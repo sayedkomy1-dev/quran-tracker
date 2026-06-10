@@ -55,6 +55,30 @@
 [data-theme="dark"] .cal-day.empty{background:transparent}
 [data-theme="dark"] .fsize-btn{background:transparent;color:var(--gl);border-color:var(--bdr)}
 [data-theme="dark"] .fsize-btn.active{background:var(--gm);color:#fff;border-color:var(--gm)}
+/* ═══ Dark mode — عناصر جديدة ═══ */
+[data-theme="dark"] .ci-item{background:var(--wh)}
+[data-theme="dark"] .ci-btn{background:var(--wh);border-color:var(--bdr);color:var(--txt)}
+[data-theme="dark"] .ci-btn.h{background:var(--gp);border-color:var(--gm);color:var(--gl)}
+[data-theme="dark"] .ci-btn.a{background:var(--rp);border-color:var(--red);color:var(--red)}
+[data-theme="dark"] .ci-btn.v{background:var(--goldp);border-color:var(--gold);color:var(--gold)}
+[data-theme="dark"] .ci-done-bar{background:var(--gp);color:var(--gl)}
+[data-theme="dark"] .bulk-item{background:rgba(255,255,255,.05);border:0.5px solid var(--bdr)}
+[data-theme="dark"] .bulk-name{color:var(--txt)}
+[data-theme="dark"] .comp-tbl th{background:var(--gp);color:var(--gl)}
+[data-theme="dark"] .comp-tbl td{border-bottom-color:var(--bdr);color:var(--txt)}
+[data-theme="dark"] .comp-tbl tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+[data-theme="dark"] .cert-box{background:var(--goldp);border-color:var(--gold)}
+[data-theme="dark"] .cert-title{color:var(--gl)}
+[data-theme="dark"] .cert-name{color:var(--gl);border-bottom-color:var(--gold)}
+[data-theme="dark"] .cert-body{color:var(--txt)}
+[data-theme="dark"] .repeat-bar{background:rgba(201,162,39,.12);border-color:var(--gold)}
+[data-theme="dark"] .repeat-bar-text{color:var(--txt)}
+[data-theme="dark"] .voice-btn{border-color:var(--bdr);color:var(--mut);background:transparent}
+[data-theme="dark"] .voice-btn:hover{border-color:var(--gm);color:var(--gl)}
+[data-theme="dark"] .tmpl-var{background:var(--gp);color:var(--gl)}
+[data-theme="dark"] .tmpl-var:hover{background:var(--gm);color:#fff}
+[data-theme="dark"] .weak-count{background:var(--rp);color:var(--red)}
+[data-theme="dark"] .full-row label{color:var(--txt)}
 
 /* Smooth theme transition */
 body,.card,.hdr,.nav,.stc,.sc,.mo-box,
@@ -1208,7 +1232,10 @@ function goPage(p){
   if(p==='settings') initSettings();
   if(p==='compare') renderComparison();
 }
-function goBack(){ goPage('students'); }
+function goBack(){
+  if(curPage==='compare') goPage('reports');
+  else goPage('students');
+}
 
 // ══════════════════════════════════════
 // STREAK CALCULATION
@@ -1554,7 +1581,11 @@ function loadPrevTask(){
   sections.forEach(({key,label})=>{
     if(!prev[key]) return; hasAny=true;
     const d2=prev[key];
-    const desc=key==='juz'?(d2.chips||[]).map(c=>esc(c)).join('، '):`سورة ${esc(d2.surah)} (${esc(d2.from)}–${esc(d2.to)})`;
+    const desc=key==='juz'
+      ?(d2.chips||[]).map(c=>esc(c)).join('، ')
+      :d2.full
+        ?`سورة ${esc(d2.surah)} كاملة`
+        :`سورة ${esc(d2.surah)} من الآية ${esc(d2.from)} إلى الآية ${esc(d2.to)}`;
     html+=`<div style="background:var(--gp);border-radius:8px;padding:10px;margin-bottom:8px">
       <div style="font-weight:700;margin-bottom:6px;font-size:13px">${label}</div>
       <div style="font-size:13px;margin-bottom:8px">${desc}</div>
@@ -1662,20 +1693,22 @@ function buildSesData(){
 function buildSumText(ses){
   if(ses.status!=='حضر') return ses.status==='غاب'?'❌ غائب':'🌙 إجازة';
   const parts=[];
-  if(ses.new) parts.push(`حفظ: ${ses.new.surah}(${ses.new.from}-${ses.new.to})`);
-  if(ses.rec) parts.push(`مراجعة قريبة: ${ses.rec.surah}`);
-  if(ses.far) parts.push(`مراجعة بعيدة: ${ses.far.surah}`);
+  const fmt=sec=>sec.full?`${sec.surah} كاملة`:`${sec.surah}(${sec.from}-${sec.to})`;
+  if(ses.new) parts.push(`حفظ: ${fmt(ses.new)}`);
+  if(ses.rec) parts.push(`مراجعة قريبة: ${fmt(ses.rec)}`);
+  if(ses.far) parts.push(`مراجعة بعيدة: ${fmt(ses.far)}`);
   if(ses.juz) parts.push((ses.juz.chips||[]).join('، '));
   return parts.join(' · ')||'حصة مسجلة';
 }
 function buildSumHTML(ses){
   if(ses.status!=='حضر') return ses.status==='غاب'?'<span style="color:var(--red)">❌ غائب</span>':'<span style="color:var(--gold)">🌙 إجازة</span>';
   const parts=[];
-  if(ses.new) parts.push(`📖 ${esc(ses.new.surah)} (${esc(ses.new.from)}–${esc(ses.new.to)}) ${ses.new.grade?'— '+esc(ses.new.grade):''}`);
-  if(ses.rec) parts.push(`📚 ${esc(ses.rec.surah)} (${esc(ses.rec.from)}–${esc(ses.rec.to)}) ${ses.rec.grade?'— '+esc(ses.rec.grade):''}`);
-  if(ses.far) parts.push(`📘 ${esc(ses.far.surah)} (${esc(ses.far.from)}–${esc(ses.far.to)}) ${ses.far.grade?'— '+esc(ses.far.grade):''}`);
-  if(ses.juz) parts.push(`📜 ${(ses.juz.chips||[]).map(c=>esc(c)).join('، ')} ${ses.juz.grade?'— '+esc(ses.juz.grade):''}`);
-  if(ses.notes) parts.push(`💬 ${esc(ses.notes)}`);
+  const fmt=sec=>sec.full?`سورة ${esc(sec.surah)} كاملة`:`سورة ${esc(sec.surah)} (${esc(sec.from)}–${esc(sec.to)})`;
+  if(ses.new) parts.push(`📖 ${fmt(ses.new)}${ses.new.grade?' — <strong>'+esc(ses.new.grade)+'</strong>':''}`);
+  if(ses.rec) parts.push(`📚 ${fmt(ses.rec)}${ses.rec.grade?' — <strong>'+esc(ses.rec.grade)+'</strong>':''}`);
+  if(ses.far) parts.push(`📘 ${fmt(ses.far)}${ses.far.grade?' — <strong>'+esc(ses.far.grade)+'</strong>':''}`);
+  if(ses.juz) parts.push(`📜 ${(ses.juz.chips||[]).map(c=>esc(c)).join('، ')}${ses.juz.grade?' — <strong>'+esc(ses.juz.grade)+'</strong>':''}`);
+  if(ses.notes) parts.push(`💬 <em>${esc(ses.notes)}</em>`);
   return parts.join('<br>')||'حصة مسجلة';
 }
 
@@ -1879,25 +1912,60 @@ function ciRecord(sid,status){
 // ══════════════════════════════════════
 function openBulkSend(){
   const today=new Date().toDateString();
-  const present=sessions.filter(s=>new Date(s.date).toDateString()===today&&s.status==='حضر');
   const el=document.getElementById('bulkList');
-  if(!present.length){
+
+  // الحاضرون اللي عندهم تكليف مسجل (مش بس حضور)
+  const withContent=sessions.filter(s=>{
+    if(new Date(s.date).toDateString()!==today||s.status!=='حضر') return false;
+    return s.new||s.rec||s.far||s.juz;
+  });
+
+  // الحاضرون بدون تكليف (سُجّل حضورهم فقط)
+  const attendedOnly=sessions.filter(s=>{
+    if(new Date(s.date).toDateString()!==today||s.status!=='حضر') return false;
+    return !s.new&&!s.rec&&!s.far&&!s.juz;
+  });
+
+  if(!withContent.length&&!attendedOnly.length){
     el.innerHTML='<div class="empty"><p>لا يوجد طلاب حاضرون اليوم<br><small>سجّل الحضور أولاً من صفحة الحضور</small></p></div>';
     document.getElementById('bulkModal').classList.add('open');
     return;
   }
-  el.innerHTML=present.map(ses=>{
-    const st=students.find(x=>x.id===ses.studentId);
-    if(!st) return '';
-    const preview=buildSumText(ses).substring(0,60);
-    return `<div class="bulk-item">
-      <div class="bulk-info">
-        <div class="bulk-name">${esc(st.name)}</div>
-        <div class="bulk-prev">${esc(preview)}</div>
-      </div>
-      <button class="bulk-send-btn" onclick="sendBulkOne('${esc(ses.studentId)}')">📲</button>
-    </div>`;
-  }).join('');
+
+  let html='';
+
+  if(withContent.length){
+    html+=`<div style="font-size:12px;font-weight:700;color:var(--gm);margin-bottom:8px;padding:0 2px">✅ جاهز للإرسال (${withContent.length})</div>`;
+    html+=withContent.map(ses=>{
+      const st=students.find(x=>x.id===ses.studentId);
+      if(!st) return '';
+      const preview=buildSumText(ses).substring(0,55);
+      return `<div class="bulk-item">
+        <div class="bulk-info">
+          <div class="bulk-name">${esc(st.name)}</div>
+          <div class="bulk-prev">${esc(preview)}</div>
+        </div>
+        <button class="bulk-send-btn" onclick="sendBulkOne('${esc(ses.studentId)}')">📲</button>
+      </div>`;
+    }).join('');
+  }
+
+  if(attendedOnly.length){
+    html+=`<div style="font-size:12px;font-weight:700;color:var(--mut);margin:12px 0 8px;padding:0 2px">⚠️ حضور بدون تكليف (${attendedOnly.length}) — افتح الحصة وأضف التكليف</div>`;
+    html+=attendedOnly.map(ses=>{
+      const st=students.find(x=>x.id===ses.studentId);
+      if(!st) return '';
+      return `<div class="bulk-item" style="opacity:.6">
+        <div class="bulk-info">
+          <div class="bulk-name">${esc(st.name)}</div>
+          <div class="bulk-prev">لم يُسجَّل تكليف بعد</div>
+        </div>
+        <button class="bulk-send-btn" style="background:var(--mut)" onclick="startFor('${esc(ses.studentId)}');document.getElementById('bulkModal').classList.remove('open')">📖</button>
+      </div>`;
+    }).join('');
+  }
+
+  el.innerHTML=html;
   document.getElementById('bulkModal').classList.add('open');
 }
 function sendBulkOne(sid){
