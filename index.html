@@ -55,30 +55,6 @@
 [data-theme="dark"] .cal-day.empty{background:transparent}
 [data-theme="dark"] .fsize-btn{background:transparent;color:var(--gl);border-color:var(--bdr)}
 [data-theme="dark"] .fsize-btn.active{background:var(--gm);color:#fff;border-color:var(--gm)}
-/* ═══ Dark mode — عناصر جديدة ═══ */
-[data-theme="dark"] .ci-item{background:var(--wh)}
-[data-theme="dark"] .ci-btn{background:var(--wh);border-color:var(--bdr);color:var(--txt)}
-[data-theme="dark"] .ci-btn.h{background:var(--gp);border-color:var(--gm);color:var(--gl)}
-[data-theme="dark"] .ci-btn.a{background:var(--rp);border-color:var(--red);color:var(--red)}
-[data-theme="dark"] .ci-btn.v{background:var(--goldp);border-color:var(--gold);color:var(--gold)}
-[data-theme="dark"] .ci-done-bar{background:var(--gp);color:var(--gl)}
-[data-theme="dark"] .bulk-item{background:rgba(255,255,255,.05);border:0.5px solid var(--bdr)}
-[data-theme="dark"] .bulk-name{color:var(--txt)}
-[data-theme="dark"] .comp-tbl th{background:var(--gp);color:var(--gl)}
-[data-theme="dark"] .comp-tbl td{border-bottom-color:var(--bdr);color:var(--txt)}
-[data-theme="dark"] .comp-tbl tr:nth-child(even) td{background:rgba(255,255,255,.03)}
-[data-theme="dark"] .cert-box{background:var(--goldp);border-color:var(--gold)}
-[data-theme="dark"] .cert-title{color:var(--gl)}
-[data-theme="dark"] .cert-name{color:var(--gl);border-bottom-color:var(--gold)}
-[data-theme="dark"] .cert-body{color:var(--txt)}
-[data-theme="dark"] .repeat-bar{background:rgba(201,162,39,.12);border-color:var(--gold)}
-[data-theme="dark"] .repeat-bar-text{color:var(--txt)}
-[data-theme="dark"] .voice-btn{border-color:var(--bdr);color:var(--mut);background:transparent}
-[data-theme="dark"] .voice-btn:hover{border-color:var(--gm);color:var(--gl)}
-[data-theme="dark"] .tmpl-var{background:var(--gp);color:var(--gl)}
-[data-theme="dark"] .tmpl-var:hover{background:var(--gm);color:#fff}
-[data-theme="dark"] .weak-count{background:var(--rp);color:var(--red)}
-[data-theme="dark"] .full-row label{color:var(--txt)}
 
 /* Smooth theme transition */
 body,.card,.hdr,.nav,.stc,.sc,.mo-box,
@@ -152,9 +128,9 @@ body.offline-mode .nav{top:96px}
    NAV
 ══════════════════════════════════════ */
 .nav{display:flex;background:var(--wh);border-bottom:1px solid var(--bdr);position:sticky;top:62px;z-index:99;box-shadow:0 1px 4px rgba(0,0,0,.06)}
-.nav-t{flex:1;padding:8px 1px 6px;text-align:center;font-size:10px;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;transition:.2s}
+.nav-t{flex:1;padding:9px 2px 7px;text-align:center;font-size:11px;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;transition:.2s}
 .nav-t.on{color:var(--gm);border-bottom-color:var(--gm);font-weight:700}
-.nav-t .ni{font-size:18px;display:block;margin-bottom:2px}
+.nav-t .ni{font-size:20px;display:block;margin-bottom:2px}
 
 /* ══════════════════════════════════════
    PAGES + ANIMATION
@@ -423,94 +399,6 @@ body.offline-mode .nav{top:96px}
 ══════════════════════════════════════ */
 .export-row{display:flex;gap:8px;margin-bottom:10px}
 .export-row .btn{flex:1}
-
-/* ══════════════════════════════════════
-   CHECK-IN PAGE
-══════════════════════════════════════ */
-.ci-item{background:var(--wh);border-radius:var(--rad);padding:11px 14px;margin-bottom:8px;box-shadow:var(--sh);display:flex;align-items:center;gap:10px}
-.ci-name{flex:1;font-size:14px;font-weight:700}
-.ci-meta{font-size:11px;color:var(--mut);margin-top:2px}
-.ci-btns{display:flex;gap:5px;flex-shrink:0}
-.ci-btn{padding:7px 9px;border:2px solid var(--bdr);border-radius:8px;background:var(--wh);cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:.15s;white-space:nowrap}
-.ci-btn.h{border-color:var(--gm);background:var(--gp);color:var(--gd)}
-.ci-btn.a{border-color:var(--red);background:var(--rp);color:var(--red)}
-.ci-btn.v{border-color:var(--gold);background:var(--goldp);color:#7a5a00}
-.ci-done-bar{background:var(--gp);border-radius:var(--rad);padding:12px;text-align:center;margin-bottom:12px;font-size:13px;color:var(--gd);font-weight:700;display:none}
-
-/* ══════════════════════════════════════
-   VOICE INPUT
-══════════════════════════════════════ */
-.voice-row{display:flex;align-items:center;gap:8px;margin-top:6px}
-.voice-btn{background:none;border:1.5px solid var(--bdr);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;color:var(--mut);transition:.15s;font-family:inherit;flex-shrink:0}
-.voice-btn:hover{border-color:var(--gm);color:var(--gm)}
-.voice-btn.listening{border-color:var(--red);color:var(--red);animation:vPulse .7s infinite}
-@keyframes vPulse{0%,100%{opacity:1}50%{opacity:.4}}
-
-/* FULL SURAH CHECKBOX */
-.full-row{display:flex;align-items:center;gap:9px;margin:8px 0}
-.full-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--gm);flex-shrink:0;cursor:pointer}
-.full-row label{font-size:13px;font-weight:600;cursor:pointer;color:var(--txt)}
-
-/* ══════════════════════════════════════
-   COMPARISON TABLE
-══════════════════════════════════════ */
-.comp-wrap{overflow-x:auto;margin-top:8px}
-.comp-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:420px}
-.comp-tbl th{background:var(--gp);color:var(--gd);padding:8px 10px;font-weight:700;text-align:right;white-space:nowrap}
-.comp-tbl td{padding:8px 10px;border-bottom:1px solid var(--bdr);vertical-align:middle}
-.comp-tbl tr:last-child td{border-bottom:none}
-.comp-tbl .rank{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
-.r1{background:#FFD700;color:#7a5a00}.r2{background:#C0C0C0;color:#444}.r3{background:#CD7F32;color:#fff}
-.comp-bar{height:5px;background:var(--bdr);border-radius:3px;margin-top:3px}
-.comp-fill{height:100%;background:var(--gm);border-radius:3px;transition:width .5s}
-
-/* ══════════════════════════════════════
-   WEAKNESS ANALYSIS
-══════════════════════════════════════ */
-.weak-item{padding:8px 0;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;font-size:13px}
-.weak-item:last-child{border-bottom:none}
-.weak-count{background:var(--rp);color:var(--red);border-radius:12px;padding:2px 8px;font-size:11px;font-weight:700;flex-shrink:0}
-
-/* ══════════════════════════════════════
-   BULK SEND MODAL
-══════════════════════════════════════ */
-.bulk-item{background:var(--bg);border-radius:10px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
-.bulk-info{flex:1;min-width:0}
-.bulk-name{font-size:14px;font-weight:700;margin-bottom:3px}
-.bulk-prev{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bulk-send-btn{background:var(--wa);color:#fff;border:none;border-radius:8px;padding:8px 10px;cursor:pointer;font-size:14px;flex-shrink:0;font-family:inherit}
-
-/* ══════════════════════════════════════
-   CERTIFICATE
-══════════════════════════════════════ */
-#certModal .mo-box{max-width:560px}
-.cert-box{border:3px solid var(--gold);border-radius:16px;padding:30px 20px;text-align:center;background:var(--goldp);margin-bottom:12px}
-.cert-title{font-size:22px;font-weight:800;color:var(--gd);margin-bottom:6px}
-.cert-sub{font-size:13px;color:var(--mut);margin-bottom:16px}
-.cert-name{font-size:26px;font-weight:800;color:var(--gd);margin-bottom:10px;border-bottom:2px solid var(--gold);padding-bottom:10px}
-.cert-body{font-size:14px;color:var(--txt);line-height:1.8;margin-bottom:14px}
-.cert-seal{font-size:36px;margin-bottom:8px}
-.cert-teacher{font-size:13px;color:var(--mut)}
-@media print{
-  body>*:not(#certPrintWrap){display:none!important}
-  #certPrintWrap{display:block!important;position:fixed;inset:0;background:#fff;z-index:99999;padding:30px}
-  #certPrintWrap .mo-x{display:none}
-}
-
-/* ══════════════════════════════════════
-   WA TEMPLATE
-══════════════════════════════════════ */
-.tmpl-vars{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.tmpl-var{background:var(--gp);color:var(--gd);border-radius:12px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:700;border:none;font-family:inherit;transition:.15s}
-.tmpl-var:hover{background:var(--gm);color:#fff}
-
-/* ══════════════════════════════════════
-   REPEAT LAST BUTTON
-══════════════════════════════════════ */
-.repeat-bar{background:var(--goldp);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer;border:1.5px solid var(--gold)}
-.repeat-bar:hover{background:#fef3c7}
-.repeat-bar-text{flex:1;font-size:13px;color:var(--txt)}
-.repeat-bar-hint{font-size:11px;color:var(--mut)}
 </style>
 </head>
 <body>
@@ -556,7 +444,6 @@ body.offline-mode .nav{top:96px}
 <div class="nav" id="mainNav">
   <div class="nav-t on" onclick="goPage('home')"><span class="ni">🏠</span>الرئيسية</div>
   <div class="nav-t" onclick="goPage('students')"><span class="ni">👥</span>الطلاب</div>
-  <div class="nav-t" onclick="goPage('checkin')"><span class="ni">✅</span>الحضور</div>
   <div class="nav-t" onclick="goPage('session')"><span class="ni">📖</span>الحصة</div>
   <div class="nav-t" onclick="goPage('reports')"><span class="ni">📊</span>التقارير</div>
   <div class="nav-t" onclick="goPage('settings')"><span class="ni">⚙️</span>الإعدادات</div>
@@ -595,10 +482,7 @@ body.offline-mode .nav{top:96px}
         <option value="">— اختر الطالب —</option>
       </select>
     </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-g mt8" style="flex:2" onclick="goToSession()">ابدأ الحصة 📖</button>
-      <button class="btn btn-out mt8" style="flex:1" onclick="openBulkSend()">📤 إرسال للكل</button>
-    </div>
+    <button class="btn btn-g mt8" onclick="goToSession()">ابدأ الحصة 📖</button>
   </div>
 
   <!-- آخر الحصص -->
@@ -606,18 +490,6 @@ body.offline-mode .nav{top:96px}
     <div class="ch">📅 آخر الحصص</div>
     <div id="recentSes"></div>
   </div>
-</div>
-
-<!-- ══════════════ CHECK-IN ══════════════ -->
-<div class="pg" id="pg-checkin">
-  <div class="ci-done-bar" id="ciDoneBar">✅ تم تسجيل الحضور لجميع الطلاب اليوم</div>
-  <div class="card" style="margin-bottom:12px">
-    <div class="ch">📋 تسجيل حضور اليوم</div>
-    <div id="ciDate" style="font-size:12px;color:var(--mut);margin-top:4px"></div>
-  </div>
-  <div id="ciList"></div>
-  <button class="btn btn-wa mt8" onclick="sendAllWA()">📤 إرسال تقارير لجميع الحاضرين</button>
-  <div style="height:20px"></div>
 </div>
 
 <!-- ══════════════ STUDENTS ══════════════ -->
@@ -660,15 +532,6 @@ body.offline-mode .nav{top:96px}
     <button class="btn btn-wa mb8" onclick="sendAbsenceWA()">📲 إبلاغ ولي الأمر بالغياب</button>
   </div>
 
-  <div id="repeatBar" class="repeat-bar" onclick="fillFromLast()" style="display:none">
-    <span style="font-size:18px">♻️</span>
-    <div class="repeat-bar-text">
-      <div style="font-weight:700">كرر تكليف آخر حصة</div>
-      <div class="repeat-bar-hint" id="repeatHint">اضغط لملء الحقول تلقائياً</div>
-    </div>
-    <span style="font-size:16px;color:var(--gold)">←</span>
-  </div>
-
   <div id="sesContent">
     <div class="sec-div">📋 القسم الأول: تقييم التسميع</div>
     <div class="card" id="prevCard">
@@ -684,19 +547,12 @@ body.offline-mode .nav{top:96px}
         <div class="tog on" id="tog-new" onclick="togSec('new')"></div>
       </div>
       <div id="bod-new">
-        <div class="voice-row">
-          <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
-            <select id="new-s" onchange="fillAyah('new')"><option value="">— اختر —</option></select>
-          </div>
-          <button class="voice-btn" id="vb-new" onclick="startVoice('new')" title="إدخال صوتي">🎙️</button>
+        <div class="fld"><label>السورة</label>
+          <select id="new-s" onchange="fillAyah('new')"><option value="">— اختر —</option></select>
         </div>
-        <div class="full-row">
-          <input type="checkbox" id="new-full" onchange="toggleFull('new')">
-          <label for="new-full">سورة كاملة</label>
-        </div>
-        <div class="frow" id="new-range" style="display:none">
-          <div class="fld"><label>من آية</label><input type="number" id="new-f" min="1" value="1" style="text-align:center"></div>
-          <div class="fld"><label>إلى آية</label><input type="number" id="new-t" min="1" value="1" style="text-align:center"></div>
+        <div class="frow">
+          <div class="fld"><label>من آية</label><select id="new-f"></select></div>
+          <div class="fld"><label>إلى آية</label><select id="new-t"></select></div>
         </div>
         <div class="fld"><label>التقييم</label>
           <div class="gbs" id="gr-new">
@@ -715,19 +571,12 @@ body.offline-mode .nav{top:96px}
         <div class="tog" id="tog-rec" onclick="togSec('rec')"></div>
       </div>
       <div id="bod-rec" style="display:none">
-        <div class="voice-row">
-          <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
-            <select id="rec-s" onchange="fillAyah('rec')"><option value="">— اختر —</option></select>
-          </div>
-          <button class="voice-btn" id="vb-rec" onclick="startVoice('rec')" title="إدخال صوتي">🎙️</button>
+        <div class="fld"><label>السورة</label>
+          <select id="rec-s" onchange="fillAyah('rec')"><option value="">— اختر —</option></select>
         </div>
-        <div class="full-row">
-          <input type="checkbox" id="rec-full" onchange="toggleFull('rec')">
-          <label for="rec-full">سورة كاملة</label>
-        </div>
-        <div class="frow" id="rec-range" style="display:none">
-          <div class="fld"><label>من آية</label><input type="number" id="rec-f" min="1" value="1" style="text-align:center"></div>
-          <div class="fld"><label>إلى آية</label><input type="number" id="rec-t" min="1" value="1" style="text-align:center"></div>
+        <div class="frow">
+          <div class="fld"><label>من آية</label><select id="rec-f"></select></div>
+          <div class="fld"><label>إلى آية</label><select id="rec-t"></select></div>
         </div>
         <div class="fld"><label>التقييم</label>
           <div class="gbs" id="gr-rec">
@@ -746,19 +595,12 @@ body.offline-mode .nav{top:96px}
         <div class="tog" id="tog-far" onclick="togSec('far')"></div>
       </div>
       <div id="bod-far" style="display:none">
-        <div class="voice-row">
-          <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
-            <select id="far-s" onchange="fillAyah('far')"><option value="">— اختر —</option></select>
-          </div>
-          <button class="voice-btn" id="vb-far" onclick="startVoice('far')" title="إدخال صوتي">🎙️</button>
+        <div class="fld"><label>السورة</label>
+          <select id="far-s" onchange="fillAyah('far')"><option value="">— اختر —</option></select>
         </div>
-        <div class="full-row">
-          <input type="checkbox" id="far-full" onchange="toggleFull('far')">
-          <label for="far-full">سورة كاملة</label>
-        </div>
-        <div class="frow" id="far-range" style="display:none">
-          <div class="fld"><label>من آية</label><input type="number" id="far-f" min="1" value="1" style="text-align:center"></div>
-          <div class="fld"><label>إلى آية</label><input type="number" id="far-t" min="1" value="1" style="text-align:center"></div>
+        <div class="frow">
+          <div class="fld"><label>من آية</label><select id="far-f"></select></div>
+          <div class="fld"><label>إلى آية</label><select id="far-t"></select></div>
         </div>
         <div class="fld"><label>التقييم</label>
           <div class="gbs" id="gr-far">
@@ -803,7 +645,7 @@ body.offline-mode .nav{top:96px}
     </div>
 
     <button class="btn btn-g mb8" onclick="saveSession()">💾 حفظ الحصة</button>
-    <button class="btn btn-wa" onclick="saveAndSendWA()">📲 حفظ وإرسال لولي الأمر</button>
+    <button class="btn btn-wa" onclick="sendWA()">📲 إرسال التقرير لولي الأمر</button>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -825,9 +667,8 @@ body.offline-mode .nav{top:96px}
   </div>
   <!-- أدوات التصدير -->
   <div class="export-row">
-    <button class="btn btn-out btn-sm" onclick="exportCSV()">📥 CSV</button>
-    <button class="btn btn-out btn-sm" onclick="window.print()">🖨️ طباعة</button>
-    <button class="btn btn-out btn-sm" onclick="goPage('compare')">🏅 مقارنة</button>
+    <button class="btn btn-out btn-sm" onclick="exportCSV()">📥 تصدير CSV</button>
+    <button class="btn btn-out btn-sm" onclick="window.print()">🖨️ طباعة / PDF</button>
   </div>
   <!-- التقويم الشهري -->
   <div class="card" id="calCard" style="display:none">
@@ -883,24 +724,6 @@ body.offline-mode .nav{top:96px}
   </div>
 
   <div class="card">
-    <div class="ch">✉️ قالب رسالة الواتساب</div>
-    <p class="txt-mut mb8" style="font-size:12px">يمكنك تخصيص الرسالة. اضغط على المتغير لإدراجه:</p>
-    <div class="tmpl-vars">
-      <button class="tmpl-var" onclick="insertVar('{{اسم_الطالب}}')">{{اسم_الطالب}}</button>
-      <button class="tmpl-var" onclick="insertVar('{{التاريخ}}')">{{التاريخ}}</button>
-      <button class="tmpl-var" onclick="insertVar('{{الحفظ_الجديد}}')">{{الحفظ_الجديد}}</button>
-      <button class="tmpl-var" onclick="insertVar('{{المراجعة_القريبة}}')">{{المراجعة_القريبة}}</button>
-      <button class="tmpl-var" onclick="insertVar('{{المراجعة_البعيدة}}')">{{المراجعة_البعيدة}}</button>
-      <button class="tmpl-var" onclick="insertVar('{{الملاحظات}}')">{{الملاحظات}}</button>
-      <button class="tmpl-var" onclick="insertVar('{{اسم_المحفظ}}')">{{اسم_المحفظ}}</button>
-    </div>
-    <div class="fld">
-      <textarea id="waTmpl" rows="7" placeholder="اتركه فارغاً لاستخدام القالب الافتراضي..." oninput="saveSettings()"></textarea>
-    </div>
-    <button class="btn btn-out btn-sm" onclick="resetTemplate()">↺ إعادة ضبط القالب الافتراضي</button>
-  </div>
-
-  <div class="card">
     <div class="ch">💾 النسخ الاحتياطي</div>
     <button class="btn btn-g mb8" onclick="exportData()">📤 تصدير البيانات (JSON)</button>
     <div class="fld mt8">
@@ -919,29 +742,11 @@ body.offline-mode .nav{top:96px}
 <div class="pg" id="pg-profile">
   <div class="card" id="profHdr"></div>
   <div class="card" id="profTrack"></div>
-  <div class="card" id="profChart" style="display:none">
-    <div class="ch">📈 مسار التقييم</div>
-    <div style="position:relative;height:180px"><canvas id="profChartCanvas"></canvas></div>
-  </div>
-  <div class="card" id="profWeak" style="display:none">
-    <div class="ch">🔍 نقاط تحتاج اهتمام</div>
-    <div id="profWeakContent"></div>
-  </div>
   <div class="card" id="profHist"></div>
-  <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+  <div style="display:flex;gap:8px;margin-bottom:10px">
     <button class="btn btn-out btn-sm" onclick="editSt()">✏️ تعديل</button>
-    <button class="btn btn-out btn-sm" onclick="openCert()">🎓 شهادة</button>
     <button class="btn btn-red btn-sm" onclick="deleteSt()">🗑️ حذف</button>
   </div>
-</div>
-
-<!-- ══════════════ COMPARISON PAGE ══════════════ -->
-<div class="pg" id="pg-compare">
-  <div class="card">
-    <div class="ch">🏅 مقارنة الطلاب</div>
-    <div class="comp-wrap"><table class="comp-tbl" id="compTbl"></table></div>
-  </div>
-  <div style="height:20px"></div>
 </div>
 
 <!-- ══════════════ ADD/EDIT MODAL ══════════════ -->
@@ -970,32 +775,6 @@ body.offline-mode .nav{top:96px}
 </div>
 
 <!-- ════════════ TOAST ════════════ -->
-<div class="toast" id="toast"></div>
-
-<!-- ════════════ BULK SEND MODAL ════════════ -->
-<div class="mo" id="bulkModal">
-  <div class="mo-box">
-    <div class="mo-title">
-      <span>📤 إرسال لجميع الحاضرين اليوم</span>
-      <button class="mo-x" onclick="document.getElementById('bulkModal').classList.remove('open')">✕</button>
-    </div>
-    <div id="bulkList"></div>
-    <div style="height:8px"></div>
-  </div>
-</div>
-
-<!-- ════════════ CERTIFICATE MODAL ════════════ -->
-<div class="mo" id="certModal">
-  <div class="mo-box" id="certPrintWrap">
-    <div class="mo-title">
-      <span>🎓 شهادة الطالب</span>
-      <button class="mo-x" onclick="document.getElementById('certModal').classList.remove('open')">✕</button>
-    </div>
-    <div id="certContent"></div>
-    <button class="btn btn-g mb8" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
-    <button class="btn btn-out" onclick="document.getElementById('certModal').classList.remove('open')">إغلاق</button>
-  </div>
-</div>
 <div class="toast" id="toast"></div>
 
 <!-- ════════════ SCRIPTS ════════════ -->
@@ -1054,7 +833,7 @@ const JZ=Array.from({length:30},(_,i)=>`الجزء ${i+1}`);
 // ══════════════════════════════════════
 let students=[];
 let sessions=[];
-let settings={name:'',circle:'',theme:'light',fontSize:'md',notifEnabled:false,waTemplate:''};
+let settings={name:'',circle:'',theme:'light',fontSize:'md',notifEnabled:false};
 let curPage='home';
 let curStId=null;
 let editId=null;
@@ -1214,28 +993,22 @@ function goPage(p){
   document.querySelectorAll('.nav-t').forEach(x=>x.classList.remove('on'));
   const pEl=document.getElementById('pg-'+p);
   if(pEl) pEl.classList.add('on');
-  const navMap={home:0,students:1,checkin:2,session:3,reports:4,settings:5};
+  const navMap={home:0,students:1,session:2,reports:3,settings:4};
   const navTabs=document.querySelectorAll('.nav-t');
   if(navMap[p]!==undefined) navTabs[navMap[p]].classList.add('on');
-  const isExtra=p==='profile'||p==='compare';
-  document.getElementById('mainNav').style.display=isExtra?'none':'flex';
-  document.getElementById('backBtn').style.display=isExtra?'block':'none';
-  const titles={profile:'ملف الطالب',compare:'مقارنة الطلاب'};
-  document.getElementById('hdrTitle').textContent=titles[p]||'📿 بالقرآن نحيا';
-  document.getElementById('hdrSub').textContent=isExtra?'':'الشيخ السيد الكومي';
+  const isProfile=p==='profile';
+  document.getElementById('mainNav').style.display=isProfile?'none':'flex';
+  document.getElementById('backBtn').style.display=isProfile?'block':'none';
+  document.getElementById('hdrTitle').textContent=isProfile?'ملف الطالب':'📿 بالقرآن نحيا';
+  document.getElementById('hdrSub').textContent=isProfile?'':'الشيخ السيد الكومي';
   curPage=p;
   if(p==='home') renderHome();
   if(p==='students') renderSt();
-  if(p==='checkin') renderCheckin();
   if(p==='session') initSession();
   if(p==='reports') initReports();
   if(p==='settings') initSettings();
-  if(p==='compare') renderComparison();
 }
-function goBack(){
-  if(curPage==='compare') goPage('reports');
-  else goPage('students');
-}
+function goBack(){ goPage('students'); }
 
 // ══════════════════════════════════════
 // STREAK CALCULATION
@@ -1467,8 +1240,6 @@ function openProf(id){
     </div>`;
 
   document.getElementById('profTrack').innerHTML='<div class="ch">📈 الحفظ التراكمي</div>'+buildTrackHTML(id);
-  renderWeakness(id);
-  renderProfileChart(id);
 
   const hist=[...stSes].reverse();
   document.getElementById('profHist').innerHTML=`<div class="ch">📋 سجل الحصص (${stSes.length})</div>`+(
@@ -1531,32 +1302,18 @@ function resetSession(){
   document.querySelectorAll('.gb').forEach(b=>b.classList.remove('sel'));
   ['new','rec','far'].forEach(p=>{
     const s=document.getElementById(p+'-s');if(s)s.value='';
-    const f=document.getElementById(p+'-f');if(f){f.value=1;f.max=999;}
-    const t=document.getElementById(p+'-t');if(t){t.value=1;t.max=999;}
-    const fc=document.getElementById(p+'-full');if(fc)fc.checked=false;
-    const rng=document.getElementById(p+'-range');if(rng)rng.style.display='none';
+    const f=document.getElementById(p+'-f');if(f)f.innerHTML='';
+    const t=document.getElementById(p+'-t');if(t)t.innerHTML='';
   });
   document.getElementById('juz-chips').innerHTML='';
-  updateTogs();setStatusUI('حضر');
+  updateTogs(); setStatusUI('حضر');
   document.getElementById('absentNotice').style.display='none';
   document.getElementById('sesContent').style.display='block';
-  document.getElementById('repeatBar').style.display='none';
 }
 function onSesSt(){
   curStId=document.getElementById('sesSt').value;
-  if(!curStId){
-    document.getElementById('prevContent').innerHTML='<div class="txt-mut" style="text-align:center;padding:10px">اختر الطالب لعرض تكليف الحصة السابقة</div>';
-    document.getElementById('repeatBar').style.display='none';
-    return;
-  }
+  if(!curStId){ document.getElementById('prevContent').innerHTML='<div class="txt-mut" style="text-align:center;padding:10px">اختر الطالب لعرض تكليف الحصة السابقة</div>'; return; }
   loadPrevTask();
-  const prev=sessions.filter(x=>x.studentId===curStId&&x.status==='حضر').pop();
-  const rb=document.getElementById('repeatBar');
-  if(prev&&(prev.new||prev.rec||prev.far||prev.juz)){
-    const d=new Date(prev.date).toLocaleDateString('ar-EG',{month:'short',day:'numeric'});
-    document.getElementById('repeatHint').textContent=`آخر حصة: ${d} — اضغط لملء الحقول`;
-    rb.style.display='flex';
-  } else { rb.style.display='none'; }
 }
 function setStatus(s){
   sesStatus=s; setStatusUI(s);
@@ -1581,11 +1338,7 @@ function loadPrevTask(){
   sections.forEach(({key,label})=>{
     if(!prev[key]) return; hasAny=true;
     const d2=prev[key];
-    const desc=key==='juz'
-      ?(d2.chips||[]).map(c=>esc(c)).join('، ')
-      :d2.full
-        ?`سورة ${esc(d2.surah)} كاملة`
-        :`سورة ${esc(d2.surah)} من الآية ${esc(d2.from)} إلى الآية ${esc(d2.to)}`;
+    const desc=key==='juz'?(d2.chips||[]).map(c=>esc(c)).join('، '):`سورة ${esc(d2.surah)} (${esc(d2.from)}–${esc(d2.to)})`;
     html+=`<div style="background:var(--gp);border-radius:8px;padding:10px;margin-bottom:8px">
       <div style="font-weight:700;margin-bottom:6px;font-size:13px">${label}</div>
       <div style="font-size:13px;margin-bottom:8px">${desc}</div>
@@ -1615,26 +1368,11 @@ function fillJuzSelect(){
 }
 function fillAyah(p){
   const idx=parseInt(document.getElementById(p+'-s').value);
-  const rng=document.getElementById(p+'-range');
-  const fc=document.getElementById(p+'-full');
-  if(isNaN(idx)){
-    if(rng)rng.style.display='none';
-    if(fc)fc.checked=false;
-    return;
-  }
+  const f=document.getElementById(p+'-f');const t=document.getElementById(p+'-t');
+  if(isNaN(idx)){f.innerHTML='';t.innerHTML='';return;}
   const cnt=S[idx].a;
-  const f=document.getElementById(p+'-f');
-  const t=document.getElementById(p+'-t');
-  if(f){f.value=1;f.max=cnt;}
-  if(t){t.value=cnt;t.max=cnt;}
-  if(rng&&(!fc||!fc.checked)) rng.style.display='flex';
-}
-function toggleFull(p){
-  const fc=document.getElementById(p+'-full');
-  const rng=document.getElementById(p+'-range');
-  const idx=parseInt(document.getElementById(p+'-s').value);
-  if(!rng)return;
-  rng.style.display=(fc&&fc.checked)?'none':(!isNaN(idx)?'flex':'none');
+  const opts=Array.from({length:cnt},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join('');
+  f.innerHTML=opts;t.innerHTML=opts;t.value=cnt;
 }
 function togSec(k){ secOn[k]=!secOn[k]; updateTogs(); }
 function updateTogs(){
@@ -1666,24 +1404,15 @@ function buildSesData(){
   const d={};
   if(secOn.new&&document.getElementById('new-s').value!==''){
     const idx=parseInt(document.getElementById('new-s').value);
-    const full=document.getElementById('new-full')&&document.getElementById('new-full').checked;
-    const from=full?1:parseInt(document.getElementById('new-f').value)||1;
-    const to=full?S[idx].a:parseInt(document.getElementById('new-t').value)||S[idx].a;
-    d.new={surah:S[idx].n,from,to,grade:grades.new,full:!!full};
+    d.new={surah:S[idx].n,from:document.getElementById('new-f').value,to:document.getElementById('new-t').value,grade:grades.new};
   }
   if(secOn.rec&&document.getElementById('rec-s').value!==''){
     const idx=parseInt(document.getElementById('rec-s').value);
-    const full=document.getElementById('rec-full')&&document.getElementById('rec-full').checked;
-    const from=full?1:parseInt(document.getElementById('rec-f').value)||1;
-    const to=full?S[idx].a:parseInt(document.getElementById('rec-t').value)||S[idx].a;
-    d.rec={surah:S[idx].n,from,to,grade:grades.rec,full:!!full};
+    d.rec={surah:S[idx].n,from:document.getElementById('rec-f').value,to:document.getElementById('rec-t').value,grade:grades.rec};
   }
   if(secOn.far&&document.getElementById('far-s').value!==''){
     const idx=parseInt(document.getElementById('far-s').value);
-    const full=document.getElementById('far-full')&&document.getElementById('far-full').checked;
-    const from=full?1:parseInt(document.getElementById('far-f').value)||1;
-    const to=full?S[idx].a:parseInt(document.getElementById('far-t').value)||S[idx].a;
-    d.far={surah:S[idx].n,from,to,grade:grades.far,full:!!full};
+    d.far={surah:S[idx].n,from:document.getElementById('far-f').value,to:document.getElementById('far-t').value,grade:grades.far};
   }
   if(secOn.juz&&juzChips.length) d.juz={chips:[...juzChips],grade:grades.juz};
   d.notes=document.getElementById('sesNotes').value.trim();
@@ -1693,22 +1422,20 @@ function buildSesData(){
 function buildSumText(ses){
   if(ses.status!=='حضر') return ses.status==='غاب'?'❌ غائب':'🌙 إجازة';
   const parts=[];
-  const fmt=sec=>sec.full?`${sec.surah} كاملة`:`${sec.surah}(${sec.from}-${sec.to})`;
-  if(ses.new) parts.push(`حفظ: ${fmt(ses.new)}`);
-  if(ses.rec) parts.push(`مراجعة قريبة: ${fmt(ses.rec)}`);
-  if(ses.far) parts.push(`مراجعة بعيدة: ${fmt(ses.far)}`);
+  if(ses.new) parts.push(`حفظ: ${ses.new.surah}(${ses.new.from}-${ses.new.to})`);
+  if(ses.rec) parts.push(`مراجعة قريبة: ${ses.rec.surah}`);
+  if(ses.far) parts.push(`مراجعة بعيدة: ${ses.far.surah}`);
   if(ses.juz) parts.push((ses.juz.chips||[]).join('، '));
   return parts.join(' · ')||'حصة مسجلة';
 }
 function buildSumHTML(ses){
   if(ses.status!=='حضر') return ses.status==='غاب'?'<span style="color:var(--red)">❌ غائب</span>':'<span style="color:var(--gold)">🌙 إجازة</span>';
   const parts=[];
-  const fmt=sec=>sec.full?`سورة ${esc(sec.surah)} كاملة`:`سورة ${esc(sec.surah)} (${esc(sec.from)}–${esc(sec.to)})`;
-  if(ses.new) parts.push(`📖 ${fmt(ses.new)}${ses.new.grade?' — <strong>'+esc(ses.new.grade)+'</strong>':''}`);
-  if(ses.rec) parts.push(`📚 ${fmt(ses.rec)}${ses.rec.grade?' — <strong>'+esc(ses.rec.grade)+'</strong>':''}`);
-  if(ses.far) parts.push(`📘 ${fmt(ses.far)}${ses.far.grade?' — <strong>'+esc(ses.far.grade)+'</strong>':''}`);
-  if(ses.juz) parts.push(`📜 ${(ses.juz.chips||[]).map(c=>esc(c)).join('، ')}${ses.juz.grade?' — <strong>'+esc(ses.juz.grade)+'</strong>':''}`);
-  if(ses.notes) parts.push(`💬 <em>${esc(ses.notes)}</em>`);
+  if(ses.new) parts.push(`📖 ${esc(ses.new.surah)} (${esc(ses.new.from)}–${esc(ses.new.to)}) ${ses.new.grade?'— '+esc(ses.new.grade):''}`);
+  if(ses.rec) parts.push(`📚 ${esc(ses.rec.surah)} (${esc(ses.rec.from)}–${esc(ses.rec.to)}) ${ses.rec.grade?'— '+esc(ses.rec.grade):''}`);
+  if(ses.far) parts.push(`📘 ${esc(ses.far.surah)} (${esc(ses.far.from)}–${esc(ses.far.to)}) ${ses.far.grade?'— '+esc(ses.far.grade):''}`);
+  if(ses.juz) parts.push(`📜 ${(ses.juz.chips||[]).map(c=>esc(c)).join('، ')} ${ses.juz.grade?'— '+esc(ses.juz.grade):''}`);
+  if(ses.notes) parts.push(`💬 ${esc(ses.notes)}`);
   return parts.join('<br>')||'حصة مسجلة';
 }
 
@@ -1736,394 +1463,6 @@ function sendWA(){
   const msg=buildWAMsg(s,ses);
   window.open(`https://wa.me/${s.phone}?text=${encodeURIComponent(msg)}`,'_blank');
 }
-function saveAndSendWA(){
-  saveSession();
-  setTimeout(sendWA,300);
-}
-
-// ══════════════════════════════════════
-// FILL FROM LAST SESSION
-// ══════════════════════════════════════
-function fillFromLast(){
-  if(!curStId) return;
-  const prev=sessions.filter(x=>x.studentId===curStId&&x.status==='حضر').pop();
-  if(!prev){ toast('لا توجد حصة سابقة','error'); return; }
-
-  // Make sure sections are populated with surah options
-  fillSurahSelects();
-
-  if(prev.new){
-    const idx=S.findIndex(s=>s.n===prev.new.surah);
-    if(idx>=0){
-      secOn.new=true; updateTogs();
-      document.getElementById('new-s').value=idx;
-      fillAyah('new');
-      if(prev.new.full){
-        document.getElementById('new-full').checked=true;
-        toggleFull('new');
-      } else {
-        document.getElementById('new-f').value=prev.new.from;
-        document.getElementById('new-t').value=prev.new.to;
-      }
-      if(prev.new.grade) setGr('new',prev.new.grade);
-    }
-  }
-  if(prev.rec){
-    const idx=S.findIndex(s=>s.n===prev.rec.surah);
-    if(idx>=0){
-      secOn.rec=true; updateTogs();
-      document.getElementById('rec-s').value=idx;
-      fillAyah('rec');
-      if(prev.rec.full){
-        document.getElementById('rec-full').checked=true;
-        toggleFull('rec');
-      } else {
-        document.getElementById('rec-f').value=prev.rec.from;
-        document.getElementById('rec-t').value=prev.rec.to;
-      }
-      if(prev.rec.grade) setGr('rec',prev.rec.grade);
-    }
-  }
-  if(prev.far){
-    const idx=S.findIndex(s=>s.n===prev.far.surah);
-    if(idx>=0){
-      secOn.far=true; updateTogs();
-      document.getElementById('far-s').value=idx;
-      fillAyah('far');
-      if(prev.far.full){
-        document.getElementById('far-full').checked=true;
-        toggleFull('far');
-      } else {
-        document.getElementById('far-f').value=prev.far.from;
-        document.getElementById('far-t').value=prev.far.to;
-      }
-      if(prev.far.grade) setGr('far',prev.far.grade);
-    }
-  }
-  if(prev.juz&&prev.juz.chips){
-    secOn.juz=true; updateTogs();
-    juzChips=[...prev.juz.chips];
-    renderChips();
-    if(prev.juz.grade) setGr('juz',prev.juz.grade);
-  }
-  if(prev.notes) document.getElementById('sesNotes').value=prev.notes;
-  toast('تم تحميل التكليف السابق ✓','success');
-  vibrate([30,20,60]);
-}
-
-// ══════════════════════════════════════
-// VOICE INPUT
-// ══════════════════════════════════════
-let activeVoiceSec=null;
-function startVoice(sec){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ toast('المتصفح لا يدعم الإدخال الصوتي — جرب Chrome','error'); return; }
-  if(activeVoiceSec){
-    toast('هناك إدخال صوتي جارٍ بالفعل','error'); return;
-  }
-  const rec=new SR();
-  rec.lang='ar-SA';rec.continuous=false;rec.interimResults=false;
-  const btn=document.getElementById('vb-'+sec);
-  if(btn) btn.classList.add('listening');
-  activeVoiceSec=sec;
-  toast('🎙️ يستمع... تكلم الآن','info');
-  rec.onresult=e=>{
-    const txt=e.results[0][0].transcript;
-    parseVoiceInput(sec,txt);
-    toast('تم التعرف: '+txt,'success');
-  };
-  rec.onerror=()=>{ toast('لم يتعرف على الصوت، حاول مرة أخرى','error'); };
-  rec.onend=()=>{
-    if(btn) btn.classList.remove('listening');
-    activeVoiceSec=null;
-  };
-  rec.start();
-}
-function parseVoiceInput(sec,txt){
-  // Match surah name
-  const idx=S.findIndex(s=>txt.includes(s.n));
-  if(idx>=0){
-    document.getElementById(sec+'-s').value=idx;
-    fillAyah(sec);
-  }
-  // Match full surah
-  if(txt.includes('كامل')||txt.includes('كاملة')){
-    const fc=document.getElementById(sec+'-full');
-    if(fc){fc.checked=true; toggleFull(sec);}
-  }
-  // Match grade
-  if(txt.includes('ممتاز')) setGr(sec,'ممتاز');
-  else if(txt.includes('جيد جداً')||txt.includes('جيد جدا')) setGr(sec,'جيد جداً');
-  else if(txt.includes('جيد')) setGr(sec,'جيد');
-  else if(txt.includes('ضعيف')) setGr(sec,'ضعيف');
-}
-
-// ══════════════════════════════════════
-// CHECK-IN
-// ══════════════════════════════════════
-function renderCheckin(){
-  const today=new Date().toDateString();
-  const d=new Date().toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  document.getElementById('ciDate').textContent=d;
-
-  // Get today's sessions (already recorded)
-  const todaySes={};
-  sessions.filter(s=>new Date(s.date).toDateString()===today)
-    .forEach(s=>{ todaySes[s.studentId]=s.status; });
-
-  const allDone=students.length>0&&students.every(s=>todaySes[s.id]);
-  document.getElementById('ciDoneBar').style.display=allDone?'block':'none';
-
-  const el=document.getElementById('ciList');
-  if(!students.length){
-    el.innerHTML='<div class="empty"><div class="ei">👥</div><p>لا يوجد طلاب مسجلون</p></div>';
-    return;
-  }
-  el.innerHTML=students.map(s=>{
-    const status=todaySes[s.id]||'';
-    const hCls=status==='حضر'?'h':'';
-    const aCls=status==='غاب'?'a':'';
-    const vCls=status==='إجازة'?'v':'';
-    return `<div class="ci-item" id="ci-${esc(s.id)}">
-      <div>
-        <div class="ci-name">${esc(s.name)}</div>
-        <div class="ci-meta">${status?'● '+status:'لم يسجل بعد'}</div>
-      </div>
-      <div class="ci-btns">
-        <button class="ci-btn ${hCls}" onclick="ciRecord('${esc(s.id)}','حضر')">✅ حضر</button>
-        <button class="ci-btn ${aCls}" onclick="ciRecord('${esc(s.id)}','غاب')">❌ غاب</button>
-        <button class="ci-btn ${vCls}" onclick="ciRecord('${esc(s.id)}','إجازة')">🌙 إجازة</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-function ciRecord(sid,status){
-  const today=new Date().toDateString();
-  const existing=sessions.find(s=>s.studentId===sid&&new Date(s.date).toDateString()===today);
-  if(existing){ existing.status=status; existing.summary=buildSumText(existing); }
-  else { sessions.push({id:'ses'+Date.now(),studentId:sid,date:new Date().toISOString(),status,summary:status}); }
-  save(); renderCheckin(); vibrate([30]);
-  const st=students.find(x=>x.id===sid);
-  toast(`${st?st.name:'الطالب'}: ${status}`,'success');
-}
-
-// ══════════════════════════════════════
-// BULK SEND
-// ══════════════════════════════════════
-function openBulkSend(){
-  const today=new Date().toDateString();
-  const el=document.getElementById('bulkList');
-
-  // الحاضرون اللي عندهم تكليف مسجل (مش بس حضور)
-  const withContent=sessions.filter(s=>{
-    if(new Date(s.date).toDateString()!==today||s.status!=='حضر') return false;
-    return s.new||s.rec||s.far||s.juz;
-  });
-
-  // الحاضرون بدون تكليف (سُجّل حضورهم فقط)
-  const attendedOnly=sessions.filter(s=>{
-    if(new Date(s.date).toDateString()!==today||s.status!=='حضر') return false;
-    return !s.new&&!s.rec&&!s.far&&!s.juz;
-  });
-
-  if(!withContent.length&&!attendedOnly.length){
-    el.innerHTML='<div class="empty"><p>لا يوجد طلاب حاضرون اليوم<br><small>سجّل الحضور أولاً من صفحة الحضور</small></p></div>';
-    document.getElementById('bulkModal').classList.add('open');
-    return;
-  }
-
-  let html='';
-
-  if(withContent.length){
-    html+=`<div style="font-size:12px;font-weight:700;color:var(--gm);margin-bottom:8px;padding:0 2px">✅ جاهز للإرسال (${withContent.length})</div>`;
-    html+=withContent.map(ses=>{
-      const st=students.find(x=>x.id===ses.studentId);
-      if(!st) return '';
-      const preview=buildSumText(ses).substring(0,55);
-      return `<div class="bulk-item">
-        <div class="bulk-info">
-          <div class="bulk-name">${esc(st.name)}</div>
-          <div class="bulk-prev">${esc(preview)}</div>
-        </div>
-        <button class="bulk-send-btn" onclick="sendBulkOne('${esc(ses.studentId)}')">📲</button>
-      </div>`;
-    }).join('');
-  }
-
-  if(attendedOnly.length){
-    html+=`<div style="font-size:12px;font-weight:700;color:var(--mut);margin:12px 0 8px;padding:0 2px">⚠️ حضور بدون تكليف (${attendedOnly.length}) — افتح الحصة وأضف التكليف</div>`;
-    html+=attendedOnly.map(ses=>{
-      const st=students.find(x=>x.id===ses.studentId);
-      if(!st) return '';
-      return `<div class="bulk-item" style="opacity:.6">
-        <div class="bulk-info">
-          <div class="bulk-name">${esc(st.name)}</div>
-          <div class="bulk-prev">لم يُسجَّل تكليف بعد</div>
-        </div>
-        <button class="bulk-send-btn" style="background:var(--mut)" onclick="startFor('${esc(ses.studentId)}');document.getElementById('bulkModal').classList.remove('open')">📖</button>
-      </div>`;
-    }).join('');
-  }
-
-  el.innerHTML=html;
-  document.getElementById('bulkModal').classList.add('open');
-}
-function sendBulkOne(sid){
-  const st=students.find(x=>x.id===sid);
-  if(!st) return;
-  const today=new Date().toDateString();
-  const ses=sessions.filter(s=>s.studentId===sid&&new Date(s.date).toDateString()===today).pop();
-  const msg=buildWAMsg(st,ses);
-  window.open(`https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}`,'_blank');
-}
-function sendAllWA(){
-  const today=new Date().toDateString();
-  const present=sessions.filter(s=>new Date(s.date).toDateString()===today&&s.status==='حضر');
-  if(!present.length){ toast('لا يوجد حاضرون اليوم','error'); return; }
-  openBulkSend();
-}
-
-// ══════════════════════════════════════
-// COMPARISON
-// ══════════════════════════════════════
-function renderComparison(){
-  const tbl=document.getElementById('compTbl');
-  if(!tbl||!students.length){
-    if(tbl) tbl.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--mut)">لا يوجد طلاب</td></tr>';
-    return;
-  }
-  const grMap={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
-  const data=students.map(s=>{
-    const stSes=sessions.filter(x=>x.studentId===s.id);
-    const present=stSes.filter(x=>x.status==='حضر');
-    const total=stSes.length;
-    const attPct=total>0?Math.round(present.length/total*100):0;
-    const totalAyat=calcTotalAyat(s.id);
-    const allGrades=present.flatMap(ses=>[ses.new?.grade,ses.rec?.grade,ses.far?.grade].filter(Boolean));
-    const avgG=allGrades.length?allGrades.reduce((a,g)=>a+(grMap[g]||0),0)/allGrades.length:0;
-    const avgLabel=avgG>=3.5?'ممتاز':avgG>=2.5?'جيد جداً':avgG>=1.5?'جيد':avgG>0?'ضعيف':'—';
-    return {s,present:present.length,attPct,totalAyat,avgG,avgLabel};
-  }).sort((a,b)=>b.totalAyat-a.totalAyat);
-
-  const maxAyat=Math.max(...data.map(d=>d.totalAyat),1);
-  const medals=['🥇','🥈','🥉'];
-  tbl.innerHTML=`<thead><tr>
-    <th>#</th><th>الطالب</th><th>آيات محفوظة</th><th>حضور</th><th>متوسط التقييم</th>
-  </tr></thead><tbody>${data.map((d,i)=>`<tr>
-    <td><span class="rank ${i===0?'r1':i===1?'r2':i===2?'r3':''}">${medals[i]||i+1}</span></td>
-    <td style="font-weight:700;cursor:pointer" onclick="openProf('${esc(d.s.id)}')">${esc(d.s.name)}</td>
-    <td><div style="font-weight:700;color:var(--gm)">${d.totalAyat}</div><div class="comp-bar"><div class="comp-fill" style="width:${Math.round(d.totalAyat/maxAyat*100)}%"></div></div></td>
-    <td>${d.attPct}%<div style="font-size:10px;color:var(--mut)">${d.present} حصة</div></td>
-    <td>${esc(d.avgLabel)}</td>
-  </tr>`).join('')}</tbody>`;
-}
-
-// ══════════════════════════════════════
-// WEAKNESS ANALYSIS
-// ══════════════════════════════════════
-function renderWeakness(id){
-  const stSes=sessions.filter(x=>x.studentId===id&&x.status==='حضر');
-  const weak={};
-  stSes.forEach(ses=>{
-    ['new','rec','far'].forEach(k=>{
-      if(ses[k]&&(ses[k].grade==='جيد'||ses[k].grade==='ضعيف')){
-        const key=ses[k].surah;
-        weak[key]=(weak[key]||0)+1;
-      }
-    });
-  });
-  const sorted=Object.entries(weak).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  const el=document.getElementById('profWeakContent');
-  const card=document.getElementById('profWeak');
-  if(!sorted.length){ card.style.display='none'; return; }
-  card.style.display='block';
-  el.innerHTML=sorted.map(([surah,cnt])=>`<div class="weak-item">
-    <span>سورة ${esc(surah)}</span>
-    <span class="weak-count">${cnt} مرة</span>
-  </div>`).join('');
-}
-
-// ══════════════════════════════════════
-// PROGRESS CHART IN PROFILE
-// ══════════════════════════════════════
-function renderProfileChart(id){
-  const stSes=sessions.filter(x=>x.studentId===id&&x.status==='حضر'&&x.new?.grade)
-    .slice(-12);
-  const card=document.getElementById('profChart');
-  if(stSes.length<2){ card.style.display='none'; return; }
-  card.style.display='block';
-  destroyChart('profCh');
-  const c=getChartColors();
-  const grMap={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
-  const labels=stSes.map(s=>new Date(s.date).toLocaleDateString('ar-EG',{day:'numeric',month:'short'}));
-  const vals=stSes.map(s=>grMap[s.new.grade]||0);
-  const ctx=document.getElementById('profChartCanvas');
-  if(!ctx) return;
-  chartInst.profCh=new Chart(ctx,{
-    type:'line',
-    data:{
-      labels,
-      datasets:[{label:'تقييم الحفظ',data:vals,borderColor:c.green,backgroundColor:c.green+'22',fill:true,tension:.3,pointBackgroundColor:c.green,pointRadius:4}]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        x:{ticks:{color:c.text,font:{size:10}},grid:{color:c.grid}},
-        y:{min:0,max:4,ticks:{color:c.text,font:{size:10},callback:v=>['','ضعيف','جيد','جيد جداً','ممتاز'][v]||''},grid:{color:c.grid}}
-      }
-    }
-  });
-}
-
-// ══════════════════════════════════════
-// CERTIFICATE
-// ══════════════════════════════════════
-function openCert(){
-  if(!curStId) return;
-  const s=students.find(x=>x.id===curStId);
-  if(!s) return;
-  const total=calcTotalAyat(curStId);
-  const pct=Math.min(100,Math.round(total/6236*100));
-  const d=new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
-  const stSes=sessions.filter(x=>x.studentId===curStId&&x.status==='حضر');
-  const lastNew=stSes.filter(x=>x.new).pop();
-  const wصل=lastNew?`سورة ${lastNew.new.surah} الآية ${lastNew.new.to}`:'—';
-  document.getElementById('certContent').innerHTML=`
-    <div class="cert-box">
-      <div class="cert-seal">📿</div>
-      <div class="cert-title">شهادة تقدير</div>
-      <div class="cert-sub">${esc(settings.circle)||'حلقة تحفيظ القرآن الكريم'}</div>
-      <div class="cert-name">${esc(s.name)}</div>
-      <div class="cert-body">
-        أتم بحمد الله حفظ<br>
-        <strong style="font-size:18px;color:var(--gm)">${total} آية كريمة</strong><br>
-        ما يعادل ${pct}% من القرآن الكريم<br>
-        وصل إلى: ${esc(wصل)}
-      </div>
-      <div style="font-size:12px;color:var(--mut);margin-bottom:8px">📅 ${d}</div>
-      <div class="cert-teacher">${settings.name?'المحفظ: '+esc(settings.name):''}</div>
-    </div>`;
-  document.getElementById('certModal').classList.add('open');
-}
-
-// ══════════════════════════════════════
-// WA TEMPLATE
-// ══════════════════════════════════════
-function insertVar(v){
-  const ta=document.getElementById('waTmpl');
-  if(!ta) return;
-  const pos=ta.selectionStart;
-  ta.value=ta.value.slice(0,pos)+v+ta.value.slice(ta.selectionEnd);
-  ta.focus();
-  ta.setSelectionRange(pos+v.length,pos+v.length);
-  saveSettings();
-}
-function resetTemplate(){
-  document.getElementById('waTmpl').value='';
-  saveSettings();
-  toast('تم إعادة ضبط القالب الافتراضي','success');
-}
 
 function sendAbsenceWA(){
   const sid=document.getElementById('sesSt').value;
@@ -2147,32 +1486,8 @@ function directWA(id){
 // ══════════════════════════════════════
 // WA MESSAGE BUILDER
 // ══════════════════════════════════════
-function fmtSection(sec){
-  if(!sec)return'';
-  return sec.full?`سورة ${sec.surah} كاملة`:`سورة ${sec.surah} (${sec.from}–${sec.to})`;
-}
-
 function buildWAMsg(s,ses){
   const d=new Date(ses?ses.date:Date.now()).toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-
-  // Template mode
-  const tmpl=settings.waTemplate||'';
-  if(tmpl.trim()){
-    let msg=tmpl;
-    const newTxt=ses?.new?`📖 الحفظ الجديد: ${fmtSection(ses.new)}${ses.new.grade?' — '+ses.new.grade:''}`:'' ;
-    const recTxt=ses?.rec?`📚 المراجعة القريبة: ${fmtSection(ses.rec)}${ses.rec.grade?' — '+ses.rec.grade:''}`:'' ;
-    const farTxt=ses?.far?`📘 المراجعة البعيدة: ${fmtSection(ses.far)}${ses.far.grade?' — '+ses.far.grade:''}`:'' ;
-    msg=msg.replace(/{{اسم_الطالب}}/g,s.name)
-           .replace(/{{التاريخ}}/g,d)
-           .replace(/{{الحفظ_الجديد}}/g,newTxt)
-           .replace(/{{المراجعة_القريبة}}/g,recTxt)
-           .replace(/{{المراجعة_البعيدة}}/g,farTxt)
-           .replace(/{{الملاحظات}}/g,ses?.notes||'')
-           .replace(/{{اسم_المحفظ}}/g,settings.name||'');
-    return msg;
-  }
-
-  // Default message
   let msg=`السلام عليكم ورحمة الله وبركاته 🌿\n\n✨ متابعة الطالب: *${s.name}*\n📅 ${d}\n\n━━━━━━━━━━━━━━━━━━`;
   const pg=ses?ses.prevGrades:{};
   const hasPrev=pg&&(pg.new||pg.rec||pg.far||pg.juz);
@@ -2186,10 +1501,10 @@ function buildWAMsg(s,ses){
   }
   msg+=`\n\n📝 *تكليف الحصة القادمة:*\n`;
   let hasTak=false;
-  if(ses&&ses.new){hasTak=true;msg+=`\n📖 *الحفظ الجديد:*\n${fmtSection(ses.new)}\n${ses.new.grade?grIcon(ses.new.grade)+' '+ses.new.grade+'\n':''}` ;}
-  if(ses&&ses.rec){hasTak=true;msg+=`\n📚 *المراجعة القريبة:*\n${fmtSection(ses.rec)}\n${ses.rec.grade?grIcon(ses.rec.grade)+' '+ses.rec.grade+'\n':''}` ;}
-  if(ses&&ses.far){hasTak=true;msg+=`\n📘 *المراجعة البعيدة:*\n${fmtSection(ses.far)}\n${ses.far.grade?grIcon(ses.far.grade)+' '+ses.far.grade+'\n':''}` ;}
-  if(ses&&ses.juz){hasTak=true;msg+=`\n📜 *مراجعة أجزاء/سور:*\n${(ses.juz.chips||[]).join('، ')}\n${ses.juz.grade?grIcon(ses.juz.grade)+' '+ses.juz.grade+'\n':''}` ;}
+  if(ses&&ses.new){hasTak=true;msg+=`\n📖 *الحفظ الجديد:*\nسورة ${ses.new.surah} (${ses.new.from}–${ses.new.to})\n`;}
+  if(ses&&ses.rec){hasTak=true;msg+=`\n📚 *المراجعة القريبة:*\nسورة ${ses.rec.surah} (${ses.rec.from}–${ses.rec.to})\n`;}
+  if(ses&&ses.far){hasTak=true;msg+=`\n📘 *المراجعة البعيدة:*\nسورة ${ses.far.surah} (${ses.far.from}–${ses.far.to})\n`;}
+  if(ses&&ses.juz){hasTak=true;msg+=`\n📜 *مراجعة أجزاء/سور:*\n${(ses.juz.chips||[]).join('، ')}\n`;}
   if(!hasTak) msg+=`لا يوجد تكليف جديد\n`;
   msg+=`\n━━━━━━━━━━━━━━━━━━`;
   if(ses&&ses.notes) msg+=`\n\n💬 *ملاحظات المحفظ:*\n${ses.notes}\n\n━━━━━━━━━━━━━━━━━━`;
@@ -2442,13 +1757,12 @@ function exportCSV(){
 function initSettings(){
   document.getElementById('setName').value=settings.name||'';
   document.getElementById('setCircle').value=settings.circle||'';
-  const tmpl=document.getElementById('waTmpl');
-  if(tmpl) tmpl.value=settings.waTemplate||'';
   const sel=document.getElementById('trackSt');
   sel.innerHTML='<option value="">— اختر الطالب —</option>';
   students.forEach(s=>{ sel.innerHTML+=`<option value="${esc(s.id)}">${esc(s.name)}</option>`; });
   renderTrack();
   applyFontSize();
+  // Update notif button
   const nb=document.getElementById('notifBtn');
   if(Notification&&Notification.permission==='granted'){
     nb.textContent='✅ الإشعارات مفعّلة';nb.disabled=true;
@@ -2457,8 +1771,6 @@ function initSettings(){
 function saveSettings(){
   settings.name=document.getElementById('setName').value;
   settings.circle=document.getElementById('setCircle').value;
-  const tmpl=document.getElementById('waTmpl');
-  if(tmpl) settings.waTemplate=tmpl.value;
   save();
 }
 function renderTrack(){
