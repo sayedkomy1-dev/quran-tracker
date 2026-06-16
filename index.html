@@ -1502,4 +1502,4 @@ function renderCalendar(sid,year,month){
   const el=document.getElementById('calGrid'); if(!el) return; const firstDay=new Date(year,month,1); const lastDay=new Date(year,month+1,0); const startDow=firstDay.getDay();
   const stSes=sessions.filter(s=>{ if(s.studentId!==sid)return false; const d=new Date(s.date); return d.getFullYear()===year&&d.getMonth()===month; });
   const dayMap={}; stSes.forEach(s=>{ dayMap[new Date(s.date).getDate()]=s.status; }); const today=new Date(); const dayNames=['أح','إث','ثل','أر','خم','جم','سب']; let html='<div class="cal-grid">'; dayNames.forEach(d=>{ html+=`<div class="cal-head">${d}</div>`; }); for(let i=0;i<startDow;i++) html+='<div class="cal-day empty"></div>';
-  for(let day=1;day<=lastDay.getDate();day++){ const status=dayMap[day]; const cls=status==='حضر'?'present':status==='غ
+  for(let day=1;day<=lastDay.getDate();day++){ const status=dayMap[day]; const cls=status==='حضر'?'present':status==='
