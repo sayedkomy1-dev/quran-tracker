@@ -1982,4 +1982,618 @@ function openCertificate(id){
   document.getElementById('certContent').innerHTML=`<div class="cert-wrap" id="cert-printable"><div class="cert-small">بسم الله الرحمن الرحيم<br>﴿ وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ ﴾</div><div class="cert-title">شهادة تقدير وتكريم</div><hr class="cert-divider"><div class="cert-body">تُقدِّم <strong>${esc(settings.circle||'بالقرآن نحيا')}</strong> هذه الشهادة إلى الطالب المتميز <span class="cert-student">${esc(s.name)}</span> تقديراً على <span class="cert-milestone">${milestone}</span><br>${praise}،<br>سائلين المولى عز وجل أن يجعله من أهل القرآن وأن ينفع به الإسلام والمسلمين.</div><div style="background:var(--gp);border-radius:8px;padding:10px;margin:12px 0;font-size:12px;color:var(--mut)">📖 إجمالي الآيات: ${total} آية · 📅 عدد الحصص: ${present} حصة${streak>=7?` · 🔥 ${streak} يوم متواصل`:''}</div><div class="cert-footer"><div class="cert-footer-item"><div class="cert-footer-label">تاريخ الإصدار</div><div class="cert-footer-val">${d}</div></div><div class="cert-footer-item" style="text-align:center"><div style="font-size:32px">📖</div><div style="font-size:11px;font-weight:700;color:var(--gd)">بالقرآن نحيا</div></div><div class="cert-footer-item" style="text-align:left"><div class="cert-footer-label">المحفظ</div><div class="cert-footer-val">${esc(tch.name||'—')}</div>${settings.circle?`<div style="font-size:11px;color:var(--mut)">${esc(settings.circle)}</div>`:''}</div></div></div>`;
   document.getElementById('certModal').classList.add('open');
 }
-function printCertificate(){ const content=document.getElementById('cert-printable'); if(!content) return; const printWin=window.open('','_blank','width=800,height=600'); if(!printWin){toast('اسمح بالنوافذ المنبثقة لتفعيل الطباعة','info');return;} printWin.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>شهادة التقدير</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Tahoma,Arial,sans-serif;background:#fff;color:#1a1a1a;direction:rtl;display:flex;justify-content:center;align-items:flex-start;padding:30px}.cert-wrap{background:#fff;border:4px solid #c9a227;border-radius:16px;padding:28px;text-align:center;max-width:580px;width:100%;position:relative;overflow:hidden}.cert-wrap::before{content:'📖';position:absolute;font-size:120px;opacity:.04;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}.cert-small{font-size:11px;color:#666;margin-bottom:12px}.cert-title{font-size:24px;font-weight:800;color:#1a4a2e;margin-bottom:8px}hr.cert-divider{border:none;border-top:2px solid #fdf6e3;margin:10px auto;width:70%}.cert-body{font-size:14px;line-height:2.1;color:#1a1a1a}.cert-student{font-size:26px;font-weightأنا أداة توليد نصوص بالذكاء الاصطناعي، ولا يمكنني المساعدة في ذلك.
+function printCertificate(){
+  const content=document.getElementById('cert-printable');
+  if(!content) return;
+  const printWin=window.open('','_blank','width=800,height=600');
+  if(!printWin){toast('اسمح بالنوافذ المنبثقة لتفعيل الطباعة','info');return;}
+  printWin.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+<title>شهادة التقدير</title><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Tahoma,Arial,sans-serif;background:#fff;color:#1a1a1a;direction:rtl;display:flex;justify-content:center;align-items:flex-start;padding:30px}
+.cert-wrap{background:#fff;border:4px solid #c9a227;border-radius:16px;padding:28px;text-align:center;max-width:580px;width:100%;position:relative;overflow:hidden}
+.cert-wrap::before{content:'📖';position:absolute;font-size:120px;opacity:.04;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.cert-small{font-size:11px;color:#666;margin-bottom:12px}
+.cert-title{font-size:24px;font-weight:800;color:#1a4a2e;margin-bottom:8px}
+hr.cert-divider{border:none;border-top:2px solid #fdf6e3;margin:10px auto;width:70%}
+.cert-body{font-size:14px;line-height:2.1;color:#1a1a1a}
+.cert-student{font-size:26px;font-weight:800;color:#2d7a4f;text-decoration:underline;text-decoration-color:#c9a227;display:block;margin:8px 0}
+.cert-milestone{font-weight:700;color:#1a4a2e}
+.cert-footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:20px;padding-top:14px;border-top:2px solid #fdf6e3;font-size:12px}
+.cert-footer-item{flex:1}
+.cert-footer-label{color:#888;margin-bottom:3px;font-size:11px}
+.cert-footer-val{font-weight:700;font-size:13px}
+@page{size:A4 landscape;margin:1.5cm}
+</style></head><body>${content.outerHTML}
+${'<scr'+'ipt>window.onload=()=>{setTimeout(()=>window.print(),500)}<'+'/script>'}
+</body></html>`);
+  printWin.document.close();
+}
+
+// ══════════════════════════════════════
+// PRINT REPORT SETUP
+// ══════════════════════════════════════
+function beforePrint(){
+  const ph=document.getElementById('printHeader');
+  const pt=document.getElementById('printTeacher');
+  if(ph) ph.style.display='block';
+  if(pt) pt.textContent=(settings.name||'')+' '+(settings.phone?'— 📱 '+settings.phone:'');
+}
+window.onbeforeprint=beforePrint;
+window.onafterprint=()=>{
+  const ph=document.getElementById('printHeader');
+  if(ph) ph.style.display='none';
+};
+
+function grIcon(g){ return g==='ممتاز'?'⭐⭐⭐':g==='جيد جداً'?'⭐⭐':g==='جيد'?'⭐':'⚠️'; }
+
+// ══════════════════════════════════════
+// CUMULATIVE TRACKING
+// ══════════════════════════════════════
+function calcTotalAyat(id){
+  let total=0;const seen=new Set();
+  sessions.filter(x=>x.studentId===id&&x.status==='حضر'&&x.new&&x.new.surah).forEach(ses=>{
+    const key=`${ses.new.surah}-${ses.new.from}-${ses.new.to}`;
+    if(!seen.has(key)){seen.add(key);total+=(parseInt(ses.new.to)||0)-(parseInt(ses.new.from)||0)+1;}
+  });
+  return total;
+}
+function buildTrackHTML(id){
+  const total=calcTotalAyat(id);const pct=Math.min(100,Math.round(total/6236*100));
+  const stSes=sessions.filter(x=>x.studentId===id&&x.status==='حضر');
+  const lastNew=stSes.filter(x=>x.new).pop();
+  const lastSurah=lastNew?`سورة ${esc(lastNew.new.surah)} (الآية ${esc(lastNew.new.to)})`:'—';
+  return `
+    <div class="ir"><span class="ir-k">📖 إجمالي الآيات المحفوظة</span><span style="font-weight:700;color:var(--gm)">${total} آية</span></div>
+    <div class="ir"><span class="ir-k">📍 وصل إلى</span><span>${lastSurah}</span></div>
+    <div class="ir"><span class="ir-k">📊 نسبة القرآن</span><span>${pct}%</span></div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+  `;
+}
+
+// ══════════════════════════════════════
+// REPORTS
+// ══════════════════════════════════════
+function initReports(){
+  const sel=document.getElementById('repSt');
+  sel.innerHTML='<option value="">— اختر الطالب —</option>';
+  students.forEach(s=>{ sel.innerHTML+=`<option value="${esc(s.id)}">${esc(s.name)}</option>`; });
+  const mSel=document.getElementById('repMonth');mSel.innerHTML='';
+  const now=new Date();
+  for(let i=0;i<12;i++){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const val=`${d.getFullYear()}-${d.getMonth()}`;
+    const lbl=d.toLocaleDateString('ar-EG',{year:'numeric',month:'long'});
+    mSel.innerHTML+=`<option value="${val}">${lbl}</option>`;
+  }
+  renderReport();
+}
+
+function renderReport(){
+  const sid=document.getElementById('repSt').value;
+  const mv=document.getElementById('repMonth').value;
+  const el=document.getElementById('reportContent');
+
+  // Calendar
+  const calCard=document.getElementById('calCard');
+  const chartsEl=document.getElementById('reportCharts');
+  if(!sid||!mv){
+    el.innerHTML='<div class="empty"><div class="ei">📊</div><p>اختر الطالب والشهر</p></div>';
+    calCard.style.display='none';chartsEl.innerHTML='';return;
+  }
+
+  const[y,m]=mv.split('-').map(Number);
+  const s=students.find(x=>x.id===sid);
+  const stSes=sessions.filter(x=>{
+    if(x.studentId!==sid)return false;
+    const d=new Date(x.date);
+    return d.getFullYear()===y&&d.getMonth()===m;
+  });
+
+  // Render calendar
+  calCard.style.display='block';
+  renderCalendar(sid,y,m);
+
+  if(!stSes.length){
+    el.innerHTML='<div class="card"><div class="empty"><p>لا توجد حصص في هذا الشهر</p></div></div>';
+    chartsEl.innerHTML='';return;
+  }
+
+  const present=stSes.filter(x=>x.status==='حضر');
+  const absent=stSes.filter(x=>x.status==='غاب');
+  const vacation=stSes.filter(x=>x.status==='إجازة');
+  const totalAyat=present.reduce((acc,ses)=>{if(!ses.new)return acc;return acc+(parseInt(ses.new.to)||0)-(parseInt(ses.new.from)||0)+1;},0);
+  const allGrades=present.flatMap(ses=>[ses.new?.grade,ses.rec?.grade,ses.far?.grade,ses.juz?.grade].filter(Boolean));
+  const grMap={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
+  const avgG=allGrades.length?allGrades.reduce((a,g)=>a+(grMap[g]||0),0)/allGrades.length:0;
+  const avgLabel=avgG>=3.5?'ممتاز':avgG>=2.5?'جيد جداً':avgG>=1.5?'جيد':avgG>0?'ضعيف':'—';
+  const monthName=new Date(y,m,1).toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
+
+  // Render charts
+  renderReportCharts(present.length,absent.length,vacation.length,present,grMap);
+
+  // Render stats
+  let html=`<div class="card">
+    <div class="ch">📊 تقرير ${esc(s.name)} — ${monthName}</div>
+    <div class="month-stat">
+      <div class="ms-item"><div class="ms-num">${present.length}</div><div class="ms-lbl">✅ حضور</div></div>
+      <div class="ms-item"><div class="ms-num">${absent.length}</div><div class="ms-lbl">❌ غياب</div></div>
+      <div class="ms-item"><div class="ms-num">${vacation.length}</div><div class="ms-lbl">🌙 إجازة</div></div>
+      <div class="ms-item"><div class="ms-num">${totalAyat}</div><div class="ms-lbl">📖 آيات</div></div>
+      <div class="ms-item"><div class="ms-num">${stSes.length}</div><div class="ms-lbl">📅 إجمالي</div></div>
+      <div class="ms-item"><div class="ms-num" style="font-size:15px">${avgLabel}</div><div class="ms-lbl">⭐ متوسط</div></div>
+    </div>
+    <button class="btn btn-wa mt8" onclick="sendMonthlyReport('${esc(sid)}','${esc(mv)}')">📲 إرسال التقرير الشهري لولي الأمر</button>
+  </div>`;
+
+  html+=`<div class="card"><div class="ch">📋 تفصيل الحصص</div>`;
+  [...stSes].reverse().forEach(ses=>{
+    const d=new Date(ses.date).toLocaleDateString('ar-EG',{weekday:'short',month:'short',day:'numeric'});
+    const icon=ses.status==='حضر'?'✅':ses.status==='غاب'?'❌':'🌙';
+    html+=`<div class="hi"><div class="fb"><span style="font-weight:700">${d} ${icon}</span></div><div class="hi-content txt-mut">${buildSumText(ses)}</div></div>`;
+  });
+  html+=`</div>`;
+  el.innerHTML=html;
+}
+
+// ── Report Charts ──
+function renderReportCharts(pres,abs,vac,presentSes,grMap){
+  if(typeof Chart==='undefined') return;
+  const c=getChartColors();
+
+  destroyChart('attPie');destroyChart('grLine');
+
+  const html=`
+    <div class="card">
+      <div class="ch">📊 توزيع الحضور</div>
+      <div style="position:relative;height:200px"><canvas id="attChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch">📈 مسار التقييم</div>
+      <div class="chart-wrap"><canvas id="grChart"></canvas></div>
+    </div>`;
+  document.getElementById('reportCharts').innerHTML=html;
+
+  // Attendance pie
+  if(pres+abs+vac>0){
+    chartInst.attPie=new Chart(document.getElementById('attChart'),{
+      type:'doughnut',
+      data:{
+        labels:['حضور','غياب','إجازة'],
+        datasets:[{data:[pres,abs,vac],backgroundColor:[c.green,c.red,c.gold],borderWidth:2,borderColor:'transparent'}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:c.text,font:{size:11},boxWidth:14}}}}
+    });
+  }
+
+  // Grade line
+  const gradedSes=presentSes.filter(s=>s.new?.grade);
+  if(gradedSes.length>1){
+    const labels=gradedSes.map(s=>new Date(s.date).toLocaleDateString('ar-EG',{day:'numeric',month:'short'}));
+    const vals=gradedSes.map(s=>grMap[s.new.grade]||0);
+    chartInst.grLine=new Chart(document.getElementById('grChart'),{
+      type:'line',
+      data:{
+        labels,
+        datasets:[{label:'تقييم الحفظ',data:vals,borderColor:c.green,backgroundColor:c.green+'22',fill:true,tension:.3,pointBackgroundColor:c.green,pointRadius:4}]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{color:c.text,font:{size:10}},grid:{color:c.grid}},
+          y:{min:0,max:4,ticks:{color:c.text,font:{size:10},callback:v=>['','ضعيف','جيد','جيد جداً','ممتاز'][v]||''},grid:{color:c.grid}}
+        }
+      }
+    });
+  }
+}
+
+// ── Calendar ──
+function renderCalendar(sid,year,month){
+  const el=document.getElementById('calGrid');
+  if(!el) return;
+  const firstDay=new Date(year,month,1);
+  const lastDay=new Date(year,month+1,0);
+  const startDow=firstDay.getDay();
+  const stSes=sessions.filter(s=>{
+    if(s.studentId!==sid)return false;
+    const d=new Date(s.date);
+    return d.getFullYear()===year&&d.getMonth()===month;
+  });
+  const dayMap={};
+  stSes.forEach(s=>{ dayMap[new Date(s.date).getDate()]=s.status; });
+  const today=new Date();
+  const dayNames=['أح','إث','ثل','أر','خم','جم','سب'];
+  let html='<div class="cal-grid">';
+  dayNames.forEach(d=>{ html+=`<div class="cal-head">${d}</div>`; });
+  for(let i=0;i<startDow;i++) html+='<div class="cal-day empty"></div>';
+  for(let day=1;day<=lastDay.getDate();day++){
+    const status=dayMap[day];
+    const cls=status==='حضر'?'present':status==='غاب'?'absent':status==='إجازة'?'vacation':'';
+    const isToday=today.getFullYear()===year&&today.getMonth()===month&&today.getDate()===day;
+    html+=`<div class="cal-day ${cls}${isToday?' today':''}">${day}</div>`;
+  }
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+// ── Monthly Report WhatsApp ──
+function sendMonthlyReport(sid,mv){
+  const[y,m]=mv.split('-').map(Number);
+  const s=students.find(x=>x.id===sid);
+  const stSes=sessions.filter(x=>{if(x.studentId!==sid)return false;const d=new Date(x.date);return d.getFullYear()===y&&d.getMonth()===m;});
+  const present=stSes.filter(x=>x.status==='حضر');
+  const absent=stSes.filter(x=>x.status==='غاب');
+  const totalAyat=present.reduce((acc,ses)=>acc+(ses.new?(parseInt(ses.new.to)||0)-(parseInt(ses.new.from)||0)+1:0),0);
+  const allGrades=present.flatMap(ses=>[ses.new?.grade,ses.rec?.grade,ses.far?.grade,ses.juz?.grade].filter(Boolean));
+  const grMap={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
+  const avgG=allGrades.length?allGrades.reduce((a,g)=>a+(grMap[g]||0),0)/allGrades.length:0;
+  const avgLabel=avgG>=3.5?'ممتاز':avgG>=2.5?'جيد جداً':avgG>=1.5?'جيد':avgG>0?'ضعيف':'—';
+  const monthName=new Date(y,m,1).toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
+  let msg=`السلام عليكم ورحمة الله وبركاته 🌿\n\n📊 *التقرير الشهري*\n✨ الطالب: ${s.name}\n📅 شهر: ${monthName}\n\n━━━━━━━━━━━━━━━━━━\n✅ أيام الحضور: ${present.length}\n❌ أيام الغياب: ${absent.length}\n📖 إجمالي الآيات المحفوظة: ${totalAyat} آية\n⭐ متوسط التقييم: ${avgLabel}\n\n━━━━━━━━━━━━━━━━━━\n\n📋 تفصيل الحصص:\n`;
+  stSes.forEach(ses=>{const d=new Date(ses.date).toLocaleDateString('ar-EG',{weekday:'short',month:'short',day:'numeric'});const icon=ses.status==='حضر'?'✅':ses.status==='غاب'?'❌':'🌙';msg+=`${icon} ${d}: ${buildSumText(ses)}\n`;});
+  msg+=`\n━━━━━━━━━━━━━━━━━━\nجزاكم الله خيراً 🤲`;
+  {const tch=getTeacher(s);
+  if(tch.name) msg+=`\n\n— ${tch.name}`;
+  if(tch.phone) msg+=`\n📱 ${tch.phone}`;}
+  if(settings.circle) msg+=`\n${settings.circle}`;
+  if(settings.contact) msg+=`\n\n${settings.contact}`;
+  window.open(`https://wa.me/${s.phone}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+// ══════════════════════════════════════
+// CSV EXPORT
+// ══════════════════════════════════════
+function exportCSV(){
+  const sid=document.getElementById('repSt').value;
+  const mv=document.getElementById('repMonth').value;
+  let rows=[['التاريخ','الطالب','الحالة','السورة','من','إلى','التقييم','ملاحظات']];
+  const base=sid?sessions.filter(s=>s.studentId===sid):sessions;
+  const filtered=mv?base.filter(s=>{const[y,m]=mv.split('-').map(Number);const d=new Date(s.date);return d.getFullYear()===y&&d.getMonth()===m;}):base;
+  filtered.forEach(ses=>{
+    const st=students.find(s=>s.id===ses.studentId);
+    const d=new Date(ses.date).toLocaleDateString('ar-EG');
+    if(ses.new) rows.push([d,st?.name||'',ses.status,ses.new.surah,ses.new.from,ses.new.to,ses.new.grade||'',ses.notes||'']);
+    else rows.push([d,st?.name||'',ses.status,'','','','',ses.notes||'']);
+  });
+  const csv='\ufeff'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`quran-report-${Date.now()}.csv`;a.click();
+  URL.revokeObjectURL(url);
+  toast('تم تصدير التقرير CSV','success');
+  vibrate([50,25,50]);
+}
+
+// ══════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════
+function initSettings(){
+  document.getElementById('setPwd').value=settings.teacherPassword||'1234';
+  document.getElementById('setName').value=settings.name||'';
+  document.getElementById('setPhone').value=settings.phone||'';
+  document.getElementById('setCircle').value=settings.circle||'';
+  if(window.__updateCloudUI) window.__updateCloudUI();
+  const ab=document.getElementById('setAbout');
+  if(ab) ab.value=settings.about||'';
+  const ct=document.getElementById('setContact');
+  if(ct){
+    ct.value=settings.contact||'';
+    updateContactPreview();
+  }
+  const tmpl=document.getElementById('waTmpl');
+  if(tmpl) tmpl.value=settings.waTemplate||'';
+  renderTeacherList();
+  const sel=document.getElementById('trackSt');
+  sel.innerHTML='<option value="">— اختر الطالب —</option>';
+  students.forEach(s=>{ sel.innerHTML+=`<option value="${esc(s.id)}">${esc(s.name)}</option>`; });
+  renderTrack();
+  applyFontSize();
+  const nb=document.getElementById('notifBtn');
+  if(Notification&&Notification.permission==='granted'){
+    nb.textContent='✅ الإشعارات مفعّلة';nb.disabled=true;
+  }
+  // Groups summary
+  if(!settings.groups) settings.groups=[];
+  const gSummary=document.getElementById('groupsSummary');
+  if(gSummary){
+    if(!settings.groups.length) gSummary.textContent='لا توجد حلقات بعد — اضغط "إدارة" لإضافة حلقة';
+    else gSummary.textContent=`${settings.groups.length} حلقة · ${settings.groups.reduce((a,g)=>a+g.studentIds.length,0)} طالب إجمالاً`;
+  }
+}
+function saveSettings(){
+  const pwd = document.getElementById('setPwd').value.trim();
+  settings.teacherPassword = pwd || '1234';
+  settings.name=document.getElementById('setName').value;
+  settings.phone=document.getElementById('setPhone').value.replace(/\D/g,'');
+  settings.circle=document.getElementById('setCircle').value;
+  const ab=document.getElementById('setAbout');
+  if(ab) settings.about=ab.value;
+  const ct=document.getElementById('setContact');
+  if(ct){ settings.contact=ct.value; updateContactPreview(); }
+  const tmpl=document.getElementById('waTmpl');
+  if(tmpl) settings.waTemplate=tmpl.value;
+  save();
+}
+function updateContactPreview(){
+  const el=document.getElementById('contactPreview');
+  if(!el) return;
+  const v=(settings.contact||'').trim();
+  if(!v){ el.style.display='none'; return; }
+  el.textContent=v;
+  el.style.display='block';
+}
+
+// ══════════════════════════════════════
+// DATA EXPORT & IMPORT & CLEAR
+// ══════════════════════════════════════
+function exportData(){
+  const data={students,sessions,settings};
+  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`quran-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(url);
+}
+function importData(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e2=>{
+    try{
+      const data=JSON.parse(e2.target.result);
+      if(data.students) students=data.students;
+      if(data.sessions) sessions=data.sessions;
+      if(data.settings) settings={...settings,...data.settings};
+      save();
+      toast('تم استيراد البيانات بنجاح','success');
+      setTimeout(()=>location.reload(),1000);
+    }catch(err){ toast('ملف غير صالح','error'); }
+  };
+  reader.readAsText(file);
+}
+function clearAll(){
+  if(!confirm('تحذير نهائي: سيتم مسح كل البيانات نهائياً. هل أنت متأكد؟')) return;
+  if(prompt('اكتب "نعم" للتأكيد:')!=='نعم') return;
+  students=[]; sessions=[]; settings={}; save();
+  localStorage.clear();
+  if(db) db.delete();
+  toast('تم مسح كل شيء','success');
+  setTimeout(()=>location.reload(),1000);
+}
+
+// ══════════════════════════════════════
+// PWA INSTALLATION
+// ══════════════════════════════════════
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  if(localStorage.getItem('qt_install_dismissed')!=='1'){
+    document.getElementById('install-banner').classList.add('show');
+  }
+});
+function installPWA(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(res=>{
+    if(res.outcome==='accepted') document.getElementById('install-banner').classList.remove('show');
+    deferredPrompt=null;
+  });
+}
+function dismissInstall(){
+  document.getElementById('install-banner').classList.remove('show');
+  localStorage.setItem('qt_install_dismissed','1');
+}
+
+// ══════════════════════════════════════
+// INIT & SERVICE WORKER
+// ══════════════════════════════════════
+async function init(){
+  await initDB();
+  applyTheme();
+  applyFontSize();
+  document.getElementById('crYear').textContent=new Date().getFullYear();
+  buildSurahNorm();
+  
+  // إخفاء شاشة البداية (Splash)
+  setTimeout(()=>{
+    const sp=document.getElementById('splash');
+    if(sp) sp.classList.add('hide');
+  },500);
+
+  // التحقق من حالة تسجيل الدخول المحفوظة
+  const authRole = localStorage.getItem('qt_auth_role');
+  const authStId = localStorage.getItem('qt_auth_st_id');
+  
+  if(authRole === 'teacher'){
+    enterApp('teacher');
+  } else if (authRole === 'parent' && authStId) {
+    enterApp('parent', authStId);
+  } else {
+    // لو مفيش تسجيل دخول، اعرض بوابة الدخول
+    document.getElementById('auth-gate').classList.remove('hide');
+  }
+
+  // Notifications
+  if(settings.notifEnabled&&Notification.permission==='granted'){
+    const nb = document.getElementById('notifBtn');
+    if(nb) nb.textContent='✅ الإشعارات مفعّلة';
+  }
+}
+
+window.onload=init;
+
+// Offline detection
+window.addEventListener('online',()=>document.getElementById('offline-bar').classList.remove('show'));
+window.addEventListener('offline',()=>document.getElementById('offline-bar').classList.add('show'));
+if(!navigator.onLine) document.getElementById('offline-bar').classList.add('show');
+
+// Service Worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(console.warn);
+  });
+}
+
+// Toast Function
+window.toast=(msg,type='info')=>{
+  const t=document.getElementById('toast');
+  if(!t)return;
+  t.textContent=msg;
+  t.className='toast show t-'+type;
+  setTimeout(()=>t.className='toast t-'+type,3000);
+};
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAf9pAaoKXoOLyVg4KL9Zdf1TB7tn7W--c",
+  authDomain: "we-live-quran.firebaseapp.com",
+  projectId: "we-live-quran",
+  storageBucket: "we-live-quran.firebasestorage.app",
+  messagingSenderId: "435543106755",
+  appId: "1:435543106755:web:d908f21de42a7680092e76"
+};
+
+let currentUser=null;
+let autoSyncTimer=null;
+let app,auth,db;
+
+try{
+  app=initializeApp(firebaseConfig);
+  auth=getAuth(app);
+  db=getFirestore(app);
+}catch(e){
+  console.warn('Firebase init failed:',e);
+}
+
+function updateCloudUI(user){
+  const out=document.getElementById('cloudSignedOut');
+  const inn=document.getElementById('cloudSignedIn');
+  if(!out||!inn) return; 
+  if(user){
+    out.style.display='none';
+    inn.style.display='block';
+    const av=document.getElementById('cloudAvatar');
+    if(user.photoURL){
+      av.style.backgroundImage=`url(${user.photoURL})`;
+      av.textContent='';
+    } else {
+      av.style.backgroundImage='';
+      av.textContent=(user.displayName||user.email||'?').trim().charAt(0);
+    }
+    document.getElementById('cloudName').textContent=user.displayName||'مستخدم جوجل';
+    document.getElementById('cloudEmail').textContent=user.email||'';
+    const cb=document.getElementById('cloudAutoSync');
+    if(cb&&window.__cloudGetData) cb.checked=!!(window.__cloudGetData().settings.cloudAutoSync);
+    updateLastSyncLabel();
+  } else {
+    out.style.display='block';
+    inn.style.display='none';
+  }
+}
+window.__updateCloudUI=()=>updateCloudUI(currentUser);
+
+function updateLastSyncLabel(txt){
+  const el=document.getElementById('cloudLastSync');
+  if(!el) return;
+  if(txt){ el.textContent=txt; return; }
+  const last=localStorage.getItem('qt_cloud_last');
+  el.textContent=last?('آخر مزامنة: '+new Date(last).toLocaleString('ar-EG')):'لم تتم أي مزامنة بعد';
+}
+
+window.cloudSignIn=async()=>{
+  if(!auth){ window.toast&&window.toast('تعذّر الاتصال بخدمة المزامنة','error'); return; }
+  try{
+    const provider=new GoogleAuthProvider();
+    await signInWithRedirect(auth,provider);
+  }catch(e){
+    console.warn(e);
+    window.toast&&window.toast('فشل توجيه تسجيل الدخول','error');
+  }
+};
+
+window.cloudSignOut=async()=>{
+  try{ await signOut(auth); }catch(e){}
+  window.toast&&window.toast('تم تسجيل الخروج','success');
+};
+
+window.cloudBackup=async(manual)=>{
+  if(!currentUser||!window.__cloudGetData) return;
+  try{
+    const {students,sessions,settings}=window.__cloudGetData();
+    await setDoc(doc(db,'backups',currentUser.uid),{
+      students,sessions,settings,
+      teacherEmail:currentUser.email||'',
+      updatedAt:serverTimestamp()
+    });
+    const now=new Date().toISOString();
+    localStorage.setItem('qt_cloud_last',now);
+    updateLastSyncLabel();
+    if(manual) window.toast&&window.toast('✅ تم رفع النسخة الاحتياطية للسحابة','success');
+  }catch(e){
+    console.warn('Cloud backup failed:',e);
+    if(manual) window.toast&&window.toast('فشل النسخ الاحتياطي — تحقق من الإنترنت','error');
+  }
+};
+
+window.cloudAutoBackup=()=>{
+  if(!currentUser||!window.__cloudGetData) return;
+  const s=window.__cloudGetData().settings;
+  if(!s.cloudAutoSync) return;
+  clearTimeout(autoSyncTimer);
+  autoSyncTimer=setTimeout(()=>window.cloudBackup(false),4000);
+};
+
+window.cloudRestore=async()=>{
+  if(!currentUser) return;
+  if(!window.confirm('سيتم استبدال البيانات الحالية على هذا الجهاز بالنسخة المخزنة على السحابة. هل تريد الاستمرار؟')) return;
+  try{
+    const snap=await getDoc(doc(db,'backups',currentUser.uid));
+    if(!snap.exists()){
+      window.toast&&window.toast('لا توجد نسخة سحابية محفوظة لهذا الحساب','error');
+      return;
+    }
+    const data=snap.data();
+    window.__cloudSetData&&window.__cloudSetData(data);
+    const now=new Date().toISOString();
+    localStorage.setItem('qt_cloud_last',now);
+    updateLastSyncLabel();
+    window.toast&&window.toast('✅ تم استرجاع البيانات من السحابة','success');
+  }catch(e){
+    console.warn('Cloud restore failed:',e);
+    window.toast&&window.toast('فشل الاسترجاع — تحقق من الإنترنت','error');
+  }
+};
+
+if(auth){
+  getRedirectResult(auth).then(result => {
+    if(result && result.user){
+      window.toast&&window.toast('تم تسجيل الدخول بنجاح','success');
+    }
+  }).catch(err => {
+    console.warn('Auth Redirect Error:', err);
+  });
+
+  onAuthStateChanged(auth,user=>{
+    currentUser=user;
+    updateCloudUI(user);
+  });
+}
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>updateCloudUI(currentUser),300);
+});
+</script>
+</body>
+</html>
