@@ -9,17 +9,30 @@
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="نظام متابعة طلاب تحفيظ القرآن الكريم">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕋</text></svg>">
 <title>بالقرآن نحيا – الشيخ السيد الكومي</title>
 <style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS — LIGHT MODE
+══════════════════════════════════════ */
 :root{
-  --gd:#1a4a2e;--gm:#2d7a4f;--gl:#4caf7d;--gp:#e8f5ee;--gold:#c9a227;--goldp:#fdf6e3;
-  --bp:#e3f2fd;--blue:#1565c0;--op:#fff3e0;--org:#e65100;--rp:#ffebee;--red:#c62828;
-  --txt:#1a1a1a;--mut:#666;--bdr:#e0e0e0;--bg:#f4f4f4;--wh:#fff;--rad:12px;--sh:0 2px 10px rgba(0,0,0,0.1);--fs:15px;
+  --gd:#1a4a2e;--gm:#2d7a4f;--gl:#4caf7d;--gp:#e8f5ee;
+  --gold:#c9a227;--goldp:#fdf6e3;
+  --bp:#e3f2fd;--blue:#1565c0;
+  --op:#fff3e0;--org:#e65100;
+  --rp:#ffebee;--red:#c62828;
+  --txt:#1a1a1a;--mut:#666;--bdr:#e0e0e0;--bg:#f4f4f4;--wh:#fff;
+  --rad:12px;--sh:0 2px 10px rgba(0,0,0,0.1);
+  --fs:15px;
 }
+
+/* ══════════════════════════════════════
+   DARK MODE
+══════════════════════════════════════ */
 [data-theme="dark"]{
-  --bg:#0d1a11;--wh:#162019;--txt:#dde8df;--mut:#7a9980;--bdr:#243328;--sh:0 2px 12px rgba(0,0,0,0.5);
-  --gp:rgba(45,122,79,.18);--goldp:rgba(201,162,39,.15);--bp:rgba(21,101,192,.15);--op:rgba(230,81,0,.15);--rp:rgba(198,40,40,.15);
+  --bg:#0d1a11;--wh:#162019;--txt:#dde8df;--mut:#7a9980;
+  --bdr:#243328;--sh:0 2px 12px rgba(0,0,0,0.5);
+  --gp:rgba(45,122,79,.18);--goldp:rgba(201,162,39,.15);
+  --bp:rgba(21,101,192,.15);--op:rgba(230,81,0,.15);--rp:rgba(198,40,40,.15);
 }
 [data-theme="dark"] body{background:var(--bg)}
 [data-theme="dark"] .hdr{background:linear-gradient(135deg,#0a2015,#163824)}
@@ -42,6 +55,7 @@
 [data-theme="dark"] .cal-day.empty{background:transparent}
 [data-theme="dark"] .fsize-btn{background:transparent;color:var(--gl);border-color:var(--bdr)}
 [data-theme="dark"] .fsize-btn.active{background:var(--gm);color:#fff;border-color:var(--gm)}
+/* ═══ Dark mode — عناصر جديدة ═══ */
 [data-theme="dark"] .ci-item{background:var(--wh)}
 [data-theme="dark"] .ci-btn{background:var(--wh);border-color:var(--bdr);color:var(--txt)}
 [data-theme="dark"] .ci-btn.h{background:var(--gp);border-color:var(--gm);color:var(--gl)}
@@ -53,10 +67,9 @@
 [data-theme="dark"] .comp-tbl th{background:var(--gp);color:var(--gl)}
 [data-theme="dark"] .comp-tbl td{border-bottom-color:var(--bdr);color:var(--txt)}
 [data-theme="dark"] .comp-tbl tr:nth-child(even) td{background:rgba(255,255,255,.03)}
-[data-theme="dark"] .cert-wrap{background:var(--wh);border-color:var(--gold)}
+[data-theme="dark"] .cert-box{background:var(--goldp);border-color:var(--gold)}
 [data-theme="dark"] .cert-title{color:var(--gl)}
-[data-theme="dark"] .cert-student{color:var(--gl);text-decoration-color:var(--gold)}
-[data-theme="dark"] .cert-milestone{color:var(--gl)}
+[data-theme="dark"] .cert-name{color:var(--gl);border-bottom-color:var(--gold)}
 [data-theme="dark"] .cert-body{color:var(--txt)}
 [data-theme="dark"] .repeat-bar{background:rgba(201,162,39,.12);border-color:var(--gold)}
 [data-theme="dark"] .repeat-bar-text{color:var(--txt)}
@@ -67,39 +80,64 @@
 [data-theme="dark"] .weak-count{background:var(--rp);color:var(--red)}
 [data-theme="dark"] .full-row label{color:var(--txt)}
 
-body,.card,.hdr,.nav,.stc,.sc,.mo-box,.fld input,.fld select,.fld textarea,.btn-out,.gb{transition:background-color .3s,color .3s,border-color .3s}
+/* Smooth theme transition */
+body,.card,.hdr,.nav,.stc,.sc,.mo-box,
+.fld input,.fld select,.fld textarea,.btn-out,.gb{
+  transition:background-color .3s ease,color .3s ease,border-color .3s ease
+}
+
+/* ══════════════════════════════════════
+   FONT SIZE CONTROL
+══════════════════════════════════════ */
 html{font-size:var(--fs)}
 html.fs-lg{--fs:17px}
 html.fs-xl{--fs:19px}
+
+/* ══════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:var(--fs);overflow-x:hidden}
 
-#offline-bar{display:none;position:fixed;top:0;left:0;right:0;background:#c62828;color:#fff;text-align:center;padding:8px 16px;font-size:13px;z-index:600;animation:slideDown .3s ease}
+/* ══════════════════════════════════════
+   OFFLINE BANNER
+══════════════════════════════════════ */
+#offline-bar{
+  display:none;position:fixed;top:0;left:0;right:0;
+  background:#c62828;color:#fff;text-align:center;
+  padding:8px 16px;font-size:13px;z-index:600;
+  animation:slideDown .3s ease
+}
 #offline-bar.show{display:block}
 @keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
 body.offline-mode .hdr{top:34px}
 body.offline-mode .nav{top:96px}
-#install-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--wh);border-top:1px solid var(--bdr);padding:12px 14px;z-index:250;gap:10px;align-items:center;box-shadow:0 -4px 20px rgba(0,0,0,.12)}
+
+/* ══════════════════════════════════════
+   INSTALL BANNER
+══════════════════════════════════════ */
+#install-banner{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:var(--wh);border-top:1px solid var(--bdr);
+  padding:12px 14px;z-index:250;gap:10px;align-items:center;
+  box-shadow:0 -4px 20px rgba(0,0,0,.12)
+}
 #install-banner.show{display:flex}
 
 /* ══════════════════════════════════════
-   AUTH GATE (LOGIN SCREEN)
+   SPLASH
 ══════════════════════════════════════ */
-#auth-gate{position:fixed;inset:0;background:linear-gradient(160deg,var(--gd) 0%,var(--gm) 60%,#1a6b3a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;overflow-y:auto;padding:20px}
-#auth-gate.hide{opacity:0;pointer-events:none}
-.auth-icon{font-size:65px;background:rgba(255,255,255,0.15);width:110px;height:110px;border-radius:30px;display:flex;align-items:center;justify-content:center;margin-bottom:15px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
-.auth-title{color:#fff;font-size:30px;font-weight:800;margin-bottom:6px;text-align:center}
-.auth-sub{color:rgba(255,255,255,0.85);font-size:15px;margin-bottom:40px;text-align:center}
-.auth-box{width:100%;max-width:320px;display:flex;flex-direction:column;gap:15px;align-items:center}
-.auth-btn{background:#fff;color:var(--gm);border:none;border-radius:30px;padding:15px 20px;font-size:16px;font-weight:800;cursor:pointer;width:100%;box-shadow:0 4px 15px rgba(0,0,0,0.15);font-family:inherit;transition:transform .2s}
-.auth-btn:active{transform:scale(0.96)}
-.auth-input{width:100%;padding:15px 20px;border:none;border-radius:30px;font-size:15px;font-family:inherit;text-align:center;direction:rtl;outline:none;box-shadow:inset 0 2px 5px rgba(0,0,0,0.05);color:#1a1a1a}
-.auth-link{background:none;border:none;color:rgba(255,255,255,0.9);font-size:14px;cursor:pointer;text-decoration:underline;font-family:inherit;margin-top:5px;padding:10px}
-.auth-footer{margin-top:auto;color:rgba(255,255,255,0.9);padding:20px 10px 10px;text-align:center;font-size:13px;line-height:1.7;width:100%;max-width:360px}
-.auth-footer a{color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+#splash{position:fixed;inset:0;background:linear-gradient(160deg,var(--gd) 0%,var(--gm) 60%,#1a6b3a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
+#splash.hide{opacity:0;pointer-events:none}
+.splash-icon{width:100px;height:100px;background:rgba(255,255,255,0.15);border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:20px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
+.splash-title{color:#fff;font-size:24px;font-weight:700;text-align:center;margin-bottom:6px}
+.splash-sub{color:rgba(255,255,255,0.8);font-size:14px;text-align:center;margin-bottom:4px}
+.splash-bar{width:160px;height:3px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:40px;overflow:hidden}
+.splash-bar-inner{height:100%;background:var(--gold);border-radius:2px;animation:splashLoad 1.5s ease forwards}
+@keyframes splashLoad{from{width:0}to{width:100%}}
 
 /* ══════════════════════════════════════
-   APP UI ELEMENTS
+   HEADER
 ══════════════════════════════════════ */
 .hdr{background:linear-gradient(135deg,var(--gd),var(--gm));color:#fff;padding:12px 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.25)}
 .hdr-top{display:flex;align-items:center;justify-content:space-between}
@@ -110,168 +148,412 @@ body.offline-mode .nav{top:96px}
 .hdr-btn:active{background:rgba(255,255,255,.35)}
 .back-btn{background:rgba(255,255,255,.2);border:none;color:#fff;padding:7px 14px;border-radius:20px;font-size:13px;cursor:pointer;display:none}
 
+/* ══════════════════════════════════════
+   NAV
+══════════════════════════════════════ */
 .nav{display:flex;background:var(--wh);border-bottom:1px solid var(--bdr);position:sticky;top:62px;z-index:99;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .nav-t{flex:1;padding:8px 1px 6px;text-align:center;font-size:10px;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;transition:.2s}
 .nav-t.on{color:var(--gm);border-bottom-color:var(--gm);font-weight:700}
 .nav-t .ni{font-size:18px;display:block;margin-bottom:2px}
 
+/* ══════════════════════════════════════
+   PAGES + ANIMATION
+══════════════════════════════════════ */
 .pg{display:none;padding:12px;padding-bottom:80px;min-height:calc(100vh - 110px)}
 .pg.on{display:block;animation:pgIn .22s ease}
 @keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ══════════════════════════════════════
-   SPLASH
+   CARDS
 ══════════════════════════════════════ */
-#splash{position:fixed;inset:0;background:linear-gradient(160deg,var(--gd) 0%,var(--gm) 60%,#1a6b3a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity .5s}
-#splash.hide{opacity:0;pointer-events:none}
-.splash-icon{width:100px;height:100px;background:rgba(255,255,255,0.15);border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:52px;margin-bottom:20px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
-.splash-title{color:#fff;font-size:24px;font-weight:700;text-align:center;margin-bottom:6px}
-.splash-sub{color:rgba(255,255,255,0.8);font-size:14px;text-align:center;margin-bottom:4px}
-.splash-bar{width:160px;height:3px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:40px;overflow:hidden}
-.splash-bar-inner{height:100%;background:var(--gold);border-radius:2px;animation:splashLoad 1.5s ease forwards}
-@keyframes splashLoad{from{width:0}to{width:100%}}
+.card{background:var(--wh);border-radius:var(--rad);padding:14px;margin-bottom:10px;box-shadow:var(--sh)}
+.ch{font-size:13px;font-weight:700;color:var(--mut);margin-bottom:10px;display:flex;align-items:center;gap:6px}
 
-.ch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px}
-.ach-badge{border-radius:10px;padding:10px 6px;text-align:center;transition:.2s}
-.ach-badge.earned{background:var(--goldp);border:1px solid var(--gold)}
-.ach-badge.locked{background:var(--bg);border:1px dashed var(--bdr);opacity:.4}
-.ach-icon{font-size:22px;margin-bottom:4px}
-.ach-name{font-size:11px;font-weight:700;color:var(--gd);line-height:1.3}
-.ach-desc{font-size:10px;color:var(--mut);margin-top:2px}
+/* ══════════════════════════════════════
+   STATS
+══════════════════════════════════════ */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.sc{background:var(--wh);border-radius:var(--rad);padding:14px;text-align:center;box-shadow:var(--sh)}
+.sn{font-size:30px;font-weight:800;color:var(--gm)}
+.sl{font-size:11px;color:var(--mut);margin-top:3px}
 
-.portal-hdr{background:linear-gradient(135deg,var(--gd),var(--gm));color:#fff;padding:20px;border-radius:16px;margin-bottom:12px;text-align:center}
-.portal-hdr-icon{font-size:40px;margin-bottom:8px}
-.portal-hdr-title{font-size:18px;font-weight:800}
-.portal-hdr-sub{font-size:12px;opacity:.8;margin-top:2px}
-.portal-st-card{background:var(--gp);border-radius:14px;padding:14px;margin-bottom:12px;display:flex;align-items:center;gap:12px}
-.portal-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.portal-stat-item{background:var(--wh);border:1px solid var(--bdr);border-radius:10px;padding:10px;text-align:center}
-.portal-stat-n{font-size:22px;font-weight:800;color:var(--gm)}
-.portal-stat-l{font-size:11px;color:var(--mut)}
-.portal-section{background:var(--wh);border:1px solid var(--bdr);border-radius:14px;padding:14px;margin-bottom:12px}
-.portal-section-title{font-size:13px;font-weight:700;color:var(--mut);margin-bottom:10px}
-.portal-assign-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f0}
-.portal-assign-row:last-child{border-bottom:none}
-.portal-assign-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+/* ══════════════════════════════════════
+   STREAK CARD
+══════════════════════════════════════ */
+.streak-card{background:linear-gradient(135deg,var(--gold),#b8900a);color:#fff;border-radius:var(--rad);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 16px rgba(201,162,39,.3)}
+.streak-num{font-size:40px;font-weight:800;line-height:1}
+.streak-info .s-title{font-size:14px;font-weight:700}
+.streak-info .s-sub{font-size:12px;opacity:.85;margin-top:2px}
 
-.group-card{background:var(--wh);border:1.5px solid var(--bdr);border-radius:var(--rad);padding:12px 14px;margin-bottom:8px}
-.group-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:8px}
-.group-name{font-size:15px;font-weight:700}
-.group-count{font-size:12px;color:var(--mut);margin-top:2px}
-.group-chips{display:flex;flex-wrap:wrap;gap:4px}
-.group-chip{background:var(--gp);color:var(--gd);padding:3px 9px;border-radius:12px;font-size:11px;font-weight:600}
-.group-actions{display:flex;gap:5px;flex-shrink:0}
-.gs-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f0f0f0}
-.gs-row:last-child{border-bottom:none}
-.gs-btns{display:flex;gap:4px}
-.gs-btn{padding:5px 10px;border:1.5px solid var(--bdr);border-radius:8px;font-size:12px;cursor:pointer;background:var(--wh);color:var(--mut);transition:.15s;font-family:inherit}
-.gs-btn.sel-h{background:var(--gp);border-color:var(--gm);color:var(--gd);font-weight:700}
-.gs-btn.sel-a{background:var(--rp);border-color:var(--red);color:var(--red);font-weight:700}
-.gs-btn.sel-v{background:var(--goldp);border-color:var(--gold);color:#7a5a00;font-weight:700}
+/* ══════════════════════════════════════
+   CHART
+══════════════════════════════════════ */
+.chart-wrap{position:relative;height:170px;margin-top:6px}
 
-.cert-wrap{background:var(--wh);border:4px solid var(--gold);border-radius:16px;padding:24px 20px;text-align:center;direction:rtl;position:relative;overflow:hidden}
-.cert-wrap::before{content:'📖';position:absolute;font-size:120px;opacity:.04;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
-.cert-small{font-size:12px;color:var(--mut);margin-bottom:12px}
+/* ══════════════════════════════════════
+   STUDENT CARDS
+══════════════════════════════════════ */
+.stc{background:var(--wh);border-radius:var(--rad);padding:12px 14px;margin-bottom:8px;box-shadow:var(--sh);display:flex;align-items:center;gap:12px;cursor:pointer;border-right:4px solid var(--gm);transition:.15s}
+.stc:active{transform:scale(.99);background:#fafafa}
+.av{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;flex-shrink:0}
+.si{flex:1;min-width:0}
+.sn2{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sm{font-size:12px;color:var(--mut);margin-top:2px}
+.mini-prog{height:4px;background:var(--bdr);border-radius:2px;overflow:hidden;margin-top:5px}
+.mini-prog-fill{height:100%;background:linear-gradient(90deg,var(--gm),var(--gl));border-radius:2px;transition:.5s}
+
+/* ══════════════════════════════════════
+   FORM
+══════════════════════════════════════ */
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:13px;color:var(--mut);margin-bottom:5px;font-weight:600}
+.fld input,.fld select,.fld textarea{width:100%;padding:10px 12px;border:1.5px solid var(--bdr);border-radius:10px;font-size:14px;font-family:inherit;background:var(--wh);color:var(--txt);transition:.2s;direction:rtl}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--gm);box-shadow:0 0 0 3px rgba(45,122,79,.12)}
+.fld textarea{min-height:75px;resize:vertical}
+.frow{display:flex;gap:8px}
+.frow .fld{flex:1}
+
+/* ══════════════════════════════════════
+   BADGES
+══════════════════════════════════════ */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:10px}
+.b-new{background:var(--gp);color:var(--gd)}
+.b-rec{background:var(--bp);color:var(--blue)}
+.b-far{background:var(--op);color:var(--org)}
+.b-juz{background:var(--goldp);color:#7a5a00}
+.b-prev{background:var(--rp);color:var(--red)}
+
+/* ══════════════════════════════════════
+   GRADE BUTTONS
+══════════════════════════════════════ */
+.gbs{display:flex;gap:5px;margin-top:6px}
+.gb{flex:1;padding:8px 2px;font-size:12px;border-radius:8px;border:1.5px solid;cursor:pointer;text-align:center;font-weight:600;transition:.15s;background:var(--wh)}
+.gb[data-g="ممتاز"]{border-color:#2e7d32;color:#2e7d32}
+.gb[data-g="جيد جداً"]{border-color:#1565c0;color:#1565c0}
+.gb[data-g="جيد"]{border-color:#e65100;color:#e65100}
+.gb[data-g="ضعيف"]{border-color:#c62828;color:#c62828}
+.gb.sel[data-g="ممتاز"]{background:#2e7d32;color:#fff}
+.gb.sel[data-g="جيد جداً"]{background:#1565c0;color:#fff}
+.gb.sel[data-g="جيد"]{background:#e65100;color:#fff}
+.gb.sel[data-g="ضعيف"]{background:#c62828;color:#fff}
+
+/* ══════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════ */
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:var(--rad);font-size:15px;font-weight:700;cursor:pointer;text-align:center;transition:.2s;font-family:inherit}
+.btn-g{background:var(--gm);color:#fff}
+.btn-g:active{background:var(--gd)}
+.btn-wa{background:#25D366;color:#fff}
+.btn-wa:active{background:#1da851}
+.btn-out{background:var(--wh);color:var(--gm);border:2px solid var(--gm)}
+.btn-red{background:var(--red);color:#fff}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-sm{padding:8px 14px;font-size:13px;width:auto;display:inline-block;border-radius:8px}
+
+/* ══════════════════════════════════════
+   TOGGLE
+══════════════════════════════════════ */
+.tog{width:46px;height:26px;background:var(--bdr);border-radius:13px;position:relative;cursor:pointer;transition:.2s;flex-shrink:0}
+.tog.on{background:var(--gm)}
+.tog::after{content:'';position:absolute;width:22px;height:22px;background:#fff;border-radius:50%;top:2px;right:2px;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.tog.on::after{transform:translateX(-20px)}
+
+/* ══════════════════════════════════════
+   STATUS BUTTONS
+══════════════════════════════════════ */
+.status-btns{display:flex;gap:8px;margin-bottom:10px}
+.st-btn{flex:1;padding:12px 6px;border:2px solid var(--bdr);border-radius:10px;background:var(--wh);cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--mut);transition:.15s;font-family:inherit}
+.st-btn.sel-h{border-color:var(--gm);background:var(--gp);color:var(--gd)}
+.st-btn.sel-a{border-color:var(--red);background:var(--rp);color:var(--red)}
+.st-btn.sel-v{border-color:var(--gold);background:var(--goldp);color:#7a5a00}
+
+/* ══════════════════════════════════════
+   CHIPS
+══════════════════════════════════════ */
+.chip{display:inline-flex;align-items:center;background:var(--gp);color:var(--gd);border-radius:14px;padding:4px 10px;font-size:12px;margin:3px;font-weight:600}
+.chip-x{margin-right:5px;cursor:pointer;font-size:15px;opacity:.7}
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;align-items:flex-end}
+.mo.open{display:flex}
+.mo-box{background:var(--wh);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-height:88vh;overflow-y:auto}
+.mo-title{font-size:17px;font-weight:800;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.mo-x{background:none;border:none;font-size:24px;cursor:pointer;color:var(--mut);line-height:1}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;z-index:500;display:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.3);transition:opacity .3s}
+.toast.show{display:block}
+.toast.t-success{background:#2e7d32}
+.toast.t-error{background:#c62828}
+.toast.t-info{background:#1565c0}
+.toast.t-gold{background:var(--gold)}
+
+/* ══════════════════════════════════════
+   WA PREVIEW
+══════════════════════════════════════ */
+.wa-prev{background:#e8f5e9;border:1px solid #a5d6a7;border-radius:var(--rad);padding:14px;font-size:13px;line-height:1.8;white-space:pre-wrap;direction:rtl;max-height:260px;overflow-y:auto;margin-bottom:12px;font-family:inherit}
+
+/* ══════════════════════════════════════
+   HISTORY
+══════════════════════════════════════ */
+.hi{border-bottom:1px solid #f0f0f0;padding:10px 0}
+.hi:last-child{border-bottom:none}
+.hi-date{font-size:11px;color:var(--mut);margin-bottom:3px}
+.hi-content{font-size:13px;line-height:1.6}
+
+/* ══════════════════════════════════════
+   LEVEL
+══════════════════════════════════════ */
+.lv{display:inline-block;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700}
+.lv1{background:var(--gp);color:var(--gd)}
+.lv2{background:var(--bp);color:var(--blue)}
+.lv3{background:var(--op);color:var(--org)}
+
+/* ══════════════════════════════════════
+   EMPTY
+══════════════════════════════════════ */
+.empty{text-align:center;padding:40px 20px;color:var(--mut)}
+.empty .ei{font-size:50px;margin-bottom:12px}
+
+/* ══════════════════════════════════════
+   PROGRESS BAR
+══════════════════════════════════════ */
+.prog-bar{height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden;margin-top:6px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gm),var(--gl));border-radius:4px;transition:.5s}
+
+/* ══════════════════════════════════════
+   UTILS
+══════════════════════════════════════ */
+.dv{height:1px;background:var(--bdr);margin:12px 0}
+.fb{display:flex;justify-content:space-between;align-items:center}
+.mt8{margin-top:8px}
+.mb8{margin-bottom:8px}
+.mb4{margin-bottom:4px}
+.txt-mut{color:var(--mut);font-size:13px}
+
+/* ══════════════════════════════════════
+   FAB
+══════════════════════════════════════ */
+.fab{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--gm);color:#fff;border:none;width:58px;height:58px;border-radius:50%;font-size:28px;cursor:pointer;box-shadow:0 4px 16px rgba(45,122,79,.5);display:flex;align-items:center;justify-content:center;z-index:200;transition:.2s}
+.fab:active{transform:translateX(-50%) scale(.95)}
+
+/* ══════════════════════════════════════
+   MONTH REPORT
+══════════════════════════════════════ */
+.month-stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.ms-item{background:var(--gp);border-radius:10px;padding:10px 8px;text-align:center}
+.ms-num{font-size:22px;font-weight:800;color:var(--gd)}
+.ms-lbl{font-size:11px;color:var(--mut);margin-top:2px}
+
+/* ══════════════════════════════════════
+   INFO ROW
+══════════════════════════════════════ */
+.ir{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f5f5f5;font-size:14px}
+.ir:last-child{border-bottom:none}
+.ir-k{color:var(--mut)}
+
+/* ══════════════════════════════════════
+   ABSENT NOTICE
+══════════════════════════════════════ */
+.absent-notice{background:var(--rp);border:1px solid #ef9a9a;border-radius:10px;padding:12px;margin-bottom:10px;font-size:13px;color:var(--red);text-align:center}
+
+/* ══════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════ */
+.sec-div{background:linear-gradient(135deg,var(--gd),var(--gm));color:#fff;padding:10px 14px;border-radius:10px;margin-bottom:10px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+
+/* ══════════════════════════════════════
+   CALENDAR
+══════════════════════════════════════ */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
+.cal-head{text-align:center;font-size:10px;color:var(--mut);padding:4px 0;font-weight:700}
+.cal-day{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;background:var(--bg);color:var(--mut);transition:.15s}
+.cal-day.present{background:var(--gp);color:var(--gd);font-weight:700}
+.cal-day.absent{background:var(--rp);color:var(--red);font-weight:700}
+.cal-day.vacation{background:var(--goldp);color:#7a5a00;font-weight:700}
+.cal-day.today{outline:2px solid var(--gm);outline-offset:1px}
+.cal-day.empty{background:transparent}
+.cal-legend{display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--mut);flex-wrap:wrap}
+.cal-legend span{display:flex;align-items:center;gap:4px}
+.cal-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+
+/* ══════════════════════════════════════
+   FONT SIZE BUTTONS
+══════════════════════════════════════ */
+.fsize-row{display:flex;gap:8px;margin-top:6px}
+.fsize-btn{padding:8px 16px;border:1.5px solid var(--bdr);border-radius:8px;background:var(--wh);color:var(--txt);cursor:pointer;font-family:inherit;transition:.2s;font-weight:600}
+.fsize-btn.active{background:var(--gm);color:#fff;border-color:var(--gm)}
+
+/* ══════════════════════════════════════
+   CONFETTI
+══════════════════════════════════════ */
+@keyframes confettiFall{
+  0%{transform:translateY(-80px) rotate(0deg);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+}
+.confetti-p{position:fixed;z-index:9999;pointer-events:none;animation:confettiFall linear forwards}
+
+/* ══════════════════════════════════════
+   PRINT
+══════════════════════════════════════ */
+@media print{
+  .hdr,.nav,.fab,.toast,.btn-wa,.btn-g,.btn-red,.btn-out,
+  #install-banner,#offline-bar,.abs-notice,.back-btn,
+  .hdr-btn,.fsize-row,.ch button{display:none!important}
+  .pg{display:block!important;padding:0!important}
+  body{background:#fff!important;color:#000!important}
+  .card{box-shadow:none!important;border:1px solid #ddd;break-inside:avoid}
+  .prog-fill{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ══════════════════════════════════════
+   URGENCY INDICATOR
+══════════════════════════════════════ */
+.urgency-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.urgency-red{background:#c62828}
+.urgency-yellow{background:#f9a825}
+.urgency-none{display:none}
+
+/* ══════════════════════════════════════
+   EXPORT ROW
+══════════════════════════════════════ */
+.export-row{display:flex;gap:8px;margin-bottom:10px}
+.export-row .btn{flex:1}
+
+/* ══════════════════════════════════════
+   CHECK-IN PAGE
+══════════════════════════════════════ */
+.ci-item{background:var(--wh);border-radius:var(--rad);padding:11px 14px;margin-bottom:8px;box-shadow:var(--sh);display:flex;align-items:center;gap:10px}
+.ci-name{flex:1;font-size:14px;font-weight:700}
+.ci-meta{font-size:11px;color:var(--mut);margin-top:2px}
+.ci-btns{display:flex;gap:5px;flex-shrink:0}
+.ci-btn{padding:7px 9px;border:2px solid var(--bdr);border-radius:8px;background:var(--wh);cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:.15s;white-space:nowrap}
+.ci-btn.h{border-color:var(--gm);background:var(--gp);color:var(--gd)}
+.ci-btn.a{border-color:var(--red);background:var(--rp);color:var(--red)}
+.ci-btn.v{border-color:var(--gold);background:var(--goldp);color:#7a5a00}
+.ci-done-bar{background:var(--gp);border-radius:var(--rad);padding:12px;text-align:center;margin-bottom:12px;font-size:13px;color:var(--gd);font-weight:700;display:none}
+
+/* ══════════════════════════════════════
+   VOICE INPUT
+══════════════════════════════════════ */
+.voice-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.voice-btn{background:none;border:1.5px solid var(--bdr);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:15px;color:var(--mut);transition:.15s;font-family:inherit;flex-shrink:0}
+.voice-btn:hover{border-color:var(--gm);color:var(--gm)}
+.voice-btn.listening{border-color:var(--red);color:var(--red);animation:vPulse .7s infinite}
+@keyframes vPulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* FULL SURAH CHECKBOX */
+.full-row{display:flex;align-items:center;gap:9px;margin:8px 0}
+.full-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--gm);flex-shrink:0;cursor:pointer}
+.full-row label{font-size:13px;font-weight:600;cursor:pointer;color:var(--txt)}
+
+/* ══════════════════════════════════════
+   COMPARISON TABLE
+══════════════════════════════════════ */
+.comp-wrap{overflow-x:auto;margin-top:8px}
+.comp-tbl{width:100%;border-collapse:collapse;font-size:12px;min-width:420px}
+.comp-tbl th{background:var(--gp);color:var(--gd);padding:8px 10px;font-weight:700;text-align:right;white-space:nowrap}
+.comp-tbl td{padding:8px 10px;border-bottom:1px solid var(--bdr);vertical-align:middle}
+.comp-tbl tr:last-child td{border-bottom:none}
+.comp-tbl .rank{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:12px}
+.r1{background:#FFD700;color:#7a5a00}.r2{background:#C0C0C0;color:#444}.r3{background:#CD7F32;color:#fff}
+.comp-bar{height:5px;background:var(--bdr);border-radius:3px;margin-top:3px}
+.comp-fill{height:100%;background:var(--gm);border-radius:3px;transition:width .5s}
+
+/* ══════════════════════════════════════
+   WEAKNESS ANALYSIS
+══════════════════════════════════════ */
+.weak-item{padding:8px 0;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.weak-item:last-child{border-bottom:none}
+.weak-count{background:var(--rp);color:var(--red);border-radius:12px;padding:2px 8px;font-size:11px;font-weight:700;flex-shrink:0}
+
+/* ══════════════════════════════════════
+   BULK SEND MODAL
+══════════════════════════════════════ */
+.bulk-item{background:var(--bg);border-radius:10px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.bulk-info{flex:1;min-width:0}
+.bulk-name{font-size:14px;font-weight:700;margin-bottom:3px}
+.bulk-prev{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bulk-send-btn{background:var(--wa);color:#fff;border:none;border-radius:8px;padding:8px 10px;cursor:pointer;font-size:14px;flex-shrink:0;font-family:inherit}
+
+/* ══════════════════════════════════════
+   CERTIFICATE
+══════════════════════════════════════ */
+#certModal .mo-box{max-width:560px}
+.cert-box{border:3px solid var(--gold);border-radius:16px;padding:30px 20px;text-align:center;background:var(--goldp);margin-bottom:12px}
 .cert-title{font-size:22px;font-weight:800;color:var(--gd);margin-bottom:6px}
-hr.cert-divider{border:none;border-top:2px solid var(--goldp);margin:10px auto;width:70%}
-.cert-body{font-size:14px;line-height:2.1;color:var(--txt)}
-.cert-student{font-size:26px;font-weight:800;color:var(--gm);text-decoration:underline;text-decoration-color:var(--gold);display:block;margin:8px 0}
-.cert-milestone{font-weight:700;color:var(--gd)}
-.cert-footer{display:flex;justify-content:space-between;align-items:flex-end;margin-top:20px;padding-top:14px;border-top:2px solid var(--goldp);font-size:12px}
-.cert-footer-item{flex:1}
-.cert-footer-label{color:var(--mut);margin-bottom:3px;font-size:11px}
-.cert-footer-val{font-weight:700;font-size:13px;color:var(--txt)}
+.cert-sub{font-size:13px;color:var(--mut);margin-bottom:16px}
+.cert-name{font-size:26px;font-weight:800;color:var(--gd);margin-bottom:10px;border-bottom:2px solid var(--gold);padding-bottom:10px}
+.cert-body{font-size:14px;color:var(--txt);line-height:1.8;margin-bottom:14px}
+.cert-seal{font-size:36px;margin-bottom:8px}
+.cert-teacher{font-size:13px;color:var(--mut)}
+@media print{
+  body>*:not(#certPrintWrap){display:none!important}
+  #certPrintWrap{display:block!important;position:fixed;inset:0;background:#fff;z-index:99999;padding:30px}
+  #certPrintWrap .mo-x{display:none}
+}
+
+/* ══════════════════════════════════════
+   WA TEMPLATE
+══════════════════════════════════════ */
 .tmpl-vars{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .tmpl-var{background:var(--gp);color:var(--gd);border-radius:12px;padding:4px 10px;font-size:11px;cursor:pointer;font-weight:700;border:none;font-family:inherit;transition:.15s}
 .tmpl-var:hover{background:var(--gm);color:#fff}
+
+/* ══════════════════════════════════════
+   REPEAT LAST BUTTON
+══════════════════════════════════════ */
 .repeat-bar{background:var(--goldp);border-radius:10px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:pointer;border:1.5px solid var(--gold)}
 .repeat-bar:hover{background:#fef3c7}
 .repeat-bar-text{flex:1;font-size:13px;color:var(--txt)}
 .repeat-bar-hint{font-size:11px;color:var(--mut)}
-.tch-item{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:8px}
-.tch-av{width:34px;height:34px;border-radius:50%;background:var(--gp);color:var(--gd);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0}
-.tch-info{flex:1;min-width:0}
-.tch-name{font-size:13px;font-weight:700;color:var(--txt)}
-.tch-phone{font-size:11px;color:var(--mut);direction:ltr;text-align:right}
-.tch-default{font-size:10px;background:var(--gp);color:var(--gm);border-radius:8px;padding:1px 6px;margin-right:6px}
-.tch-btns{display:flex;gap:5px;flex-shrink:0}
-.tch-btn{width:30px;height:30px;border:none;border-radius:8px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--wh)}
-.copyright-card{text-align:center;padding:18px 14px}
-.copyright-card .cr-icon{font-size:30px;margin-bottom:8px}
-.copyright-card .cr-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:4px}
-.copyright-card .cr-dev{font-size:12px;color:var(--mut);margin-bottom:10px}
-.cr-links{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.cr-link{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;text-decoration:none;border-radius:20px;padding:6px 14px}
-.cr-link.wa{background:#E7F9EF;color:#1aab55}
-.cr-link.mail{background:var(--gp);color:var(--gm)}
 </style>
 </head>
 <body>
 
+<!-- ════════════ OFFLINE BANNER ════════════ -->
 <div id="offline-bar">📵 لا يوجد اتصال — التطبيق يعمل من الذاكرة المحلية</div>
 
+<!-- ════════════ INSTALL BANNER ════════════ -->
+<div id="install-banner">
+  <div style="width:40px;height:40px;background:var(--gp);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📿</div>
+  <div style="flex:1">
+    <div style="font-weight:700;font-size:14px">أضف إلى الشاشة الرئيسية</div>
+    <div style="font-size:12px;color:var(--mut)">وصول سريع بدون متصفح</div>
+  </div>
+  <button class="btn btn-g btn-sm" onclick="installPWA()" style="white-space:nowrap">تثبيت</button>
+  <button onclick="dismissInstall()" style="background:none;border:none;font-size:22px;color:var(--mut);cursor:pointer;padding:4px 8px;line-height:1">✕</button>
+</div>
+
+<!-- ════════════ SPLASH ════════════ -->
 <div id="splash">
-  <div class="splash-icon">📖</div>
+  <div class="splash-icon">📿</div>
   <div class="splash-title">بالقرآن نحيا</div>
   <div class="splash-sub">الشيخ السيد الكومي</div>
   <div class="splash-sub" style="font-size:12px;opacity:.7;margin-top:4px">نظام متابعة طلاب التحفيظ</div>
   <div class="splash-bar"><div class="splash-bar-inner"></div></div>
 </div>
 
-<div id="auth-gate" class="hide">
-  <div class="auth-icon">🕋</div>
-  <div class="auth-title">بالقرآن نحيا</div>
-  <div class="auth-sub">نظام متابعة طلاب التحفيظ</div>
-
-  <div id="auth-roles" class="auth-box">
-    <button class="auth-btn" onclick="window.cloudSignIn && window.cloudSignIn()" style="display:flex;align-items:center;justify-content:center;gap:8px">
-      <span style="font-size:18px">☁️</span> تسجيل دخول المحفظ (Google)
-    </button>
-    <button class="auth-btn" onclick="showAuthForm('parent')">دخول ولي الأمر (برقم الهاتف)</button>
-  </div>
-
-  <div id="auth-parent" class="auth-box" style="display:none">
-    <input type="tel" id="parent-phone" class="auth-input" placeholder="رقم هاتف ولي الأمر (واتساب)">
-    <button class="auth-btn" onclick="loginParent()">دخول</button>
-    <button class="auth-link" onclick="showAuthForm('roles')">رجوع للخلف</button>
-  </div>
-
-  <div id="auth-siblings" class="auth-box" style="display:none">
-    <div style="color:#fff;font-weight:700;margin-bottom:10px">اختر الطالب:</div>
-    <div id="auth-siblings-list" style="width:100%;display:flex;flex-direction:column;gap:10px"></div>
-    <button class="auth-link" onclick="showAuthForm('parent')">رجوع للخلف</button>
-  </div>
-
-  <div class="auth-footer">
-    <div style="font-weight:800;font-size:15px;margin-bottom:6px">تصميم وتطوير الشيخ السيد الكومي</div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:12px;font-size:13px">
-      <a href="mailto:sayedkomy1@gmail.com">✉️ sayedkomy1@gmail.com</a>
-      <a href="https://wa.me/201095782616" target="_blank">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.1-.471-.149-.67.149-.198.298-.767.967-.94 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.148-.174.198-.298.297-.497.1-.198.05-.372-.024-.521-.075-.148-.67-1.611-.916-2.206-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.263.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.127 1.531 5.861L.057 23.58a.5.5 0 0 0 .609.609l5.717-1.473A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.924 0-3.73-.5-5.3-1.375l-.379-.215-3.93 1.013 1.012-3.931-.215-.379A9.961 9.961 0 0 1 2 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg>
-        01095782616
-      </a>
-    </div>
-    <div style="font-size:11px;opacity:0.6;border-top:1px solid rgba(255,255,255,0.2);padding-top:10px;margin-top:4px">
-      © <script>document.write(new Date().getFullYear())</script> جميع الحقوق محفوظة لبرنامج "بالقرآن نحيا"
-    </div>
-  </div>
-</div>
-
-<div class="hdr" style="display:none">
+<!-- ════════════ HEADER ════════════ -->
+<div class="hdr">
   <div class="hdr-top">
     <div>
-      <div class="hdr-title" id="hdrTitle">📖 بالقرآن نحيا</div>
+      <div class="hdr-title" id="hdrTitle">📿 بالقرآن نحيا</div>
       <div class="hdr-sub" id="hdrSub">الشيخ السيد الكومي</div>
     </div>
     <div class="hdr-actions">
       <button class="hdr-btn" onclick="toggleTheme()" id="themeBtn" title="تبديل المظهر">🌙</button>
-      <button class="hdr-btn" id="logoutBtn" onclick="logoutApp()" style="display:none" title="تسجيل الخروج">🚪</button>
       <button class="back-btn" id="backBtn" onclick="goBack()">→ رجوع</button>
     </div>
   </div>
 </div>
 
-<div class="nav" id="mainNav" style="display:none">
+<!-- ════════════ NAV ════════════ -->
+<div class="nav" id="mainNav">
   <div class="nav-t on" onclick="goPage('home')"><span class="ni">🏠</span>الرئيسية</div>
   <div class="nav-t" onclick="goPage('students')"><span class="ni">👥</span>الطلاب</div>
   <div class="nav-t" onclick="goPage('checkin')"><span class="ni">✅</span>الحضور</div>
@@ -280,352 +562,2096 @@ hr.cert-divider{border:none;border-top:2px solid var(--goldp);margin:10px auto;w
   <div class="nav-t" onclick="goPage('settings')"><span class="ni">⚙️</span>الإعدادات</div>
 </div>
 
-<div class="pg" id="pg-parent-view">
-  <div id="parent-view-content"></div>
-</div>
-
-<div class="pg" id="pg-home">
+<!-- ══════════════ HOME ══════════════ -->
+<div class="pg on" id="pg-home">
+  <!-- إحصائيات سريعة -->
   <div class="sg">
     <div class="sc"><div class="sn" id="stTotal">0</div><div class="sl">إجمالي الطلاب</div></div>
     <div class="sc"><div class="sn" id="stToday">0</div><div class="sl">حصص اليوم</div></div>
     <div class="sc"><div class="sn" id="stMonth">0</div><div class="sl">حصص الشهر</div></div>
     <div class="sc"><div class="sn" id="stAbsent">0</div><div class="sl">غياب اليوم</div></div>
   </div>
+
+  <!-- بطاقة الإنجاز اليومي (streak) -->
   <div id="streakCard" class="streak-card" style="display:none">
     <div class="streak-num" id="streakNum">0</div>
-    <div class="streak-info"><div class="s-title">🔥 أيام نشاط متواصل</div><div class="s-sub" id="streakSub">واصل المسيرة!</div></div>
-  </div>
-  <div class="card"><div class="ch">📈 نشاط آخر 7 أيام</div><div class="chart-wrap"><canvas id="weekChart"></canvas></div></div>
-  <div class="card">
-    <div class="ch">⚡ بدء حصة سريعة</div>
-    <div class="fld"><select id="quickSt" onchange="quickPick()"><option value="">— اختر الطالب —</option></select></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-g mt8" style="flex:2" onclick="goToSession()">ابدأ الحصة 📖</button>
-      <button class="btn btn-out mt8" style="flex:1" onclick="openBulkSend()">📤 إرسال</button>
+    <div class="streak-info">
+      <div class="s-title">🔥 أيام نشاط متواصل</div>
+      <div class="s-sub" id="streakSub">استمر في التميز!</div>
     </div>
   </div>
-  <div class="card"><div class="ch">📅 آخر الحصص</div><div id="recentSes"></div></div>
+
+  <!-- نشاط الأسبوع -->
+  <div class="card">
+    <div class="ch">📈 نشاط آخر 7 أيام</div>
+    <div class="chart-wrap"><canvas id="weekChart"></canvas></div>
+  </div>
+
+  <!-- حصة سريعة -->
+  <div class="card">
+    <div class="ch">⚡ بدء حصة سريعة</div>
+    <div class="fld">
+      <select id="quickSt" onchange="quickPick()">
+        <option value="">— اختر الطالب —</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-g mt8" style="flex:2" onclick="goToSession()">ابدأ الحصة 📖</button>
+      <button class="btn btn-out mt8" style="flex:1" onclick="openBulkSend()">📤 إرسال للكل</button>
+    </div>
+  </div>
+
+  <!-- آخر الحصص -->
+  <div class="card">
+    <div class="ch">📅 آخر الحصص</div>
+    <div id="recentSes"></div>
+  </div>
 </div>
 
+<!-- ══════════════ CHECK-IN ══════════════ -->
 <div class="pg" id="pg-checkin">
   <div class="ci-done-bar" id="ciDoneBar">✅ تم تسجيل الحضور لجميع الطلاب اليوم</div>
-  <div class="card"><div class="ch">📋 تسجيل حضور اليوم</div><div id="ciDate" style="font-size:12px;color:var(--mut);margin-top:4px"></div></div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="ch">📋 تسجيل حضور اليوم</div>
+    <div id="ciDate" style="font-size:12px;color:var(--mut);margin-top:4px"></div>
+  </div>
   <div id="ciList"></div>
-  <button class="btn btn-wa mt8" onclick="sendAllWA()">📤 إرسال تقارير للكل</button>
+  <button class="btn btn-wa mt8" onclick="sendAllWA()">📤 إرسال تقارير لجميع الحاضرين</button>
+  <div style="height:20px"></div>
 </div>
 
+<!-- ══════════════ STUDENTS ══════════════ -->
 <div class="pg" id="pg-students">
   <div style="display:flex;gap:8px;margin-bottom:12px">
     <div style="flex:1;position:relative">
       <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--mut)">🔍</span>
-      <input type="text" id="searchIn" placeholder="ابحث عن طالب..." oninput="filterSt()" style="padding-right:38px;width:100%;padding:10px 38px 10px 12px;border:1.5px solid var(--bdr);border-radius:10px;font-size:14px;background:var(--wh);color:var(--txt);direction:rtl">
+      <input type="text" id="searchIn" placeholder="ابحث عن طالب..." oninput="filterSt()" style="padding-right:38px;width:100%;padding:10px 38px 10px 12px;border:1.5px solid var(--bdr);border-radius:10px;font-size:14px;font-family:inherit;background:var(--wh);color:var(--txt);direction:rtl">
     </div>
-    <select id="filterLevel" onchange="filterSt()" style="padding:10px 12px;border:1.5px solid var(--bdr);border-radius:10px;background:var(--wh);color:var(--txt)"><option value="">الكل</option><option value="مبتدئ">مبتدئ</option><option value="متوسط">متوسط</option><option value="متقدم">متقدم</option></select>
+    <select id="filterLevel" onchange="filterSt()" style="padding:10px 12px;border:1.5px solid var(--bdr);border-radius:10px;font-size:13px;background:var(--wh);color:var(--txt);font-family:inherit">
+      <option value="">الكل</option>
+      <option value="مبتدئ">مبتدئ</option>
+      <option value="متوسط">متوسط</option>
+      <option value="متقدم">متقدم</option>
+    </select>
   </div>
   <div id="stList"></div>
   <button class="fab" onclick="openAddSt()">+</button>
 </div>
 
+<!-- ══════════════ SESSION ══════════════ -->
 <div class="pg" id="pg-session">
   <div class="card">
     <div class="ch">👤 الطالب</div>
-    <div class="fld"><select id="sesSt" onchange="onSesSt()"><option value="">— اختر الطالب —</option></select></div>
+    <div class="fld">
+      <select id="sesSt" onchange="onSesSt()">
+        <option value="">— اختر الطالب —</option>
+      </select>
+    </div>
+    <div class="fld mb4"><label>حالة الحضور</label></div>
     <div class="status-btns">
       <button class="st-btn sel-h" id="sb-h" onclick="setStatus('حضر')">✅ حضر</button>
       <button class="st-btn" id="sb-a" onclick="setStatus('غاب')">❌ غاب</button>
       <button class="st-btn" id="sb-v" onclick="setStatus('إجازة')">🌙 إجازة</button>
     </div>
   </div>
+
   <div id="absentNotice" style="display:none">
     <div class="absent-notice">⚠️ الطالب غائب — سيتم نقل التكليف السابق للحصة القادمة</div>
-    <button class="btn btn-wa mb8" onclick="sendAbsenceWA()">📲 إبلاغ الغياب</button>
+    <button class="btn btn-wa mb8" onclick="sendAbsenceWA()">📲 إبلاغ ولي الأمر بالغياب</button>
   </div>
+
   <div id="repeatBar" class="repeat-bar" onclick="fillFromLast()" style="display:none">
-    <span>♻️</span><div class="repeat-bar-text"><div style="font-weight:700">كرر تكليف آخر حصة</div><div class="repeat-bar-hint" id="repeatHint">اضغط للملء تلقائياً</div></div><span>←</span>
+    <span style="font-size:18px">♻️</span>
+    <div class="repeat-bar-text">
+      <div style="font-weight:700">كرر تكليف آخر حصة</div>
+      <div class="repeat-bar-hint" id="repeatHint">اضغط لملء الحقول تلقائياً</div>
+    </div>
+    <span style="font-size:16px;color:var(--gold)">←</span>
   </div>
+
   <div id="sesContent">
     <div class="sec-div">📋 القسم الأول: تقييم التسميع</div>
-    <div class="card" id="prevCard"><div class="ch">📋 تسميع الحصة السابقة</div><div id="prevContent"></div></div>
+    <div class="card" id="prevCard">
+      <div class="ch">📋 تسميع الحصة السابقة</div>
+      <div id="prevContent"><div class="txt-mut" style="text-align:center;padding:10px">اختر الطالب لعرض تكليف الحصة السابقة</div></div>
+    </div>
+
     <div class="sec-div">📝 القسم الثاني: تكليف الحصة القادمة</div>
+
     <div class="card">
-      <div class="fb mb8"><span class="badge b-new">📖 حفظ جديد</span><div class="tog on" id="tog-new" onclick="togSec('new')"></div></div>
+      <div class="fb mb8">
+        <span class="badge b-new">📖 حفظ جديد</span>
+        <div class="tog on" id="tog-new" onclick="togSec('new')"></div>
+      </div>
       <div id="bod-new">
-        <div class="voice-row"><div class="fld" style="flex:1;margin-bottom:0"><select id="new-s" onchange="fillAyah('new')"></select></div><button class="voice-btn" id="vb-new" onclick="startVoice('new')">🎙️</button></div>
-        <div class="full-row"><input type="checkbox" id="new-full" onchange="toggleFull('new')"><label for="new-full">سورة كاملة</label></div>
-        <div class="frow" id="new-range" style="display:none"><div class="fld"><input type="number" id="new-f"></div><div class="fld"><input type="number" id="new-t"></div></div>
-        <div class="fld"><div class="gbs" id="gr-new"><div class="gb" data-g="ممتاز" onclick="setGr('new','ممتاز')">⭐ ممتاز</div><div class="gb" data-g="جيد جداً" onclick="setGr('new','جيد جداً')">جيد جداً</div><div class="gb" data-g="جيد" onclick="setGr('new','جيد')">جيد</div><div class="gb" data-g="ضعيف" onclick="setGr('new','ضعيف')">ضعيف</div></div></div>
+        <div class="voice-row">
+          <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
+            <select id="new-s" onchange="fillAyah('new')"><option value="">— اختر —</option></select>
+          </div>
+          <button class="voice-btn" id="vb-new" onclick="startVoice('new')" title="إدخال صوتي">🎙️</button>
+        </div>
+        <div class="full-row">
+          <input type="checkbox" id="new-full" onchange="toggleFull('new')">
+          <label for="new-full">سورة كاملة</label>
+        </div>
+        <div class="frow" id="new-range" style="display:none">
+          <div class="fld"><label>من آية</label><input type="number" id="new-f" min="1" value="1" style="text-align:center"></div>
+          <div class="fld"><label>إلى آية</label><input type="number" id="new-t" min="1" value="1" style="text-align:center"></div>
+        </div>
+        <div class="fld"><label>التقييم</label>
+          <div class="gbs" id="gr-new">
+            <div class="gb" data-g="ممتاز" onclick="setGr('new','ممتاز')">⭐ ممتاز</div>
+            <div class="gb" data-g="جيد جداً" onclick="setGr('new','جيد جداً')">جيد جداً</div>
+            <div class="gb" data-g="جيد" onclick="setGr('new','جيد')">جيد</div>
+            <div class="gb" data-g="ضعيف" onclick="setGr('new','ضعيف')">ضعيف</div>
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="card">
-      <div class="fb mb8"><span class="badge b-rec">📚 مراجعة قريبة</span><div class="tog" id="tog-rec" onclick="togSec('rec')"></div></div>
+      <div class="fb mb8">
+        <span class="badge b-rec">📚 مراجعة قريبة</span>
+        <div class="tog" id="tog-rec" onclick="togSec('rec')"></div>
+      </div>
       <div id="bod-rec" style="display:none">
-        <div class="voice-row"><div class="fld" style="flex:1;margin-bottom:0"><select id="rec-s" onchange="fillAyah('rec')"></select></div><button class="voice-btn" id="vb-rec" onclick="startVoice('rec')">🎙️</button></div>
-        <div class="full-row"><input type="checkbox" id="rec-full" onchange="toggleFull('rec')"><label for="rec-full">سورة كاملة</label></div>
-        <div class="frow" id="rec-range" style="display:none"><div class="fld"><input type="number" id="rec-f"></div><div class="fld"><input type="number" id="rec-t"></div></div>
-        <div class="fld"><div class="gbs" id="gr-rec"><div class="gb" data-g="ممتاز" onclick="setGr('rec','ممتاز')">⭐ ممتاز</div><div class="gb" data-g="جيد جداً" onclick="setGr('rec','جيد جداً')">جيد جداً</div><div class="gb" data-g="جيد" onclick="setGr('rec','جيد')">جيد</div><div class="gb" data-g="ضعيف" onclick="setGr('rec','ضعيف')">ضعيف</div></div></div>
+        <div class="voice-row">
+          <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
+            <select id="rec-s" onchange="fillAyah('rec')"><option value="">— اختر —</option></select>
+          </div>
+          <button class="voice-btn" id="vb-rec" onclick="startVoice('rec')" title="إدخال صوتي">🎙️</button>
+        </div>
+        <div class="full-row">
+          <input type="checkbox" id="rec-full" onchange="toggleFull('rec')">
+          <label for="rec-full">سورة كاملة</label>
+        </div>
+        <div class="frow" id="rec-range" style="display:none">
+          <div class="fld"><label>من آية</label><input type="number" id="rec-f" min="1" value="1" style="text-align:center"></div>
+          <div class="fld"><label>إلى آية</label><input type="number" id="rec-t" min="1" value="1" style="text-align:center"></div>
+        </div>
+        <div class="fld"><label>التقييم</label>
+          <div class="gbs" id="gr-rec">
+            <div class="gb" data-g="ممتاز" onclick="setGr('rec','ممتاز')">⭐ ممتاز</div>
+            <div class="gb" data-g="جيد جداً" onclick="setGr('rec','جيد جداً')">جيد جداً</div>
+            <div class="gb" data-g="جيد" onclick="setGr('rec','جيد')">جيد</div>
+            <div class="gb" data-g="ضعيف" onclick="setGr('rec','ضعيف')">ضعيف</div>
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="card">
-      <div class="fb mb8"><span class="badge b-far">📘 مراجعة بعيدة</span><div class="tog" id="tog-far" onclick="togSec('far')"></div></div>
+      <div class="fb mb8">
+        <span class="badge b-far">📘 مراجعة بعيدة</span>
+        <div class="tog" id="tog-far" onclick="togSec('far')"></div>
+      </div>
       <div id="bod-far" style="display:none">
-        <div class="voice-row"><div class="fld" style="flex:1;margin-bottom:0"><select id="far-s" onchange="fillAyah('far')"></select></div><button class="voice-btn" id="vb-far" onclick="startVoice('far')">🎙️</button></div>
-        <div class="full-row"><input type="checkbox" id="far-full" onchange="toggleFull('far')"><label for="far-full">سورة كاملة</label></div>
-        <div class="frow" id="far-range" style="display:none"><div class="fld"><input type="number" id="far-f"></div><div class="fld"><input type="number" id="far-t"></div></div>
-        <div class="fld"><div class="gbs" id="gr-far"><div class="gb" data-g="ممتاز" onclick="setGr('far','ممتاز')">⭐ ممتاز</div><div class="gb" data-g="جيد جداً" onclick="setGr('far','جيد جداً')">جيد جداً</div><div class="gb" data-g="جيد" onclick="setGr('far','جيد')">جيد</div><div class="gb" data-g="ضعيف" onclick="setGr('far','ضعيف')">ضعيف</div></div></div>
+        <div class="voice-row">
+          <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
+            <select id="far-s" onchange="fillAyah('far')"><option value="">— اختر —</option></select>
+          </div>
+          <button class="voice-btn" id="vb-far" onclick="startVoice('far')" title="إدخال صوتي">🎙️</button>
+        </div>
+        <div class="full-row">
+          <input type="checkbox" id="far-full" onchange="toggleFull('far')">
+          <label for="far-full">سورة كاملة</label>
+        </div>
+        <div class="frow" id="far-range" style="display:none">
+          <div class="fld"><label>من آية</label><input type="number" id="far-f" min="1" value="1" style="text-align:center"></div>
+          <div class="fld"><label>إلى آية</label><input type="number" id="far-t" min="1" value="1" style="text-align:center"></div>
+        </div>
+        <div class="fld"><label>التقييم</label>
+          <div class="gbs" id="gr-far">
+            <div class="gb" data-g="ممتاز" onclick="setGr('far','ممتاز')">⭐ ممتاز</div>
+            <div class="gb" data-g="جيد جداً" onclick="setGr('far','جيد جداً')">جيد جداً</div>
+            <div class="gb" data-g="جيد" onclick="setGr('far','جيد')">جيد</div>
+            <div class="gb" data-g="ضعيف" onclick="setGr('far','ضعيف')">ضعيف</div>
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="card">
-      <div class="fb mb8"><span class="badge b-juz">📜 أجزاء سحابية</span><div class="tog" id="tog-juz" onclick="togSec('juz')"></div></div>
+      <div class="fb mb8">
+        <span class="badge b-juz">📜 أجزاء / سور كاملة</span>
+        <div class="tog" id="tog-juz" onclick="togSec('juz')"></div>
+      </div>
       <div id="bod-juz" style="display:none">
-        <div class="fld"><select id="juz-j" onchange="addJuz()"></select></div>
-        <div class="fld"><select id="juz-s" onchange="addJuzSurah()"></select></div>
-        <div id="juz-chips"></div>
-        <div class="fld"><div class="gbs" id="gr-juz"><div class="gb" data-g="ممتاز" onclick="setGr('juz','ممتاز')">⭐ ممتاز</div><div class="gb" data-g="جيد جداً" onclick="setGr('juz','جيد جداً')">جيد جداً</div><div class="gb" data-g="جيد" onclick="setGr('juz','جيد')">جيد</div><div class="gb" data-g="ضعيف" onclick="setGr('juz','ضعيف')">ضعيف</div></div></div>
+        <div class="fld"><label>اختر جزءاً كاملاً</label>
+          <select id="juz-j" onchange="addJuz()"><option value="">— اختر الجزء —</option></select>
+        </div>
+        <div class="fld"><label>أو اختر سورة كاملة</label>
+          <select id="juz-s" onchange="addJuzSurah()"><option value="">— اختر السورة —</option></select>
+        </div>
+        <div id="juz-chips" style="margin:4px 0 10px"></div>
+        <div class="fld"><label>التقييم</label>
+          <div class="gbs" id="gr-juz">
+            <div class="gb" data-g="ممتاز" onclick="setGr('juz','ممتاز')">⭐ ممتاز</div>
+            <div class="gb" data-g="جيد جداً" onclick="setGr('juz','جيد جداً')">جيد جداً</div>
+            <div class="gb" data-g="جيد" onclick="setGr('juz','جيد')">جيد</div>
+            <div class="gb" data-g="ضعيف" onclick="setGr('juz','ضعيف')">ضعيف</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="card"><div class="ch">💬 ملاحظات</div><div class="fld"><textarea id="sesNotes" placeholder="توجيهات..."></textarea></div></div>
+
+    <div class="card">
+      <div class="ch">💬 ملاحظات لولي الأمر</div>
+      <div class="fld">
+        <textarea id="sesNotes" placeholder="توجيهات، ملاحظات، نصائح..."></textarea>
+      </div>
+    </div>
+
     <button class="btn btn-g mb8" onclick="saveSession()">💾 حفظ الحصة</button>
-    <button class="btn btn-wa" onclick="saveAndSendWA()">📲 حفظ وإرسال</button>
+    <button class="btn btn-wa" onclick="saveAndSendWA()">📲 حفظ وإرسال لولي الأمر</button>
+    <div style="height:20px"></div>
   </div>
 </div>
 
+<!-- ══════════════ REPORTS ══════════════ -->
+<div class="pg" id="pg-reports">
+  <div class="card">
+    <div class="ch">📊 التقارير الشهرية</div>
+    <div class="fld">
+      <label>اختر الطالب</label>
+      <select id="repSt" onchange="renderReport()">
+        <option value="">— اختر الطالب —</option>
+      </select>
+    </div>
+    <div class="fld">
+      <label>الشهر</label>
+      <select id="repMonth" onchange="renderReport()"></select>
+    </div>
+  </div>
+  <!-- أدوات التصدير -->
+  <div class="export-row">
+    <button class="btn btn-out btn-sm" onclick="exportCSV()">📥 CSV</button>
+    <button class="btn btn-out btn-sm" onclick="window.print()">🖨️ طباعة</button>
+    <button class="btn btn-out btn-sm" onclick="goPage('compare')">🏅 مقارنة</button>
+  </div>
+  <!-- التقويم الشهري -->
+  <div class="card" id="calCard" style="display:none">
+    <div class="ch">📅 التقويم الشهري</div>
+    <div id="calGrid"></div>
+    <div class="cal-legend">
+      <span><div class="cal-dot" style="background:var(--gm)"></div> حضور</span>
+      <span><div class="cal-dot" style="background:var(--red)"></div> غياب</span>
+      <span><div class="cal-dot" style="background:var(--gold)"></div> إجازة</span>
+    </div>
+  </div>
+  <!-- الرسوم البيانية -->
+  <div id="reportCharts"></div>
+  <!-- محتوى التقرير -->
+  <div id="reportContent"></div>
+</div>
+
+<!-- ══════════════ SETTINGS ══════════════ -->
+<div class="pg" id="pg-settings">
+  <div class="card">
+    <div class="ch">👤 بيانات المحفظ</div>
+    <div class="fld"><label>اسم المحفظ</label>
+      <input type="text" id="setName" placeholder="الشيخ / الأستاذ..." oninput="saveSettings()">
+    </div>
+    <div class="fld"><label>اسم الحلقة</label>
+      <input type="text" id="setCircle" placeholder="مسجد / مكان..." oninput="saveSettings()">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch">🔡 حجم الخط</div>
+    <div class="fsize-row">
+      <button class="fsize-btn active" id="fsmd" onclick="setFontSize('md')" style="font-size:14px">أ صغير</button>
+      <button class="fsize-btn" id="fslg" onclick="setFontSize('lg')" style="font-size:16px">أ متوسط</button>
+      <button class="fsize-btn" id="fsxl" onclick="setFontSize('xl')" style="font-size:18px">أ كبير</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch">🔔 الإشعارات</div>
+    <button class="btn btn-out" id="notifBtn" onclick="requestNotif()">🔔 تفعيل التذكيرات اليومية</button>
+    <p class="txt-mut mt8" style="font-size:12px">يذكّرك بتسجيل حصص اليوم</p>
+  </div>
+
+  <div class="card">
+    <div class="ch">📈 سجل الحفظ التراكمي</div>
+    <div class="fld">
+      <select id="trackSt" onchange="renderTrack()">
+        <option value="">— اختر الطالب —</option>
+      </select>
+    </div>
+    <div id="trackContent"></div>
+  </div>
+
+  <div class="card">
+    <div class="ch">✉️ قالب رسالة الواتساب</div>
+    <p class="txt-mut mb8" style="font-size:12px">يمكنك تخصيص الرسالة. اضغط على المتغير لإدراجه:</p>
+    <div class="tmpl-vars">
+      <button class="tmpl-var" onclick="insertVar('{{اسم_الطالب}}')">{{اسم_الطالب}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{التاريخ}}')">{{التاريخ}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{الحفظ_الجديد}}')">{{الحفظ_الجديد}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{المراجعة_القريبة}}')">{{المراجعة_القريبة}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{المراجعة_البعيدة}}')">{{المراجعة_البعيدة}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{الملاحظات}}')">{{الملاحظات}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{اسم_المحفظ}}')">{{اسم_المحفظ}}</button>
+    </div>
+    <div class="fld">
+      <textarea id="waTmpl" rows="7" placeholder="اتركه فارغاً لاستخدام القالب الافتراضي..." oninput="saveSettings()"></textarea>
+    </div>
+    <button class="btn btn-out btn-sm" onclick="resetTemplate()">↺ إعادة ضبط القالب الافتراضي</button>
+  </div>
+
+  <div class="card">
+    <div class="ch">💾 النسخ الاحتياطي</div>
+    <button class="btn btn-g mb8" onclick="exportData()">📤 تصدير البيانات (JSON)</button>
+    <div class="fld mt8">
+      <label>استيراد بيانات</label>
+      <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="border:1px dashed var(--bdr);background:#fafafa;border-radius:10px;padding:10px">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch" style="color:var(--red)">⚠️ خطر</div>
+    <button class="btn btn-red" onclick="clearAll()">🗑️ حذف جميع البيانات</button>
+  </div>
+</div>
+
+<!-- ══════════════ PROFILE ══════════════ -->
+<div class="pg" id="pg-profile">
+  <div class="card" id="profHdr"></div>
+  <div class="card" id="profTrack"></div>
+  <div class="card" id="profChart" style="display:none">
+    <div class="ch">📈 مسار التقييم</div>
+    <div style="position:relative;height:180px"><canvas id="profChartCanvas"></canvas></div>
+  </div>
+  <div class="card" id="profWeak" style="display:none">
+    <div class="ch">🔍 نقاط تحتاج اهتمام</div>
+    <div id="profWeakContent"></div>
+  </div>
+  <div class="card" id="profHist"></div>
+  <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+    <button class="btn btn-out btn-sm" onclick="editSt()">✏️ تعديل</button>
+    <button class="btn btn-out btn-sm" onclick="openCert()">🎓 شهادة</button>
+    <button class="btn btn-red btn-sm" onclick="deleteSt()">🗑️ حذف</button>
+  </div>
+</div>
+
+<!-- ══════════════ COMPARISON PAGE ══════════════ -->
+<div class="pg" id="pg-compare">
+  <div class="card">
+    <div class="ch">🏅 مقارنة الطلاب</div>
+    <div class="comp-wrap"><table class="comp-tbl" id="compTbl"></table></div>
+  </div>
+  <div style="height:20px"></div>
+</div>
+
+<!-- ══════════════ ADD/EDIT MODAL ══════════════ -->
 <div class="mo" id="stModal">
   <div class="mo-box">
-    <div class="mo-title"><span id="moTitle">إضافة طالب</span><button class="mo-x" onclick="closeMo()">✕</button></div>
-    <div class="fld"><label>اسم الطالب *</label><input type="text" id="m-name"></div>
-    <div class="fld"><label>ولي الأمر</label><input type="text" id="m-par"></div>
-    <div class="fld"><label>رقم واتساب ولي الأمر *</label><input type="tel" id="m-phone"></div>
-    <div class="fld"><label>👳 المسؤول</label><select id="m-teacher"></select></div>
-    <div class="fld"><label>تاريخ البداية</label><input type="date" id="m-date"></div>
-    <div class="fld"><label>المستوى</label><select id="m-level"><option value="مبتدئ">مبتدئ</option><option value="متوسط">متوسط</option><option value="متقدم">متقدم</option></select></div>
-    <div class="fld"><label>ملاحظات</label><textarea id="m-notes"></textarea></div>
-    <div class="fld"><label>🎯 الخطة اليومية (آية)</label><input type="number" id="m-plan"></div>
+    <div class="mo-title">
+      <span id="moTitle">إضافة طالب</span>
+      <button class="mo-x" onclick="closeMo()">✕</button>
+    </div>
+    <div class="fld"><label>اسم الطالب *</label><input type="text" id="m-name" placeholder="الاسم الكامل"></div>
+    <div class="fld"><label>اسم ولي الأمر</label><input type="text" id="m-par" placeholder="اسم الأب أو الأم"></div>
+    <div class="fld"><label>رقم واتساب ولي الأمر *</label><input type="tel" id="m-phone" placeholder="01xxxxxxxxx"></div>
+    <div class="fld"><label>تاريخ بداية الحفظ</label><input type="date" id="m-date"></div>
+    <div class="fld"><label>مستوى الطالب</label>
+      <select id="m-level">
+        <option value="مبتدئ">مبتدئ</option>
+        <option value="متوسط">متوسط</option>
+        <option value="متقدم">متقدم</option>
+      </select>
+    </div>
+    <div class="fld"><label>ملاحظات عامة</label><textarea id="m-notes" placeholder="أي معلومات..."></textarea></div>
     <button class="btn btn-g" onclick="saveSt()">💾 حفظ</button>
+    <div style="height:8px"></div>
+    <button class="btn btn-out" onclick="closeMo()">إلغاء</button>
   </div>
 </div>
 
-<div class="mo" id="teacherModal">
-  <div class="mo-box">
-    <div class="mo-title"><span id="teacherModalTitle">إضافة محفظ</span><button class="mo-x" onclick="document.getElementById('teacherModal').classList.remove('open')">✕</button></div>
-    <div class="fld"><label>الاسم *</label><input type="text" id="t-name"></div>
-    <div class="fld"><label>الواتساب *</label><input type="tel" id="t-phone"></div>
-    <button class="btn btn-g" onclick="saveTeacher()">💾 حفظ</button>
-  </div>
-</div>
-
-<div class="mo" id="bulkModal"><div class="mo-box"><div class="mo-title"><span>📤 إرسال جماعي</span><button class="mo-x" onclick="document.getElementById('bulkModal').classList.remove('open')">✕</button></div><div id="bulkList"></div></div></div>
-<div class="mo" id="certModal"><div class="mo-box" style="max-height:90vh"><div class="mo-title"><span>🎖️ شهادة تقدير</span><button class="mo-x" onclick="document.getElementById('certModal').classList.remove('open')">✕</button></div><div id="certContent" style="overflow-y:auto;max-height:58vh"></div><button class="btn btn-gold mt8" onclick="printCertificate()">🖨️ طباعة</button></div></div>
-<div class="mo" id="parentPortal"><div class="mo-box" style="max-height:93vh"><div class="mo-title"><span>📋 الملف السريع</span><button class="mo-x" onclick="document.getElementById('parentPortal').classList.remove('open')">✕</button></div><div id="portalContent" style="overflow-y:auto;max-height:62vh"></div><div style="display:flex;gap:8px;margin-top:10px;"><button class="btn btn-g" style="flex:1" onclick="printPortal()">🖨️ طباعة</button><button class="btn btn-wa" style="flex:1" onclick="sharePortalWA()">📲 مشاركة</button></div></div></div>
-<div class="mo" id="groupsModal"><div class="mo-box"><div class="mo-title"><span>👥 الحلقات الفرعية</span><button class="mo-x" onclick="document.getElementById('groupsModal').classList.remove('open')">✕</button></div><div id="groupsList"></div><div style="display:flex;gap:8px;margin-top:12px;"><input type="text" id="newGroupName" placeholder="حلقة جديدة..."><button class="btn btn-g btn-sm" onclick="addGroup()">+</button></div></div></div>
-<div class="mo" id="groupSesModal"><div class="mo-box"><div class="mo-title"><span id="groupSesTitle">حصة جماعية</span><button class="mo-x" onclick="document.getElementById('groupSesModal').classList.remove('open')">✕</button></div><div id="groupSesContent" style="overflow-y:auto;max-height:52vh"></div><div style="margin-top:10px;display:flex;gap:8px"><button class="btn btn-g" style="flex:1" onclick="saveGroupSession()">💾 حفظ</button><button class="btn btn-wa" style="flex:1" onclick="sendGroupWA()">📋 نسخ التقرير</button></div></div></div>
-<div class="mo" id="assignGroupModal"><div class="mo-box"><div class="mo-title"><span id="assignGroupTitle">إضافة طلاب</span><button class="mo-x" onclick="document.getElementById('assignGroupModal').classList.remove('open')">✕</button></div><div id="assignGroupContent" style="overflow-y:auto;max-height:52vh"></div><button class="btn btn-g mt8" onclick="saveGroupAssignment()">💾 حفظ</button></div></div>
-
+<!-- ════════════ TOAST ════════════ -->
 <div class="toast" id="toast"></div>
 
+<!-- ════════════ BULK SEND MODAL ════════════ -->
+<div class="mo" id="bulkModal">
+  <div class="mo-box">
+    <div class="mo-title">
+      <span>📤 إرسال لجميع الحاضرين اليوم</span>
+      <button class="mo-x" onclick="document.getElementById('bulkModal').classList.remove('open')">✕</button>
+    </div>
+    <div id="bulkList"></div>
+    <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- ════════════ CERTIFICATE MODAL ════════════ -->
+<div class="mo" id="certModal">
+  <div class="mo-box" id="certPrintWrap">
+    <div class="mo-title">
+      <span>🎓 شهادة الطالب</span>
+      <button class="mo-x" onclick="document.getElementById('certModal').classList.remove('open')">✕</button>
+    </div>
+    <div id="certContent"></div>
+    <button class="btn btn-g mb8" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+    <button class="btn btn-out" onclick="document.getElementById('certModal').classList.remove('open')">إغلاق</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- ════════════ SCRIPTS ════════════ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dexie/3.2.4/dexie.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 'use strict';
-function esc(str){ const d=document.createElement('div'); d.textContent=String(str==null?'':str); return d.innerHTML; }
 
-const S=[{n:"الفاتحة",a:7},{n:"البقرة",a:286},{n:"آل عمران",a:200},{n:"النساء",a:176},{n:"المائدة",a:120},{n:"الأنعام",a:165},{n:"الأعراف",a:206},{n:"الأنفال",a:75},{n:"التوبة",a:129},{n:"يونس",a:109},{n:"هود",a:123},{n:"يوسف",a:111},{n:"الرعد",a:43},{n:"إبراهيم",a:52},{n:"الحجر",a:99},{n:"النحل",a:128},{n:"الإسراء",a:111},{n:"الكهف",a:110},{n:"مريم",a:98},{n:"طه",a:135},{n:"الأنبياء",a:112},{n:"الحج",a:78},{n:"المؤمنون",a:118},{n:"النور",a:64},{n:"الفرقان",a:77},{n:"الشعراء",a:227},{n:"النمل",a:93},{n:"القصص",a:88},{n:"العنكبوت",a:69},{n:"الروم",a:60},{n:"لقمان",a:34},{n:"السجدة",a:30},{n:"الأحزاب",a:73},{n:"سبأ",a:54},{n:"فاطر",a:45},{n:"يس",a:83},{n:"الصافات",a:182},{n:"ص",a:88},{n:"الزمر",a:75},{n:"غافر",a:85},{n:"فصلت",a:54},{n:"الشورى",a:53},{n:"الزخرف",a:89},{n:"الدخان",a:59},{n:"الجاثية",a:37},{n:"الأحقاف",a:35},{n:"محمد",a:38},{n:"الفتح",a:29},{n:"الحجرات",a:18},{n:"ق",a:45},{n:"الذاريات",a:60},{n:"الطور",a:49},{n:"النجم",a:62},{n:"القمر",a:55},{n:"الرحمن",a:78},{n:"الواقعة",a:96},{n:"الحديد",a:29},{n:"المجادلة",a:22},{n:"الحشر",a:24},{n:"الممتحنة",a:13},{n:"الصف",a:14},{n:"الجمعة",a:11},{n:"المنافقون",a:11},{n:"التغابن",a:18},{n:"الطلاق",a:12},{n:"التحريم",a:12},{n:"الملك",a:30},{n:"القلم",a:52},{n:"الحاقة",a:52},{n:"المعارج",a:44},{n:"نوح",a:28},{n:"الجن",a:28},{n:"المزمل",a:20},{n:"المدثر",a:56},{n:"القيامة",a:40},{n:"الإنسان",a:31},{n:"المرسلات",a:50},{n:"النبأ",a:40},{n:"النازعات",a:46},{n:"عبس",a:42},{n:"التكوير",a:29},{n:"الانفطار",a:19},{n:"المطففين",a:36},{n:"الانشقاق",a:25},{n:"البروج",a:22},{n:"الطارق",a:17},{n:"الأعلى",a:19},{n:"الغاشية",a:26},{n:"الفجر",a:30},{n:"البلد",a:20},{n:"الشمس",a:15},{n:"الليل",a:21},{n:"الضحى",a:11},{n:"الشرح",a:8},{n:"التين",a:8},{n:"العلق",a:19},{n:"القدر",a:5},{n:"البينة",a:8},{n:"الزلزلة",a:8},{n:"العاديات",a:11},{n:"القارعة",a:11},{n:"التكاثر",a:8},{n:"العصر",a:3},{n:"الهمزة",a:9},{n:"الفيل",a:5},{n:"قريش",a:4},{n:"الماعون",a:7},{n:"الكوثر",a:3},{n:"الكافرون",a:6},{n:"النصر",a:3},{n:"المسد",a:5},{n:"الإخلاص",a:4},{n:"الفلق",a:5},{n:"الناس",a:6}];
+// ══════════════════════════════════════
+// SECURITY — XSS PREVENTION
+// ══════════════════════════════════════
+function esc(str){
+  const d=document.createElement('div');
+  d.textContent=String(str==null?'':str);
+  return d.innerHTML;
+}
+
+// ══════════════════════════════════════
+// QURAN DATA
+// ══════════════════════════════════════
+const S=[
+  {n:"الفاتحة",a:7},{n:"البقرة",a:286},{n:"آل عمران",a:200},{n:"النساء",a:176},
+  {n:"المائدة",a:120},{n:"الأنعام",a:165},{n:"الأعراف",a:206},{n:"الأنفال",a:75},
+  {n:"التوبة",a:129},{n:"يونس",a:109},{n:"هود",a:123},{n:"يوسف",a:111},
+  {n:"الرعد",a:43},{n:"إبراهيم",a:52},{n:"الحجر",a:99},{n:"النحل",a:128},
+  {n:"الإسراء",a:111},{n:"الكهف",a:110},{n:"مريم",a:98},{n:"طه",a:135},
+  {n:"الأنبياء",a:112},{n:"الحج",a:78},{n:"المؤمنون",a:118},{n:"النور",a:64},
+  {n:"الفرقان",a:77},{n:"الشعراء",a:227},{n:"النمل",a:93},{n:"القصص",a:88},
+  {n:"العنكبوت",a:69},{n:"الروم",a:60},{n:"لقمان",a:34},{n:"السجدة",a:30},
+  {n:"الأحزاب",a:73},{n:"سبأ",a:54},{n:"فاطر",a:45},{n:"يس",a:83},
+  {n:"الصافات",a:182},{n:"ص",a:88},{n:"الزمر",a:75},{n:"غافر",a:85},
+  {n:"فصلت",a:54},{n:"الشورى",a:53},{n:"الزخرف",a:89},{n:"الدخان",a:59},
+  {n:"الجاثية",a:37},{n:"الأحقاف",a:35},{n:"محمد",a:38},{n:"الفتح",a:29},
+  {n:"الحجرات",a:18},{n:"ق",a:45},{n:"الذاريات",a:60},{n:"الطور",a:49},
+  {n:"النجم",a:62},{n:"القمر",a:55},{n:"الرحمن",a:78},{n:"الواقعة",a:96},
+  {n:"الحديد",a:29},{n:"المجادلة",a:22},{n:"الحشر",a:24},{n:"الممتحنة",a:13},
+  {n:"الصف",a:14},{n:"الجمعة",a:11},{n:"المنافقون",a:11},{n:"التغابن",a:18},
+  {n:"الطلاق",a:12},{n:"التحريم",a:12},{n:"الملك",a:30},{n:"القلم",a:52},
+  {n:"الحاقة",a:52},{n:"المعارج",a:44},{n:"نوح",a:28},{n:"الجن",a:28},
+  {n:"المزمل",a:20},{n:"المدثر",a:56},{n:"القيامة",a:40},{n:"الإنسان",a:31},
+  {n:"المرسلات",a:50},{n:"النبأ",a:40},{n:"النازعات",a:46},{n:"عبس",a:42},
+  {n:"التكوير",a:29},{n:"الانفطار",a:19},{n:"المطففين",a:36},{n:"الانشقاق",a:25},
+  {n:"البروج",a:22},{n:"الطارق",a:17},{n:"الأعلى",a:19},{n:"الغاشية",a:26},
+  {n:"الفجر",a:30},{n:"البلد",a:20},{n:"الشمس",a:15},{n:"الليل",a:21},
+  {n:"الضحى",a:11},{n:"الشرح",a:8},{n:"التين",a:8},{n:"العلق",a:19},
+  {n:"القدر",a:5},{n:"البينة",a:8},{n:"الزلزلة",a:8},{n:"العاديات",a:11},
+  {n:"القارعة",a:11},{n:"التكاثر",a:8},{n:"العصر",a:3},{n:"الهمزة",a:9},
+  {n:"الفيل",a:5},{n:"قريش",a:4},{n:"الماعون",a:7},{n:"الكوثر",a:3},
+  {n:"الكافرون",a:6},{n:"النصر",a:3},{n:"المسد",a:5},{n:"الإخلاص",a:4},
+  {n:"الفلق",a:5},{n:"الناس",a:6}
+];
 const JZ=Array.from({length:30},(_,i)=>`الجزء ${i+1}`);
 
-let students=[], sessions=[], settings={name:'الشيخ السيد الكومي',phone:'201095782616',circle:'بالقرآن نحيا',about:'',contact:'',theme:'light',fontSize:'md',notifEnabled:false,waTemplate:'',teachers:[{id:'t1',name:'الشيخ السيد الكومي',phone:'201095782616'}],groups:[],cloudAutoSync:false};
-let curPage='home', curStId=null, editId=null, curGroupId=null, groupSesData={}, portalStId=null;
-let sesStatus='حضر', secOn={new:true,rec:false,far:false,juz:false}, grades={new:'',rec:'',far:'',juz:''}, prevGrades={new:'',rec:'',far:'',juz:''}, juzChips=[], db=null, chartInst={};
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let students=[];
+let sessions=[];
+let settings={name:'',circle:'',theme:'light',fontSize:'md',notifEnabled:false,waTemplate:''};
+let curPage='home';
+let curStId=null;
+let editId=null;
+let sesStatus='حضر';
+let secOn={new:true,rec:false,far:false,juz:false};
+let grades={new:'',rec:'',far:'',juz:''};
+let prevGrades={new:'',rec:'',far:'',juz:''};
+let juzChips=[];
+let db=null;
+let chartInst={};
 
+// ══════════════════════════════════════
+// DATABASE — IndexedDB via Dexie.js
+// ══════════════════════════════════════
 async function initDB(){
   try{
     if(typeof Dexie!=='undefined'){
-      db=new Dexie('QuranApp'); db.version(1).stores({kv:'key'});
-      const rows=await db.kv.toArray(); const map={}; rows.forEach(r=>{ map[r.key]=r.val; });
-      if(map.students!==undefined){ students=JSON.parse(map.students||'[]'); sessions=JSON.parse(map.sessions||'[]'); settings={...settings,...JSON.parse(map.settings||'{}')}; }
-      else { students=JSON.parse(localStorage.getItem('qt_st')||'[]'); sessions=JSON.parse(localStorage.getItem('qt_ses')||'[]'); settings={...settings,...JSON.parse(localStorage.getItem('qt_cfg')||'{}')}; await db.kv.bulkPut([{key:'students',val:JSON.stringify(students)},{key:'sessions',val:JSON.stringify(sessions)},{key:'settings',val:JSON.stringify(settings)}]); }
+      db=new Dexie('QuranApp');
+      db.version(1).stores({kv:'key'});
+
+      // Try to load from Dexie
+      const rows=await db.kv.toArray();
+      const map={};
+      rows.forEach(r=>{ map[r.key]=r.val; });
+
+      if(map.students!==undefined){
+        students=JSON.parse(map.students||'[]');
+        sessions=JSON.parse(map.sessions||'[]');
+        settings={...settings,...JSON.parse(map.settings||'{}')};
+      } else {
+        // Migrate from localStorage
+        students=JSON.parse(localStorage.getItem('qt_st')||'[]');
+        sessions=JSON.parse(localStorage.getItem('qt_ses')||'[]');
+        const cfg=JSON.parse(localStorage.getItem('qt_cfg')||'{}');
+        settings={...settings,...cfg};
+        // Save to Dexie
+        await db.kv.bulkPut([
+          {key:'students',val:JSON.stringify(students)},
+          {key:'sessions',val:JSON.stringify(sessions)},
+          {key:'settings',val:JSON.stringify(settings)}
+        ]);
+      }
+    } else {
+      throw new Error('Dexie not available');
     }
-  } catch(e){ students=JSON.parse(localStorage.getItem('qt_st')||'[]'); sessions=JSON.parse(localStorage.getItem('qt_ses')||'[]'); settings={...settings,...JSON.parse(localStorage.getItem('qt_cfg')||'{}')}; }
+  } catch(e){
+    // Fallback to localStorage
+    students=JSON.parse(localStorage.getItem('qt_st')||'[]');
+    sessions=JSON.parse(localStorage.getItem('qt_ses')||'[]');
+    const cfg=JSON.parse(localStorage.getItem('qt_cfg')||'{}');
+    settings={...settings,...cfg};
+  }
 }
 
 function save(){
-  try{ localStorage.setItem('qt_st',JSON.stringify(students)); localStorage.setItem('qt_ses',JSON.stringify(sessions)); localStorage.setItem('qt_cfg',JSON.stringify(settings)); }catch(e){}
-  if(db) db.kv.bulkPut([{key:'students',val:JSON.stringify(students)},{key:'sessions',val:JSON.stringify(sessions)},{key:'settings',val:JSON.stringify(settings)}]).catch(()=>{});
-  if(window.cloudAutoBackup) window.cloudAutoBackup();
-}
-
-window.__cloudGetData=()=>({students,sessions,settings});
-window.__cloudSetData=(data)=>{
-  if(data.students) students=data.students; if(data.sessions) sessions=data.sessions; if(data.settings) settings={...settings,...data.settings};
-  save(); if(!SURAH_NORM) buildSurahNorm();
-  renderHome();renderSt();
-  if(curPage==='settings') initSettings(); if(curPage==='checkin') renderCheckin(); if(curPage==='compare') renderComparison();
-};
-
-function applyTheme(){ const dark=settings.theme==='dark'; document.documentElement.setAttribute('data-theme',dark?'dark':'light'); document.getElementById('themeBtn').textContent=dark?'☀️':'🌙'; document.getElementById('themeColorMeta').setAttribute('content',dark?'#0d1a11':'#1a4a2e'); if(typeof Chart!=='undefined') Chart.defaults.color=dark?'#7a9980':'#666'; }
-function toggleTheme(){ settings.theme=settings.theme==='dark'?'light':'dark'; save(); applyTheme(); if(curPage==='home') renderHomeCharts(); if(curPage==='reports') renderReportCharts(); }
-function applyFontSize(){ const fs=settings.fontSize||'md'; document.documentElement.className=document.documentElement.className.replace(/fs-\w+/g,''); if(fs!=='md') document.documentElement.classList.add('fs-'+fs); ['md','lg','xl'].forEach(s=>{ const b=document.getElementById('fs'+s); if(b) b.classList.toggle('active',s===fs); }); }
-function setFontSize(sz){ settings.fontSize=sz; save(); applyFontSize(); toast('حجم الخط: '+(sz==='md'?'صغير':sz==='lg'?'متوسط':'كبير'),'info'); }
-function vibrate(pat){ if(navigator.vibrate) navigator.vibrate(pat||[50]); }
-
-function showAuthForm(type){
-  document.getElementById('auth-roles').style.display='none'; document.getElementById('auth-parent').style.display='none'; document.getElementById('auth-siblings').style.display='none';
-  if(type==='roles') document.getElementById('auth-roles').style.display='flex';
-  if(type==='parent') document.getElementById('auth-parent').style.display='flex';
-}
-
-function loginParent(){
-  let phone = document.getElementById('parent-phone').value.trim();
-  if(!phone){ toast('أدخل رقم الهاتف المسجل', 'error'); return; }
-  phone = phone.replace(/\D/g, '');
-  const matches = students.filter(s => { if(!s.phone) return false; const sPhone = s.phone.replace(/\D/g, ''); return sPhone === phone || sPhone.endsWith(phone) || phone.endsWith(sPhone); });
-  if(matches.length === 1){ localStorage.setItem('qt_auth_role', 'parent'); localStorage.setItem('qt_auth_st_id', matches[0].id); enterApp('parent', matches[0].id); }
-  else if(matches.length > 1){ document.getElementById('auth-parent').style.display = 'none'; document.getElementById('auth-siblings').style.display = 'flex'; document.getElementById('auth-siblings-list').innerHTML = matches.map(st => `<button class="auth-btn" onclick="selectSibling('${esc(st.id)}')">👤 ${esc(st.name)}</button>`).join(''); }
-  else { toast('لم يتم العثور على طالب مسجل بهذا الرقم', 'error'); }
-}
-function selectSibling(id){ localStorage.setItem('qt_auth_role', 'parent'); localStorage.setItem('qt_auth_st_id', id); enterApp('parent', id); }
-
-window.enterApp = function(role, stId){
-  document.getElementById('auth-gate').classList.add('hide');
-  document.querySelector('.hdr').style.display = 'block';
-  if(role === 'teacher'){
-     document.getElementById('mainNav').style.display = 'flex';
-     document.getElementById('logoutBtn').style.display = 'inline-block';
-     document.getElementById('hdrSub').textContent = settings.name || 'الشيخ السيد الكومي';
-     goPage('home');
-  } else if(role === 'parent'){
-     document.getElementById('mainNav').style.display = 'none';
-     document.getElementById('backBtn').style.display = 'none';
-     document.getElementById('logoutBtn').style.display = 'inline-block';
-     document.getElementById('hdrSub').textContent = 'بوابة ولي الأمر';
-     renderParentPage(stId);
+  // Synchronous localStorage backup
+  try{
+    localStorage.setItem('qt_st',JSON.stringify(students));
+    localStorage.setItem('qt_ses',JSON.stringify(sessions));
+    localStorage.setItem('qt_cfg',JSON.stringify(settings));
+  }catch(e){}
+  // Async Dexie save (fire and forget — no 5MB limit)
+  if(db){
+    db.kv.bulkPut([
+      {key:'students',val:JSON.stringify(students)},
+      {key:'sessions',val:JSON.stringify(sessions)},
+      {key:'settings',val:JSON.stringify(settings)}
+    ]).catch(()=>{});
   }
 }
-function logoutApp(){ localStorage.removeItem('qt_auth_role'); localStorage.removeItem('qt_auth_st_id'); location.reload(); }
 
+// ══════════════════════════════════════
+// AVATAR COLOR HELPERS
+// ══════════════════════════════════════
+const AV_BG=['var(--gp)','var(--bp)','var(--goldp)','var(--rp)','var(--op)'];
+const AV_TX=['var(--gd)','var(--blue)','#7a5a00','var(--red)','var(--org)'];
+function avBg(id){const h=id.split('').reduce((a,c)=>a+c.charCodeAt(0),0);return AV_BG[h%AV_BG.length];}
+function avTx(id){const h=id.split('').reduce((a,c)=>a+c.charCodeAt(0),0);return AV_TX[h%AV_TX.length];}
+
+// ══════════════════════════════════════
+// THEME — DARK MODE
+// ══════════════════════════════════════
+function applyTheme(){
+  const dark=settings.theme==='dark';
+  document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+  document.getElementById('themeBtn').textContent=dark?'☀️':'🌙';
+  document.getElementById('themeColorMeta').setAttribute('content',dark?'#0d1a11':'#1a4a2e');
+  // Update Chart.js defaults
+  if(typeof Chart!=='undefined'){
+    const tc=dark?'#7a9980':'#666';
+    Chart.defaults.color=tc;
+  }
+}
+function toggleTheme(){
+  settings.theme=settings.theme==='dark'?'light':'dark';
+  save();
+  applyTheme();
+  // Re-render charts with new theme colors
+  if(curPage==='home') renderHomeCharts();
+  if(curPage==='reports') renderReportCharts();
+}
+
+// ══════════════════════════════════════
+// FONT SIZE
+// ══════════════════════════════════════
+function applyFontSize(){
+  const fs=settings.fontSize||'md';
+  document.documentElement.className=document.documentElement.className.replace(/fs-\w+/g,'');
+  if(fs!=='md') document.documentElement.classList.add('fs-'+fs);
+  ['md','lg','xl'].forEach(s=>{
+    const b=document.getElementById('fs'+s);
+    if(b) b.classList.toggle('active',s===fs);
+  });
+}
+function setFontSize(sz){
+  settings.fontSize=sz;
+  save();
+  applyFontSize();
+  toast('حجم الخط: '+(sz==='md'?'صغير':sz==='lg'?'متوسط':'كبير'),'info');
+}
+
+// ══════════════════════════════════════
+// HAPTIC FEEDBACK
+// ══════════════════════════════════════
+function vibrate(pat){
+  if(navigator.vibrate) navigator.vibrate(pat||[50]);
+}
+
+// ══════════════════════════════════════
+// CONFETTI CELEBRATION
+// ══════════════════════════════════════
+function celebrate(){
+  const colors=['#c9a227','#2d7a4f','#4caf7d','#1565c0','#e65100','#fff'];
+  for(let i=0;i<70;i++){
+    const p=document.createElement('div');
+    p.className='confetti-p';
+    const dur=1.4+Math.random()*1.2;
+    p.style.cssText=`
+      left:${Math.random()*100}vw;top:-10px;
+      width:${6+Math.random()*7}px;height:${6+Math.random()*7}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>.5?'50%':'3px'};
+      animation-duration:${dur}s;animation-delay:${Math.random()*0.6}s;
+    `;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),(dur+1)*1000);
+  }
+  vibrate([100,50,100,50,200]);
+  toast('🎉 ممتاز! أحسنت يا طالب القرآن!','gold');
+}
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
 function goPage(p){
-  document.querySelectorAll('.pg').forEach(x=>x.classList.remove('on')); document.querySelectorAll('.nav-t').forEach(x=>x.classList.remove('on'));
-  const pEl=document.getElementById('pg-'+p); if(pEl) pEl.classList.add('on');
-  const navMap={home:0,students:1,checkin:2,session:3,reports:4,settings:5}; const navTabs=document.querySelectorAll('.nav-t'); if(navMap[p]!==undefined) navTabs[navMap[p]].classList.add('on');
-  const isExtra=p==='profile'||p==='compare'; document.getElementById('mainNav').style.display=isExtra?'none':'flex'; document.getElementById('backBtn').style.display=isExtra?'block':'none';
-  const titles={profile:'ملف الطالب',compare:'مقارنة الطلاب'}; document.getElementById('hdrTitle').textContent=titles[p]||'📖 بالقرآن نحيا'; curPage=p;
-  if(p==='home') renderHome(); if(p==='students') renderSt(); if(p==='checkin') renderCheckin(); if(p==='session') initSession(); if(p==='reports') initReports(); if(p==='settings') initSettings(); if(p==='compare') renderComparison();
+  document.querySelectorAll('.pg').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.nav-t').forEach(x=>x.classList.remove('on'));
+  const pEl=document.getElementById('pg-'+p);
+  if(pEl) pEl.classList.add('on');
+  const navMap={home:0,students:1,checkin:2,session:3,reports:4,settings:5};
+  const navTabs=document.querySelectorAll('.nav-t');
+  if(navMap[p]!==undefined) navTabs[navMap[p]].classList.add('on');
+  const isExtra=p==='profile'||p==='compare';
+  document.getElementById('mainNav').style.display=isExtra?'none':'flex';
+  document.getElementById('backBtn').style.display=isExtra?'block':'none';
+  const titles={profile:'ملف الطالب',compare:'مقارنة الطلاب'};
+  document.getElementById('hdrTitle').textContent=titles[p]||'📿 بالقرآن نحيا';
+  document.getElementById('hdrSub').textContent=isExtra?'':'الشيخ السيد الكومي';
+  curPage=p;
+  if(p==='home') renderHome();
+  if(p==='students') renderSt();
+  if(p==='checkin') renderCheckin();
+  if(p==='session') initSession();
+  if(p==='reports') initReports();
+  if(p==='settings') initSettings();
+  if(p==='compare') renderComparison();
 }
-function goBack(){ if(curPage==='compare') goPage('reports'); else goPage('students'); }
-
-function buildPortalCalendarHTML(id,y,m){
-  const firstDay=new Date(y,m,1); const lastDay=new Date(y,m+1,0); const startDow=firstDay.getDay();
-  const stSes=sessions.filter(s=>{if(s.studentId!==id)return false;const d=new Date(s.date);return d.getFullYear()===y&&d.getMonth()===m;});
-  const dayMap={};stSes.forEach(s=>{dayMap[new Date(s.date).getDate()]=s.status;});
-  const today=new Date(); const dn=['أح','إث','ثل','أر','خم','جم','سب'];
-  let h='<div class="cal-grid">'; dn.forEach(d=>{h+=`<div class="cal-head">${d}</div>`;});
-  for(let i=0;i<startDow;i++) h+='<div class="cal-day empty"></div>';
-  for(let day=1;day<=lastDay.getDate();day++){ const st=dayMap[day]; const cls=st==='حضر'?'present':st==='غاب'?'absent':st==='إجازة'?'vacation':''; const isT=today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===day; h+=`<div class="cal-day ${cls}${isT?' today':''}">${day}</div>`; }
-  h+='</div><div class="cal-legend"><span><div class="cal-dot" style="background:var(--gm)"></div>حضور</span><span><div class="cal-dot" style="background:var(--red)"></div>غياب</span><span><div class="cal-dot" style="background:var(--gold)"></div>إجازة</span></div>'; return h;
+function goBack(){
+  if(curPage==='compare') goPage('reports');
+  else goPage('students');
 }
 
-function generateParentPortalHTML(id){
-  const s=students.find(x=>x.id===id); if(!s) return '';
+// ══════════════════════════════════════
+// STREAK CALCULATION
+// ══════════════════════════════════════
+function calcMaxStreak(){
+  // Overall streak: any student present counts
+  const allDays=[...new Set(
+    sessions.filter(s=>s.status==='حضر').map(s=>new Date(s.date).toDateString())
+  )].sort((a,b)=>new Date(b)-new Date(a));
+
+  if(!allDays.length) return 0;
+  let streak=0;
+  let check=new Date();check.setHours(0,0,0,0);
+
+  for(const ds of allDays){
+    const d=new Date(ds);d.setHours(0,0,0,0);
+    const diff=(check-d)/86400000;
+    if(diff<=1){streak++;check=new Date(d);check.setDate(check.getDate()-1);}
+    else break;
+  }
+  return streak;
+}
+
+// ══════════════════════════════════════
+// HOME
+// ══════════════════════════════════════
+function renderHome(){
+  document.getElementById('stTotal').textContent=students.length;
+  const today=new Date().toDateString();
+  const todSes=sessions.filter(s=>new Date(s.date).toDateString()===today);
+  document.getElementById('stToday').textContent=todSes.filter(s=>s.status==='حضر').length;
+  document.getElementById('stAbsent').textContent=todSes.filter(s=>s.status!=='حضر').length;
+  const m=new Date().getMonth(),y=new Date().getFullYear();
+  document.getElementById('stMonth').textContent=sessions.filter(s=>{const d=new Date(s.date);return d.getMonth()===m&&d.getFullYear()===y&&s.status==='حضر';}).length;
+
+  // Quick pick
+  const qs=document.getElementById('quickSt');
+  qs.innerHTML='<option value="">— اختر الطالب —</option>';
+  students.forEach(s=>{ qs.innerHTML+=`<option value="${esc(s.id)}">${esc(s.name)}</option>`; });
+
+  // Streak
+  const streak=calcMaxStreak();
+  const sc=document.getElementById('streakCard');
+  if(streak>=2){
+    document.getElementById('streakNum').textContent=streak;
+    document.getElementById('streakSub').textContent=streak>=7?'أسبوع كامل 🏆':streak>=30?'شهر كامل! 🌟':'واصل المسيرة!';
+    sc.style.display='flex';
+  } else { sc.style.display='none'; }
+
+  // Recent sessions
+  const last=sessions.slice(-6).reverse();
+  const el=document.getElementById('recentSes');
+  if(!last.length){ el.innerHTML='<div class="empty"><div class="ei">📋</div><p>لا توجد حصص بعد</p></div>'; }
+  else {
+    el.innerHTML=last.map(ses=>{
+      const st=students.find(x=>x.id===ses.studentId);
+      const nm=st?esc(st.name):'طالب محذوف';
+      const d=new Date(ses.date).toLocaleDateString('ar-EG',{weekday:'short',month:'short',day:'numeric'});
+      const icon=ses.status==='حضر'?'✅':ses.status==='غاب'?'❌':'🌙';
+      return `<div class="hi"><div class="fb"><span style="font-weight:700">${nm}</span><span class="txt-mut">${d} ${icon}</span></div><div class="hi-content txt-mut">${esc(ses.summary||'')}</div></div>`;
+    }).join('');
+  }
+
+  // Charts
+  renderHomeCharts();
+}
+function quickPick(){ curStId=document.getElementById('quickSt').value; }
+function goToSession(){ goPage('session'); if(curStId) document.getElementById('sesSt').value=curStId; onSesSt(); }
+
+// ══════════════════════════════════════
+// HOME CHARTS
+// ══════════════════════════════════════
+function getChartColors(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  return{
+    text:dark?'#7a9980':'#555',
+    grid:dark?'rgba(255,255,255,.06)':'rgba(0,0,0,.07)',
+    green:'#4caf7d',red:'#ef5350',gold:'#c9a227',blue:'#42a5f5'
+  };
+}
+function destroyChart(id){ if(chartInst[id]){chartInst[id].destroy();delete chartInst[id];} }
+
+function renderHomeCharts(){
+  if(typeof Chart==='undefined') return;
+  const ctx=document.getElementById('weekChart');
+  if(!ctx) return;
+  destroyChart('week');
+  const c=getChartColors();
+  const days=[],present=[],absent=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    const ds=d.toDateString();
+    days.push(d.toLocaleDateString('ar-EG',{weekday:'short'}));
+    const day=sessions.filter(s=>new Date(s.date).toDateString()===ds);
+    present.push(day.filter(s=>s.status==='حضر').length);
+    absent.push(day.filter(s=>s.status!=='حضر').length);
+  }
+  chartInst.week=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:days,
+      datasets:[
+        {label:'حضور',data:present,backgroundColor:c.green+'cc',borderRadius:5,borderSkipped:false},
+        {label:'غياب',data:absent,backgroundColor:c.red+'99',borderRadius:5,borderSkipped:false}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{color:c.text,font:{size:11},boxWidth:12}}},
+      scales:{
+        x:{ticks:{color:c.text,font:{size:10}},grid:{color:c.grid}},
+        y:{beginAtZero:true,ticks:{stepSize:1,color:c.text,font:{size:10}},grid:{color:c.grid}}
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════
+// STUDENTS LIST
+// ══════════════════════════════════════
+function renderSt(q='',lvl=''){
+  const el=document.getElementById('stList');
+  const list=students.filter(s=>{
+    const matchQ=!q||(s.name.includes(q)||s.parent.includes(q));
+    const matchL=!lvl||s.level===lvl;
+    return matchQ&&matchL;
+  });
+  if(!list.length){ el.innerHTML='<div class="empty"><div class="ei">👥</div><p>لا يوجد طلاب — اضغط + للإضافة</p></div>'; return; }
+  el.innerHTML=list.map(s=>{
+    const init=s.name.trim().split(' ').slice(0,2).map(x=>x[0]).join('');
+    const cls=s.level==='متقدم'?'lv1':s.level==='متوسط'?'lv2':'lv3';
+    const cnt=sessions.filter(x=>x.studentId===s.id&&x.status==='حضر').length;
+    const lastSes=sessions.filter(x=>x.studentId===s.id).pop();
+    const lastDate=lastSes?new Date(lastSes.date).toLocaleDateString('ar-EG',{month:'short',day:'numeric'}):'—';
+    const total=calcTotalAyat(s.id);
+    const pct=Math.min(100,Math.round(total/6236*100));
+    // Urgency: highlight if last session > 7 days ago
+    const daysSince=lastSes?Math.floor((Date.now()-new Date(lastSes.date))/86400000):999;
+    const urgency=daysSince>14?'urgency-red':daysSince>7?'urgency-yellow':'urgency-none';
+    return `<div class="stc" onclick="openProf('${esc(s.id)}')">
+      <div class="av" style="background:${avBg(s.id)};color:${avTx(s.id)}">${esc(init)}</div>
+      <div class="si">
+        <div class="fb">
+          <div class="sn2">${esc(s.name)}</div>
+          <div class="urgency-dot ${urgency}" title="${daysSince<999?daysSince+' يوم':'لا حصص'}"></div>
+        </div>
+        <div class="sm">آخر حصة: ${lastDate} · ${cnt} حضور · ${total} آية</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+          <span class="lv ${cls}">${esc(s.level)}</span>
+          <div class="mini-prog" style="flex:1"><div class="mini-prog-fill" style="width:${pct}%"></div></div>
+          <span style="font-size:10px;color:var(--mut)">${pct}%</span>
+        </div>
+      </div>
+      <div style="color:var(--mut);font-size:20px">‹</div>
+    </div>`;
+  }).join('');
+}
+function filterSt(){
+  renderSt(document.getElementById('searchIn').value,document.getElementById('filterLevel').value);
+}
+
+// ══════════════════════════════════════
+// ADD / EDIT STUDENT
+// ══════════════════════════════════════
+function openAddSt(){
+  editId=null;
+  document.getElementById('moTitle').textContent='إضافة طالب جديد';
+  ['m-name','m-par','m-phone','m-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-level').value='مبتدئ';
+  document.getElementById('m-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('stModal').classList.add('open');
+}
+function closeMo(){ document.getElementById('stModal').classList.remove('open'); }
+
+function saveSt(){
+  const name=document.getElementById('m-name').value.trim();
+  const phone=document.getElementById('m-phone').value.trim();
+  if(!name){ toast('أدخل اسم الطالب','error'); return; }
+  if(!phone){ toast('أدخل رقم الواتساب','error'); return; }
+  const d={name,parent:document.getElementById('m-par').value.trim(),phone:normPhone(phone),
+    startDate:document.getElementById('m-date').value,level:document.getElementById('m-level').value,
+    notes:document.getElementById('m-notes').value.trim()};
+  if(editId){
+    const i=students.findIndex(s=>s.id===editId);
+    students[i]={...students[i],...d};
+    toast('تم تحديث البيانات','success');
+  } else {
+    d.id='s'+Date.now(); students.push(d);
+    toast('تم إضافة الطالب','success');
+    vibrate([50,25,100]);
+  }
+  save(); closeMo(); renderSt();
+}
+function normPhone(p){
+  p=p.replace(/\D/g,'');
+  if(p.startsWith('0')) p='2'+p;
+  if(!p.startsWith('20')) p='20'+p;
+  return p;
+}
+
+// ══════════════════════════════════════
+// PROFILE
+// ══════════════════════════════════════
+function openProf(id){
+  curStId=id;
+  const s=students.find(x=>x.id===id);
   const init=s.name.trim().split(' ').slice(0,2).map(x=>x[0]).join('');
-  const now=new Date(); const m=now.getMonth(),y=now.getFullYear();
+  const cls=s.level==='متقدم'?'lv1':s.level==='متوسط'?'lv2':'lv3';
   const stSes=sessions.filter(x=>x.studentId===id);
-  const monthSes=stSes.filter(x=>{const d=new Date(x.date);return d.getMonth()===m&&d.getFullYear()===y;});
-  const present=monthSes.filter(x=>x.status==='حضر'); const absent=monthSes.filter(x=>x.status==='غاب');
-  const total=calcTotalAyat(id); const pct=Math.min(100,Math.round(total/6236*100));
-  const lastSes=stSes.filter(x=>x.status==='حضر').pop(); const streak=calcStreakSt(id);
-  const allGrades=present.flatMap(x=>[x.new?.grade,x.rec?.grade,x.far?.grade,x.juz?.grade].filter(Boolean));
+  const present=stSes.filter(x=>x.status==='حضر').length;
+  const absent=stSes.filter(x=>x.status==='غاب').length;
+  const streak=calcStreakSt(id);
+  document.getElementById('profHdr').innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+      <div class="av" style="width:58px;height:58px;font-size:22px;background:${avBg(s.id)};color:${avTx(s.id)}">${esc(init)}</div>
+      <div><div style="font-size:19px;font-weight:800">${esc(s.name)}</div><span class="lv ${cls}">${esc(s.level)}</span>
+        ${streak>=3?`<span class="lv lv1" style="margin-right:4px">🔥 ${streak} أيام</span>`:''}
+      </div>
+    </div>
+    <div class="ir"><span class="ir-k">👨‍👦 ولي الأمر</span><span>${esc(s.parent||'—')}</span></div>
+    <div class="ir"><span class="ir-k">📱 واتساب</span><span dir="ltr">${esc(s.phone)}</span></div>
+    <div class="ir"><span class="ir-k">📅 بداية الحفظ</span><span>${esc(s.startDate||'—')}</span></div>
+    <div class="ir"><span class="ir-k">✅ حضور</span><span>${present} حصة</span></div>
+    <div class="ir"><span class="ir-k">❌ غياب</span><span>${absent} مرة</span></div>
+    <div class="ir"><span class="ir-k">📝 ملاحظات</span><span>${esc(s.notes||'—')}</span></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-g btn-sm" onclick="startFor('${esc(id)}')">📖 ابدأ حصة</button>
+      <button class="btn btn-wa btn-sm" onclick="directWA('${esc(id)}')">📲 واتساب</button>
+    </div>`;
+
+  document.getElementById('profTrack').innerHTML='<div class="ch">📈 الحفظ التراكمي</div>'+buildTrackHTML(id);
+  renderWeakness(id);
+  renderProfileChart(id);
+
+  const hist=[...stSes].reverse();
+  document.getElementById('profHist').innerHTML=`<div class="ch">📋 سجل الحصص (${stSes.length})</div>`+(
+    !hist.length?'<div class="empty"><p>لا توجد حصص</p></div>':
+    hist.map(ses=>{
+      const d=new Date(ses.date).toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
+      const icon=ses.status==='حضر'?'✅':ses.status==='غاب'?'❌':'🌙';
+      return `<div class="hi"><div class="fb"><span style="font-weight:700">${d} ${icon}</span></div><div class="hi-content">${buildSumHTML(ses)}</div></div>`;
+    }).join('')
+  );
+  goPage('profile');
+}
+function calcStreakSt(id){
+  const days=[...new Set(
+    sessions.filter(s=>s.studentId===id&&s.status==='حضر').map(s=>new Date(s.date).toDateString())
+  )].sort((a,b)=>new Date(b)-new Date(a));
+  if(!days.length) return 0;
+  let s=0,c=new Date();c.setHours(0,0,0,0);
+  for(const ds of days){
+    const d=new Date(ds);d.setHours(0,0,0,0);
+    if((c-d)/86400000<=1){s++;c=new Date(d);c.setDate(c.getDate()-1);}else break;
+  }
+  return s;
+}
+function startFor(id){ curStId=id; goPage('session'); document.getElementById('sesSt').value=id; onSesSt(); }
+function editSt(){
+  const s=students.find(x=>x.id===curStId); editId=curStId;
+  document.getElementById('moTitle').textContent='تعديل بيانات الطالب';
+  document.getElementById('m-name').value=s.name;
+  document.getElementById('m-par').value=s.parent;
+  document.getElementById('m-phone').value=s.phone;
+  document.getElementById('m-date').value=s.startDate||'';
+  document.getElementById('m-level').value=s.level;
+  document.getElementById('m-notes').value=s.notes||'';
+  document.getElementById('stModal').classList.add('open');
+}
+function deleteSt(){
+  if(!confirm('هل تريد حذف هذا الطالب وجميع بياناته؟')) return;
+  students=students.filter(s=>s.id!==curStId);
+  sessions=sessions.filter(s=>s.studentId!==curStId);
+  save(); toast('تم الحذف','success'); goPage('students');
+}
+
+// ══════════════════════════════════════
+// SESSION
+// ══════════════════════════════════════
+function initSession(){
+  fillSurahSelects(); fillJuzSelect();
+  const sel=document.getElementById('sesSt');
+  sel.innerHTML='<option value="">— اختر الطالب —</option>';
+  students.forEach(s=>{ sel.innerHTML+=`<option value="${esc(s.id)}">${esc(s.name)}</option>`; });
+  if(curStId) sel.value=curStId;
+  resetSession();
+  if(curStId) onSesSt();
+}
+function resetSession(){
+  grades={new:'',rec:'',far:'',juz:''};prevGrades={new:'',rec:'',far:'',juz:''};
+  secOn={new:true,rec:false,far:false,juz:false};juzChips=[];sesStatus='حضر';
+  document.getElementById('sesNotes').value='';
+  document.querySelectorAll('.gb').forEach(b=>b.classList.remove('sel'));
+  ['new','rec','far'].forEach(p=>{
+    const s=document.getElementById(p+'-s');if(s)s.value='';
+    const f=document.getElementById(p+'-f');if(f){f.value=1;f.max=999;}
+    const t=document.getElementById(p+'-t');if(t){t.value=1;t.max=999;}
+    const fc=document.getElementById(p+'-full');if(fc)fc.checked=false;
+    const rng=document.getElementById(p+'-range');if(rng)rng.style.display='none';
+  });
+  document.getElementById('juz-chips').innerHTML='';
+  updateTogs();setStatusUI('حضر');
+  document.getElementById('absentNotice').style.display='none';
+  document.getElementById('sesContent').style.display='block';
+  document.getElementById('repeatBar').style.display='none';
+}
+function onSesSt(){
+  curStId=document.getElementById('sesSt').value;
+  if(!curStId){
+    document.getElementById('prevContent').innerHTML='<div class="txt-mut" style="text-align:center;padding:10px">اختر الطالب لعرض تكليف الحصة السابقة</div>';
+    document.getElementById('repeatBar').style.display='none';
+    return;
+  }
+  loadPrevTask();
+  const prev=sessions.filter(x=>x.studentId===curStId&&x.status==='حضر').pop();
+  const rb=document.getElementById('repeatBar');
+  if(prev&&(prev.new||prev.rec||prev.far||prev.juz)){
+    const d=new Date(prev.date).toLocaleDateString('ar-EG',{month:'short',day:'numeric'});
+    document.getElementById('repeatHint').textContent=`آخر حصة: ${d} — اضغط لملء الحقول`;
+    rb.style.display='flex';
+  } else { rb.style.display='none'; }
+}
+function setStatus(s){
+  sesStatus=s; setStatusUI(s);
+  const isAbsent=s!=='حضر';
+  document.getElementById('absentNotice').style.display=isAbsent?'block':'none';
+  document.getElementById('sesContent').style.display=isAbsent?'none':'block';
+}
+function setStatusUI(s){
+  document.getElementById('sb-h').className='st-btn'+(s==='حضر'?' sel-h':'');
+  document.getElementById('sb-a').className='st-btn'+(s==='غاب'?' sel-a':'');
+  document.getElementById('sb-v').className='st-btn'+(s==='إجازة'?' sel-v':'');
+}
+function loadPrevTask(){
+  if(!curStId) return;
+  const prev=sessions.filter(x=>x.studentId===curStId&&x.status==='حضر').pop();
+  const el=document.getElementById('prevContent');
+  if(!prev){ el.innerHTML='<div class="txt-mut" style="padding:8px;text-align:center">لا توجد حصة سابقة</div>'; return; }
+  const d=new Date(prev.date).toLocaleDateString('ar-EG',{weekday:'long',month:'long',day:'numeric'});
+  let html=`<div class="txt-mut mb8">التكليف من حصة: ${d}</div>`;
+  const sections=[{key:'new',label:'📖 الحفظ الجديد'},{key:'rec',label:'📚 المراجعة القريبة'},{key:'far',label:'📘 المراجعة البعيدة'},{key:'juz',label:'📜 الأجزاء والسور'}];
+  let hasAny=false;
+  sections.forEach(({key,label})=>{
+    if(!prev[key]) return; hasAny=true;
+    const d2=prev[key];
+    const desc=key==='juz'
+      ?(d2.chips||[]).map(c=>esc(c)).join('، ')
+      :d2.full
+        ?`سورة ${esc(d2.surah)} كاملة`
+        :`سورة ${esc(d2.surah)} من الآية ${esc(d2.from)} إلى الآية ${esc(d2.to)}`;
+    html+=`<div style="background:var(--gp);border-radius:8px;padding:10px;margin-bottom:8px">
+      <div style="font-weight:700;margin-bottom:6px;font-size:13px">${label}</div>
+      <div style="font-size:13px;margin-bottom:8px">${desc}</div>
+      <div class="gbs" id="pgr-${key}">
+        ${['ممتاز','جيد جداً','جيد','ضعيف'].map(g=>`<div class="gb" data-g="${g}" onclick="setPrevGr('${key}','${g}')">${g==='ممتاز'?'⭐ ':''} ${g}</div>`).join('')}
+      </div></div>`;
+  });
+  if(!hasAny) html+='<div class="txt-mut">لا يوجد تكليف للحصة السابقة</div>';
+  el.innerHTML=html;
+}
+function setPrevGr(key,g){
+  prevGrades[key]=g;
+  document.querySelectorAll(`#pgr-${key} .gb`).forEach(b=>b.classList.toggle('sel',b.dataset.g===g));
+}
+function fillSurahSelects(){
+  ['new','rec','far','juz'].forEach(p=>{
+    const el=p==='juz'?document.getElementById('juz-s'):document.getElementById(p+'-s');
+    if(!el) return;
+    el.innerHTML='<option value="">— اختر السورة —</option>';
+    S.forEach((s,i)=>{ el.innerHTML+=`<option value="${i}">${i+1}. سورة ${s.n}</option>`; });
+  });
+}
+function fillJuzSelect(){
+  const el=document.getElementById('juz-j');
+  el.innerHTML='<option value="">— اختر الجزء —</option>';
+  JZ.forEach((j,i)=>{ el.innerHTML+=`<option value="${i}">${j}</option>`; });
+}
+function fillAyah(p){
+  const idx=parseInt(document.getElementById(p+'-s').value);
+  const rng=document.getElementById(p+'-range');
+  const fc=document.getElementById(p+'-full');
+  if(isNaN(idx)){
+    if(rng)rng.style.display='none';
+    if(fc)fc.checked=false;
+    return;
+  }
+  const cnt=S[idx].a;
+  const f=document.getElementById(p+'-f');
+  const t=document.getElementById(p+'-t');
+  if(f){f.value=1;f.max=cnt;}
+  if(t){t.value=cnt;t.max=cnt;}
+  if(rng&&(!fc||!fc.checked)) rng.style.display='flex';
+}
+function toggleFull(p){
+  const fc=document.getElementById(p+'-full');
+  const rng=document.getElementById(p+'-range');
+  const idx=parseInt(document.getElementById(p+'-s').value);
+  if(!rng)return;
+  rng.style.display=(fc&&fc.checked)?'none':(!isNaN(idx)?'flex':'none');
+}
+function togSec(k){ secOn[k]=!secOn[k]; updateTogs(); }
+function updateTogs(){
+  ['new','rec','far','juz'].forEach(k=>{
+    const tog=document.getElementById('tog-'+k);
+    const bod=document.getElementById('bod-'+k);
+    if(secOn[k]){tog.classList.add('on');bod.style.display='block';}
+    else{tog.classList.remove('on');bod.style.display='none';}
+  });
+}
+function setGr(k,g){
+  grades[k]=g;
+  document.querySelectorAll(`#gr-${k} .gb`).forEach(b=>b.classList.toggle('sel',b.dataset.g===g));
+}
+function addJuz(){
+  const v=document.getElementById('juz-j').value;
+  if(v===''||juzChips.includes('جزء: '+JZ[v])) return;
+  juzChips.push('جزء: '+JZ[v]);document.getElementById('juz-j').value='';renderChips();
+}
+function addJuzSurah(){
+  const v=document.getElementById('juz-s').value;
+  if(v===''||juzChips.includes('سورة '+S[v].n)) return;
+  juzChips.push('سورة '+S[v].n);document.getElementById('juz-s').value='';renderChips();
+}
+function renderChips(){ document.getElementById('juz-chips').innerHTML=juzChips.map((c,i)=>`<span class="chip">${esc(c)}<span class="chip-x" onclick="rmChip(${i})">✕</span></span>`).join(''); }
+function rmChip(i){ juzChips.splice(i,1);renderChips(); }
+
+function buildSesData(){
+  const d={};
+  if(secOn.new&&document.getElementById('new-s').value!==''){
+    const idx=parseInt(document.getElementById('new-s').value);
+    const full=document.getElementById('new-full')&&document.getElementById('new-full').checked;
+    const from=full?1:parseInt(document.getElementById('new-f').value)||1;
+    const to=full?S[idx].a:parseInt(document.getElementById('new-t').value)||S[idx].a;
+    d.new={surah:S[idx].n,from,to,grade:grades.new,full:!!full};
+  }
+  if(secOn.rec&&document.getElementById('rec-s').value!==''){
+    const idx=parseInt(document.getElementById('rec-s').value);
+    const full=document.getElementById('rec-full')&&document.getElementById('rec-full').checked;
+    const from=full?1:parseInt(document.getElementById('rec-f').value)||1;
+    const to=full?S[idx].a:parseInt(document.getElementById('rec-t').value)||S[idx].a;
+    d.rec={surah:S[idx].n,from,to,grade:grades.rec,full:!!full};
+  }
+  if(secOn.far&&document.getElementById('far-s').value!==''){
+    const idx=parseInt(document.getElementById('far-s').value);
+    const full=document.getElementById('far-full')&&document.getElementById('far-full').checked;
+    const from=full?1:parseInt(document.getElementById('far-f').value)||1;
+    const to=full?S[idx].a:parseInt(document.getElementById('far-t').value)||S[idx].a;
+    d.far={surah:S[idx].n,from,to,grade:grades.far,full:!!full};
+  }
+  if(secOn.juz&&juzChips.length) d.juz={chips:[...juzChips],grade:grades.juz};
+  d.notes=document.getElementById('sesNotes').value.trim();
+  d.prevGrades={...prevGrades};
+  return d;
+}
+function buildSumText(ses){
+  if(ses.status!=='حضر') return ses.status==='غاب'?'❌ غائب':'🌙 إجازة';
+  const parts=[];
+  const fmt=sec=>sec.full?`${sec.surah} كاملة`:`${sec.surah}(${sec.from}-${sec.to})`;
+  if(ses.new) parts.push(`حفظ: ${fmt(ses.new)}`);
+  if(ses.rec) parts.push(`مراجعة قريبة: ${fmt(ses.rec)}`);
+  if(ses.far) parts.push(`مراجعة بعيدة: ${fmt(ses.far)}`);
+  if(ses.juz) parts.push((ses.juz.chips||[]).join('، '));
+  return parts.join(' · ')||'حصة مسجلة';
+}
+function buildSumHTML(ses){
+  if(ses.status!=='حضر') return ses.status==='غاب'?'<span style="color:var(--red)">❌ غائب</span>':'<span style="color:var(--gold)">🌙 إجازة</span>';
+  const parts=[];
+  const fmt=sec=>sec.full?`سورة ${esc(sec.surah)} كاملة`:`سورة ${esc(sec.surah)} (${esc(sec.from)}–${esc(sec.to)})`;
+  if(ses.new) parts.push(`📖 ${fmt(ses.new)}${ses.new.grade?' — <strong>'+esc(ses.new.grade)+'</strong>':''}`);
+  if(ses.rec) parts.push(`📚 ${fmt(ses.rec)}${ses.rec.grade?' — <strong>'+esc(ses.rec.grade)+'</strong>':''}`);
+  if(ses.far) parts.push(`📘 ${fmt(ses.far)}${ses.far.grade?' — <strong>'+esc(ses.far.grade)+'</strong>':''}`);
+  if(ses.juz) parts.push(`📜 ${(ses.juz.chips||[]).map(c=>esc(c)).join('، ')}${ses.juz.grade?' — <strong>'+esc(ses.juz.grade)+'</strong>':''}`);
+  if(ses.notes) parts.push(`💬 <em>${esc(ses.notes)}</em>`);
+  return parts.join('<br>')||'حصة مسجلة';
+}
+
+function saveSession(){
+  const sid=document.getElementById('sesSt').value;
+  if(!sid){ toast('اختر الطالب أولاً','error'); return; }
+  const data=sesStatus==='حضر'?buildSesData():{};
+  const ses={id:'ses'+Date.now(),studentId:sid,date:new Date().toISOString(),status:sesStatus,...data};
+  ses.summary=buildSumText(ses);
+  sessions.push(ses); save();
+  vibrate([50,25,100]);
+  toast('تم حفظ الحصة بنجاح ✓','success');
+  // Celebrate if juz completed with ممتاز
+  if(sesStatus==='حضر'&&data.juz&&grades.juz==='ممتاز'){
+    setTimeout(celebrate,400);
+  }
+}
+
+function sendWA(){
+  const sid=document.getElementById('sesSt').value;
+  if(!sid){ toast('اختر الطالب أولاً','error'); return; }
+  const s=students.find(x=>x.id===sid);
+  const data=buildSesData();
+  const ses={date:new Date().toISOString(),status:'حضر',...data};
+  const msg=buildWAMsg(s,ses);
+  window.open(`https://wa.me/${s.phone}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+function saveAndSendWA(){
+  saveSession();
+  setTimeout(sendWA,300);
+}
+
+// ══════════════════════════════════════
+// FILL FROM LAST SESSION
+// ══════════════════════════════════════
+function fillFromLast(){
+  if(!curStId) return;
+  const prev=sessions.filter(x=>x.studentId===curStId&&x.status==='حضر').pop();
+  if(!prev){ toast('لا توجد حصة سابقة','error'); return; }
+
+  // Make sure sections are populated with surah options
+  fillSurahSelects();
+
+  if(prev.new){
+    const idx=S.findIndex(s=>s.n===prev.new.surah);
+    if(idx>=0){
+      secOn.new=true; updateTogs();
+      document.getElementById('new-s').value=idx;
+      fillAyah('new');
+      if(prev.new.full){
+        document.getElementById('new-full').checked=true;
+        toggleFull('new');
+      } else {
+        document.getElementById('new-f').value=prev.new.from;
+        document.getElementById('new-t').value=prev.new.to;
+      }
+      if(prev.new.grade) setGr('new',prev.new.grade);
+    }
+  }
+  if(prev.rec){
+    const idx=S.findIndex(s=>s.n===prev.rec.surah);
+    if(idx>=0){
+      secOn.rec=true; updateTogs();
+      document.getElementById('rec-s').value=idx;
+      fillAyah('rec');
+      if(prev.rec.full){
+        document.getElementById('rec-full').checked=true;
+        toggleFull('rec');
+      } else {
+        document.getElementById('rec-f').value=prev.rec.from;
+        document.getElementById('rec-t').value=prev.rec.to;
+      }
+      if(prev.rec.grade) setGr('rec',prev.rec.grade);
+    }
+  }
+  if(prev.far){
+    const idx=S.findIndex(s=>s.n===prev.far.surah);
+    if(idx>=0){
+      secOn.far=true; updateTogs();
+      document.getElementById('far-s').value=idx;
+      fillAyah('far');
+      if(prev.far.full){
+        document.getElementById('far-full').checked=true;
+        toggleFull('far');
+      } else {
+        document.getElementById('far-f').value=prev.far.from;
+        document.getElementById('far-t').value=prev.far.to;
+      }
+      if(prev.far.grade) setGr('far',prev.far.grade);
+    }
+  }
+  if(prev.juz&&prev.juz.chips){
+    secOn.juz=true; updateTogs();
+    juzChips=[...prev.juz.chips];
+    renderChips();
+    if(prev.juz.grade) setGr('juz',prev.juz.grade);
+  }
+  if(prev.notes) document.getElementById('sesNotes').value=prev.notes;
+  toast('تم تحميل التكليف السابق ✓','success');
+  vibrate([30,20,60]);
+}
+
+// ══════════════════════════════════════
+// VOICE INPUT
+// ══════════════════════════════════════
+let activeVoiceSec=null;
+function startVoice(sec){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ toast('المتصفح لا يدعم الإدخال الصوتي — جرب Chrome','error'); return; }
+  if(activeVoiceSec){
+    toast('هناك إدخال صوتي جارٍ بالفعل','error'); return;
+  }
+  const rec=new SR();
+  rec.lang='ar-SA';rec.continuous=false;rec.interimResults=false;
+  const btn=document.getElementById('vb-'+sec);
+  if(btn) btn.classList.add('listening');
+  activeVoiceSec=sec;
+  toast('🎙️ يستمع... تكلم الآن','info');
+  rec.onresult=e=>{
+    const txt=e.results[0][0].transcript;
+    parseVoiceInput(sec,txt);
+    toast('تم التعرف: '+txt,'success');
+  };
+  rec.onerror=()=>{ toast('لم يتعرف على الصوت، حاول مرة أخرى','error'); };
+  rec.onend=()=>{
+    if(btn) btn.classList.remove('listening');
+    activeVoiceSec=null;
+  };
+  rec.start();
+}
+function parseVoiceInput(sec,txt){
+  // Match surah name
+  const idx=S.findIndex(s=>txt.includes(s.n));
+  if(idx>=0){
+    document.getElementById(sec+'-s').value=idx;
+    fillAyah(sec);
+  }
+  // Match full surah
+  if(txt.includes('كامل')||txt.includes('كاملة')){
+    const fc=document.getElementById(sec+'-full');
+    if(fc){fc.checked=true; toggleFull(sec);}
+  }
+  // Match grade
+  if(txt.includes('ممتاز')) setGr(sec,'ممتاز');
+  else if(txt.includes('جيد جداً')||txt.includes('جيد جدا')) setGr(sec,'جيد جداً');
+  else if(txt.includes('جيد')) setGr(sec,'جيد');
+  else if(txt.includes('ضعيف')) setGr(sec,'ضعيف');
+}
+
+// ══════════════════════════════════════
+// CHECK-IN
+// ══════════════════════════════════════
+function renderCheckin(){
+  const today=new Date().toDateString();
+  const d=new Date().toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('ciDate').textContent=d;
+
+  // Get today's sessions (already recorded)
+  const todaySes={};
+  sessions.filter(s=>new Date(s.date).toDateString()===today)
+    .forEach(s=>{ todaySes[s.studentId]=s.status; });
+
+  const allDone=students.length>0&&students.every(s=>todaySes[s.id]);
+  document.getElementById('ciDoneBar').style.display=allDone?'block':'none';
+
+  const el=document.getElementById('ciList');
+  if(!students.length){
+    el.innerHTML='<div class="empty"><div class="ei">👥</div><p>لا يوجد طلاب مسجلون</p></div>';
+    return;
+  }
+  el.innerHTML=students.map(s=>{
+    const status=todaySes[s.id]||'';
+    const hCls=status==='حضر'?'h':'';
+    const aCls=status==='غاب'?'a':'';
+    const vCls=status==='إجازة'?'v':'';
+    return `<div class="ci-item" id="ci-${esc(s.id)}">
+      <div>
+        <div class="ci-name">${esc(s.name)}</div>
+        <div class="ci-meta">${status?'● '+status:'لم يسجل بعد'}</div>
+      </div>
+      <div class="ci-btns">
+        <button class="ci-btn ${hCls}" onclick="ciRecord('${esc(s.id)}','حضر')">✅ حضر</button>
+        <button class="ci-btn ${aCls}" onclick="ciRecord('${esc(s.id)}','غاب')">❌ غاب</button>
+        <button class="ci-btn ${vCls}" onclick="ciRecord('${esc(s.id)}','إجازة')">🌙 إجازة</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function ciRecord(sid,status){
+  const today=new Date().toDateString();
+  const existing=sessions.find(s=>s.studentId===sid&&new Date(s.date).toDateString()===today);
+  if(existing){ existing.status=status; existing.summary=buildSumText(existing); }
+  else { sessions.push({id:'ses'+Date.now(),studentId:sid,date:new Date().toISOString(),status,summary:status}); }
+  save(); renderCheckin(); vibrate([30]);
+  const st=students.find(x=>x.id===sid);
+  toast(`${st?st.name:'الطالب'}: ${status}`,'success');
+}
+
+// ══════════════════════════════════════
+// BULK SEND
+// ══════════════════════════════════════
+function openBulkSend(){
+  const today=new Date().toDateString();
+  const el=document.getElementById('bulkList');
+
+  // الحاضرون اللي عندهم تكليف مسجل (مش بس حضور)
+  const withContent=sessions.filter(s=>{
+    if(new Date(s.date).toDateString()!==today||s.status!=='حضر') return false;
+    return s.new||s.rec||s.far||s.juz;
+  });
+
+  // الحاضرون بدون تكليف (سُجّل حضورهم فقط)
+  const attendedOnly=sessions.filter(s=>{
+    if(new Date(s.date).toDateString()!==today||s.status!=='حضر') return false;
+    return !s.new&&!s.rec&&!s.far&&!s.juz;
+  });
+
+  if(!withContent.length&&!attendedOnly.length){
+    el.innerHTML='<div class="empty"><p>لا يوجد طلاب حاضرون اليوم<br><small>سجّل الحضور أولاً من صفحة الحضور</small></p></div>';
+    document.getElementById('bulkModal').classList.add('open');
+    return;
+  }
+
+  let html='';
+
+  if(withContent.length){
+    html+=`<div style="font-size:12px;font-weight:700;color:var(--gm);margin-bottom:8px;padding:0 2px">✅ جاهز للإرسال (${withContent.length})</div>`;
+    html+=withContent.map(ses=>{
+      const st=students.find(x=>x.id===ses.studentId);
+      if(!st) return '';
+      const preview=buildSumText(ses).substring(0,55);
+      return `<div class="bulk-item">
+        <div class="bulk-info">
+          <div class="bulk-name">${esc(st.name)}</div>
+          <div class="bulk-prev">${esc(preview)}</div>
+        </div>
+        <button class="bulk-send-btn" onclick="sendBulkOne('${esc(ses.studentId)}')">📲</button>
+      </div>`;
+    }).join('');
+  }
+
+  if(attendedOnly.length){
+    html+=`<div style="font-size:12px;font-weight:700;color:var(--mut);margin:12px 0 8px;padding:0 2px">⚠️ حضور بدون تكليف (${attendedOnly.length}) — افتح الحصة وأضف التكليف</div>`;
+    html+=attendedOnly.map(ses=>{
+      const st=students.find(x=>x.id===ses.studentId);
+      if(!st) return '';
+      return `<div class="bulk-item" style="opacity:.6">
+        <div class="bulk-info">
+          <div class="bulk-name">${esc(st.name)}</div>
+          <div class="bulk-prev">لم يُسجَّل تكليف بعد</div>
+        </div>
+        <button class="bulk-send-btn" style="background:var(--mut)" onclick="startFor('${esc(ses.studentId)}');document.getElementById('bulkModal').classList.remove('open')">📖</button>
+      </div>`;
+    }).join('');
+  }
+
+  el.innerHTML=html;
+  document.getElementById('bulkModal').classList.add('open');
+}
+function sendBulkOne(sid){
+  const st=students.find(x=>x.id===sid);
+  if(!st) return;
+  const today=new Date().toDateString();
+  const ses=sessions.filter(s=>s.studentId===sid&&new Date(s.date).toDateString()===today).pop();
+  const msg=buildWAMsg(st,ses);
+  window.open(`https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+function sendAllWA(){
+  const today=new Date().toDateString();
+  const present=sessions.filter(s=>new Date(s.date).toDateString()===today&&s.status==='حضر');
+  if(!present.length){ toast('لا يوجد حاضرون اليوم','error'); return; }
+  openBulkSend();
+}
+
+// ══════════════════════════════════════
+// COMPARISON
+// ══════════════════════════════════════
+function renderComparison(){
+  const tbl=document.getElementById('compTbl');
+  if(!tbl||!students.length){
+    if(tbl) tbl.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--mut)">لا يوجد طلاب</td></tr>';
+    return;
+  }
+  const grMap={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
+  const data=students.map(s=>{
+    const stSes=sessions.filter(x=>x.studentId===s.id);
+    const present=stSes.filter(x=>x.status==='حضر');
+    const total=stSes.length;
+    const attPct=total>0?Math.round(present.length/total*100):0;
+    const totalAyat=calcTotalAyat(s.id);
+    const allGrades=present.flatMap(ses=>[ses.new?.grade,ses.rec?.grade,ses.far?.grade].filter(Boolean));
+    const avgG=allGrades.length?allGrades.reduce((a,g)=>a+(grMap[g]||0),0)/allGrades.length:0;
+    const avgLabel=avgG>=3.5?'ممتاز':avgG>=2.5?'جيد جداً':avgG>=1.5?'جيد':avgG>0?'ضعيف':'—';
+    return {s,present:present.length,attPct,totalAyat,avgG,avgLabel};
+  }).sort((a,b)=>b.totalAyat-a.totalAyat);
+
+  const maxAyat=Math.max(...data.map(d=>d.totalAyat),1);
+  const medals=['🥇','🥈','🥉'];
+  tbl.innerHTML=`<thead><tr>
+    <th>#</th><th>الطالب</th><th>آيات محفوظة</th><th>حضور</th><th>متوسط التقييم</th>
+  </tr></thead><tbody>${data.map((d,i)=>`<tr>
+    <td><span class="rank ${i===0?'r1':i===1?'r2':i===2?'r3':''}">${medals[i]||i+1}</span></td>
+    <td style="font-weight:700;cursor:pointer" onclick="openProf('${esc(d.s.id)}')">${esc(d.s.name)}</td>
+    <td><div style="font-weight:700;color:var(--gm)">${d.totalAyat}</div><div class="comp-bar"><div class="comp-fill" style="width:${Math.round(d.totalAyat/maxAyat*100)}%"></div></div></td>
+    <td>${d.attPct}%<div style="font-size:10px;color:var(--mut)">${d.present} حصة</div></td>
+    <td>${esc(d.avgLabel)}</td>
+  </tr>`).join('')}</tbody>`;
+}
+
+// ══════════════════════════════════════
+// WEAKNESS ANALYSIS
+// ══════════════════════════════════════
+function renderWeakness(id){
+  const stSes=sessions.filter(x=>x.studentId===id&&x.status==='حضر');
+  const weak={};
+  stSes.forEach(ses=>{
+    ['new','rec','far'].forEach(k=>{
+      if(ses[k]&&(ses[k].grade==='جيد'||ses[k].grade==='ضعيف')){
+        const key=ses[k].surah;
+        weak[key]=(weak[key]||0)+1;
+      }
+    });
+  });
+  const sorted=Object.entries(weak).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const el=document.getElementById('profWeakContent');
+  const card=document.getElementById('profWeak');
+  if(!sorted.length){ card.style.display='none'; return; }
+  card.style.display='block';
+  el.innerHTML=sorted.map(([surah,cnt])=>`<div class="weak-item">
+    <span>سورة ${esc(surah)}</span>
+    <span class="weak-count">${cnt} مرة</span>
+  </div>`).join('');
+}
+
+// ══════════════════════════════════════
+// PROGRESS CHART IN PROFILE
+// ══════════════════════════════════════
+function renderProfileChart(id){
+  const stSes=sessions.filter(x=>x.studentId===id&&x.status==='حضر'&&x.new?.grade)
+    .slice(-12);
+  const card=document.getElementById('profChart');
+  if(stSes.length<2){ card.style.display='none'; return; }
+  card.style.display='block';
+  destroyChart('profCh');
+  const c=getChartColors();
+  const grMap={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
+  const labels=stSes.map(s=>new Date(s.date).toLocaleDateString('ar-EG',{day:'numeric',month:'short'}));
+  const vals=stSes.map(s=>grMap[s.new.grade]||0);
+  const ctx=document.getElementById('profChartCanvas');
+  if(!ctx) return;
+  chartInst.profCh=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[{label:'تقييم الحفظ',data:vals,borderColor:c.green,backgroundColor:c.green+'22',fill:true,tension:.3,pointBackgroundColor:c.green,pointRadius:4}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:c.text,font:{size:10}},grid:{color:c.grid}},
+        y:{min:0,max:4,ticks:{color:c.text,font:{size:10},callback:v=>['','ضعيف','جيد','جيد جداً','ممتاز'][v]||''},grid:{color:c.grid}}
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════
+// CERTIFICATE
+// ══════════════════════════════════════
+function openCert(){
+  if(!curStId) return;
+  const s=students.find(x=>x.id===curStId);
+  if(!s) return;
+  const total=calcTotalAyat(curStId);
+  const pct=Math.min(100,Math.round(total/6236*100));
+  const d=new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
+  const stSes=sessions.filter(x=>x.studentId===curStId&&x.status==='حضر');
+  const lastNew=stSes.filter(x=>x.new).pop();
+  const wصل=lastNew?`سورة ${lastNew.new.surah} الآية ${lastNew.new.to}`:'—';
+  document.getElementById('certContent').innerHTML=`
+    <div class="cert-box">
+      <div class="cert-seal">📿</div>
+      <div class="cert-title">شهادة تقدير</div>
+      <div class="cert-sub">${esc(settings.circle)||'حلقة تحفيظ القرآن الكريم'}</div>
+      <div class="cert-name">${esc(s.name)}</div>
+      <div class="cert-body">
+        أتم بحمد الله حفظ<br>
+        <strong style="font-size:18px;color:var(--gm)">${total} آية كريمة</strong><br>
+        ما يعادل ${pct}% من القرآن الكريم<br>
+        وصل إلى: ${esc(wصل)}
+      </div>
+      <div style="font-size:12px;color:var(--mut);margin-bottom:8px">📅 ${d}</div>
+      <div class="cert-teacher">${settings.name?'المحفظ: '+esc(settings.name):''}</div>
+    </div>`;
+  document.getElementById('certModal').classList.add('open');
+}
+
+// ══════════════════════════════════════
+// WA TEMPLATE
+// ══════════════════════════════════════
+function insertVar(v){
+  const ta=document.getElementById('waTmpl');
+  if(!ta) return;
+  const pos=ta.selectionStart;
+  ta.value=ta.value.slice(0,pos)+v+ta.value.slice(ta.selectionEnd);
+  ta.focus();
+  ta.setSelectionRange(pos+v.length,pos+v.length);
+  saveSettings();
+}
+function resetTemplate(){
+  document.getElementById('waTmpl').value='';
+  saveSettings();
+  toast('تم إعادة ضبط القالب الافتراضي','success');
+}
+
+function sendAbsenceWA(){
+  const sid=document.getElementById('sesSt').value;
+  if(!sid){ toast('اختر الطالب أولاً','error'); return; }
+  const s=students.find(x=>x.id===sid);
+  const d=new Date().toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const reason=sesStatus==='إجازة'?'🌙 إجازة':'❌ غياب';
+  let msg=`السلام عليكم ورحمة الله وبركاته 🌿\n\nمتابعة الطالب: ✨ ${s.name}\n📅 ${d}\n\n${reason}\n\nسيتم تكليف الطالب بمقدار الحصة السابقة إن شاء الله.\n\nجزاكم الله خيراً 🤲`;
+  if(settings.name) msg+=`\n\n— ${settings.name}`;
+  if(settings.circle) msg+=`\n${settings.circle}`;
+  window.open(`https://wa.me/${s.phone}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+function directWA(id){
+  const s=students.find(x=>x.id===id);
+  const lastSes=sessions.filter(x=>x.studentId===id&&x.status==='حضر').pop();
+  const msg=buildWAMsg(s,lastSes);
+  window.open(`https://wa.me/${s.phone}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+// ══════════════════════════════════════
+// WA MESSAGE BUILDER
+// ══════════════════════════════════════
+function fmtSection(sec){
+  if(!sec)return'';
+  return sec.full?`سورة ${sec.surah} كاملة`:`سورة ${sec.surah} (${sec.from}–${sec.to})`;
+}
+
+function buildWAMsg(s,ses){
+  const d=new Date(ses?ses.date:Date.now()).toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  // Template mode
+  const tmpl=settings.waTemplate||'';
+  if(tmpl.trim()){
+    let msg=tmpl;
+    const newTxt=ses?.new?`📖 الحفظ الجديد: ${fmtSection(ses.new)}${ses.new.grade?' — '+ses.new.grade:''}`:'' ;
+    const recTxt=ses?.rec?`📚 المراجعة القريبة: ${fmtSection(ses.rec)}${ses.rec.grade?' — '+ses.rec.grade:''}`:'' ;
+    const farTxt=ses?.far?`📘 المراجعة البعيدة: ${fmtSection(ses.far)}${ses.far.grade?' — '+ses.far.grade:''}`:'' ;
+    msg=msg.replace(/{{اسم_الطالب}}/g,s.name)
+           .replace(/{{التاريخ}}/g,d)
+           .replace(/{{الحفظ_الجديد}}/g,newTxt)
+           .replace(/{{المراجعة_القريبة}}/g,recTxt)
+           .replace(/{{المراجعة_البعيدة}}/g,farTxt)
+           .replace(/{{الملاحظات}}/g,ses?.notes||'')
+           .replace(/{{اسم_المحفظ}}/g,settings.name||'');
+    return msg;
+  }
+
+  // Default message
+  let msg=`السلام عليكم ورحمة الله وبركاته 🌿\n\n✨ متابعة الطالب: *${s.name}*\n📅 ${d}\n\n━━━━━━━━━━━━━━━━━━`;
+  const pg=ses?ses.prevGrades:{};
+  const hasPrev=pg&&(pg.new||pg.rec||pg.far||pg.juz);
+  if(hasPrev){
+    msg+=`\n\n📋 *نتيجة التسميع:*\n`;
+    if(pg.new) msg+=`📖 الحفظ: ${grIcon(pg.new)} ${pg.new}\n`;
+    if(pg.rec) msg+=`📚 المراجعة القريبة: ${grIcon(pg.rec)} ${pg.rec}\n`;
+    if(pg.far) msg+=`📘 المراجعة البعيدة: ${grIcon(pg.far)} ${pg.far}\n`;
+    if(pg.juz) msg+=`📜 الأجزاء: ${grIcon(pg.juz)} ${pg.juz}\n`;
+    msg+=`\n━━━━━━━━━━━━━━━━━━`;
+  }
+  msg+=`\n\n📝 *تكليف الحصة القادمة:*\n`;
+  let hasTak=false;
+  if(ses&&ses.new){hasTak=true;msg+=`\n📖 *الحفظ الجديد:*\n${fmtSection(ses.new)}\n${ses.new.grade?grIcon(ses.new.grade)+' '+ses.new.grade+'\n':''}` ;}
+  if(ses&&ses.rec){hasTak=true;msg+=`\n📚 *المراجعة القريبة:*\n${fmtSection(ses.rec)}\n${ses.rec.grade?grIcon(ses.rec.grade)+' '+ses.rec.grade+'\n':''}` ;}
+  if(ses&&ses.far){hasTak=true;msg+=`\n📘 *المراجعة البعيدة:*\n${fmtSection(ses.far)}\n${ses.far.grade?grIcon(ses.far.grade)+' '+ses.far.grade+'\n':''}` ;}
+  if(ses&&ses.juz){hasTak=true;msg+=`\n📜 *مراجعة أجزاء/سور:*\n${(ses.juz.chips||[]).join('، ')}\n${ses.juz.grade?grIcon(ses.juz.grade)+' '+ses.juz.grade+'\n':''}` ;}
+  if(!hasTak) msg+=`لا يوجد تكليف جديد\n`;
+  msg+=`\n━━━━━━━━━━━━━━━━━━`;
+  if(ses&&ses.notes) msg+=`\n\n💬 *ملاحظات المحفظ:*\n${ses.notes}\n\n━━━━━━━━━━━━━━━━━━`;
+  msg+=`\n\nجزاكم الله خيراً 🤲`;
+  if(settings.name) msg+=`\n\n— ${settings.name}`;
+  if(settings.circle) msg+=`\n${settings.circle}`;
+  return msg;
+}
+function grIcon(g){ return g==='ممتاز'?'⭐⭐⭐':g==='جيد جداً'?'⭐⭐':g==='جيد'?'⭐':'⚠️'; }
+
+// ══════════════════════════════════════
+// CUMULATIVE TRACKING
+// ══════════════════════════════════════
+function calcTotalAyat(id){
+  let total=0;const seen=new Set();
+  sessions.filter(x=>x.studentId===id&&x.status==='حضر'&&x.new&&x.new.surah).forEach(ses=>{
+    const key=`${ses.new.surah}-${ses.new.from}-${ses.new.to}`;
+    if(!seen.has(key)){seen.add(key);total+=(parseInt(ses.new.to)||0)-(parseInt(ses.new.from)||0)+1;}
+  });
+  return total;
+}
+function buildTrackHTML(id){
+  const total=calcTotalAyat(id);const pct=Math.min(100,Math.round(total/6236*100));
+  const stSes=sessions.filter(x=>x.studentId===id&&x.status==='حضر');
+  const lastNew=stSes.filter(x=>x.new).pop();
+  const lastSurah=lastNew?`سورة ${esc(lastNew.new.surah)} (الآية ${esc(lastNew.new.to)})`:'—';
+  return `
+    <div class="ir"><span class="ir-k">📖 إجمالي الآيات المحفوظة</span><span style="font-weight:700;color:var(--gm)">${total} آية</span></div>
+    <div class="ir"><span class="ir-k">📍 وصل إلى</span><span>${lastSurah}</span></div>
+    <div class="ir"><span class="ir-k">📊 نسبة القرآن</span><span>${pct}%</span></div>
+    <div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>
+  `;
+}
+
+// ══════════════════════════════════════
+// REPORTS
+// ══════════════════════════════════════
+function initReports(){
+  const sel=document.getElementById('repSt');
+  sel.innerHTML='<option value="">— اختر الطالب —</option>';
+  students.forEach(s=>{ sel.innerHTML+=`<option value="${esc(s.id)}">${esc(s.name)}</option>`; });
+  const mSel=document.getElementById('repMonth');mSel.innerHTML='';
+  const now=new Date();
+  for(let i=0;i<12;i++){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const val=`${d.getFullYear()}-${d.getMonth()}`;
+    const lbl=d.toLocaleDateString('ar-EG',{year:'numeric',month:'long'});
+    mSel.innerHTML+=`<option value="${val}">${lbl}</option>`;
+  }
+  renderReport();
+}
+
+function renderReport(){
+  const sid=document.getElementById('repSt').value;
+  const mv=document.getElementById('repMonth').value;
+  const el=document.getElementById('reportContent');
+
+  // Calendar
+  const calCard=document.getElementById('calCard');
+  const chartsEl=document.getElementById('reportCharts');
+  if(!sid||!mv){
+    el.innerHTML='<div class="empty"><div class="ei">📊</div><p>اختر الطالب والشهر</p></div>';
+    calCard.style.display='none';chartsEl.innerHTML='';return;
+  }
+
+  const[y,m]=mv.split('-').map(Number);
+  const s=students.find(x=>x.id===sid);
+  const stSes=sessions.filter(x=>{
+    if(x.studentId!==sid)return false;
+    const d=new Date(x.date);
+    return d.getFullYear()===y&&d.getMonth()===m;
+  });
+
+  // Render calendar
+  calCard.style.display='block';
+  renderCalendar(sid,y,m);
+
+  if(!stSes.length){
+    el.innerHTML='<div class="card"><div class="empty"><p>لا توجد حصص في هذا الشهر</p></div></div>';
+    chartsEl.innerHTML='';return;
+  }
+
+  const present=stSes.filter(x=>x.status==='حضر');
+  const absent=stSes.filter(x=>x.status==='غاب');
+  const vacation=stSes.filter(x=>x.status==='إجازة');
+  const totalAyat=present.reduce((acc,ses)=>{if(!ses.new)return acc;return acc+(parseInt(ses.new.to)||0)-(parseInt(ses.new.from)||0)+1;},0);
+  const allGrades=present.flatMap(ses=>[ses.new?.grade,ses.rec?.grade,ses.far?.grade,ses.juz?.grade].filter(Boolean));
   const grMap={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
   const avgG=allGrades.length?allGrades.reduce((a,g)=>a+(grMap[g]||0),0)/allGrades.length:0;
   const avgLabel=avgG>=3.5?'ممتاز':avgG>=2.5?'جيد جداً':avgG>=1.5?'جيد':avgG>0?'ضعيف':'—';
-  const monthName=now.toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
-  const lvCls=s.level==='متقدم'?'lv1':s.level==='متوسط'?'lv2':'lv3';
-  const achs=calcAchievements(id).filter(a=>a.earned); const tch=getTeacher(s);
+  const monthName=new Date(y,m,1).toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
 
-  let assignHTML='';
-  if(lastSes){
-    const fmt=sec=>sec.full?`سورة ${esc(sec.surah)} كاملة`:`سورة ${esc(sec.surah)} (${esc(sec.from)}–${esc(sec.to)})`;
-    const parts=[];
-    if(lastSes.new) parts.push(`<div class="portal-assign-row"><div class="portal-assign-icon" style="background:var(--gp)">📖</div><div><div style="font-weight:700;font-size:13px">الحفظ الجديد</div><div style="font-size:12px;color:var(--mut);margin-top:2px">${fmt(lastSes.new)}${lastSes.new.grade?' · '+esc(lastSes.new.grade):''}</div></div></div>`);
-    if(lastSes.rec) parts.push(`<div class="portal-assign-row"><div class="portal-assign-icon" style="background:var(--gp)">📚</div><div><div style="font-weight:700;font-size:13px">مراجعة قريبة</div><div style="font-size:12px;color:var(--mut);margin-top:2px">${fmt(lastSes.rec)}</div></div></div>`);
-    if(lastSes.far) parts.push(`<div class="portal-assign-row"><div class="portal-assign-icon" style="background:var(--goldp)">📘</div><div><div style="font-weight:700;font-size:13px">مراجعة بعيدة</div><div style="font-size:12px;color:var(--mut);margin-top:2px">${fmt(lastSes.far)}</div></div></div>`);
-    if(lastSes.juz) parts.push(`<div class="portal-assign-row"><div class="portal-assign-icon" style="background:var(--goldp)">📜</div><div><div style="font-weight:700;font-size:13px">مراجعة أجزاء/سور</div><div style="font-size:12px;color:var(--mut);margin-top:2px">${(lastSes.juz.chips||[]).map(c=>esc(c)).join('، ')}</div></div></div>`);
-    if(!parts.length) assignHTML='<div style="color:var(--mut);font-size:13px">لا يوجد تكليف محدد</div>'; else assignHTML=parts.join('');
-    if(lastSes.notes) assignHTML+=`<div style="background:var(--goldp);border-radius:8px;padding:10px;margin-top:8px;font-size:13px"><strong>💬 ملاحظة:</strong><br>${esc(lastSes.notes)}</div>`;
-  } else { assignHTML='<div style="color:var(--mut);font-size:13px">لم تُسجَّل حصص بعد</div>'; }
-  const lastDate=lastSes?new Date(lastSes.date).toLocaleDateString('ar-EG',{weekday:'long',month:'long',day:'numeric'}):'—';
+  // Render charts
+  renderReportCharts(present.length,absent.length,vacation.length,present,grMap);
 
-  return `<div id="portal-printable" style="direction:rtl"><div class="portal-hdr"><div class="portal-hdr-icon">📖</div><div class="portal-hdr-title">${esc(settings.circle||'بالقرآن نحيا')}</div><div class="portal-hdr-sub">${esc(tch.name||'')}</div></div><div class="portal-st-card"><div class="av" style="width:54px;height:54px;font-size:20px;background:${avBg(s.id)};color:${avTx(s.id)}">${esc(init)}</div><div><div style="font-size:18px;font-weight:800">${esc(s.name)}</div><div style="display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap"><span class="lv ${lvCls}">${esc(s.level)}</span>${streak>=3?`<span class="lv lv1">🔥 ${streak} أيام</span>`:''}</div></div></div><div class="portal-stat"><div class="portal-stat-item"><div class="portal-stat-n">${present.length}</div><div class="portal-stat-l">✅ حضور</div></div><div class="portal-stat-item"><div class="portal-stat-n" style="color:var(--red)">${absent.length}</div><div class="portal-stat-l">❌ غياب</div></div><div class="portal-stat-item"><div class="portal-stat-n" style="font-size:15px">${avgLabel}</div><div class="portal-stat-l">⭐ التقييم</div></div></div><div class="portal-section"><div class="portal-section-title">📅 حضور ${monthName}</div>${buildPortalCalendarHTML(id,y,m)}</div><div class="portal-section"><div class="portal-section-title">📝 التكليف الحالي <span style="font-weight:400;font-size:11px">(من ${lastDate})</span></div>${assignHTML}</div><div class="portal-section"><div class="portal-section-title">📈 مسيرة الحفظ</div><div class="ir"><span class="ir-k">إجمالي الآيات</span><span style="font-weight:800;color:var(--gm)">${total} آية</span></div><div style="margin-top:8px"><div class="plan-bar-wrap"><div class="plan-bar-fill" style="width:${pct}%"></div></div></div></div>${achs.length?`<div class="portal-section"><div class="portal-section-title">🏆 الإنجازات المحققة</div><div class="achievement-grid">${achs.map(a=>`<div class="ach-badge earned"><div class="ach-icon">${a.icon}</div><div class="ach-name">${a.name}</div></div>`).join('')}</div></div>`:''}</div>`;
+  // Render stats
+  let html=`<div class="card">
+    <div class="ch">📊 تقرير ${esc(s.name)} — ${monthName}</div>
+    <div class="month-stat">
+      <div class="ms-item"><div class="ms-num">${present.length}</div><div class="ms-lbl">✅ حضور</div></div>
+      <div class="ms-item"><div class="ms-num">${absent.length}</div><div class="ms-lbl">❌ غياب</div></div>
+      <div class="ms-item"><div class="ms-num">${vacation.length}</div><div class="ms-lbl">🌙 إجازة</div></div>
+      <div class="ms-item"><div class="ms-num">${totalAyat}</div><div class="ms-lbl">📖 آيات</div></div>
+      <div class="ms-item"><div class="ms-num">${stSes.length}</div><div class="ms-lbl">📅 إجمالي</div></div>
+      <div class="ms-item"><div class="ms-num" style="font-size:15px">${avgLabel}</div><div class="ms-lbl">⭐ متوسط</div></div>
+    </div>
+    <button class="btn btn-wa mt8" onclick="sendMonthlyReport('${esc(sid)}','${esc(mv)}')">📲 إرسال التقرير الشهري لولي الأمر</button>
+  </div>`;
+
+  html+=`<div class="card"><div class="ch">📋 تفصيل الحصص</div>`;
+  [...stSes].reverse().forEach(ses=>{
+    const d=new Date(ses.date).toLocaleDateString('ar-EG',{weekday:'short',month:'short',day:'numeric'});
+    const icon=ses.status==='حضر'?'✅':ses.status==='غاب'?'❌':'🌙';
+    html+=`<div class="hi"><div class="fb"><span style="font-weight:700">${d} ${icon}</span></div><div class="hi-content txt-mut">${buildSumText(ses)}</div></div>`;
+  });
+  html+=`</div>`;
+  el.innerHTML=html;
 }
 
-function printPortal(){ const content=document.getElementById('portal-printable'); if(!content){return;} const printWin=window.open('','_blank','width=820,height=960'); printWin.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>بوابة ولي الأمر</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:sans-serif;padding:24px;direction:rtl}.portal-hdr{background:linear-gradient(135deg,#1a4a2e,#2d7a4f);color:#fff;padding:18px;border-radius:14px;text-align:center;margin-bottom:12px}.portal-st-card{background:#e8f5ee;border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px}.portal-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.portal-stat-item{background:#f5f5f5;border:1px solid #e0e0e0;border-radius:10px;padding:10px;text-align:center}.portal-stat-n{font-size:20px;font-weight:800;color:#2d7a4f}.portal-section{border:1px solid #e0e0e0;border-radius:12px;padding:12px;margin-bottom:10px;break-inside:avoid}.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}.cal-day{aspect-ratio:1;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;background:#f5f5f5}.cal-day.present{background:#e8f5ee;color:#1a4a2e;font-weight:700}.cal-day.absent{background:#ffebee;color:#c62828;font-weight:700}.plan-bar-wrap{height:7px;background:#e0e0e0;border-radius:4px;overflow:hidden}.plan-bar-fill{height:100%;background:#2d7a4f;print-color-adjust:exact}</style></head><body>${content.outerHTML}${'<scr'+'ipt>window.onload=()=>{setTimeout(()=>window.print(),500)}<'+'/script>'}</body></html>`); printWin.document.close(); }
-function sharePortalWA(){ if(!portalStId) return; const s=students.find(x=>x.id===portalStId); if(!s) return; const msg=`👋 السلام عليكم، يمكنك متابعة مستوى الطالب: *${s.name}* عبر بوابة ولي الأمر مباشرة لايف من هذا الرابط بالبحث برقم الهاتف الخاص بكم:\n🔗 https://welivequran.online`; window.open(`https://wa.me/${s.phone}?text=${encodeURIComponent(msg)}`,'_blank'); }
+// ── Report Charts ──
+function renderReportCharts(pres,abs,vac,presentSes,grMap){
+  if(typeof Chart==='undefined') return;
+  const c=getChartColors();
 
-function openGroupsModal(){ if(!settings.groups) settings.groups=[]; renderGroupsList(); document.getElementById('groupsModal').classList.add('open'); }
-function renderGroupsList(){ const el=document.getElementById('groupsList'); if(!el) return; if(!settings.groups||!settings.groups.length){ el.innerHTML='<p style="text-align:center;color:var(--mut);padding:10px">لا توجد حلقات</p>'; return; } el.innerHTML=settings.groups.map(g=>{ const sts=students.filter(s=>g.studentIds.includes(s.id)); return `<div class="group-card"><div class="group-card-header"><div><div class="group-name">${esc(g.name)}</div></div><div class="group-actions"><button class="btn btn-g btn-sm" onclick="openGroupSession('${esc(g.id)}')">📖 حصة</button><button class="btn btn-out btn-sm" onclick="openAssignGroup('${esc(g.id)}')">✏️</button><button class="btn btn-red btn-sm" onclick="deleteGroup('${esc(g.id)}')">🗑️</button></div></div><div class="group-chips">${sts.map(s=>`<span class="group-chip">${esc(s.name)}</span>`).join('')}</div></div>`; }).join(''); }
-function addGroup(){ const name=document.getElementById('newGroupName').value.trim(); if(!name) return; if(!settings.groups) settings.groups=[]; settings.groups.push({id:'g'+Date.now(),name,studentIds:[]}); document.getElementById('newGroupName').value=''; save();renderGroupsList();initSettings(); toast('تمت الإضافة','success'); }
-function deleteGroup(id){ settings.groups=settings.groups.filter(g=>g.id!==id); save();renderGroupsList();initSettings(); }
-function openAssignGroup(gid){ curGroupId=gid; const g=settings.groups.find(x=>x.id===gid); document.getElementById('assignGroupTitle').textContent='طلاب حلقة: '+g.name; document.getElementById('assignGroupContent').innerHTML=students.map(s=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;"><span style="font-size:14px">${esc(s.name)}</span><input type="checkbox" id="asg-${esc(s.id)}" ${g.studentIds.includes(s.id)?'checked':''} style="width:18px;height:18px"></div>`).join(''); document.getElementById('assignGroupModal').classList.add('open'); }
-function saveGroupAssignment(){ const g=settings.groups.find(x=>x.id===curGroupId); if(!g) return; g.studentIds=students.filter(s=>document.getElementById('asg-'+s.id)?.checked).map(s=>s.id); save(); document.getElementById('assignGroupModal').classList.remove('open'); renderGroupsList(); toast('تم الحفظ','success'); }
-function openGroupSession(gid){ curGroupId=gid; const g=settings.groups.find(x=>x.id===gid); const sts=students.filter(s=>g.studentIds.includes(s.id)); groupSesData={}; sts.forEach(s=>{groupSesData[s.id]='حضر';}); renderGroupSesRows(sts); document.getElementById('groupSesModal').classList.add('open'); }
-function renderGroupSesRows(sts){ document.getElementById('groupSesContent').innerHTML=sts.map(s=>`<div class="gs-row"><div>${esc(s.name)}</div><div class="gs-btns"><button class="gs-btn sel-h" id="gsbh-${esc(s.id)}" onclick="setGroupSt('${esc(s.id)}','حضر')">حضر</button><button class="gs-btn" id="gsba-${esc(s.id)}" onclick="setGroupSt('${esc(s.id)}','غاب')">غاب</button></div></div>`).join(''); }
-function setGroupSt(sid,status){ groupSesData[sid]=status; document.getElementById('gsbh-'+sid).className='gs-btn'+(status==='حضر'?' sel-h':''); document.getElementById('gsba-'+sid).className='gs-btn'+(status==='غاب'?' sel-a':''); }
-function saveGroupSession(){ Object.entries(groupSesData).forEach(([sid,status])=>{ sessions.push({id:'ses'+Date.now()+Math.random().toString(36).slice(2),studentId:sid,date:new Date().toISOString(),status,summary:status}); }); save(); document.getElementById('groupSesModal').classList.remove('open'); document.getElementById('groupsModal').classList.remove('open'); toast('تم حفظ حضور المجموعة','success'); }
-function sendGroupWA(){ toast('تم نسخ التقرير','success'); }
+  destroyChart('attPie');destroyChart('grLine');
 
-function openCertificate(id){
-  const s=students.find(x=>x.id===id); if(!s) return; const total=calcTotalAyat(id); const d=new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
-  document.getElementById('certContent').innerHTML=`<div class="cert-wrap" id="cert-printable"><div class="cert-title">شهادة تقدير وتكريم</div><hr class="cert-divider"><div class="cert-body">تُقدِّم حلقة بالقرآن نحيا هذه الشهادة إلى الطالب المتميز <span class="cert-student">${esc(s.name)}</span> تقديراً لجهوده في حفظ كتاب الله، وحفظه إجمالي <span class="cert-milestone">${total} آية كريمة</span>.</div><div class="cert-footer"><div>تاريخ الإصدار<br>${d}</div><div>المحفظ<br>${esc(settings.name)}</div></div></div>`;
-  document.getElementById('certModal').classList.add('open');
+  const html=`
+    <div class="card">
+      <div class="ch">📊 توزيع الحضور</div>
+      <div style="position:relative;height:200px"><canvas id="attChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="ch">📈 مسار التقييم</div>
+      <div class="chart-wrap"><canvas id="grChart"></canvas></div>
+    </div>`;
+  document.getElementById('reportCharts').innerHTML=html;
+
+  // Attendance pie
+  if(pres+abs+vac>0){
+    chartInst.attPie=new Chart(document.getElementById('attChart'),{
+      type:'doughnut',
+      data:{
+        labels:['حضور','غياب','إجازة'],
+        datasets:[{data:[pres,abs,vac],backgroundColor:[c.green,c.red,c.gold],borderWidth:2,borderColor:'transparent'}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:c.text,font:{size:11},boxWidth:14}}}}
+    });
+  }
+
+  // Grade line
+  const gradedSes=presentSes.filter(s=>s.new?.grade);
+  if(gradedSes.length>1){
+    const labels=gradedSes.map(s=>new Date(s.date).toLocaleDateString('ar-EG',{day:'numeric',month:'short'}));
+    const vals=gradedSes.map(s=>grMap[s.new.grade]||0);
+    chartInst.grLine=new Chart(document.getElementById('grChart'),{
+      type:'line',
+      data:{
+        labels,
+        datasets:[{label:'تقييم الحفظ',data:vals,borderColor:c.green,backgroundColor:c.green+'22',fill:true,tension:.3,pointBackgroundColor:c.green,pointRadius:4}]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{color:c.text,font:{size:10}},grid:{color:c.grid}},
+          y:{min:0,max:4,ticks:{color:c.text,font:{size:10},callback:v=>['','ضعيف','جيد','جيد جداً','ممتاز'][v]||''},grid:{color:c.grid}}
+        }
+      }
+    });
+  }
 }
-function printCertificate(){ const content=document.getElementById('cert-printable'); if(!content) return; const printWin=window.open('','_blank','width=800,height=600'); printWin.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><style>body{font-family:sans-serif;direction:rtl;padding:40px}.cert-wrap{border:4px solid #c9a227;padding:30px;text-align:center}.cert-title{font-size:28px;color:#1a4a2e}.cert-student{font-size:30px;font-weight:bold;color:#2d7a4f;display:block;margin:15px 0}.cert-footer{display:flex;justify-content:space-between;margin-top:40px}</style></head><body>${content.outerHTML}${'<scr'+'ipt>window.onload=()=>{window.print()}<'+'/script>'}</body></html>`); printWin.document.close(); }
 
-function renderParentPage(id){ document.getElementById('parent-view-content').innerHTML=generateParentPortalHTML(id); }
-function renderTrack(){ const id=document.getElementById('trackSt').value; const el=document.getElementById('trackContent'); if(!id){el.innerHTML='';return;} el.innerHTML=buildTrackHTML(id); }
+// ── Calendar ──
+function renderCalendar(sid,year,month){
+  const el=document.getElementById('calGrid');
+  if(!el) return;
+  const firstDay=new Date(year,month,1);
+  const lastDay=new Date(year,month+1,0);
+  const startDow=firstDay.getDay();
+  const stSes=sessions.filter(s=>{
+    if(s.studentId!==sid)return false;
+    const d=new Date(s.date);
+    return d.getFullYear()===year&&d.getMonth()===month;
+  });
+  const dayMap={};
+  stSes.forEach(s=>{ dayMap[new Date(s.date).getDate()]=s.status; });
+  const today=new Date();
+  const dayNames=['أح','إث','ثل','أر','خم','جم','سب'];
+  let html='<div class="cal-grid">';
+  dayNames.forEach(d=>{ html+=`<div class="cal-head">${d}</div>`; });
+  for(let i=0;i<startDow;i++) html+='<div class="cal-day empty"></div>';
+  for(let day=1;day<=lastDay.getDate();day++){
+    const status=dayMap[day];
+    const cls=status==='حضر'?'present':status==='غاب'?'absent':status==='إجازة'?'vacation':'';
+    const isToday=today.getFullYear()===year&&today.getMonth()===month&&today.getDate()===day;
+    html+=`<div class="cal-day ${cls}${isToday?' today':''}">${day}</div>`;
+  }
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+// ── Monthly Report WhatsApp ──
+function sendMonthlyReport(sid,mv){
+  const[y,m]=mv.split('-').map(Number);
+  const s=students.find(x=>x.id===sid);
+  const stSes=sessions.filter(x=>{if(x.studentId!==sid)return false;const d=new Date(x.date);return d.getFullYear()===y&&d.getMonth()===m;});
+  const present=stSes.filter(x=>x.status==='حضر');
+  const absent=stSes.filter(x=>x.status==='غاب');
+  const totalAyat=present.reduce((acc,ses)=>acc+(ses.new?(parseInt(ses.new.to)||0)-(parseInt(ses.new.from)||0)+1:0),0);
+  const allGrades=present.flatMap(ses=>[ses.new?.grade,ses.rec?.grade,ses.far?.grade,ses.juz?.grade].filter(Boolean));
+  const grMap={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
+  const avgG=allGrades.length?allGrades.reduce((a,g)=>a+(grMap[g]||0),0)/allGrades.length:0;
+  const avgLabel=avgG>=3.5?'ممتاز':avgG>=2.5?'جيد جداً':avgG>=1.5?'جيد':avgG>0?'ضعيف':'—';
+  const monthName=new Date(y,m,1).toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
+  let msg=`السلام عليكم ورحمة الله وبركاته 🌿\n\n📊 *التقرير الشهري*\n✨ الطالب: ${s.name}\n📅 شهر: ${monthName}\n\n━━━━━━━━━━━━━━━━━━\n✅ أيام الحضور: ${present.length}\n❌ أيام الغياب: ${absent.length}\n📖 إجمالي الآيات المحفوظة: ${totalAyat} آية\n⭐ متوسط التقييم: ${avgLabel}\n\n━━━━━━━━━━━━━━━━━━\n\n📋 تفصيل الحصص:\n`;
+  stSes.forEach(ses=>{const d=new Date(ses.date).toLocaleDateString('ar-EG',{weekday:'short',month:'short',day:'numeric'});const icon=ses.status==='حضر'?'✅':ses.status==='غاب'?'❌':'🌙';msg+=`${icon} ${d}: ${buildSumText(ses)}\n`;});
+  msg+=`\n━━━━━━━━━━━━━━━━━━\nجزاكم الله خيراً 🤲`;
+  if(settings.name) msg+=`\n\n— ${settings.name}`;
+  if(settings.circle) msg+=`\n${settings.circle}`;
+  window.open(`https://wa.me/${s.phone}?text=${encodeURIComponent(msg)}`,'_blank');
+}
 
 // ══════════════════════════════════════
-// INIT & SCRIPT MOUNT
+// CSV EXPORT
 // ══════════════════════════════════════
-function renderCheckin(){ renderCheckinLogic(); }
-function ciRecord(sid,status){ ciRecordLogic(sid,status); }
-function filterSt(){ filterStLogic(); }
-function quickPick(){ quickPickLogic(); }
-function goToSession(){ goToSessionLogic(); }
-
-async function init(){
-  await initDB(); applyTheme(); applyFontSize(); buildSurahNorm();
-  setTimeout(()=>{ const sp=document.getElementById('splash'); if(sp) sp.classList.add('hide'); },500);
-  const authRole = localStorage.getItem('qt_auth_role'); const authStId = localStorage.getItem('qt_auth_st_id');
-  if(authRole === 'teacher') enterApp('teacher'); else if (authRole === 'parent' && authStId) enterApp('parent', authStId); else document.getElementById('auth-gate').classList.remove('hide');
+function exportCSV(){
+  const sid=document.getElementById('repSt').value;
+  const mv=document.getElementById('repMonth').value;
+  let rows=[['التاريخ','الطالب','الحالة','السورة','من','إلى','التقييم','ملاحظات']];
+  const base=sid?sessions.filter(s=>s.studentId===sid):sessions;
+  const filtered=mv?base.filter(s=>{const[y,m]=mv.split('-').map(Number);const d=new Date(s.date);return d.getFullYear()===y&&d.getMonth()===m;}):base;
+  filtered.forEach(ses=>{
+    const st=students.find(s=>s.id===ses.studentId);
+    const d=new Date(ses.date).toLocaleDateString('ar-EG');
+    if(ses.new) rows.push([d,st?.name||'',ses.status,ses.new.surah,ses.new.from,ses.new.to,ses.new.grade||'',ses.notes||'']);
+    else rows.push([d,st?.name||'',ses.status,'','','','',ses.notes||'']);
+  });
+  const csv='\ufeff'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`quran-report-${Date.now()}.csv`;a.click();
+  URL.revokeObjectURL(url);
+  toast('تم تصدير التقرير CSV','success');
+  vibrate([50,25,50]);
 }
-window.onload=init;
-</script>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAf9pAaoKXoOLyVg4KL9Zdf1TB7tn7W--c",
-  authDomain: "we-live-quran.firebaseapp.com",
-  projectId: "we-live-quran",
-  storageBucket: "we-live-quran.firebasestorage.app",
-  messagingSenderId: "435543106755",
-  appId: "1:435543106755:web:d908f21de42a7680092e76"
-};
-
-let currentUser=null, app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app);
-
-window.cloudSignIn=async()=>{ const provider=new GoogleAuthProvider(); await signInWithRedirect(auth,provider); };
-window.cloudSignOut=async()=>{ await signOut(auth); localStorage.removeItem('qt_auth_role'); location.reload(); };
-
-window.cloudBackup=async(manual)=>{
-  if(!currentUser||!window.__cloudGetData) return;
-  try{ const {students,sessions,settings}=window.__cloudGetData(); await setDoc(doc(db,'backups',currentUser.uid),{ students,sessions,settings, teacherEmail:currentUser.email||'', updatedAt:serverTimestamp() }); if(manual) window.toast&&window.toast('✅ تم الرفع للسحابة بنجاح','success'); }catch(e){ if(manual) window.toast&&window.toast('حدث خطأ في الشبكة','error'); }
-};
-
-if(auth){
-  getRedirectResult(auth).then(result => { if(result && result.user) window.toast('تم تسجيل الدخول بنجاح','success'); }).catch(console.warn);
-  onAuthStateChanged(auth,user=>{ currentUser=user; if(user){ localStorage.setItem('qt_auth_role', 'teacher'); if(window.enterApp) window.enterApp('teacher'); } });
+// ══════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════
+function initSettings(){
+  document.getElementById('setName').value=settings.name||'';
+  document.getElementById('setCircle').value=settings.circle||'';
+  const tmpl=document.getElementById('waTmpl');
+  if(tmpl) tmpl.value=settings.waTemplate||'';
+  const sel=document.getElementById('trackSt');
+  sel.innerHTML='<option value="">— اختر الطالب —</option>';
+  students.forEach(s=>{ sel.innerHTML+=`<option value="${esc(s.id)}">${esc(s.name)}</option>`; });
+  renderTrack();
+  applyFontSize();
+  const nb=document.getElementById('notifBtn');
+  if(Notification&&Notification.permission==='granted'){
+    nb.textContent='✅ الإشعارات مفعّلة';nb.disabled=true;
+  }
 }
+function saveSettings(){
+  settings.name=document.getElementById('setName').value;
+  settings.circle=document.getElementById('setCircle').value;
+  const tmpl=document.getElementById('waTmpl');
+  if(tmpl) settings.waTemplate=tmpl.value;
+  save();
+}
+function renderTrack(){
+  const id=document.getElementById('trackSt').value;
+  const el=document.getElementById('trackContent');
+  if(!id){el.innerHTML='';return;}
+  el.innerHTML=buildTrackHTML(id);
+}
+
+// ══════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════
+function requestNotif(){
+  if(!('Notification' in window)){ toast('المتصفح لا يدعم الإشعارات','error'); return; }
+  Notification.requestPermission().then(perm=>{
+    if(perm==='granted'){
+      settings.notifEnabled=true; save();
+      new Notification('بالقرآن نحيا 📿',{body:'تم تفعيل التذكيرات اليومية',icon:'./icon-192.png'});
+      const nb=document.getElementById('notifBtn');
+      if(nb){nb.textContent='✅ الإشعارات مفعّلة';nb.disabled=true;}
+      toast('تم تفعيل الإشعارات','success');
+    } else {
+      toast('تم رفض الإشعارات من المتصفح','error');
+    }
+  });
+}
+function checkAndNotify(){
+  if(!settings.notifEnabled||Notification.permission!=='granted') return;
+  const today=new Date().toDateString();
+  const todayCount=sessions.filter(s=>new Date(s.date).toDateString()===today).length;
+  if(todayCount===0&&students.length>0){
+    new Notification('تذكير بالقرآن نحيا 📿',{
+      body:`لديك ${students.length} طالب — لم يتم تسجيل حصص اليوم بعد`,
+      icon:'./icon-192.png',tag:'daily-reminder'
+    });
+  }
+}
+
+// ══════════════════════════════════════
+// BACKUP
+// ══════════════════════════════════════
+function exportData(){
+  const data=JSON.stringify({students,sessions,settings,exportDate:new Date().toISOString(),version:2},null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=`quran-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();
+  toast('تم تصدير النسخة الاحتياطية','success');
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!d.students||!Array.isArray(d.students)) throw new Error();
+      if(!confirm(`سيتم استيراد ${d.students.length} طالب و${d.sessions.length} حصة. هل تريد المتابعة؟`)) return;
+      students=d.students;sessions=d.sessions||[];settings={...settings,...(d.settings||{})};
+      save();toast('تم استيراد البيانات بنجاح','success');goPage('home');
+    }catch(err){toast('ملف غير صالح','error');}
+  };
+  reader.readAsText(file);
+}
+function clearAll(){
+  if(!confirm('⚠️ هذا سيحذف جميع البيانات نهائياً. هل أنت متأكد؟')) return;
+  if(!confirm('تأكيد أخير: حذف كل شيء؟')) return;
+  students=[];sessions=[];save();
+  toast('تم مسح جميع البيانات','success');goPage('home');
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+let toastTimer=null;
+function toast(msg,type){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(type?' t-'+type:'');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ══════════════════════════════════════
+// PWA — INSTALL PROMPT
+// ══════════════════════════════════════
+let deferredInstall=null;
+
+function setupInstallPrompt(){
+  window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault();deferredInstall=e;
+    // Show banner after 10 seconds
+    setTimeout(()=>document.getElementById('install-banner').classList.add('show'),10000);
+  });
+  window.addEventListener('appinstalled',()=>{
+    document.getElementById('install-banner').classList.remove('show');
+    deferredInstall=null;toast('تم تثبيت التطبيق بنجاح! 🎉','success');
+  });
+}
+
+async function installPWA(){
+  if(!deferredInstall){toast('قم بفتح التطبيق في المتصفح للتثبيت','info');return;}
+  deferredInstall.prompt();
+  const{outcome}=await deferredInstall.userChoice;
+  if(outcome==='accepted') toast('جاري التثبيت...','success');
+  deferredInstall=null;
+  document.getElementById('install-banner').classList.remove('show');
+}
+
+function dismissInstall(){
+  document.getElementById('install-banner').classList.remove('show');
+  deferredInstall=null;
+}
+
+// ══════════════════════════════════════
+// NETWORK DETECTION
+// ══════════════════════════════════════
+function setupNetworkDetection(){
+  function update(){
+    const offline=!navigator.onLine;
+    document.getElementById('offline-bar').classList.toggle('show',offline);
+    document.body.classList.toggle('offline-mode',offline);
+  }
+  window.addEventListener('online',update);
+  window.addEventListener('offline',update);
+  update();
+}
+
+// ══════════════════════════════════════
+// SERVICE WORKER
+// ══════════════════════════════════════
+function registerSW(){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').then(reg=>{
+      // Check for updates
+      reg.addEventListener('updatefound',()=>{
+        const worker=reg.installing;
+        worker.addEventListener('statechange',()=>{
+          if(worker.state==='installed'&&navigator.serviceWorker.controller){
+            toast('تحديث جديد متاح — أعد تشغيل التطبيق','info');
+          }
+        });
+      });
+    }).catch(()=>{});
+  }
+}
+
+// ══════════════════════════════════════
+// URL PARAMS (for shortcuts)
+// ══════════════════════════════════════
+function handleURLParams(){
+  const params=new URLSearchParams(location.search);
+  const page=params.get('page');
+  if(page&&['session','students','reports','settings'].includes(page)) goPage(page);
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+// Capture install prompt ASAP
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredInstall=e;
+  setTimeout(()=>document.getElementById('install-banner').classList.add('show'),10000);
+});
+
+window.addEventListener('load',async ()=>{
+  // 1. Load data (IndexedDB + localStorage fallback)
+  await initDB();
+
+  // 2. Apply saved preferences
+  applyTheme();
+  applyFontSize();
+
+  // 3. Fill Quran selects
+  fillSurahSelects();
+  fillJuzSelect();
+
+  // 4. Render initial page
+  renderHome();
+  renderSt();
+
+  // 5. Hide splash
+  setTimeout(()=>document.getElementById('splash').classList.add('hide'),1600);
+
+  // 6. PWA setup
+  setupInstallPrompt();
+  setupNetworkDetection();
+  registerSW();
+
+  // 7. Handle URL shortcuts
+  handleURLParams();
+
+  // 8. Check and show notification reminder
+  setTimeout(checkAndNotify, 5000);
+});
 </script>
 </body>
 </html>
