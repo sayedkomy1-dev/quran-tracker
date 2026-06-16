@@ -3593,4 +3593,272 @@ function saveSettings(){
 function updateContactPreview(){
   const el=document.getElementById('contactPreview');
   if(!el) return;
-  const v=(settings.contact||'').
+  const v=(settings.contact||'').trim();
+  if(!v){ el.style.display='none'; return; }
+  el.textContent=v;
+  el.style.display='block';
+}
+
+// ══════════════════════════════════════
+// DATA EXPORT & IMPORT & CLEAR
+// ══════════════════════════════════════
+function exportData(){
+  const data={students,sessions,settings};
+  const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`quran-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(url);
+}
+function importData(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e2=>{
+    try{
+      const data=JSON.parse(e2.target.result);
+      if(data.students) students=data.students;
+      if(data.sessions) sessions=data.sessions;
+      if(data.settings) settings={...settings,...data.settings};
+      save();
+      toast('تم استيراد البيانات بنجاح','success');
+      setTimeout(()=>location.reload(),1000);
+    }catch(err){ toast('ملف غير صالح','error'); }
+  };
+  reader.readAsText(file);
+}
+function clearAll(){
+  if(!confirm('تحذير نهائي: سيتم مسح كل البيانات نهائياً. هل أنت متأكد؟')) return;
+  if(prompt('اكتب "نعم" للتأكيد:')!=='نعم') return;
+  students=[]; sessions=[]; settings={}; save();
+  localStorage.clear();
+  if(db) db.delete();
+  toast('تم مسح كل شيء','success');
+  setTimeout(()=>location.reload(),1000);
+}
+
+// ══════════════════════════════════════
+// PWA INSTALLATION
+// ══════════════════════════════════════
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  if(localStorage.getItem('qt_install_dismissed')!=='1'){
+    document.getElementById('install-banner').classList.add('show');
+  }
+});
+function installPWA(){
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(res=>{
+    if(res.outcome==='accepted') document.getElementById('install-banner').classList.remove('show');
+    deferredPrompt=null;
+  });
+}
+function dismissInstall(){
+  document.getElementById('install-banner').classList.remove('show');
+  localStorage.setItem('qt_install_dismissed','1');
+}
+
+// ══════════════════════════════════════
+// INIT & SERVICE WORKER
+// ══════════════════════════════════════
+async function init(){
+  await initDB();
+  applyTheme();
+  applyFontSize();
+  document.getElementById('crYear').textContent=new Date().getFullYear();
+  buildSurahNorm();
+  goPage('home');
+  // Hide Splash
+  setTimeout(()=>{
+    const sp=document.getElementById('splash');
+    if(sp) sp.classList.add('hide');
+  },500);
+
+  // Notifications
+  if(settings.notifEnabled&&Notification.permission==='granted'){
+    document.getElementById('notifBtn').textContent='✅ الإشعارات مفعّلة';
+  }
+}
+
+window.onload=init;
+
+// Offline detection
+window.addEventListener('online',()=>document.getElementById('offline-bar').classList.remove('show'));
+window.addEventListener('offline',()=>document.getElementById('offline-bar').classList.add('show'));
+if(!navigator.onLine) document.getElementById('offline-bar').classList.add('show');
+
+// Service Worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(console.warn);
+  });
+}
+
+// Toast Function
+window.toast=(msg,type='info')=>{
+  const t=document.getElementById('toast');
+  if(!t)return;
+  t.textContent=msg;
+  t.className='toast show t-'+type;
+  setTimeout(()=>t.className='toast t-'+type,3000);
+};
+</script>
+
+<!-- ══════════════════════════════════════
+     ☁️ المزامنة السحابية — Firebase
+     (Google Sign-In + Firestore Backup/Restore)
+══════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAf9pAaoKXoOLyVg4KL9Zdf1TB7tn7W--c",
+  authDomain: "we-live-quran.firebaseapp.com",
+  projectId: "we-live-quran",
+  storageBucket: "we-live-quran.firebasestorage.app",
+  messagingSenderId: "435543106755",
+  appId: "1:435543106755:web:d908f21de42a7680092e76"
+};
+
+let currentUser=null;
+let autoSyncTimer=null;
+let app,auth,db;
+
+try{
+  app=initializeApp(firebaseConfig);
+  auth=getAuth(app);
+  db=getFirestore(app);
+}catch(e){
+  console.warn('Firebase init failed:',e);
+}
+
+function updateCloudUI(user){
+  const out=document.getElementById('cloudSignedOut');
+  const inn=document.getElementById('cloudSignedIn');
+  if(!out||!inn) return; 
+  if(user){
+    out.style.display='none';
+    inn.style.display='block';
+    const av=document.getElementById('cloudAvatar');
+    if(user.photoURL){
+      av.style.backgroundImage=`url(${user.photoURL})`;
+      av.textContent='';
+    } else {
+      av.style.backgroundImage='';
+      av.textContent=(user.displayName||user.email||'?').trim().charAt(0);
+    }
+    document.getElementById('cloudName').textContent=user.displayName||'مستخدم جوجل';
+    document.getElementById('cloudEmail').textContent=user.email||'';
+    const cb=document.getElementById('cloudAutoSync');
+    if(cb&&window.__cloudGetData) cb.checked=!!(window.__cloudGetData().settings.cloudAutoSync);
+    updateLastSyncLabel();
+  } else {
+    out.style.display='block';
+    inn.style.display='none';
+  }
+}
+window.__updateCloudUI=()=>updateCloudUI(currentUser);
+
+function updateLastSyncLabel(txt){
+  const el=document.getElementById('cloudLastSync');
+  if(!el) return;
+  if(txt){ el.textContent=txt; return; }
+  const last=localStorage.getItem('qt_cloud_last');
+  el.textContent=last?('آخر مزامنة: '+new Date(last).toLocaleString('ar-EG')):'لم تتم أي مزامنة بعد';
+}
+
+// ── تسجيل الدخول (بنظام التحويل المباشر القوي) ──
+window.cloudSignIn=async()=>{
+  if(!auth){ window.toast&&window.toast('تعذّر الاتصال بخدمة المزامنة','error'); return; }
+  try{
+    const provider=new GoogleAuthProvider();
+    await signInWithRedirect(auth,provider);
+  }catch(e){
+    console.warn(e);
+    window.toast&&window.toast('فشل توجيه تسجيل الدخول','error');
+  }
+};
+
+window.cloudSignOut=async()=>{
+  try{ await signOut(auth); }catch(e){}
+  window.toast&&window.toast('تم تسجيل الخروج','success');
+};
+
+window.cloudBackup=async(manual)=>{
+  if(!currentUser||!window.__cloudGetData) return;
+  try{
+    const {students,sessions,settings}=window.__cloudGetData();
+    await setDoc(doc(db,'backups',currentUser.uid),{
+      students,sessions,settings,
+      teacherEmail:currentUser.email||'',
+      updatedAt:serverTimestamp()
+    });
+    const now=new Date().toISOString();
+    localStorage.setItem('qt_cloud_last',now);
+    updateLastSyncLabel();
+    if(manual) window.toast&&window.toast('✅ تم رفع النسخة الاحتياطية للسحابة','success');
+  }catch(e){
+    console.warn('Cloud backup failed:',e);
+    if(manual) window.toast&&window.toast('فشل النسخ الاحتياطي — تحقق من الإنترنت','error');
+  }
+};
+
+window.cloudAutoBackup=()=>{
+  if(!currentUser||!window.__cloudGetData) return;
+  const s=window.__cloudGetData().settings;
+  if(!s.cloudAutoSync) return;
+  clearTimeout(autoSyncTimer);
+  autoSyncTimer=setTimeout(()=>window.cloudBackup(false),4000);
+};
+
+window.cloudRestore=async()=>{
+  if(!currentUser) return;
+  if(!window.confirm('سيتم استبدال البيانات الحالية على هذا الجهاز بالنسخة المخزنة على السحابة. هل تريد الاستمرار؟')) return;
+  try{
+    const snap=await getDoc(doc(db,'backups',currentUser.uid));
+    if(!snap.exists()){
+      window.toast&&window.toast('لا توجد نسخة سحابية محفوظة لهذا الحساب','error');
+      return;
+    }
+    const data=snap.data();
+    window.__cloudSetData&&window.__cloudSetData(data);
+    const now=new Date().toISOString();
+    localStorage.setItem('qt_cloud_last',now);
+    updateLastSyncLabel();
+    window.toast&&window.toast('✅ تم استرجاع البيانات من السحابة','success');
+  }catch(e){
+    console.warn('Cloud restore failed:',e);
+    window.toast&&window.toast('فشل الاسترجاع — تحقق من الإنترنت','error');
+  }
+};
+
+if(auth){
+  getRedirectResult(auth).then(result => {
+    if(result && result.user){
+      window.toast&&window.toast('تم تسجيل الدخول بنجاح','success');
+    }
+  }).catch(err => {
+    console.warn('Auth Redirect Error:', err);
+  });
+
+  onAuthStateChanged(auth,user=>{
+    currentUser=user;
+    updateCloudUI(user);
+  });
+}
+
+window.addEventListener('load',()=>{
+  setTimeout(()=>updateCloudUI(currentUser),300);
+});
+</script>
+</body>
+</html>
