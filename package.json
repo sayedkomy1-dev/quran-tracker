@@ -1,10 +1,9 @@
 {
-  "name": "bil-quran-nahya-tracker",
-  "version": "6.2.0",
+  "name": "imam-academy-pwa",
+  "version": "7.0.0",
   "private": true,
-  "description": "Imam Academy local-first PWA for Quran student tracking",
+  "description": "أكاديمية الإمام لتحفيظ القرآن الكريم — PWA",
   "scripts": {
-    "test": "node tests/smoke.test.js",
-    "check": "node --check app.js && node --check sw.js"
+    "test": "node tests/static-check.js"
   }
 }

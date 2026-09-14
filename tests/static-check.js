@@ -1,0 +1,22 @@
+const fs=require('fs');
+const path=require('path');
+const vm=require('vm');
+const root=path.join(__dirname,'..');
+const read=f=>fs.readFileSync(path.join(root,f),'utf8');
+function assert(cond,msg){if(!cond)throw new Error(msg);}
+const html=read('index.html');
+const app=read('app.js');
+const sw=read('sw.js');
+const manifest=JSON.parse(read('manifest.json'));
+const version=read('VERSION').trim();
+new vm.Script(app,{filename:'app.js'});
+new vm.Script(sw,{filename:'sw.js'});
+assert(version==='7.0.0','VERSION must be 7.0.0');
+assert(html.includes('content="7.0.0"'),'HTML application-version mismatch');
+assert(app.includes("const APP_VERSION='7.0.0'"),'app.js APP_VERSION mismatch');
+assert(sw.includes("const APP_VERSION = '7.0.0'"),'sw.js APP_VERSION mismatch');
+assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
+['pg-tasks','taskModal','quickSearchModal','platformStatus','smartHub'].forEach(id=>assert(html.includes(`id="${id}"`),`missing #${id}`));
+['renderTasks','renderSmartHub','openQuickSearch','setupKeyboardShortcuts','shareBackup'].forEach(fn=>assert(new RegExp(`function\\s+${fn}\\s*\\(`).test(app),`missing ${fn}()`));
+['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','screenshots/mobile-home.png','screenshots/desktop-home.png'].forEach(f=>assert(fs.existsSync(path.join(root,f)),`missing ${f}`));
+console.log('Static checks passed for Imam Academy v7.0.0');

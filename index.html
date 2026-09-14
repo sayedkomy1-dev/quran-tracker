@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="6.2.0">
+<meta name="application-version" content="7.0.0">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -53,7 +53,9 @@
       <div class="hdr-sub" id="hdrSub">بالقرآن نحيا</div>
     </div>
     <div class="hdr-actions">
-      <button class="hdr-btn" onclick="toggleTheme()" id="themeBtn" title="تبديل المظهر">🌙</button>
+      <button class="hdr-btn hdr-search" onclick="openQuickSearch()" title="بحث سريع — Ctrl+K" aria-label="بحث سريع">🔎</button>
+      <button class="hdr-btn hdr-task" onclick="goPage('tasks')" title="المهام والمتابعة" aria-label="المهام والمتابعة">☑️<span class="hdr-badge" id="taskBadge" hidden>0</span></button>
+      <button class="hdr-btn" onclick="toggleTheme()" id="themeBtn" title="تبديل المظهر" aria-label="تبديل المظهر">🌙</button>
       <button class="back-btn" id="backBtn" onclick="goBack()">→ رجوع</button>
     </div>
   </div>
@@ -77,6 +79,22 @@
     <div class="sc"><div class="sn" id="stToday">0</div><div class="sl">حصص اليوم</div></div>
     <div class="sc"><div class="sn" id="stMonth">0</div><div class="sl">حصص الشهر</div></div>
     <div class="sc"><div class="sn" id="stAbsent">0</div><div class="sl">غياب اليوم</div></div>
+  </div>
+
+  <!-- مركز اليوم الذكي -->
+  <div class="smart-hub" id="smartHub">
+    <div class="smart-next" id="smartNext"></div>
+    <div class="smart-actions">
+      <button class="quick-action" onclick="goPage('checkin')"><span>✅</span><b>الحضور</b></button>
+      <button class="quick-action" onclick="goPage('tasks')"><span>☑️</span><b>المهام</b><small id="quickTaskCount"></small></button>
+      <button class="quick-action" onclick="openAddSt()"><span>➕</span><b>طالب جديد</b></button>
+      <button class="quick-action" onclick="openQuickSearch()"><span>🔎</span><b>بحث سريع</b></button>
+    </div>
+  </div>
+
+  <div class="card attention-card" id="attentionCard" style="display:none">
+    <div class="fb mb8"><div class="ch" style="margin:0">🧭 يحتاج متابعة</div><button class="link-btn" onclick="goPage('tasks')">عرض المهام</button></div>
+    <div id="attentionList"></div>
   </div>
 
   <!-- بطاقة الإنجاز اليومي (streak) -->
@@ -143,11 +161,14 @@
       <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--mut)">🔍</span>
       <input type="text" id="searchIn" placeholder="ابحث عن طالب..." oninput="filterSt()" style="padding-right:38px;width:100%;padding:10px 38px 10px 12px;border:1.5px solid var(--bdr);border-radius:10px;font-size:14px;font-family:inherit;background:var(--wh);color:var(--txt);direction:rtl">
     </div>
-    <select id="filterLevel" onchange="filterSt()" style="padding:10px 12px;border:1.5px solid var(--bdr);border-radius:10px;font-size:13px;background:var(--wh);color:var(--txt);font-family:inherit">
-      <option value="">الكل</option>
+    <select id="filterLevel" onchange="filterSt()" class="student-filter">
+      <option value="">كل المستويات</option>
       <option value="مبتدئ">مبتدئ</option>
       <option value="متوسط">متوسط</option>
       <option value="متقدم">متقدم</option>
+    </select>
+    <select id="filterGroup" onchange="filterSt()" class="student-filter">
+      <option value="">كل المجموعات</option>
     </select>
   </div>
   <button class="btn btn-wa mb8" onclick="openBroadcastComposer()">📣 رسالة جماعية لأولياء الأمور</button>
@@ -405,6 +426,16 @@
   </div>
 
   <div class="card">
+    <div class="ch">📱💻 الجهاز والتثبيت</div>
+    <div id="platformStatus" class="platform-grid"></div>
+    <div class="settings-actions">
+      <button class="btn btn-g btn-sm" onclick="installPWA()">⬇️ تثبيت التطبيق</button>
+      <button class="btn btn-out btn-sm" onclick="requestPersistentStorage()">🛡️ حماية التخزين المحلي</button>
+    </div>
+    <p class="txt-mut mt8" style="font-size:11px">على Android ثبّت التطبيق من Chrome، وعلى Windows من Edge/Chrome ليعمل في نافذة مستقلة وباختصارات لوحة المفاتيح.</p>
+  </div>
+
+  <div class="card">
     <div class="ch">🔔 الإشعارات</div>
     <button class="btn btn-out" id="notifBtn" onclick="requestNotif()">🔔 تفعيل تذكير المتابعة</button>
     <p class="txt-mut mt8" style="font-size:12px">يظهر تذكير عند فتح التطبيق إذا لم تُسجَّل متابعة اليوم</p>
@@ -442,7 +473,10 @@
 
   <div class="card">
     <div class="ch">💾 النسخ الاحتياطي</div>
-    <button class="btn btn-g mb8" onclick="exportData()">📤 تصدير البيانات (JSON)</button>
+    <div class="settings-actions">
+      <button class="btn btn-g mb8" onclick="exportData()">📤 تنزيل نسخة JSON</button>
+      <button class="btn btn-out mb8" onclick="shareBackup()">📲 مشاركة نسخة احتياطية</button>
+    </div>
     <div class="fld mt8">
       <label>استيراد بيانات</label>
       <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="border:1px dashed var(--bdr);background:#fafafa;border-radius:10px;padding:10px">
@@ -451,8 +485,8 @@
 
   <div class="card">
     <div class="ch">🧪 سلامة البيانات</div>
-    <div class="ir"><span class="ir-k">الإصدار</span><span id="appVersionText">6.2.0</span></div>
-    <div class="ir"><span class="ir-k">مخطط البيانات</span><span id="schemaVersionText">v7</span></div>
+    <div class="ir"><span class="ir-k">الإصدار</span><span id="appVersionText">7.0.0</span></div>
+    <div class="ir"><span class="ir-k">مخطط البيانات</span><span id="schemaVersionText">v8</span></div>
     <button class="btn btn-out mt8" onclick="runDataHealthCheck()">فحص سلامة البيانات</button>
     <div id="dataHealthResult" class="txt-mut mt8" style="font-size:12px"></div>
   </div>
@@ -460,6 +494,37 @@
   <div class="card">
     <div class="ch" style="color:var(--red)">⚠️ خطر</div>
     <button class="btn btn-red" onclick="clearAll()">🗑️ حذف جميع البيانات</button>
+  </div>
+</div>
+
+<!-- ══════════════ TASKS / FOLLOW-UP ══════════════ -->
+<div class="pg" id="pg-tasks">
+  <div class="task-hero card">
+    <div>
+      <div class="ch">☑️ المهام والمتابعة</div>
+      <div class="task-hero-title">متابعة لا تسقط من الذاكرة</div>
+      <div class="txt-mut">مهام للطلاب، تنبيهات للمراجعة، ومواعيد مستحقة — كلها محلية على جهازك.</div>
+    </div>
+    <button class="btn btn-g btn-sm" onclick="openTaskModal()">+ مهمة جديدة</button>
+  </div>
+  <div class="task-stats">
+    <button class="task-stat" onclick="setTaskFilter('open')"><b id="taskOpenCount">0</b><span>مفتوحة</span></button>
+    <button class="task-stat overdue" onclick="setTaskFilter('overdue')"><b id="taskOverdueCount">0</b><span>متأخرة</span></button>
+    <button class="task-stat" onclick="setTaskFilter('today')"><b id="taskTodayCount">0</b><span>اليوم</span></button>
+    <button class="task-stat" onclick="setTaskFilter('done')"><b id="taskDoneCount">0</b><span>مكتملة</span></button>
+  </div>
+  <div class="card">
+    <div class="task-toolbar">
+      <div class="segmented" id="taskFilters">
+        <button data-filter="open" class="on" onclick="setTaskFilter('open')">المفتوحة</button>
+        <button data-filter="today" onclick="setTaskFilter('today')">اليوم</button>
+        <button data-filter="overdue" onclick="setTaskFilter('overdue')">المتأخرة</button>
+        <button data-filter="done" onclick="setTaskFilter('done')">المكتملة</button>
+        <button data-filter="all" onclick="setTaskFilter('all')">الكل</button>
+      </div>
+      <input type="search" id="taskSearch" placeholder="ابحث في المهام..." oninput="renderTasks()">
+    </div>
+    <div id="taskList"></div>
   </div>
 </div>
 
@@ -477,6 +542,7 @@
   </div>
   <div class="card" id="profHist"></div>
   <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+    <button class="btn btn-g btn-sm" onclick="openTaskModal(curStId)">☑️ إضافة مهمة</button>
     <button class="btn btn-out btn-sm" onclick="editSt()">✏️ تعديل</button>
     <button class="btn btn-out btn-sm" onclick="openCert()">🎓 شهادة</button>
     <button class="btn btn-red btn-sm" onclick="deleteSt()">🗑️ حذف</button>
@@ -510,6 +576,8 @@
         <option value="متقدم">متقدم</option>
       </select>
     </div>
+    <div class="fld"><label>المجموعة / الحلقة <span class="txt-mut">(اختياري)</span></label><input type="text" id="m-group" list="groupList" placeholder="مثال: مجموعة السبت — المستوى الأول"></div>
+    <datalist id="groupList"></datalist>
     <div class="fld">
       <label>أيام الحصص الأسبوعية <span class="txt-mut">(اختياري)</span></label>
       <div class="days-grid" id="m-days">
@@ -538,6 +606,34 @@
     <button class="btn btn-g" onclick="saveSt()">💾 حفظ</button>
     <div style="height:8px"></div>
     <button class="btn btn-out" onclick="closeMo()">إلغاء</button>
+  </div>
+</div>
+
+<!-- ════════════ TASK MODAL ════════════ -->
+<div class="mo" id="taskModal">
+  <div class="mo-box">
+    <div class="mo-title"><span id="taskModalTitle">مهمة جديدة</span><button class="mo-x" onclick="closeTaskModal()">✕</button></div>
+    <div class="fld"><label>المهمة *</label><input type="text" id="taskTitle" placeholder="مثال: مراجعة سورة الملك"></div>
+    <div class="fld"><label>الطالب <span class="txt-mut">(اختياري)</span></label><select id="taskStudent"><option value="">— مهمة عامة —</option></select></div>
+    <div class="frow">
+      <div class="fld"><label>تاريخ الاستحقاق</label><input type="date" id="taskDue"></div>
+      <div class="fld"><label>الأولوية</label><select id="taskPriority"><option value="normal">عادية</option><option value="high">عالية</option></select></div>
+    </div>
+    <div class="fld"><label>ملاحظات</label><textarea id="taskNotes" rows="3" placeholder="تفاصيل مختصرة..."></textarea></div>
+    <button class="btn btn-g" onclick="saveTask()">💾 حفظ المهمة</button>
+  </div>
+</div>
+
+<!-- ════════════ QUICK SEARCH / COMMAND PALETTE ════════════ -->
+<div class="mo command-modal" id="quickSearchModal">
+  <div class="mo-box command-box">
+    <div class="command-input-wrap">
+      <span>🔎</span>
+      <input type="search" id="quickSearchInput" placeholder="ابحث عن طالب أو مهمة أو اكتب: حصة، تقرير..." oninput="renderQuickSearch()" autocomplete="off">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="command-hint">Ctrl/⌘ + K للبحث · Alt + 1…6 للتنقل · Ctrl/⌘ + Enter لحفظ الحصة</div>
+    <div id="quickSearchResults" class="command-results"></div>
   </div>
 </div>
 

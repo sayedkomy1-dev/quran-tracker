@@ -50,14 +50,15 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION='6.2.0';
-const SCHEMA_VERSION=7;
+const APP_VERSION='7.0.0';
+const SCHEMA_VERSION=8;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
 const GRADE_MAP={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
 
 let students=[];
 let sessions=[];
+let tasks=[];
 let settings={name:'',circle:ACADEMY_NAME,theme:'light',fontSize:'md',notifEnabled:false,waTemplate:'',schemaVersion:SCHEMA_VERSION};
 let curPage='home';
 let curStId=null;
@@ -162,6 +163,8 @@ function migrateData(){
     if(!x.createdAt){x.createdAt=now;changed=true;}
     if(!x.updatedAt){x.updatedAt=x.createdAt;changed=true;}
     if(!x.level){x.level='مبتدئ';changed=true;}
+    const normalizedGroup=String(x.group||'').trim().slice(0,120);
+    if((x.group||'')!==normalizedGroup){x.group=normalizedGroup;changed=true;} else x.group=normalizedGroup;
     const normDays=Array.isArray(x.scheduleDays)?[...new Set(x.scheduleDays.map(Number).filter(d=>Number.isInteger(d)&&d>=0&&d<=6))]:[];
     if(JSON.stringify(normDays)!==JSON.stringify(x.scheduleDays||[])){x.scheduleDays=normDays;changed=true;} else x.scheduleDays=normDays;
     if(x.scheduleTime&&!/^\d{2}:\d{2}$/.test(x.scheduleTime)){x.scheduleTime='';changed=true;}
@@ -181,6 +184,21 @@ function migrateData(){
     if(!x.summary) x.summary=buildSumText(x);
     return x;
   });
+
+  const studentIds=new Set(students.map(x=>x.id));
+  tasks=(Array.isArray(tasks)?tasks:[]).map(raw=>{
+    const x={...raw};
+    if(!x.id){x.id=makeId('task');changed=true;}
+    x.title=String(x.title||'').trim().slice(0,240);
+    x.notes=String(x.notes||'').trim().slice(0,4000);
+    if(x.studentId&&!studentIds.has(x.studentId)){x.studentId='';changed=true;}
+    if(x.dueDate&&!/^\d{4}-\d{2}-\d{2}$/.test(x.dueDate)){x.dueDate='';changed=true;}
+    if(!['normal','high'].includes(x.priority)){x.priority='normal';changed=true;}
+    x.done=!!x.done;
+    if(!x.createdAt){x.createdAt=now;changed=true;}
+    if(!x.updatedAt){x.updatedAt=x.createdAt;changed=true;}
+    return x;
+  }).filter(x=>x.title);
 
   // Safe legacy repair: remove attendance-only duplicates when the same student/day
   // already has a detailed session. Detailed same-day sessions are never deleted.
@@ -211,10 +229,11 @@ function readLocalFallback(){
   try{
     students=JSON.parse(localStorage.getItem('qt_st')||'[]');
     sessions=JSON.parse(localStorage.getItem('qt_ses')||'[]');
+    tasks=JSON.parse(localStorage.getItem('qt_tasks')||'[]');
     settings={...settings,...JSON.parse(localStorage.getItem('qt_cfg')||'{}')};
   }catch(e){
     console.warn('تعذر قراءة النسخة المحلية الاحتياطية',e);
-    students=[];sessions=[];
+    students=[];sessions=[];tasks=[];
   }
 }
 
@@ -267,6 +286,7 @@ function idbWriteSnapshot(){
     const store=tx.objectStore('kv');
     store.put({key:'students',val:JSON.stringify(students)});
     store.put({key:'sessions',val:JSON.stringify(sessions)});
+    store.put({key:'tasks',val:JSON.stringify(tasks)});
     store.put({key:'settings',val:JSON.stringify(settings)});
     tx.onerror=()=>console.warn('تعذر حفظ نسخة IndexedDB',tx.error);
   }catch(e){console.warn('تعذر الكتابة إلى IndexedDB',e);}
@@ -278,9 +298,10 @@ async function initDB(){
     const rows=await idbGetAll(db);
     const map={};
     rows.forEach(r=>{if(r&&r.key!=null)map[r.key]=r.val;});
-    if(map.students!==undefined||map.sessions!==undefined||map.settings!==undefined){
+    if(map.students!==undefined||map.sessions!==undefined||map.tasks!==undefined||map.settings!==undefined){
       students=JSON.parse(map.students||'[]');
       sessions=JSON.parse(map.sessions||'[]');
+      tasks=JSON.parse(map.tasks||'[]');
       settings={...settings,...JSON.parse(map.settings||'{}')};
     }else{
       readLocalFallback();
@@ -300,9 +321,11 @@ function save(){
   try{
     localStorage.setItem('qt_st',JSON.stringify(students));
     localStorage.setItem('qt_ses',JSON.stringify(sessions));
+    localStorage.setItem('qt_tasks',JSON.stringify(tasks));
     localStorage.setItem('qt_cfg',JSON.stringify(settings));
   }catch(e){console.warn('تعذر حفظ نسخة localStorage الاحتياطية',e);}
   idbWriteSnapshot();
+  queueMicrotask(()=>{try{updateTaskBadge();}catch(_){}});
 }
 
 // ══════════════════════════════════════
@@ -393,9 +416,11 @@ function goPage(p){
   const navTabs=document.querySelectorAll('.nav-t');
   if(navMap[p]!==undefined) navTabs[navMap[p]].classList.add('on');
   const isExtra=p==='profile'||p==='compare';
+  const showBack=isExtra||p==='tasks';
   document.getElementById('mainNav').style.display=isExtra?'none':'flex';
-  document.getElementById('backBtn').style.display=isExtra?'block':'none';
-  const titles={profile:'ملف الطالب',compare:'مقارنة الطلاب'};
+  document.getElementById('backBtn').style.display=showBack?'block':'none';
+  document.body.classList.toggle('no-sidebar',isExtra);
+  const titles={profile:'ملف الطالب',compare:'مقارنة الطلاب',tasks:'المهام والمتابعة'};
   document.getElementById('hdrTitle').textContent=titles[p]||'أكاديمية الإمام';
   document.getElementById('hdrSub').textContent=isExtra?'':ACADEMY_TAGLINE;
   curPage=p;
@@ -406,9 +431,11 @@ function goPage(p){
   if(p==='reports') initReports();
   if(p==='settings') initSettings();
   if(p==='compare') renderComparison();
+  if(p==='tasks') renderTasks();
 }
 function goBack(){
   if(curPage==='compare') goPage('reports');
+  else if(curPage==='tasks') goPage('home');
   else goPage('students');
 }
 
@@ -462,6 +489,8 @@ function renderHome(){
   }else sc.style.display='none';
 
   renderTodayQueue();
+  renderSmartHub();
+  updateTaskBadge();
 
   const last=sessions.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,6);
   const el=document.getElementById('recentSes');
@@ -649,12 +678,15 @@ function renderHomeCharts(){
 // ══════════════════════════════════════
 // STUDENTS LIST
 // ══════════════════════════════════════
-function renderSt(q='',lvl=''){
+function renderSt(q='',lvl='',group=''){
   const el=document.getElementById('stList');
+  refreshGroupOptions();
+  const nq=String(q||'').trim().toLowerCase();
   const list=students.filter(s=>{
-    const matchQ=!q||(s.name.includes(q)||s.parent.includes(q));
+    const matchQ=!nq||String(s.name||'').toLowerCase().includes(nq)||String(s.parent||'').toLowerCase().includes(nq)||String(s.group||'').toLowerCase().includes(nq);
     const matchL=!lvl||s.level===lvl;
-    return matchQ&&matchL;
+    const matchG=!group||s.group===group;
+    return matchQ&&matchL&&matchG;
   });
   if(!list.length){ el.innerHTML='<div class="empty"><div class="ei">👥</div><p>لا يوجد طلاب — اضغط + للإضافة</p></div>'; return; }
   el.innerHTML=list.map(s=>{
@@ -677,7 +709,7 @@ function renderSt(q='',lvl=''){
           <div class="urgency-dot ${urgency}" title="${daysSince<999?daysSince+' يوم':'لا حصص'}"></div>
         </div>
         <div class="sm">آخر حصة: ${lastDate} · ${cnt} حضور · ${total} آية مُقيّمة</div>
-        ${st.scheduleTime&&st.scheduleDays?.length?`<span class="schedule-chip">🕐 ${esc(st.scheduleTime)}</span>`:''}
+        ${s.group?`<span class="group-chip">👥 ${esc(s.group)}</span>`:''}${s.scheduleTime&&s.scheduleDays?.length?`<span class="schedule-chip">🕐 ${esc(s.scheduleTime)}</span>`:''}
         <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
           <span class="lv ${cls}">${esc(s.level)}</span>
           <div class="mini-prog" style="flex:1"><div class="mini-prog-fill" style="width:${pct}%"></div></div>
@@ -689,7 +721,7 @@ function renderSt(q='',lvl=''){
   }).join('');
 }
 function filterSt(){
-  renderSt(document.getElementById('searchIn').value,document.getElementById('filterLevel').value);
+  renderSt(document.getElementById('searchIn').value,document.getElementById('filterLevel').value,document.getElementById('filterGroup')?.value||'');
 }
 
 // ══════════════════════════════════════
@@ -698,7 +730,7 @@ function filterSt(){
 function openAddSt(){
   editId=null;
   document.getElementById('moTitle').textContent='إضافة طالب جديد';
-  ['m-name','m-par','m-phone','m-notes'].forEach(id=>document.getElementById(id).value='');
+  ['m-name','m-par','m-phone','m-notes','m-group'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('m-level').value='مبتدئ';
   document.getElementById('m-date').value=localDateKey();
   document.querySelectorAll('.m-day').forEach(x=>x.checked=false);
@@ -722,6 +754,7 @@ function saveSt(){
   const now=new Date().toISOString();
   const d={name,parent:document.getElementById('m-par').value.trim(),phone:normalizedPhone,
     startDate:document.getElementById('m-date').value,level:document.getElementById('m-level').value,
+    group:document.getElementById('m-group')?.value.trim().slice(0,120)||'',
     scheduleDays,scheduleTime,sessionDuration,
     notes:document.getElementById('m-notes').value.trim(),updatedAt:now};
   const conflicts=getScheduleConflicts(d,editId);
@@ -771,6 +804,7 @@ function openProf(id){
       </div>
     </div>
     <div class="ir"><span class="ir-k">👨‍👦 ولي الأمر</span><span>${esc(s.parent||'—')}</span></div>
+    <div class="ir"><span class="ir-k">👥 المجموعة</span><span>${esc(s.group||'—')}</span></div>
     <div class="ir"><span class="ir-k">📱 واتساب</span><span dir="ltr">${esc(s.phone)}</span></div>
     <div class="ir"><span class="ir-k">📅 بداية الحفظ</span><span>${esc(s.startDate||'—')}</span></div>
     <div class="ir"><span class="ir-k">🗓️ الموعد الأسبوعي</span><span>${esc(scheduleText(s))}</span></div>
@@ -811,6 +845,7 @@ function editSt(){
   document.getElementById('m-phone').value=s.phone;
   document.getElementById('m-date').value=s.startDate||'';
   document.getElementById('m-level').value=s.level;
+  document.getElementById('m-group').value=s.group||'';
   document.querySelectorAll('.m-day').forEach(x=>x.checked=(s.scheduleDays||[]).includes(Number(x.value)));
   document.getElementById('m-time').value=s.scheduleTime||'';
   document.getElementById('m-duration').value=String(s.sessionDuration||30);
@@ -821,6 +856,7 @@ function deleteSt(){
   if(!confirm('هل تريد حذف هذا الطالب وجميع بياناته؟')) return;
   students=students.filter(s=>s.id!==curStId);
   sessions=sessions.filter(s=>s.studentId!==curStId);
+  tasks=tasks.filter(t=>t.studentId!==curStId);
   save(); toast('تم الحذف','success'); goPage('students');
 }
 
@@ -1782,7 +1818,7 @@ function initSettings(){
   document.getElementById('setCircle').value=settings.circle||'';
   const tmpl=document.getElementById('waTmpl');if(tmpl)tmpl.value=settings.waTemplate||'';
   const sel=document.getElementById('trackSt');sel.innerHTML='<option value="">— اختر الطالب —</option>';students.forEach(st=>{sel.innerHTML+=`<option value="${esc(st.id)}">${esc(st.name)}</option>`;});
-  renderTrack();applyFontSize();
+  renderTrack();applyFontSize();renderPlatformStatus();
   const av=document.getElementById('appVersionText'),sv=document.getElementById('schemaVersionText');if(av)av.textContent=APP_VERSION;if(sv)sv.textContent='v'+SCHEMA_VERSION;
   const nb=document.getElementById('notifBtn');
   if(nb&&'Notification' in window&&Notification.permission==='granted'){nb.textContent='✅ الإشعارات مفعّلة';nb.disabled=true;}
@@ -1802,7 +1838,8 @@ function runDataHealthCheck(){
   let badRanges=0;sessions.forEach(x=>['new','rec','far'].forEach(k=>{const v=x[k];if(v&&(Number(v.from)<1||Number(v.to)<Number(v.from)))badRanges++;}));if(badRanges)issues.push(`${badRanges} نطاق آيات غير صالح`);
   const badPhones=students.filter(x=>!/^20\d{10}$/.test(String(x.phone||''))).length;if(badPhones)issues.push(`${badPhones} رقم واتساب يحتاج مراجعة`);
   const scheduleConflicts=allScheduleConflicts();if(scheduleConflicts.length)issues.push(`${scheduleConflicts.length} تعارضاً في مواعيد الطلاب`);
-  const draftCount=Object.keys(localStorage).filter(k=>k.startsWith('qt_draft_v6_')).length;if(draftCount)issues.push(`${draftCount} مسودة حصة محفوظة تلقائياً`);
+  const orphanTasks=tasks.filter(t=>t.studentId&&!studentIds.has(t.studentId)).length;if(orphanTasks)issues.push(`${orphanTasks} مهمة مرتبطة بطالب غير موجود`);
+  const draftCount=Object.keys(localStorage).filter(k=>/^qt_draft_v[678]_/.test(k)).length;if(draftCount)issues.push(`${draftCount} مسودة حصة محفوظة تلقائياً`);
   const el=document.getElementById('dataHealthResult');
   if(!issues.length){el.innerHTML='✅ لا توجد مشكلات بنيوية ظاهرة في البيانات.';toast('فحص البيانات سليم','success');}
   else{el.innerHTML='⚠️ '+issues.map(esc).join('<br>⚠️ ');toast(`تم العثور على ${issues.length} ملاحظة`,'info');}
@@ -1836,14 +1873,14 @@ async function checkAndNotify(){
 // ══════════════════════════════════════
 // BACKUP — VERSIONED + VALIDATED
 // ══════════════════════════════════════
-function backupPayload(){return {meta:{app:'أكاديمية الإمام — بالقرآن نحيا',appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,exportDate:new Date().toISOString()},students,sessions,settings};}
+function backupPayload(){return {meta:{app:'أكاديمية الإمام — بالقرآن نحيا',appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,exportDate:new Date().toISOString()},students,sessions,tasks,settings};}
 function exportData(){
   const data=JSON.stringify(backupPayload(),null,2),blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=`quran-backup-v${SCHEMA_VERSION}-${localDateKey()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('تم تصدير النسخة الاحتياطية','success');
 }
 function validateBackup(d){
   if(!d||typeof d!=='object'||!Array.isArray(d.students)||!Array.isArray(d.sessions||[]))throw new Error('بنية الملف غير صحيحة');
-  if(d.students.length>10000||(d.sessions||[]).length>200000)throw new Error('حجم الملف غير منطقي');
+  if(d.students.length>10000||(d.sessions||[]).length>200000||(d.tasks||[]).length>50000)throw new Error('حجم الملف غير منطقي');
   d.students.forEach(st=>{if(!st||typeof st!=='object'||typeof st.name!=='string')throw new Error('بيانات طالب غير صالحة');});
   (d.sessions||[]).forEach(se=>{if(!se||typeof se!=='object'||se.studentId==null)throw new Error('بيانات حصة غير صالحة');});
   return true;
@@ -1868,7 +1905,7 @@ function sanitizeBackupData(d){
     return {
       id,name:cleanText(raw.name,160),parent:cleanText(raw.parent,160),phone:cleanText(raw.phone,30),
       startDate:/^\d{4}-\d{2}-\d{2}$/.test(String(raw.startDate||''))?String(raw.startDate):'',
-      level:['مبتدئ','متوسط','متقدم'].includes(raw.level)?raw.level:'مبتدئ',
+      level:['مبتدئ','متوسط','متقدم'].includes(raw.level)?raw.level:'مبتدئ',group:cleanText(raw.group,120),
       scheduleDays:Array.isArray(raw.scheduleDays)?[...new Set(raw.scheduleDays.map(Number).filter(x=>Number.isInteger(x)&&x>=0&&x<=6))]:[],
       scheduleTime:/^\d{2}:\d{2}$/.test(String(raw.scheduleTime||''))?String(raw.scheduleTime):'',
       sessionDuration:Math.min(180,Math.max(15,parseInt(raw.sessionDuration)||30)),notes:cleanText(raw.notes,5000),
@@ -1894,7 +1931,17 @@ function sanitizeBackupData(d){
     }
     safeSessions.push(ses);
   });
-  return{students:safeStudents,sessions:safeSessions};
+  const usedTasks=new Set();
+  const safeTasks=(Array.isArray(d.tasks)?d.tasks:[]).map(raw=>{
+    const sid=raw.studentId?idMap.get(String(raw.studentId))||'':'';
+    return {
+      id:safeImportedId(raw.id,'task',usedTasks),studentId:sid,title:cleanText(raw.title,240),notes:cleanText(raw.notes,4000),
+      dueDate:/^\d{4}-\d{2}-\d{2}$/.test(String(raw.dueDate||''))?String(raw.dueDate):'',
+      priority:['normal','high'].includes(raw.priority)?raw.priority:'normal',done:!!raw.done,
+      createdAt:cleanText(raw.createdAt,40),updatedAt:cleanText(raw.updatedAt,40)
+    };
+  }).filter(x=>x.title);
+  return{students:safeStudents,sessions:safeSessions,tasks:safeTasks};
 }
 function importData(e){
   const file=e.target.files[0];if(!file)return;const reader=new FileReader();
@@ -1903,13 +1950,13 @@ function importData(e){
       const d=JSON.parse(ev.target.result);validateBackup(d);
       const safe=sanitizeBackupData(d),importedSessions=safe.sessions;
       if(!confirm(`سيتم استبدال البيانات الحالية واستيراد ${safe.students.length} طالب و${importedSessions.length} حصة.\nيفضل تصدير نسخة احتياطية قبل المتابعة.\n\nهل تريد الاستمرار؟`))return;
-      const old={students,sessions,settings};
+      const old={students,sessions,tasks,settings};
       try{
-        students=safe.students;sessions=importedSessions;
+        students=safe.students;sessions=importedSessions;tasks=safe.tasks||[];
         const cfg=d.settings&&typeof d.settings==='object'?d.settings:{};
         settings={...settings,name:cleanText(cfg.name,160),circle:cleanText(cfg.circle,200),theme:['light','dark'].includes(cfg.theme)?cfg.theme:'light',fontSize:['md','lg','xl'].includes(cfg.fontSize)?cfg.fontSize:'md',notifEnabled:!!cfg.notifEnabled,waTemplate:cleanText(cfg.waTemplate,8000),schemaVersion:SCHEMA_VERSION};
         migrateData();save();applyTheme();applyFontSize();toast('تم استيراد البيانات وفحصها وترقيتها بنجاح','success');goPage('home');
-      }catch(inner){students=old.students;sessions=old.sessions;settings=old.settings;save();throw inner;}
+      }catch(inner){students=old.students;sessions=old.sessions;tasks=old.tasks;settings=old.settings;save();throw inner;}
     }catch(err){toast(`ملف غير صالح: ${err.message||'تعذر القراءة'}`,'error');}
     finally{e.target.value='';}
   };reader.readAsText(file);
@@ -1917,7 +1964,7 @@ function importData(e){
 function clearAll(){
   if(!confirm('⚠️ هذا سيحذف جميع الطلاب والحصص من هذا الجهاز. هل أنت متأكد؟'))return;
   if(!confirm('تأكيد أخير: احذف كل البيانات المحلية؟'))return;
-  students=[];sessions=[];Object.keys(localStorage).filter(k=>k.startsWith('qt_draft_v6_')||k.startsWith('qt_draft_v7_')).forEach(k=>localStorage.removeItem(k));save();toast('تم مسح جميع البيانات','success');goPage('home');
+  students=[];sessions=[];tasks=[];Object.keys(localStorage).filter(k=>/^qt_draft_v[678]_/.test(k)).forEach(k=>localStorage.removeItem(k));save();toast('تم مسح جميع البيانات','success');goPage('home');
 }
 
 // ══════════════════════════════════════
@@ -1999,7 +2046,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('contro
 function handleURLParams(){
   const params=new URLSearchParams(location.search);
   const page=params.get('page');
-  if(page&&['session','students','reports','settings'].includes(page)) goPage(page);
+  if(page&&['session','students','reports','settings','tasks','checkin'].includes(page)) goPage(page);
 }
 
 // ══════════════════════════════════════
@@ -2039,11 +2086,13 @@ window.addEventListener('load',async ()=>{
   renderSt();
 
   // 5. Hide splash
-  setTimeout(()=>document.getElementById('splash').classList.add('hide'),1600);
+  setTimeout(()=>document.getElementById('splash').classList.add('hide'),650);
 
   // 6. PWA setup
   setupInstallPrompt();
   setupNetworkDetection();
+  setupKeyboardShortcuts();
+  setupPlatformUX();
   registerSW();
 
   // 7. Handle URL shortcuts
@@ -2443,4 +2492,158 @@ function sendNextBroadcast(){
   if(broadcastQueueIndex>=broadcastQueue.length){const p=document.getElementById('broadcastProgress');p.style.display='block';p.innerHTML=`✅ تم فتح رسائل ${broadcastQueue.length} ولي أمر. الإرسال النهائي يتم من داخل واتساب.`;toast('اكتملت قائمة الإرسال','success');return;}
   const st=broadcastQueue[broadcastQueueIndex],text=personalizeBroadcast(document.getElementById('broadcastText')?.value||'',st);openWhatsApp(st,text);broadcastQueueIndex++;
   const p=document.getElementById('broadcastProgress');p.style.display='block';const left=broadcastQueue.length-broadcastQueueIndex;p.innerHTML=`<strong>تم فتح ${broadcastQueueIndex} من ${broadcastQueue.length}</strong><br><span class="txt-mut">${left?`بعد إرسال الرسالة الحالية في واتساب اضغط «التالي».`:'انتهت القائمة.'}</span>${left?'<button class="btn btn-wa btn-sm mt8" onclick="sendNextBroadcast()">فتح الرسالة التالية ←</button>':''}`;
+}
+
+
+// ══════════════════════════════════════
+// v7.0 — CROSS-PLATFORM UX, TASKS & SMART FOLLOW-UP
+// ══════════════════════════════════════
+let taskFilter='open';
+let editingTaskId=null;
+
+function refreshGroupOptions(){
+  const groups=[...new Set(students.map(s=>String(s.group||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));
+  const dl=document.getElementById('groupList');if(dl)dl.innerHTML=groups.map(g=>`<option value="${esc(g)}"></option>`).join('');
+  const sel=document.getElementById('filterGroup');
+  if(sel){const keep=sel.value;sel.innerHTML='<option value="">كل المجموعات</option>'+groups.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join('');if(groups.includes(keep))sel.value=keep;}
+}
+
+function taskDueState(task,today=localDateKey()){
+  if(task.done)return'done';
+  if(!task.dueDate)return'open';
+  if(task.dueDate<today)return'overdue';
+  if(task.dueDate===today)return'today';
+  return'open';
+}
+function getOpenTasks(){return tasks.filter(t=>!t.done);}
+function updateTaskBadge(){
+  const count=getOpenTasks().length,b=document.getElementById('taskBadge'),q=document.getElementById('quickTaskCount');
+  if(b){b.hidden=!count;b.textContent=count>99?'99+':String(count);}
+  if(q)q.textContent=count?`${count} مفتوحة`:'';
+}
+function setTaskFilter(filter){taskFilter=filter;document.querySelectorAll('#taskFilters button').forEach(b=>b.classList.toggle('on',b.dataset.filter===filter));renderTasks();}
+function openTaskModal(studentId='',taskId=''){
+  editingTaskId=taskId||null;
+  const modal=document.getElementById('taskModal');if(!modal)return;
+  const sel=document.getElementById('taskStudent');sel.innerHTML='<option value="">— مهمة عامة —</option>'+students.map(s=>`<option value="${esc(s.id)}">${esc(s.name)}</option>`).join('');
+  const task=taskId?tasks.find(t=>t.id===taskId):null;
+  document.getElementById('taskModalTitle').textContent=task?'تعديل المهمة':'مهمة جديدة';
+  document.getElementById('taskTitle').value=task?.title||'';
+  document.getElementById('taskStudent').value=task?.studentId||studentId||'';
+  document.getElementById('taskDue').value=task?.dueDate||localDateKey();
+  document.getElementById('taskPriority').value=task?.priority||'normal';
+  document.getElementById('taskNotes').value=task?.notes||'';
+  modal.classList.add('open');setTimeout(()=>document.getElementById('taskTitle')?.focus(),60);
+}
+function closeTaskModal(){document.getElementById('taskModal')?.classList.remove('open');editingTaskId=null;}
+function saveTask(){
+  const wasEditing=!!editingTaskId;
+  const title=document.getElementById('taskTitle').value.trim();if(!title){toast('اكتب المهمة أولاً','error');return;}
+  const now=new Date().toISOString(),data={title:title.slice(0,240),studentId:document.getElementById('taskStudent').value||'',dueDate:document.getElementById('taskDue').value||'',priority:document.getElementById('taskPriority').value==='high'?'high':'normal',notes:document.getElementById('taskNotes').value.trim().slice(0,4000),updatedAt:now};
+  if(editingTaskId){const i=tasks.findIndex(t=>t.id===editingTaskId);if(i>=0)tasks[i]={...tasks[i],...data};}
+  else tasks.unshift({id:makeId('task'),...data,done:false,createdAt:now});
+  save();closeTaskModal();renderTasks();renderSmartHub();toast(wasEditing?'تم تحديث المهمة':'تمت إضافة المهمة','success');
+}
+function toggleTask(id){const t=tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;t.updatedAt=new Date().toISOString();save();renderTasks();renderSmartHub();vibrate([25]);}
+function deleteTaskItem(id){const t=tasks.find(x=>x.id===id);if(!t)return;if(!confirm(`حذف المهمة: ${t.title}؟`))return;tasks=tasks.filter(x=>x.id!==id);save();renderTasks();renderSmartHub();toast('تم حذف المهمة','success');}
+function renderTasks(){
+  updateTaskBadge();
+  const today=localDateKey(),open=tasks.filter(t=>!t.done),overdue=open.filter(t=>t.dueDate&&t.dueDate<today),todayTasks=open.filter(t=>t.dueDate===today),done=tasks.filter(t=>t.done);
+  const ids={taskOpenCount:open.length,taskOverdueCount:overdue.length,taskTodayCount:todayTasks.length,taskDoneCount:done.length};Object.entries(ids).forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.textContent=v;});
+  document.querySelectorAll('#taskFilters button').forEach(b=>b.classList.toggle('on',b.dataset.filter===taskFilter));
+  const el=document.getElementById('taskList');if(!el)return;
+  const q=String(document.getElementById('taskSearch')?.value||'').trim().toLowerCase();
+  let list=[...tasks];
+  list=list.filter(t=>{const state=taskDueState(t,today);if(taskFilter==='all')return true;if(taskFilter==='open')return !t.done;return state===taskFilter;});
+  if(q)list=list.filter(t=>`${t.title} ${t.notes||''} ${students.find(s=>s.id===t.studentId)?.name||''}`.toLowerCase().includes(q));
+  list.sort((a,b)=>Number(a.done)-Number(b.done)||(a.dueDate||'9999-99-99').localeCompare(b.dueDate||'9999-99-99')||(a.priority==='high'?-1:1));
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">☑️</div><p>لا توجد مهام في هذا العرض</p></div>';return;}
+  el.innerHTML=list.map(t=>{const st=students.find(s=>s.id===t.studentId),state=taskDueState(t,today),due=t.dueDate?new Date(t.dueDate+'T12:00:00').toLocaleDateString('ar-EG',{month:'short',day:'numeric'}):'بدون موعد';return `<div class="task-item ${state} ${t.priority==='high'?'priority-high':''}">
+    <button class="task-check ${t.done?'done':''}" onclick="toggleTask('${esc(t.id)}')" aria-label="${t.done?'إعادة فتح':'إكمال'} المهمة">${t.done?'✓':''}</button>
+    <div class="task-main"><div class="task-title">${esc(t.title)}</div><div class="task-meta">${st?`👤 ${esc(st.name)} · `:''}${state==='overdue'?'⚠️ متأخرة · ':state==='today'?'📌 اليوم · ':''}📅 ${esc(due)}${t.priority==='high'?' · 🔴 أولوية عالية':''}</div>${t.notes?`<div class="task-notes">${esc(t.notes)}</div>`:''}</div>
+    <div class="task-menu"><button onclick="openTaskModal('${esc(t.studentId||'')}','${esc(t.id)}')">✏️</button><button onclick="deleteTaskItem('${esc(t.id)}')">🗑️</button></div>
+  </div>`;}).join('');
+}
+
+function getAttentionStudents(){
+  const now=Date.now();
+  return students.map(st=>{
+    const hist=sessions.filter(s=>s.studentId===st.id).sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const last=hist[0]||null,days=last?Math.max(0,Math.floor((now-new Date(last.date).getTime())/86400000)):999;
+    const recent=hist.filter(s=>s.status==='حضر').slice(0,5),gradesArr=recent.flatMap(getAssessmentGrades).map(g=>GRADE_MAP[g]).filter(Boolean),avg=gradesArr.length?gradesArr.reduce((a,b)=>a+b,0)/gradesArr.length:null;
+    const absences=hist.slice(0,6).filter(s=>s.status==='غاب').length;
+    let score=0,reasons=[];
+    if(days===999){score+=3;reasons.push('لم تبدأ المتابعة بعد');}
+    else if(days>14){score+=3;reasons.push(`آخر حصة منذ ${days} يومًا`);}else if(days>7){score+=2;reasons.push(`مرّ ${days} أيام على آخر حصة`);}
+    if(avg!=null&&avg<2.25){score+=3;reasons.push('متوسط التسميع يحتاج تقوية');}else if(avg!=null&&avg<3){score+=1;reasons.push('التقييم الأخير متوسط');}
+    if(absences>=2){score+=2;reasons.push(`${absences} غياب في آخر المتابعات`);}
+    const openTasks=tasks.filter(t=>!t.done&&t.studentId===st.id).length;if(openTasks){score+=Math.min(2,openTasks);reasons.push(`${openTasks} مهمة مفتوحة`);}
+    return{st,score,reasons,days};
+  }).filter(x=>x.score>=2).sort((a,b)=>b.score-a.score||b.days-a.days).slice(0,6);
+}
+function renderSmartHub(){
+  const nextEl=document.getElementById('smartNext'),attCard=document.getElementById('attentionCard'),attList=document.getElementById('attentionList');if(!nextEl)return;
+  const today=localDateKey(),expected=expectedStudentsForDate(today),now=new Date(),mins=now.getHours()*60+now.getMinutes();
+  const pending=expected.filter(st=>!findDailySession(st.id,today));
+  let next=pending.filter(st=>timeToMinutes(st.scheduleTime)!=null&&timeToMinutes(st.scheduleTime)>=mins).sort((a,b)=>timeToMinutes(a.scheduleTime)-timeToMinutes(b.scheduleTime))[0]||pending[0]||null;
+  if(next){const t=next.scheduleTime?`الساعة ${esc(next.scheduleTime)}`:'اليوم';nextEl.innerHTML=`<div class="smart-next-label">الحصة التالية</div><div class="smart-next-name">${esc(next.name)}</div><div class="smart-next-meta">${t}${next.group?` · ${esc(next.group)}`:''}</div><button class="btn btn-g btn-sm" onclick="startFor('${esc(next.id)}')">ابدأ الآن</button>`;}
+  else if(expected.length)nextEl.innerHTML='<div class="smart-next-label">متابعة اليوم</div><div class="smart-next-name">تم تسجيل الجميع ✓</div><div class="smart-next-meta">يمكنك مراجعة التقارير أو إضافة مهمة للغد.</div>';
+  else nextEl.innerHTML='<div class="smart-next-label">اليوم</div><div class="smart-next-name">لا توجد حصص مجدولة</div><div class="smart-next-meta">ابدأ حصة استثنائية أو رتّب مهام المتابعة.</div>';
+  const attention=getAttentionStudents();
+  if(attCard&&attList){attCard.style.display=attention.length?'block':'none';attList.innerHTML=attention.map(x=>`<button class="attention-item" onclick="openProf('${esc(x.st.id)}')"><span class="attention-avatar">${esc(x.st.name.trim().slice(0,1))}</span><span><b>${esc(x.st.name)}</b><small>${esc(x.reasons.slice(0,2).join(' · '))}</small></span><i>‹</i></button>`).join('');}
+  updateTaskBadge();
+}
+
+function openQuickSearch(){const m=document.getElementById('quickSearchModal');if(!m)return;m.classList.add('open');const i=document.getElementById('quickSearchInput');if(i){i.value='';renderQuickSearch();setTimeout(()=>i.focus(),40);}}
+function closeQuickSearch(){document.getElementById('quickSearchModal')?.classList.remove('open');}
+function quickOpenStudent(id){closeQuickSearch();openProf(id);}
+function quickOpenTask(id){closeQuickSearch();goPage('tasks');taskFilter='all';const input=document.getElementById('taskSearch');const t=tasks.find(x=>x.id===id);if(input&&t)input.value=t.title;renderTasks();}
+function quickGo(page){closeQuickSearch();goPage(page);}
+function renderQuickSearch(){
+  const el=document.getElementById('quickSearchResults');if(!el)return;const q=String(document.getElementById('quickSearchInput')?.value||'').trim().toLowerCase();
+  const pages=[['home','🏠','الرئيسية'],['students','👥','الطلاب'],['checkin','✅','الحضور'],['session','📖','بدء حصة'],['reports','📊','التقارير'],['tasks','☑️','المهام'],['settings','⚙️','الإعدادات']];
+  const pageMatches=pages.filter(x=>!q||x[2].includes(q)).slice(0,5);
+  const stMatches=students.filter(s=>!q||`${s.name} ${s.parent||''} ${s.group||''}`.toLowerCase().includes(q)).slice(0,7);
+  const taskMatches=tasks.filter(t=>!q||`${t.title} ${t.notes||''}`.toLowerCase().includes(q)).slice(0,5);
+  el.innerHTML=`<div class="command-section"><span>تنقل سريع</span>${pageMatches.map(x=>`<button onclick="quickGo('${x[0]}')"><i>${x[1]}</i><b>${x[2]}</b><small>فتح</small></button>`).join('')}</div>`+
+    (stMatches.length?`<div class="command-section"><span>الطلاب</span>${stMatches.map(st=>`<button onclick="quickOpenStudent('${esc(st.id)}')"><i>👤</i><b>${esc(st.name)}</b><small>${esc(st.group||st.level||'')}</small></button>`).join('')}</div>`:'')+
+    (taskMatches.length?`<div class="command-section"><span>المهام</span>${taskMatches.map(t=>`<button onclick="quickOpenTask('${esc(t.id)}')"><i>${t.done?'✅':'☑️'}</i><b>${esc(t.title)}</b><small>${esc(t.dueDate||'بدون موعد')}</small></button>`).join('')}</div>`:'');
+}
+
+function setupKeyboardShortcuts(){
+  document.addEventListener('keydown',e=>{
+    const tag=document.activeElement?.tagName,typing=['INPUT','TEXTAREA','SELECT'].includes(tag);
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openQuickSearch();return;}
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='n'&&!typing){e.preventDefault();openAddSt();return;}
+    if((e.ctrlKey||e.metaKey)&&e.key==='Enter'&&curPage==='session'){e.preventDefault();saveSession();return;}
+    if(e.altKey&&/^[1-6]$/.test(e.key)){e.preventDefault();const pages=['home','students','checkin','session','reports','settings'];goPage(pages[Number(e.key)-1]);return;}
+    if(e.key==='Escape'){
+      const open=[...document.querySelectorAll('.mo.open')].pop();if(open){open.classList.remove('open');return;}
+      if(curPage==='profile'||curPage==='compare'||curPage==='tasks')goBack();
+    }
+  });
+}
+function setupPlatformUX(){
+  const standalone=window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  document.body.classList.toggle('standalone-app',!!standalone);
+  document.body.classList.toggle('touch-device',matchMedia?.('(pointer: coarse)').matches||false);
+  refreshGroupOptions();updateTaskBadge();
+}
+async function renderPlatformStatus(){
+  const el=document.getElementById('platformStatus');if(!el)return;
+  const ua=(navigator.userAgentData?.platform||navigator.platform||navigator.userAgent||'').toLowerCase(),platform=ua.includes('win')?'Windows':ua.includes('android')?'Android':ua.includes('iphone')||ua.includes('ipad')?'iOS':'متصفح ويب';
+  const standalone=window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
+  let storage='غير متاح',persist='غير معروف';
+  try{if(navigator.storage?.estimate){const e=await navigator.storage.estimate();const used=(e.usage||0)/1048576,quota=(e.quota||0)/1048576;storage=`${used.toFixed(1)} MB / ${quota>=1024?(quota/1024).toFixed(1)+' GB':quota.toFixed(0)+' MB'}`;}if(navigator.storage?.persisted)persist=(await navigator.storage.persisted())?'محمي':'قابل للتنظيف';}catch(_){}
+  el.innerHTML=`<div><span>النظام</span><b>${esc(platform)}</b></div><div><span>وضع التشغيل</span><b>${standalone?'تطبيق مثبت':'داخل المتصفح'}</b></div><div><span>الاتصال</span><b>${navigator.onLine?'متصل':'بدون إنترنت'}</b></div><div><span>التخزين</span><b>${esc(storage)}</b></div><div><span>حماية التخزين</span><b>${esc(persist)}</b></div><div><span>الإصدار</span><b>${APP_VERSION}</b></div>`;
+}
+async function requestPersistentStorage(){
+  if(!navigator.storage?.persist){toast('هذا المتصفح لا يدعم طلب حماية التخزين','info');return;}
+  try{const ok=await navigator.storage.persist();toast(ok?'تم طلب حماية البيانات المحلية بنجاح':'لم يمنح المتصفح حماية دائمة للتخزين',ok?'success':'info');renderPlatformStatus();}catch(_){toast('تعذر تغيير حالة التخزين','error');}
+}
+function buildBackupFile(){const data=JSON.stringify(backupPayload(),null,2);return new File([data],`quran-backup-v${SCHEMA_VERSION}-${localDateKey()}.json`,{type:'application/json'});}
+async function shareBackup(){
+  const file=buildBackupFile();
+  try{if(navigator.share&&navigator.canShare?.({files:[file]})){await navigator.share({title:'نسخة احتياطية — أكاديمية الإمام',text:'نسخة احتياطية لبيانات أكاديمية الإمام',files:[file]});toast('تم فتح المشاركة','success');return;}}catch(e){if(e?.name==='AbortError')return;}
+  exportData();toast('المشاركة بالملفات غير مدعومة هنا؛ تم تنزيل النسخة بدلاً منها','info');
 }
