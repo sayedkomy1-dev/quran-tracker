@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="7.0.0">
+<meta name="application-version" content="8.0.0">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -81,20 +81,35 @@
     <div class="sc"><div class="sn" id="stAbsent">0</div><div class="sl">غياب اليوم</div></div>
   </div>
 
-  <!-- مركز اليوم الذكي -->
-  <div class="smart-hub" id="smartHub">
-    <div class="smart-next" id="smartNext"></div>
-    <div class="smart-actions">
-      <button class="quick-action" onclick="goPage('checkin')"><span>✅</span><b>الحضور</b></button>
-      <button class="quick-action" onclick="goPage('tasks')"><span>☑️</span><b>المهام</b><small id="quickTaskCount"></small></button>
-      <button class="quick-action" onclick="openAddSt()"><span>➕</span><b>طالب جديد</b></button>
-      <button class="quick-action" onclick="openQuickSearch()"><span>🔎</span><b>بحث سريع</b></button>
+  <!-- تحليل مبسط في أعلى الواجهة -->
+  <div class="card home-analysis" id="homeAnalysis">
+    <div class="fb mb8">
+      <div class="ch" style="margin:0">📊 تحليل مبسط</div>
+      <span class="analysis-note" id="homeTrend">آخر 7 أيام</span>
+    </div>
+    <div class="insight-grid">
+      <div class="insight-item"><strong id="anWeekPresent">0</strong><span>حضور آخر 7 أيام</span></div>
+      <div class="insight-item"><strong id="anWeekAbsent">0</strong><span>غياب آخر 7 أيام</span></div>
+      <div class="insight-item"><strong id="anAvgGrade">—</strong><span>متوسط التسميع</span></div>
+      <div class="insight-item"><strong id="anNewAyat">0</strong><span>آيات حفظ جديد هذا الشهر</span></div>
     </div>
   </div>
 
-  <div class="card attention-card" id="attentionCard" style="display:none">
-    <div class="fb mb8"><div class="ch" style="margin:0">🧭 يحتاج متابعة</div><button class="link-btn" onclick="goPage('tasks')">عرض المهام</button></div>
-    <div id="attentionList"></div>
+  <div class="card goal-card" id="weeklyGoalsCard">
+    <div class="fb mb8"><div class="ch" style="margin:0">🎯 أهداف هذا الأسبوع</div><button class="btn btn-out btn-xs" onclick="goPage('settings');setTimeout(()=>document.getElementById('goalNewAyat')?.focus(),80)">تعديل</button></div>
+    <div class="goal-grid">
+      <div class="goal-item"><strong id="goalNewAyatNow">0</strong><span>آية حفظ جديد</span><small id="goalNewAyatTarget">من 0</small></div>
+      <div class="goal-item"><strong id="goalReviewNow">0</strong><span>مراجعات</span><small id="goalReviewTarget">من 0</small></div>
+      <div class="goal-item"><strong id="goalSessionsNow">0</strong><span>حصص</span><small id="goalSessionsTarget">من 0</small></div>
+      <div class="goal-item"><strong id="goalAttendanceNow">0</strong><span>حضور</span><small id="goalAttendanceTarget">من 0</small></div>
+    </div>
+  </div>
+
+  <div class="smart-actions home-actions">
+    <button class="quick-action" onclick="goPage('checkin')"><span>✅</span><b>الحضور</b></button>
+    <button class="quick-action" onclick="goPage('session')"><span>📖</span><b>بدء حصة</b></button>
+    <button class="quick-action" onclick="openAddSt()"><span>➕</span><b>طالب جديد</b></button>
+    <button class="quick-action" onclick="openQuickSearch()"><span>🔎</span><b>بحث سريع</b></button>
   </div>
 
   <!-- بطاقة الإنجاز اليومي (streak) -->
@@ -203,6 +218,12 @@
     </div>
   </div>
 
+  <div class="card session-journey-card" id="sessionJourneyCard" style="display:none">
+    <div class="fb mb8"><div class="ch" style="margin:0">📍 أين توقفنا؟</div><button class="btn btn-out btn-xs" onclick="fillFromLast()">♻️ نفس التكليف</button></div>
+    <div id="sessionJourneyStrip" class="journey-strip"></div>
+    <div id="smartReviewSuggestions" class="review-suggestions"></div>
+  </div>
+
   <div id="absentNotice" style="display:none">
     <div class="absent-notice">⚠️ الطالب غائب — سيتم نقل التكليف السابق للحصة القادمة</div>
     <button class="btn btn-wa mb8" onclick="sendAbsenceWA()">📲 إبلاغ ولي الأمر بالغياب</button>
@@ -224,17 +245,30 @@
       <div id="prevContent"><div class="txt-mut" style="text-align:center;padding:10px">اختر الطالب لعرض تكليف الحصة السابقة</div></div>
     </div>
 
+    <div class="card session-errors-card" id="sessionErrorsCard">
+      <div class="fb mb8"><div class="ch" style="margin:0">🧭 سجل أخطاء التسميع</div><span class="txt-mut" id="errorCountLabel">0 خطأ</span></div>
+      <div class="error-chip-grid" id="errorChipGrid">
+        <button type="button" onclick="addRecitationError('حفظ')">🧠 حفظ</button>
+        <button type="button" onclick="addRecitationError('تردد')">⏸️ تردد</button>
+        <button type="button" onclick="addRecitationError('تلقين')">💬 تلقين</button>
+        <button type="button" onclick="addRecitationError('تجويد')">🎙️ تجويد</button>
+        <button type="button" onclick="addRecitationError('تشكيل')">🔤 تشكيل</button>
+        <button type="button" onclick="addRecitationError('نسيان آية')">↩️ نسيان آية</button>
+      </div>
+      <div id="sessionErrorList" class="error-log-list"></div>
+    </div>
+
     <div class="sec-div">📝 القسم الثاني: تكليف الحصة القادمة</div>
 
     <div class="card">
       <div class="fb mb8">
-        <span class="badge b-new">📖 حفظ جديد</span>
+        <div class="session-badge-actions"><span class="badge b-new">📖 حفظ جديد</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="openQuranTextModal()">📖 النص</button></div>
         <div class="tog on" id="tog-new" onclick="togSec('new')"></div>
       </div>
       <div id="bod-new">
         <div class="voice-row">
           <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
-            <input type="text" id="new-s" list="surahList" autocomplete="off" placeholder="اختر أو اكتب اسم السورة" onchange="fillAyah('new')">
+            <div class="surah-combo"><input type="search" id="new-s" autocomplete="off" placeholder="اكتب للبحث أو اختر السورة" onfocus="openSurahDropdown('new')" oninput="filterSurahDropdown('new');fillAyah('new')" onchange="fillAyah('new')"><button type="button" class="surah-drop-btn" onclick="toggleSurahDropdown('new')" aria-label="فتح قائمة السور">⌄</button><div class="surah-dropdown" id="new-surah-dropdown"></div></div>
             <div class="auto-surah-hint" id="new-auto-hint"></div>
           </div>
           <button class="voice-btn" id="vb-new" onclick="startVoice('new')" title="إدخال صوتي">🎙️</button>
@@ -247,13 +281,15 @@
           <div class="fld"><label>من آية</label><input type="number" id="new-f" min="1" inputmode="numeric" placeholder="من" style="text-align:center"></div>
           <div class="fld"><label>إلى آية</label><input type="number" id="new-t" min="1" inputmode="numeric" placeholder="إلى" style="text-align:center"></div>
         </div>
-        <div class="fld"><label>تقييم إضافي للتكليف الحالي <span class="txt-mut">(اختياري)</span></label>
-          <div class="gbs" id="gr-new">
-            <div class="gb" data-g="ممتاز" onclick="setGr('new','ممتاز')">⭐ ممتاز</div>
-            <div class="gb" data-g="جيد جداً" onclick="setGr('new','جيد جداً')">جيد جداً</div>
-            <div class="gb" data-g="جيد" onclick="setGr('new','جيد')">جيد</div>
-            <div class="gb" data-g="ضعيف" onclick="setGr('new','ضعيف')">ضعيف</div>
-          </div>
+        <div class="direction-picker">
+          <span class="direction-label">اتجاه الاستمرار</span>
+          <button type="button" id="dir-new-up" class="direction-btn" onclick="setDirection('new',-1)" title="نحو السورة السابقة في ترتيب المصحف">↑</button>
+          <button type="button" id="dir-new-down" class="direction-btn" onclick="setDirection('new',1)" title="نحو السورة التالية في ترتيب المصحف">↓</button>
+          <small id="dir-new-text">اختر اتجاه المتابعة</small>
+        </div>
+        <div class="assignment-actions">
+          <button type="button" class="btn btn-out btn-xs" onclick="markSectionComplete('new')">✓ تمت السورة</button>
+          <button type="button" class="btn btn-out btn-xs" onclick="repeatSectionOnly('new')">♻️ كرر نفس التكليف</button>
         </div>
       </div>
     </div>
@@ -266,7 +302,7 @@
       <div id="bod-rec" style="display:none">
         <div class="voice-row">
           <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
-            <input type="text" id="rec-s" list="surahList" autocomplete="off" placeholder="اختر أو اكتب اسم السورة" onchange="fillAyah('rec')">
+            <div class="surah-combo"><input type="search" id="rec-s" autocomplete="off" placeholder="اكتب للبحث أو اختر السورة" onfocus="openSurahDropdown('rec')" oninput="filterSurahDropdown('rec');fillAyah('rec')" onchange="fillAyah('rec')"><button type="button" class="surah-drop-btn" onclick="toggleSurahDropdown('rec')" aria-label="فتح قائمة السور">⌄</button><div class="surah-dropdown" id="rec-surah-dropdown"></div></div>
             <div class="auto-surah-hint" id="rec-auto-hint"></div>
           </div>
           <button class="voice-btn" id="vb-rec" onclick="startVoice('rec')" title="إدخال صوتي">🎙️</button>
@@ -279,13 +315,15 @@
           <div class="fld"><label>من آية</label><input type="number" id="rec-f" min="1" inputmode="numeric" placeholder="من" style="text-align:center"></div>
           <div class="fld"><label>إلى آية</label><input type="number" id="rec-t" min="1" inputmode="numeric" placeholder="إلى" style="text-align:center"></div>
         </div>
-        <div class="fld"><label>تقييم إضافي للتكليف الحالي <span class="txt-mut">(اختياري)</span></label>
-          <div class="gbs" id="gr-rec">
-            <div class="gb" data-g="ممتاز" onclick="setGr('rec','ممتاز')">⭐ ممتاز</div>
-            <div class="gb" data-g="جيد جداً" onclick="setGr('rec','جيد جداً')">جيد جداً</div>
-            <div class="gb" data-g="جيد" onclick="setGr('rec','جيد')">جيد</div>
-            <div class="gb" data-g="ضعيف" onclick="setGr('rec','ضعيف')">ضعيف</div>
-          </div>
+        <div class="direction-picker">
+          <span class="direction-label">اتجاه الاستمرار</span>
+          <button type="button" id="dir-rec-up" class="direction-btn" onclick="setDirection('rec',-1)" title="نحو السورة السابقة في ترتيب المصحف">↑</button>
+          <button type="button" id="dir-rec-down" class="direction-btn" onclick="setDirection('rec',1)" title="نحو السورة التالية في ترتيب المصحف">↓</button>
+          <small id="dir-rec-text">اختر اتجاه المتابعة</small>
+        </div>
+        <div class="assignment-actions">
+          <button type="button" class="btn btn-out btn-xs" onclick="markSectionComplete('rec')">✓ تمت السورة</button>
+          <button type="button" class="btn btn-out btn-xs" onclick="repeatSectionOnly('rec')">♻️ كرر نفس التكليف</button>
         </div>
       </div>
     </div>
@@ -298,7 +336,7 @@
       <div id="bod-far" style="display:none">
         <div class="voice-row">
           <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
-            <input type="text" id="far-s" list="surahList" autocomplete="off" placeholder="اختر أو اكتب اسم السورة" onchange="fillAyah('far')">
+            <div class="surah-combo"><input type="search" id="far-s" autocomplete="off" placeholder="اكتب للبحث أو اختر السورة" onfocus="openSurahDropdown('far')" oninput="filterSurahDropdown('far');fillAyah('far')" onchange="fillAyah('far')"><button type="button" class="surah-drop-btn" onclick="toggleSurahDropdown('far')" aria-label="فتح قائمة السور">⌄</button><div class="surah-dropdown" id="far-surah-dropdown"></div></div>
             <div class="auto-surah-hint" id="far-auto-hint"></div>
           </div>
           <button class="voice-btn" id="vb-far" onclick="startVoice('far')" title="إدخال صوتي">🎙️</button>
@@ -311,56 +349,85 @@
           <div class="fld"><label>من آية</label><input type="number" id="far-f" min="1" inputmode="numeric" placeholder="من" style="text-align:center"></div>
           <div class="fld"><label>إلى آية</label><input type="number" id="far-t" min="1" inputmode="numeric" placeholder="إلى" style="text-align:center"></div>
         </div>
-        <div class="fld"><label>تقييم إضافي للتكليف الحالي <span class="txt-mut">(اختياري)</span></label>
-          <div class="gbs" id="gr-far">
-            <div class="gb" data-g="ممتاز" onclick="setGr('far','ممتاز')">⭐ ممتاز</div>
-            <div class="gb" data-g="جيد جداً" onclick="setGr('far','جيد جداً')">جيد جداً</div>
-            <div class="gb" data-g="جيد" onclick="setGr('far','جيد')">جيد</div>
-            <div class="gb" data-g="ضعيف" onclick="setGr('far','ضعيف')">ضعيف</div>
-          </div>
+        <div class="direction-picker">
+          <span class="direction-label">اتجاه الاستمرار</span>
+          <button type="button" id="dir-far-up" class="direction-btn" onclick="setDirection('far',-1)" title="نحو السورة السابقة في ترتيب المصحف">↑</button>
+          <button type="button" id="dir-far-down" class="direction-btn" onclick="setDirection('far',1)" title="نحو السورة التالية في ترتيب المصحف">↓</button>
+          <small id="dir-far-text">اختر اتجاه المتابعة</small>
+        </div>
+        <div class="assignment-actions">
+          <button type="button" class="btn btn-out btn-xs" onclick="markSectionComplete('far')">✓ تمت السورة</button>
+          <button type="button" class="btn btn-out btn-xs" onclick="repeatSectionOnly('far')">♻️ كرر نفس التكليف</button>
         </div>
       </div>
     </div>
 
     <div class="card">
       <div class="fb mb8">
-        <span class="badge b-juz">📜 أجزاء / سور كاملة</span>
+        <span class="badge b-juz">📜 مراجعة الأجزاء</span>
         <div class="tog" id="tog-juz" onclick="togSec('juz')"></div>
       </div>
       <div id="bod-juz" style="display:none">
-        <div class="fld"><label>اختر جزءاً كاملاً</label>
-          <select id="juz-j" onchange="addJuz()"><option value="">— اختر الجزء —</option></select>
-        </div>
-        <div class="fld"><label>أو اختر سورة أو أكثر <span class="txt-mut">(اختيار متعدد)</span></label>
-          <input type="search" id="juz-surah-search" placeholder="ابحث باسم السورة..." oninput="renderSurahChecklist()">
-          <div class="multi-actions">
-            <button type="button" class="btn btn-out btn-xs" onclick="selectJuzAmmaSurahs()">✓ سور جزء عم</button>
-            <button type="button" class="btn btn-out btn-xs" onclick="clearSelectedSurahs()">مسح تحديد السور</button>
-            <span class="selected-count" id="juz-surah-count">0 سورة محددة</span>
-          </div>
-          <div id="juz-surah-list" class="surah-checklist"></div>
+        <div class="fld"><label>اختر جزءاً أو أكثر</label>
+          <select id="juz-j" onchange="addJuz()"><option value="">— اختر الجزء باسمه —</option></select>
         </div>
         <div id="juz-chips" style="margin:4px 0 10px"></div>
-        <div class="fld"><label>تقييم إضافي للتكليف الحالي <span class="txt-mut">(اختياري)</span></label>
-          <div class="gbs" id="gr-juz">
-            <div class="gb" data-g="ممتاز" onclick="setGr('juz','ممتاز')">⭐ ممتاز</div>
-            <div class="gb" data-g="جيد جداً" onclick="setGr('juz','جيد جداً')">جيد جداً</div>
-            <div class="gb" data-g="جيد" onclick="setGr('juz','جيد')">جيد</div>
-            <div class="gb" data-g="ضعيف" onclick="setGr('juz','ضعيف')">ضعيف</div>
+        <div class="direction-picker">
+          <span class="direction-label">اتجاه مراجعة الأجزاء</span>
+          <button type="button" id="dir-juz-up" class="direction-btn" onclick="setDirection('juz',-1)" title="نحو الجزء السابق">↑</button>
+          <button type="button" id="dir-juz-down" class="direction-btn" onclick="setDirection('juz',1)" title="نحو الجزء التالي">↓</button>
+          <small id="dir-juz-text">اختر اتجاه المتابعة</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fb mb8">
+        <span class="badge b-juz">🕌 مراجعة السور</span>
+        <div class="tog" id="tog-surahReview" onclick="togSec('surahReview')"></div>
+      </div>
+      <div id="bod-surahReview" style="display:none">
+        <div class="fld"><label>اختر سورة أو أكثر <span class="txt-mut">(مستقل عن مراجعة الأجزاء)</span></label>
+          <input type="search" id="surah-review-search" placeholder="اكتب اسم السورة للبحث..." oninput="renderSurahChecklist()">
+          <div class="multi-actions">
+            <button type="button" class="btn btn-out btn-xs" onclick="selectJuzAmmaSurahs()">✓ سور جزء عم</button>
+            <button type="button" class="btn btn-out btn-xs" onclick="clearSelectedSurahs()">مسح التحديد</button>
+            <span class="selected-count" id="surah-review-count">0 سورة محددة</span>
           </div>
+          <div id="surah-review-list" class="surah-checklist"></div>
+        </div>
+        <div id="surah-review-chips" style="margin:4px 0 10px"></div>
+        <div class="direction-picker">
+          <span class="direction-label">اتجاه مراجعة السور</span>
+          <button type="button" id="dir-surahReview-up" class="direction-btn" onclick="setDirection('surahReview',-1)" title="نحو السورة السابقة في ترتيب المصحف">↑</button>
+          <button type="button" id="dir-surahReview-down" class="direction-btn" onclick="setDirection('surahReview',1)" title="نحو السورة التالية في ترتيب المصحف">↓</button>
+          <small id="dir-surahReview-text">اختر اتجاه المتابعة</small>
         </div>
       </div>
     </div>
 
     <div class="card">
       <div class="ch">💬 ملاحظات لولي الأمر</div>
+      <div class="note-templates">
+        <button type="button" onclick="appendNoteTemplate('الحفظ جيد ويحتاج تثبيت.')">الحفظ يحتاج تثبيت</button>
+        <button type="button" onclick="appendNoteTemplate('يرجى مراجعة المتشابهات قبل الحصة القادمة.')">راجع المتشابهات</button>
+        <button type="button" onclick="appendNoteTemplate('الطالب لم يراجع المطلوب كاملًا.')">لم يراجع المطلوب</button>
+        <button type="button" onclick="appendNoteTemplate('أداء ممتاز اليوم، بارك الله فيه.')">أداء ممتاز</button>
+      </div>
       <div class="fld">
         <textarea id="sesNotes" placeholder="توجيهات، ملاحظات، نصائح..."></textarea>
+      </div>
+      <div class="voice-note-row">
+        <button type="button" class="btn btn-out btn-sm" id="voiceNoteBtn" onclick="toggleVoiceNoteRecording()">🎤 تسجيل ملاحظة صوتية</button>
+        <span id="voiceNoteState" class="txt-mut">حد أقصى 30 ثانية</span>
+        <audio id="voiceNotePreview" controls style="display:none"></audio>
+        <button type="button" class="btn btn-red btn-xs" id="voiceNoteDeleteBtn" onclick="deletePendingVoiceNote()" style="display:none">حذف</button>
       </div>
     </div>
 
     <button class="btn btn-g mb8" id="saveSessionBtn" onclick="saveSession()">💾 حفظ الحصة</button>
     <button class="btn btn-wa" onclick="saveAndSendWA()">📲 حفظ وإرسال لولي الأمر</button>
+    <div class="wa-mode-row"><button class="btn btn-out btn-sm" onclick="saveAndSendWAMode('short')">رسالة مختصرة</button><button class="btn btn-out btn-sm" onclick="saveAndSendWAMode('detailed')">رسالة تفصيلية</button></div>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -462,8 +529,8 @@
       <button class="tmpl-var" onclick="insertVar('{{المراجعة_البعيدة}}')">{{المراجعة_البعيدة}}</button>
       <button class="tmpl-var" onclick="insertVar('{{الملاحظات}}')">{{الملاحظات}}</button>
       <button class="tmpl-var" onclick="insertVar('{{اسم_المحفظ}}')">{{اسم_المحفظ}}</button>
-      <button class="tmpl-var" onclick="insertVar('{{نسبة_الحفظ}}')">{{نسبة_الحفظ}}</button>
-      <button class="tmpl-var" onclick="insertVar('{{نسبة_الإنجاز}}')">{{نسبة_الإنجاز}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{مستوى_التسميع}}')">{{مستوى_التسميع}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{إجمالي_الآيات}}')">{{إجمالي_الآيات}}</button>
     </div>
     <div class="fld">
       <textarea id="waTmpl" rows="7" placeholder="اتركه فارغاً لاستخدام القالب الافتراضي..." oninput="saveSettings()"></textarea>
@@ -472,11 +539,37 @@
   </div>
 
   <div class="card">
+    <div class="ch">🎯 أهداف المتابعة الأسبوعية</div>
+    <div class="frow"><div class="fld"><label>آيات حفظ جديد</label><input type="number" id="goalNewAyat" min="0" max="5000" oninput="saveV8Settings()"></div><div class="fld"><label>عدد المراجعات</label><input type="number" id="goalReviews" min="0" max="500" oninput="saveV8Settings()"></div></div>
+    <div class="frow"><div class="fld"><label>عدد الحصص</label><input type="number" id="goalSessions" min="0" max="500" oninput="saveV8Settings()"></div><div class="fld"><label>الحضور المستهدف</label><input type="number" id="goalAttendance" min="0" max="500" oninput="saveV8Settings()"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="ch">🔐 قفل التطبيق</div>
+    <div class="settings-actions"><button class="btn btn-g btn-sm" onclick="setupPinLock()">تعيين / تغيير PIN</button><button class="btn btn-out btn-sm" onclick="disablePinLock()">إلغاء القفل</button><button class="btn btn-out btn-sm" onclick="setupDeviceBiometric()">بصمة / Windows Hello</button></div>
+    <p class="txt-mut mt8" style="font-size:11px">يعمل PIN محليًا. خيار البصمة/Windows Hello يظهر فقط إذا دعم الجهاز WebAuthn وكان الموقع يعمل عبر HTTPS.</p>
+    <div id="securityStatus" class="txt-mut mt8"></div>
+  </div>
+
+  <div class="card">
+    <div class="ch">☁️ مزامنة Android وWindows <span class="beta-badge">Beta</span></div>
+    <p class="txt-mut mb8" style="font-size:12px">مزامنة مشفرة اختيارية عبر Supabase. لا يُرفع النص الصريح لبيانات الطلاب؛ تُشفّر النسخة بكلمة مرور قبل الإرسال.</p>
+    <div class="fld"><label>Supabase Project URL</label><input type="url" id="syncUrl" placeholder="https://xxxx.supabase.co" oninput="saveV8Settings()"></div>
+    <div class="fld"><label>Supabase anon key</label><input type="password" id="syncKey" placeholder="anon / publishable key" oninput="saveV8Settings()"></div>
+    <div class="frow"><div class="fld"><label>Sync ID</label><input type="text" id="syncId" placeholder="مثال: imam-academy-main" oninput="saveV8Settings()"></div><div class="fld"><label>كلمة تشفير المزامنة</label><input type="password" id="syncPassphrase" placeholder="لا تُحفظ على السحابة" oninput="saveV8Settings()"></div></div>
+    <label class="switch-line"><input type="checkbox" id="syncAuto" onchange="saveV8Settings()"><span>مزامنة تلقائية بعد التغييرات</span></label>
+    <div class="settings-actions mt8"><button class="btn btn-g btn-sm" onclick="pushCloudSync()">⬆️ رفع الآن</button><button class="btn btn-out btn-sm" onclick="pullCloudSync()">⬇️ تنزيل ودمج</button></div>
+    <div id="syncStatus" class="txt-mut mt8"></div>
+  </div>
+
+  <div class="card">
     <div class="ch">💾 النسخ الاحتياطي</div>
     <div class="settings-actions">
       <button class="btn btn-g mb8" onclick="exportData()">📤 تنزيل نسخة JSON</button>
       <button class="btn btn-out mb8" onclick="shareBackup()">📲 مشاركة نسخة احتياطية</button>
     </div>
+    <div id="autoBackupStatus" class="txt-mut mb8">النسخ التلقائي: —</div>
+    <button class="btn btn-out btn-sm mb8" onclick="restoreAutoBackup()">↩️ استعادة نسخة تلقائية</button>
     <div class="fld mt8">
       <label>استيراد بيانات</label>
       <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="border:1px dashed var(--bdr);background:#fafafa;border-radius:10px;padding:10px">
@@ -531,6 +624,9 @@
 <!-- ══════════════ PROFILE ══════════════ -->
 <div class="pg" id="pg-profile">
   <div class="card" id="profHdr"></div>
+  <div class="card" id="profStop"><div class="ch">📍 أين توقفنا؟</div><div id="profStopContent"></div></div>
+  <div class="card" id="profMap"><div class="ch">🗺️ خريطة التقدم في المصحف</div><div id="profMapContent"></div></div>
+  <div class="card" id="profErrors"><div class="ch">🧭 سجل الأخطاء المتكررة</div><div id="profErrorsContent"></div></div>
   <div class="card" id="profTrack"></div>
   <div class="card" id="profChart" style="display:none">
     <div class="ch">📈 مسار التقييم</div>
@@ -576,6 +672,8 @@
         <option value="متقدم">متقدم</option>
       </select>
     </div>
+    <div class="fld"><label>خطة الطالب</label><select id="m-plan"><option value="balanced">متوازنة — حفظ ومراجعة</option><option value="beginner">مبتدئ — جرعات صغيرة</option><option value="intensive">حفظ مكثف</option><option value="reviewOnly">مراجعة فقط</option><option value="stabilize">ختمة تثبيت</option><option value="shortSurahs">قصار السور</option></select></div>
+    <div class="fld"><label>بداية التكليف التالي بعد التسميع</label><select id="m-next-mode"><option value="same">ابدأ من آخر آية تم تسميعها للربط</option><option value="next">ابدأ من الآية التالية</option></select></div>
     <div class="fld"><label>المجموعة / الحلقة <span class="txt-mut">(اختياري)</span></label><input type="text" id="m-group" list="groupList" placeholder="مثال: مجموعة السبت — المستوى الأول"></div>
     <datalist id="groupList"></datalist>
     <div class="fld">
@@ -637,6 +735,21 @@
   </div>
 </div>
 
+<!-- ════════════ QURAN TEXT MODAL ════════════ -->
+<div class="mo quran-modal" id="quranTextModal">
+  <div class="mo-box quran-box">
+    <div class="mo-title"><span id="quranModalTitle">📖 النص القرآني</span><button class="mo-x" onclick="closeQuranTextModal()">✕</button></div>
+    <div id="quranSourceNote" class="quran-source-note">الرسم: QPC Hafs / الرسم العثماني. الصوت يحتاج اتصالاً بالإنترنت.</div>
+    <div id="quranVerseContent" class="quran-verse-content"><div class="empty"><p>اختر سورة ونطاق آيات في الحفظ الجديد ثم اضغط «النص».</p></div></div>
+    <div class="quran-toolbar"><div class="fld"><label>القارئ</label><select id="quranReciter"><option value="Husary_128kbps">الشيخ محمود خليل الحصري</option><option value="Alafasy_128kbps">الشيخ مشاري راشد العفاسي</option></select></div><button class="btn btn-g btn-sm" id="quranPlayAllBtn" onclick="playQuranRange()">▶ تشغيل الآيات</button><button class="btn btn-out btn-sm" onclick="stopQuranAudio()">■ إيقاف</button></div>
+    <audio id="quranAudioPlayer" preload="none"></audio>
+  </div>
+</div>
+
+<div id="appLockOverlay" class="app-lock-overlay" style="display:none">
+  <div class="lock-card"><img src="icon-192.png" alt="شعار الأكاديمية"><h2>أكاديمية الإمام</h2><p>أدخل PIN لفتح التطبيق</p><input type="password" inputmode="numeric" id="lockPinInput" maxlength="8" placeholder="••••"><button class="btn btn-g" onclick="unlockWithPin()">فتح</button><button class="btn btn-out" id="biometricUnlockBtn" onclick="unlockWithBiometric()" style="display:none">استخدام البصمة / Windows Hello</button><div id="lockError" class="lock-error"></div></div>
+</div>
+
 <!-- ════════════ TOAST ════════════ -->
 <div class="toast" id="toast"></div>
 
@@ -686,8 +799,8 @@
       <div class="tmpl-vars mt8">
         <button class="tmpl-var" onclick="insertBroadcastVar('{{اسم_الطالب}}')">{{اسم_الطالب}}</button>
         <button class="tmpl-var" onclick="insertBroadcastVar('{{اسم_ولي_الأمر}}')">{{اسم_ولي_الأمر}}</button>
-        <button class="tmpl-var" onclick="insertBroadcastVar('{{نسبة_الحفظ}}')">{{نسبة_الحفظ}}</button>
-        <button class="tmpl-var" onclick="insertBroadcastVar('{{نسبة_الإنجاز}}')">{{نسبة_الإنجاز}}</button>
+        <button class="tmpl-var" onclick="insertBroadcastVar('{{مستوى_التسميع}}')">{{مستوى_التسميع}}</button>
+        <button class="tmpl-var" onclick="insertBroadcastVar('{{إجمالي_الآيات}}')">{{إجمالي_الآيات}}</button>
       </div>
     </div>
     <div class="broadcast-preview" id="broadcastPreview"></div>
@@ -713,5 +826,6 @@
 
 <!-- ════════════ SCRIPTS ════════════ -->
 <script src="app.js" defer></script>
+<script src="v8.js" defer></script>
 </body>
 </html>

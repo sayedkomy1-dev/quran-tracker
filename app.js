@@ -44,14 +44,20 @@ const S=[
   {n:"الكافرون",a:6},{n:"النصر",a:3},{n:"المسد",a:5},{n:"الإخلاص",a:4},
   {n:"الفلق",a:5},{n:"الناس",a:6}
 ];
-const JZ=Array.from({length:30},(_,i)=>`الجزء ${i+1}`);
+const JZ=[
+  'جزء ألم','جزء سيقول','جزء تلك الرسل','جزء لن تنالوا','جزء والمحصنات','جزء لا يحب الله',
+  'جزء وإذا سمعوا','جزء ولو أننا','جزء قال الملأ','جزء واعلموا','جزء يعتذرون','جزء وما من دابة',
+  'جزء وما أبرئ','جزء ربما','جزء سبحان الذي','جزء قال ألم','جزء اقترب للناس','جزء قد أفلح',
+  'جزء وقال الذين','جزء أمن خلق','جزء اتل ما أوحي','جزء ومن يقنت','جزء وما لي','جزء فمن أظلم',
+  'جزء إليه يرد','جزء حم','جزء قال فما خطبكم','جزء قد سمع','جزء تبارك','جزء عمّ'
+];
 const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION='7.0.0';
-const SCHEMA_VERSION=8;
+const APP_VERSION='8.0.0';
+const SCHEMA_VERSION=10;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
 const GRADE_MAP={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
@@ -64,11 +70,13 @@ let curPage='home';
 let curStId=null;
 let editId=null;
 let sesStatus='حضر';
-let secOn={new:true,rec:false,far:false,juz:false};
+let secOn={new:true,rec:false,far:false,juz:false,surahReview:false};
 let grades={new:'',rec:'',far:'',juz:''};
-let prevGrades={new:'',rec:'',far:'',juz:''};
+let prevGrades={new:'',rec:'',far:'',juz:'',surahReview:''};
 let actualRecitation={new:null,rec:null,far:null};
 let juzChips=[];
+let surahReviewChips=[];
+let reviewDirections={new:1,rec:1,far:1,juz:1,surahReview:1};
 let db=null;
 let editingSessionId=null;
 let draftTimer=null;
@@ -134,7 +142,7 @@ function allScheduleConflicts(){
   }));
   return out;
 }
-function hasSessionContent(s){ return !!(s&&(s.new||s.rec||s.far||s.juz||s.notes||Object.values(s.prevGrades||{}).some(Boolean))); }
+function hasSessionContent(s){ return !!(s&&(s.new||s.rec||s.far||s.juz||s.surahReview||s.notes||Object.values(s.prevGrades||{}).some(Boolean))); }
 function dailySessions(studentId,dateKey){ return sessions.filter(s=>s.studentId===studentId&&sessionDay(s)===dateKey); }
 function findDailySession(studentId,dateKey){
   const list=dailySessions(studentId,dateKey);
@@ -179,8 +187,19 @@ function migrateData(){
     if(!x.createdAt){x.createdAt=x.date;changed=true;}
     if(!x.updatedAt){x.updatedAt=x.date;changed=true;}
     if(!x.source){x.source=hasSessionContent(x)?'session':'legacy';changed=true;}
-    if(!x.prevGrades||typeof x.prevGrades!=='object'){x.prevGrades={new:'',rec:'',far:'',juz:''};changed=true;}
+    if(!x.prevGrades||typeof x.prevGrades!=='object'){x.prevGrades={new:'',rec:'',far:'',juz:'',surahReview:''};changed=true;}
+    else if(!Object.prototype.hasOwnProperty.call(x.prevGrades,'surahReview')){x.prevGrades={new:'',rec:'',far:'',juz:'',surahReview:'',...x.prevGrades};changed=true;}
     ['new','rec','far'].forEach(k=>{if(x[k])x[k]=clampSection(x[k]);if(x.actualRecitation?.[k])x.actualRecitation[k]=clampSection(x.actualRecitation[k]);});
+    // v7.1: مراجعة الأجزاء ومراجعة السور أصبحا مستقلين. نفصل السجلات القديمة بأمان.
+    if(x.juz&&Array.isArray(x.juz.chips)){
+      const partChips=[],surahChips=[];
+      x.juz.chips.forEach(raw=>{const c=String(raw||'').trim();if(/^سورة\s+/.test(c))surahChips.push(c);else{const n=normalizeJuzChip(c);if(n)partChips.push(n);}});
+      if(surahChips.length&&!x.surahReview){x.surahReview={chips:[...new Set(surahChips)]};changed=true;}
+      const normalized=[...new Set(partChips)];
+      if(normalized.length)x.juz={...x.juz,chips:normalized};else if(surahChips.length){delete x.juz;changed=true;}
+    }
+    if(x.surahReview&&Array.isArray(x.surahReview.chips))x.surahReview={...x.surahReview,chips:[...new Set(x.surahReview.chips.map(c=>normalizeSurahReviewChip(c)).filter(Boolean))]};
+    x.directions={new:1,rec:1,far:1,juz:1,surahReview:1,...(x.directions||{})};
     if(!x.summary) x.summary=buildSumText(x);
     return x;
   });
@@ -489,7 +508,7 @@ function renderHome(){
   }else sc.style.display='none';
 
   renderTodayQueue();
-  renderSmartHub();
+  renderHomeAnalysis();
   updateTaskBadge();
 
   const last=sessions.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,6);
@@ -917,7 +936,7 @@ function onSesSt(){
   loadPrevTask(existing?.id||'');
   const prev=getPreviousPresentSession(curStId,dateKey,existing?.id||'');
   const rb=document.getElementById('repeatBar');
-  if(prev&&(prev.new||prev.rec||prev.far||prev.juz)){
+  if(prev&&(prev.new||prev.rec||prev.far||prev.juz||prev.surahReview)){
     const d=new Date(prev.date).toLocaleDateString('ar-EG',{month:'short',day:'numeric'});
     document.getElementById('repeatHint').textContent=`آخر حصة: ${d} — اضغط لملء الحقول`;
     rb.style.display='flex';
@@ -1373,13 +1392,13 @@ function openBulkSend(){
   // الحاضرون اللي عندهم تكليف مسجل (مش بس حضور)
   const withContent=sessions.filter(s=>{
     if(sessionDay(s)!==today||s.status!=='حضر') return false;
-    return s.new||s.rec||s.far||s.juz;
+    return s.new||s.rec||s.far||s.juz||s.surahReview;
   });
 
   // الحاضرون بدون تكليف (سُجّل حضورهم فقط)
   const attendedOnly=sessions.filter(s=>{
     if(sessionDay(s)!==today||s.status!=='حضر') return false;
-    return !s.new&&!s.rec&&!s.far&&!s.juz;
+    return !s.new&&!s.rec&&!s.far&&!s.juz&&!s.surahReview;
   });
 
   if(!withContent.length&&!attendedOnly.length){
@@ -1916,7 +1935,7 @@ function sanitizeBackupData(d){
   (d.sessions||[]).forEach(raw=>{
     const mapped=idMap.get(String(raw.studentId));if(!mapped)return; // تجاهل السجلات اليتيمة في النسخة المستوردة
     const status=['حضر','غاب','إجازة'].includes(raw.status)?raw.status:'حضر';
-    const pg={};['new','rec','far','juz'].forEach(k=>{const g=cleanText(raw.prevGrades?.[k],20);pg[k]=GRADE_MAP[g]?g:'';});
+    const pg={};['new','rec','far','juz','surahReview'].forEach(k=>{const g=cleanText(raw.prevGrades?.[k],20);pg[k]=GRADE_MAP[g]?g:'';});
     const ses={
       id:safeImportedId(raw.id,'ses',usedSessions),studentId:mapped,status,
       sessionDate:/^\d{4}-\d{2}-\d{2}$/.test(String(raw.sessionDate||''))?String(raw.sessionDate):'',
@@ -1926,9 +1945,15 @@ function sanitizeBackupData(d){
     ['new','rec','far'].forEach(k=>{const x=cleanImportedSection(raw[k]);if(x)ses[k]=x;});
     const actual={};['new','rec','far'].forEach(k=>{const x=cleanImportedSection(raw.actualRecitation?.[k]);if(x)actual[k]=x;});if(Object.keys(actual).length)ses.actualRecitation=actual;
     if(raw.juz&&typeof raw.juz==='object'){
-      const chips=Array.isArray(raw.juz.chips)?raw.juz.chips.map(x=>cleanText(x,80)).slice(0,80):[];
-      const grade=cleanText(raw.juz.grade,20);ses.juz={chips,...(GRADE_MAP[grade]?{grade}:{})};
+      const chips=Array.isArray(raw.juz.chips)?raw.juz.chips.map(x=>normalizeJuzChip(cleanText(x,80))).filter(Boolean).slice(0,30):[];
+      if(chips.length)ses.juz={chips:[...new Set(chips)]};
     }
+    if(raw.surahReview&&typeof raw.surahReview==='object'){
+      const chips=Array.isArray(raw.surahReview.chips)?raw.surahReview.chips.map(x=>normalizeSurahReviewChip(cleanText(x,80))).filter(Boolean).slice(0,114):[];
+      if(chips.length)ses.surahReview={chips:[...new Set(chips)]};
+    }
+    const dirs=raw.directions&&typeof raw.directions==='object'?raw.directions:{};
+    ses.directions={};['new','rec','far','juz','surahReview'].forEach(k=>{ses.directions[k]=Number(dirs[k])===-1?-1:1;});
     safeSessions.push(ses);
   });
   const usedTasks=new Set();
@@ -2100,6 +2125,9 @@ window.addEventListener('load',async ()=>{
 
   // 8. Check and show notification reminder
   setTimeout(checkAndNotify, 5000);
+
+  // 9. v8 feature layer
+  if(typeof initV8Layer==='function') initV8Layer();
 });
 
 // ══════════════════════════════════════
@@ -2297,7 +2325,7 @@ function onSesSt(){
   loadPrevTask(existing?.id||'');
   const prev=getPreviousPresentSession(curStId,dateKey,existing?.id||'');
   const rb=document.getElementById('repeatBar');
-  if(prev&&(prev.new||prev.rec||prev.far||prev.juz)){
+  if(prev&&(prev.new||prev.rec||prev.far||prev.juz||prev.surahReview)){
     const d=new Date(prev.date).toLocaleDateString('ar-EG',{month:'short',day:'numeric'});
     document.getElementById('repeatHint').textContent=`آخر حصة: ${d} — اضغط لملء الحقول`;
     rb.style.display='flex';
@@ -2647,3 +2675,302 @@ async function shareBackup(){
   try{if(navigator.share&&navigator.canShare?.({files:[file]})){await navigator.share({title:'نسخة احتياطية — أكاديمية الإمام',text:'نسخة احتياطية لبيانات أكاديمية الإمام',files:[file]});toast('تم فتح المشاركة','success');return;}}catch(e){if(e?.name==='AbortError')return;}
   exportData();toast('المشاركة بالملفات غير مدعومة هنا؛ تم تنزيل النسخة بدلاً منها','info');
 }
+
+// ══════════════════════════════════════
+// v7.1 — SIMPLIFIED RECITATION WORKFLOW
+// فصل مراجعة الأجزاء عن السور + استكمال ذكي + اتجاه المراجعة
+// ══════════════════════════════════════
+function normalizeJuzChip(raw){
+  let c=String(raw||'').trim().replace(/^جزء\s*:\s*/,'').trim();
+  if(!c)return'';
+  if(JZ.includes(c))return c;
+  const m=c.match(/^(?:الجزء|جزء)?\s*(\d{1,2})$/);
+  if(m){const n=Number(m[1]);return n>=1&&n<=30?JZ[n-1]:'';}
+  const aliases={
+    'عم':'جزء عمّ','عمّ':'جزء عمّ','تبارك':'جزء تبارك','قد سمع':'جزء قد سمع',
+    'قال فما خطبكم':'جزء قال فما خطبكم','حم':'جزء حم','إليه يرد':'جزء إليه يرد'
+  };
+  if(aliases[c])return aliases[c];
+  if(!c.startsWith('جزء '))c='جزء '+c;
+  return JZ.includes(c)?c:'';
+}
+function normalizeSurahReviewChip(raw){
+  let c=String(raw||'').trim().replace(/^سورة\s+/,'').trim();
+  const idx=getSurahIndex(c);return idx>=0?'سورة '+S[idx].n:'';
+}
+function directionLabel(key,dir){
+  if(key==='juz')return dir===-1?'↑ نحو الجزء السابق':'↓ نحو الجزء التالي';
+  return dir===-1?'↑ نحو السورة السابقة في المصحف':'↓ نحو السورة التالية في المصحف';
+}
+function setDirection(key,dir){
+  reviewDirections[key]=dir===-1?-1:1;
+  renderDirections();scheduleDraftSave();
+}
+function renderDirections(){
+  ['new','rec','far','juz','surahReview'].forEach(key=>{
+    const dir=reviewDirections[key]===-1?-1:1;
+    document.getElementById(`dir-${key}-up`)?.classList.toggle('selected',dir===-1);
+    document.getElementById(`dir-${key}-down`)?.classList.toggle('selected',dir===1);
+    const txt=document.getElementById(`dir-${key}-text`);if(txt)txt.textContent=directionLabel(key,dir);
+  });
+}
+function fillJuzSelect(){
+  const el=document.getElementById('juz-j');if(!el)return;
+  el.innerHTML='<option value="">— اختر الجزء باسمه —</option>'+JZ.map((j,i)=>`<option value="${i}">${esc(j)}</option>`).join('');
+}
+function fillSurahSelects(){
+  const dl=document.getElementById('surahList');
+  if(dl)dl.innerHTML=S.map((x,i)=>`<option value="${esc(x.n)}">${i+1}. سورة ${esc(x.n)}</option>`).join('');
+  ['new','rec','far'].forEach(k=>{
+    const input=document.getElementById(k+'-s');if(!input)return;
+    input.addEventListener('blur',()=>setTimeout(()=>closeSurahDropdown(k),180));
+  });
+  renderSurahChecklist();
+}
+function openSurahDropdown(key){
+  const el=document.getElementById(`${key}-surah-dropdown`);if(!el)return;
+  el.classList.add('open');filterSurahDropdown(key);
+}
+function closeSurahDropdown(key){document.getElementById(`${key}-surah-dropdown`)?.classList.remove('open');}
+function toggleSurahDropdown(key){const el=document.getElementById(`${key}-surah-dropdown`);if(!el)return;el.classList.contains('open')?closeSurahDropdown(key):openSurahDropdown(key);document.getElementById(key+'-s')?.focus();}
+function filterSurahDropdown(key){
+  const input=document.getElementById(key+'-s'),el=document.getElementById(`${key}-surah-dropdown`);if(!input||!el)return;
+  input.dataset.userTouched='1';
+  const q=normalizeSurahName(input.value);const rows=S.map((surah,i)=>({surah,i})).filter(x=>!q||x.surah.n.includes(q)||String(x.i+1).includes(q)).slice(0,114);
+  el.innerHTML=rows.map(({surah,i})=>`<button type="button" onmousedown="event.preventDefault();selectSurahOption('${key}',${i})"><b>${i+1}</b><span>سورة ${esc(surah.n)}</span><small>${surah.a} آية</small></button>`).join('')||'<div class="surah-dropdown-empty">لا توجد سورة مطابقة</div>';
+  el.classList.add('open');
+}
+function selectSurahOption(key,i){
+  if(!S[i])return;const input=document.getElementById(key+'-s');if(!input)return;
+  input.value=S[i].n;input.dataset.userTouched='1';fillAyah(key);closeSurahDropdown(key);scheduleDraftSave();
+}
+function setSectionAutoValue(key,surahIndex,from,to=''){
+  if(!S[surahIndex])return;
+  secOn[key]=true;updateTogs();
+  const input=document.getElementById(key+'-s');if(!input)return;
+  input.value=S[surahIndex].n;input.dataset.userTouched='0';fillAyah(key);
+  const full=document.getElementById(key+'-full');if(full){full.checked=false;toggleFull(key);}
+  const f=document.getElementById(key+'-f'),t=document.getElementById(key+'-t');if(f)f.value=String(Math.max(1,Math.min(S[surahIndex].a,Number(from)||1)));if(t)t.value=to===''?'':String(to);
+}
+function updateTogs(){
+  ['new','rec','far','juz','surahReview'].forEach(k=>{
+    const tog=document.getElementById('tog-'+k),bod=document.getElementById('bod-'+k);if(!tog||!bod)return;
+    tog.classList.toggle('on',!!secOn[k]);bod.style.display=secOn[k]?'block':'none';
+  });
+  renderDirections();
+}
+function togSec(k){
+  secOn[k]=!secOn[k];updateTogs();
+  if(secOn[k]&&['new','rec','far'].includes(k))openSurahDropdown(k);
+  if(k==='surahReview'&&secOn[k])renderSurahChecklist();
+  scheduleDraftSave();
+}
+function resetSession(){
+  draftSuspend=true;editingSessionId=null;
+  grades={new:'',rec:'',far:'',juz:''};prevGrades={new:'',rec:'',far:'',juz:'',surahReview:''};actualRecitation={new:null,rec:null,far:null};
+  secOn={new:true,rec:false,far:false,juz:false,surahReview:false};juzChips=[];surahReviewChips=[];reviewDirections={new:1,rec:1,far:1,juz:1,surahReview:1};sesStatus='حضر';
+  const notes=document.getElementById('sesNotes');if(notes)notes.value='';
+  document.querySelectorAll('.gb').forEach(b=>b.classList.remove('sel'));
+  ['new','rec','far'].forEach(k=>{
+    const se=document.getElementById(k+'-s');if(se){se.value='';se.dataset.userTouched='0';}
+    const f=document.getElementById(k+'-f');if(f){f.value='';f.max=999;}const t=document.getElementById(k+'-t');if(t){t.value='';t.max=999;}
+    const fc=document.getElementById(k+'-full');if(fc)fc.checked=false;const rng=document.getElementById(k+'-range');if(rng)rng.style.display='none';
+    const hint=document.getElementById(k+'-auto-hint');if(hint)hint.textContent='';closeSurahDropdown(k);
+  });
+  const search=document.getElementById('surah-review-search');if(search)search.value='';
+  renderChips();renderSurahChecklist();updateTogs();setStatusUI('حضر');
+  document.getElementById('absentNotice').style.display='none';document.getElementById('sesContent').style.display='block';document.getElementById('repeatBar').style.display='none';
+  const btn=document.getElementById('saveSessionBtn');if(btn)btn.textContent='💾 حفظ الحصة';setDraftState('جاهز','');draftSuspend=false;
+}
+function paintPrevGrades(){
+  Object.entries(prevGrades||{}).forEach(([key,g])=>document.querySelectorAll(`#pgr-${key} .gb`).forEach(b=>b.classList.toggle('sel',b.dataset.g===g)));
+}
+function onSesSt(){
+  curStId=document.getElementById('sesSt').value;const dateKey=document.getElementById('sesDate')?.value||localDateKey();resetSession();
+  if(!curStId){document.getElementById('prevContent').innerHTML='<div class="txt-mut" style="text-align:center;padding:10px">اختر الطالب لعرض تكليف الحصة السابقة</div>';return;}
+  const existing=findDailySession(curStId,dateKey);editingSessionId=existing?.id||null;loadPrevTask(existing?.id||'');
+  const prev=getPreviousPresentSession(curStId,dateKey,existing?.id||'');if(prev?.directions)reviewDirections={...reviewDirections,...prev.directions};renderDirections();
+  const rb=document.getElementById('repeatBar');if(prev&&(prev.new||prev.rec||prev.far||prev.juz||prev.surahReview)){const d=new Date(prev.date).toLocaleDateString('ar-EG',{month:'short',day:'numeric'});document.getElementById('repeatHint').textContent=`آخر حصة: ${d} — اضغط لملء الحقول`;rb.style.display='flex';}else rb.style.display='none';
+  draftSuspend=true;if(existing)applySessionToEditor(existing);const restored=restoreDraft(existing);draftSuspend=false;
+  if(restored)setDraftState('تم استعادة مسودة أحدث','editing');else if(existing)setDraftState('تعديل حصة مسجلة','editing');else setDraftState(prev?'قيّم التسميع وسيُقترح التكليف التالي تلقائياً':'جاهز — ابدأ بإدخال التكليف','saved');
+}
+function applySessionToEditor(ses){
+  if(!ses)return;sesStatus=ses.status||'حضر';setStatusUI(sesStatus);const isAbsent=sesStatus!=='حضر';document.getElementById('absentNotice').style.display=isAbsent?'block':'none';document.getElementById('sesContent').style.display=isAbsent?'none':'block';
+  const btn=document.getElementById('saveSessionBtn');if(btn)btn.textContent='💾 تحديث الحصة';
+  prevGrades={new:'',rec:'',far:'',juz:'',surahReview:'',...(ses.prevGrades||{})};actualRecitation={new:null,rec:null,far:null,...(ses.actualRecitation||{})};
+  reviewDirections={new:1,rec:1,far:1,juz:1,surahReview:1,...(ses.directions||{})};secOn={new:false,rec:false,far:false,juz:false,surahReview:false};juzChips=[];surahReviewChips=[];
+  ['new','rec','far'].forEach(k=>{const x=ses[k];if(!x)return;const idx=S.findIndex(q=>q.n===x.surah);if(idx<0)return;secOn[k]=true;document.getElementById(k+'-s').value=x.surah;document.getElementById(k+'-s').dataset.userTouched='1';fillAyah(k);const full=!!x.full||(parseInt(x.from)===1&&parseInt(x.to)===S[idx].a);document.getElementById(k+'-full').checked=full;toggleFull(k);if(!full){document.getElementById(k+'-f').value=x.from;document.getElementById(k+'-t').value=x.to;}});
+  if(ses.juz?.chips?.length){secOn.juz=true;juzChips=ses.juz.chips.map(normalizeJuzChip).filter(Boolean);}
+  if(ses.surahReview?.chips?.length){secOn.surahReview=true;surahReviewChips=ses.surahReview.chips.map(normalizeSurahReviewChip).filter(Boolean);}
+  if(!ses.new&&!ses.rec&&!ses.far&&!ses.juz&&!ses.surahReview)secOn.new=true;
+  updateTogs();renderChips();renderSurahChecklist();paintPrevGrades();applyActualRecitationToFields(ses.actualRecitation||{});document.getElementById('sesNotes').value=ses.notes||'';
+}
+function captureDraft(){
+  const fields={};['new','rec','far'].forEach(k=>{fields[k]={surah:document.getElementById(k+'-s')?.value||'',from:document.getElementById(k+'-f')?.value||'',to:document.getElementById(k+'-t')?.value||'',full:!!document.getElementById(k+'-full')?.checked};});
+  const actual={};['new','rec','far'].forEach(k=>{const x=readActualSection(k);if(x)actual[k]=x;});
+  return{savedAt:new Date().toISOString(),editingSessionId,sesStatus,secOn:{...secOn},prevGrades:{...prevGrades},actualRecitation:actual,juzChips:[...juzChips],surahReviewChips:[...surahReviewChips],directions:{...reviewDirections},notes:document.getElementById('sesNotes')?.value||'',fields};
+}
+function applyDraft(d){
+  if(!d)return;sesStatus=d.sesStatus||'حضر';setStatusUI(sesStatus);const isAbsent=sesStatus!=='حضر';document.getElementById('absentNotice').style.display=isAbsent?'block':'none';document.getElementById('sesContent').style.display=isAbsent?'none':'block';
+  secOn={new:true,rec:false,far:false,juz:false,surahReview:false,...(d.secOn||{})};prevGrades={new:'',rec:'',far:'',juz:'',surahReview:'',...(d.prevGrades||{})};actualRecitation={new:null,rec:null,far:null,...(d.actualRecitation||{})};juzChips=[...(d.juzChips||[])].map(normalizeJuzChip).filter(Boolean);surahReviewChips=[...(d.surahReviewChips||[])].map(normalizeSurahReviewChip).filter(Boolean);reviewDirections={new:1,rec:1,far:1,juz:1,surahReview:1,...(d.directions||{})};updateTogs();
+  ['new','rec','far'].forEach(k=>{const f=d.fields?.[k]||{},se=document.getElementById(k+'-s');if(!se)return;se.value=f.surah??'';se.dataset.userTouched=se.value?'1':'0';if(se.value!=='')fillAyah(k);const fc=document.getElementById(k+'-full');if(fc)fc.checked=!!f.full;toggleFull(k);if(document.getElementById(k+'-f'))document.getElementById(k+'-f').value=f.from||'';if(document.getElementById(k+'-t'))document.getElementById(k+'-t').value=f.to||'';});
+  renderChips();renderSurahChecklist();paintPrevGrades();applyActualRecitationToFields(d.actualRecitation||{});document.getElementById('sesNotes').value=d.notes||'';
+}
+function addJuz(){
+  const v=document.getElementById('juz-j')?.value;if(v===''||!JZ[Number(v)])return;const name=JZ[Number(v)];if(!juzChips.includes(name))juzChips.push(name);document.getElementById('juz-j').value='';renderJuzChips();scheduleDraftSave();
+}
+function renderJuzChips(){const el=document.getElementById('juz-chips');if(el)el.innerHTML=juzChips.map((c,i)=>`<span class="chip">${esc(c)}<span class="chip-x" onclick="rmJuzChip(${i})">✕</span></span>`).join('');}
+function rmJuzChip(i){juzChips.splice(i,1);renderJuzChips();scheduleDraftSave();}
+function renderSurahChecklist(){
+  const el=document.getElementById('surah-review-list');if(!el)return;const q=normalizeSurahName(document.getElementById('surah-review-search')?.value||'');const picked=new Set(surahReviewChips.map(c=>c.replace(/^سورة\s+/,'')));
+  const rows=S.map((surah,i)=>({surah,i})).filter(x=>!q||x.surah.n.includes(q));
+  el.innerHTML=rows.map(({surah,i})=>`<label class="surah-check-item"><input type="checkbox" ${picked.has(surah.n)?'checked':''} onchange="toggleReviewSurah(${i},this.checked)"><span>${i+1}. ${esc(surah.n)}</span></label>`).join('')||'<div class="txt-mut" style="padding:10px">لا توجد سورة مطابقة</div>';syncSurahReviewCount();
+}
+function toggleReviewSurah(i,checked){if(!S[i])return;const chip='سورة '+S[i].n,at=surahReviewChips.indexOf(chip);if(checked&&at<0)surahReviewChips.push(chip);if(!checked&&at>=0)surahReviewChips.splice(at,1);renderSurahReviewChips();scheduleDraftSave();}
+function selectJuzAmmaSurahs(){S.slice(77).forEach(x=>{const c='سورة '+x.n;if(!surahReviewChips.includes(c))surahReviewChips.push(c);});renderSurahReviewChips();renderSurahChecklist();toast('تم تحديد سور جزء عمّ','success');scheduleDraftSave();}
+function clearSelectedSurahs(){surahReviewChips=[];renderSurahReviewChips();renderSurahChecklist();scheduleDraftSave();}
+function syncSurahReviewCount(){const el=document.getElementById('surah-review-count');if(el)el.textContent=`${surahReviewChips.length} سورة محددة`;}
+function renderSurahReviewChips(){const el=document.getElementById('surah-review-chips');if(el)el.innerHTML=surahReviewChips.map((c,i)=>`<span class="chip">${esc(c)}<span class="chip-x" onclick="rmSurahReviewChip(${i})">✕</span></span>`).join('');syncSurahReviewCount();}
+function rmSurahReviewChip(i){surahReviewChips.splice(i,1);renderSurahReviewChips();renderSurahChecklist();scheduleDraftSave();}
+function renderChips(){renderJuzChips();renderSurahReviewChips();}
+function readSection(k){
+  if(!secOn[k])return null;const sel=document.getElementById(k+'-s');if(!sel||!sel.value.trim())return null;const idx=getSurahIndex(sel.value);if(idx<0)return null;const full=!!document.getElementById(k+'-full')?.checked;
+  let from=full?1:parseInt(document.getElementById(k+'-f')?.value),to=full?S[idx].a:parseInt(document.getElementById(k+'-t')?.value);if(!full&&(!Number.isFinite(from)||!Number.isFinite(to)))return null;from=Math.max(1,Math.min(S[idx].a,from));to=Math.max(1,Math.min(S[idx].a,to));if(to<from)[from,to]=[to,from];return{surahId:idx+1,surah:S[idx].n,from,to,full};
+}
+function buildSesData(){
+  const d={},n=readSection('new'),r=readSection('rec'),f=readSection('far');if(n)d.new=n;if(r)d.rec=r;if(f)d.far=f;
+  if(secOn.juz&&juzChips.length)d.juz={chips:[...juzChips]};if(secOn.surahReview&&surahReviewChips.length)d.surahReview={chips:[...surahReviewChips]};
+  d.notes=document.getElementById('sesNotes').value.trim();d.prevGrades={...prevGrades};d.directions={...reviewDirections};
+  const actual={};['new','rec','far'].forEach(k=>{const x=readActualSection(k);if(x)actual[k]=x;});if(Object.keys(actual).length)d.actualRecitation=actual;return d;
+}
+function fillFromLast(){
+  if(!curStId)return;const dateKey=document.getElementById('sesDate')?.value||localDateKey(),prev=getPreviousPresentSession(curStId,dateKey,editingSessionId||'');if(!prev){toast('لا توجد حصة سابقة','error');return;}
+  ['new','rec','far'].forEach(k=>{const x=prev[k];if(!x)return;secOn[k]=true;document.getElementById(k+'-s').value=x.surah;document.getElementById(k+'-s').dataset.userTouched='1';fillAyah(k);document.getElementById(k+'-full').checked=!!x.full;toggleFull(k);if(!x.full){document.getElementById(k+'-f').value=x.from;document.getElementById(k+'-t').value=x.to;}});
+  if(prev.juz?.chips?.length){secOn.juz=true;juzChips=prev.juz.chips.map(normalizeJuzChip).filter(Boolean);}if(prev.surahReview?.chips?.length){secOn.surahReview=true;surahReviewChips=prev.surahReview.chips.map(normalizeSurahReviewChip).filter(Boolean);}reviewDirections={...reviewDirections,...(prev.directions||{})};updateTogs();renderChips();renderSurahChecklist();scheduleDraftSave();toast('تم تحميل التكليف السابق ✓','success');vibrate([30,20,60]);
+}
+function loadPrevTask(excludeId=''){
+  if(!curStId)return;const dateKey=document.getElementById('sesDate')?.value||localDateKey(),prev=getPreviousPresentSession(curStId,dateKey,excludeId),el=document.getElementById('prevContent');actualRecitation={new:null,rec:null,far:null};
+  if(!prev){el.innerHTML='<div class="txt-mut" style="padding:8px;text-align:center">لا توجد حصة سابقة</div>';return;}
+  const d=new Date(prev.date).toLocaleDateString('ar-EG',{weekday:'long',month:'long',day:'numeric'});let html=`<div class="txt-mut mb8">التكليف من حصة: ${d}</div>`;
+  const sections=[{key:'new',label:'📖 الحفظ الجديد'},{key:'rec',label:'📚 المراجعة القريبة'},{key:'far',label:'📘 المراجعة البعيدة'},{key:'juz',label:'📜 مراجعة الأجزاء'},{key:'surahReview',label:'🕌 مراجعة السور'}];let hasAny=false;
+  sections.forEach(({key,label})=>{if(!prev[key])return;hasAny=true;const x=prev[key];if(['new','rec','far'].includes(key))actualRecitation[key]={surahId:x.surahId||S.findIndex(q=>q.n===x.surah)+1,surah:x.surah,from:Number(x.from)||1,to:Number(x.to)||Number(x.from)||1,full:!!x.full};
+    const desc=['juz','surahReview'].includes(key)?(x.chips||[]).map(c=>esc(c)).join('، '):x.full?`سورة ${esc(x.surah)} كاملة`:`سورة ${esc(x.surah)} من الآية ${esc(x.from)} إلى الآية ${esc(x.to)}`;
+    const actual=['new','rec','far'].includes(key)?actualBlockHTML(key,x):'';
+    html+=`<div class="prev-task-card" id="prev-task-${key}"><div style="font-weight:700;margin-bottom:6px;font-size:13px">${label}</div><div class="assigned-range">المطلوب: ${desc}</div>${actual}<div class="assessment-label">تقييم التسميع</div><div class="gbs" id="pgr-${key}">${['ممتاز','جيد جداً','جيد','ضعيف'].map(g=>`<div class="gb" data-g="${g}" onclick="setPrevGr('${key}','${g}')">${g==='ممتاز'?'⭐ ':''}${g}</div>`).join('')}</div></div>`;
+  });
+  if(!hasAny)html+='<div class="txt-mut">لا يوجد تكليف للحصة السابقة</div>';el.innerHTML=html;['new','rec','far'].forEach(updateActualResult);paintPrevGrades();
+}
+function setPrevGr(key,g){
+  prevGrades[key]=g;document.querySelectorAll(`#pgr-${key} .gb`).forEach(b=>b.classList.toggle('sel',b.dataset.g===g));
+  smartContinueFromAssessment(key,g);scheduleDraftSave();
+}
+function isPassingGrade(g){return g==='ممتاز'||g==='جيد جداً'||g==='جيد';}
+function smartContinueFromAssessment(key,grade){
+  if(!isPassingGrade(grade)){
+    if(['new','rec','far'].includes(key)){const hint=document.getElementById(key+'-auto-hint');if(hint)hint.textContent='لم يتم التقديم تلقائيًا لأن التقييم ضعيف؛ حدّد التكليف التالي يدويًا.';}
+    return;
+  }
+  if(!curStId)return;const dateKey=document.getElementById('sesDate')?.value||localDateKey(),prev=getPreviousPresentSession(curStId,dateKey,editingSessionId||'');if(!prev?.[key])return;const dir=reviewDirections[key]===-1?-1:1;
+  if(['new','rec','far'].includes(key)){
+    const assigned=prev[key],actual=readActualSection(key)||actualRecitation[key]||assigned,idx=S.findIndex(x=>x.n===actual.surah);if(idx<0)return;
+    const reachedEnd=Number(actual.to)>=S[idx].a||actual.full;
+    if(reachedEnd){const next=idx+dir;if(next<0||next>=S.length){toast('وصلت إلى طرف ترتيب السور؛ اختر السورة التالية يدويًا','info');return;}setSectionAutoValue(key,next,1,'');const hint=document.getElementById(key+'-auto-hint');if(hint)hint.textContent=`استكمال تلقائي: ${directionLabel(key,dir)} — حدّد آية النهاية بنفسك.`;}
+    else{setSectionAutoValue(key,idx,Number(actual.to)||Number(assigned.to)||1,'');const hint=document.getElementById(key+'-auto-hint');if(hint)hint.textContent=`استكمال تلقائي من آخر آية تم تسميعها (${Number(actual.to)||Number(assigned.to)||1}) — آية النهاية متروكة لك.`;}
+    return;
+  }
+  if(key==='juz'){
+    const chips=(prev.juz?.chips||[]).map(normalizeJuzChip).filter(Boolean);if(!chips.length)return;const idx=JZ.indexOf(chips[chips.length-1]),next=idx+dir;if(next<0||next>=JZ.length){toast('وصلت إلى أول/آخر الأجزاء','info');return;}secOn.juz=true;juzChips=[JZ[next]];updateTogs();renderJuzChips();return;
+  }
+  if(key==='surahReview'){
+    const chips=(prev.surahReview?.chips||[]).map(normalizeSurahReviewChip).filter(Boolean);if(!chips.length)return;const last=chips[chips.length-1].replace(/^سورة\s+/,''),idx=S.findIndex(x=>x.n===last),next=idx+dir;if(next<0||next>=S.length){toast('وصلت إلى طرف ترتيب السور','info');return;}secOn.surahReview=true;surahReviewChips=['سورة '+S[next].n];updateTogs();renderSurahReviewChips();renderSurahChecklist();
+  }
+}
+function buildSumText(ses){
+  if(ses.status!=='حضر')return ses.status==='غاب'?'❌ غائب':ses.status==='إجازة'?'🌙 إجازة':ses.status||'غير حاضر';const parts=[],fmt=sec=>sec.full?`${sec.surah} كاملة`:`${sec.surah}(${sec.from}-${sec.to})`;
+  if(ses.new)parts.push(`حفظ: ${fmt(ses.new)}`);if(ses.rec)parts.push(`مراجعة قريبة: ${fmt(ses.rec)}`);if(ses.far)parts.push(`مراجعة بعيدة: ${fmt(ses.far)}`);if(ses.juz)parts.push(`أجزاء: ${(ses.juz.chips||[]).join('، ')}`);if(ses.surahReview)parts.push(`سور: ${(ses.surahReview.chips||[]).join('، ')}`);return parts.join(' · ')||'حصة مسجلة';
+}
+function buildSumHTML(ses){
+  if(ses.status!=='حضر')return ses.status==='غاب'?'<span style="color:var(--red)">❌ غائب</span>':'<span style="color:var(--gold)">🌙 إجازة</span>';const parts=[],fmt=sec=>sec.full?`سورة ${esc(sec.surah)} كاملة`:`سورة ${esc(sec.surah)} (${esc(sec.from)}–${esc(sec.to)})`,pg=ses.prevGrades||{};
+  if(Object.values(pg).some(Boolean)){const x=[];if(pg.new)x.push(`الحفظ: ${esc(pg.new)}${ses.actualRecitation?.new?' — '+fmt(ses.actualRecitation.new):''}`);if(pg.rec)x.push(`المراجعة القريبة: ${esc(pg.rec)}${ses.actualRecitation?.rec?' — '+fmt(ses.actualRecitation.rec):''}`);if(pg.far)x.push(`المراجعة البعيدة: ${esc(pg.far)}${ses.actualRecitation?.far?' — '+fmt(ses.actualRecitation.far):''}`);if(pg.juz)x.push(`الأجزاء: ${esc(pg.juz)}`);if(pg.surahReview)x.push(`السور: ${esc(pg.surahReview)}`);if(x.length)parts.push(`⭐ نتيجة التسميع: ${x.join(' · ')}`);}
+  if(ses.new)parts.push(`📖 ${fmt(ses.new)}`);if(ses.rec)parts.push(`📚 ${fmt(ses.rec)}`);if(ses.far)parts.push(`📘 ${fmt(ses.far)}`);if(ses.juz)parts.push(`📜 ${(ses.juz.chips||[]).map(c=>esc(c)).join('، ')}`);if(ses.surahReview)parts.push(`🕌 ${(ses.surahReview.chips||[]).map(c=>esc(c)).join('، ')}`);if(ses.notes)parts.push(`💬 <em>${esc(ses.notes)}</em>`);return parts.join('<br>')||'حصة مسجلة';
+}
+function getAssessmentGrades(ses){
+  const pg=ses?.prevGrades||{},assessed=[pg.new,pg.rec,pg.far,pg.juz,pg.surahReview].filter(Boolean);if(assessed.length)return assessed;return[ses?.new?.grade,ses?.rec?.grade,ses?.far?.grade,ses?.juz?.grade,ses?.surahReview?.grade].filter(Boolean);
+}
+function renderHomeAnalysis(){
+  const now=new Date(),weekAgo=new Date();weekAgo.setHours(0,0,0,0);weekAgo.setDate(weekAgo.getDate()-6);const week=sessions.filter(s=>new Date(s.date)>=weekAgo),present=week.filter(s=>s.status==='حضر'),absent=week.filter(s=>s.status==='غاب');
+  const month=sessions.filter(s=>{const d=new Date(s.date);return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&s.status==='حضر';});const vals=month.flatMap(getAssessmentGrades).map(g=>GRADE_MAP[g]||0).filter(Boolean);const avg=vals.length?gradeLabel(vals.reduce((a,b)=>a+b,0)/vals.length):'—';const newAyat=countUniqueAyatFromSessions(month);
+  const valsById={anWeekPresent:present.length,anWeekAbsent:absent.length,anAvgGrade:avg,anNewAyat:newAyat};Object.entries(valsById).forEach(([id,v])=>{const el=document.getElementById(id);if(el)el.textContent=v;});
+}
+function renderSmartHub(){updateTaskBadge();}
+function academyFooter(){return `\n\n━━━━━━━━━━━━━━━━━━\n🏛️ *${ACADEMY_NAME}*\n🌿 *${ACADEMY_TAGLINE}*\nنسأل الله أن يجعل أبناءنا من أهل القرآن وخاصته.`;}
+function buildWAMsg(s,ses){
+  const d=new Date(ses?ses.date:Date.now()).toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),tmpl=settings.waTemplate||'';
+  if(tmpl.trim()){
+    const newTxt=ses?.new?`📖 الحفظ الجديد: ${fmtSection(ses.new)}`:'',recTxt=ses?.rec?`📚 المراجعة القريبة: ${fmtSection(ses.rec)}`:'',farTxt=ses?.far?`📘 المراجعة البعيدة: ${fmtSection(ses.far)}`:'';
+    let out=tmpl.replace(/{{اسم_الطالب}}/g,s.name).replace(/{{التاريخ}}/g,d).replace(/{{الحفظ_الجديد}}/g,newTxt).replace(/{{المراجعة_القريبة}}/g,recTxt).replace(/{{المراجعة_البعيدة}}/g,farTxt).replace(/{{الملاحظات}}/g,ses?.notes||'').replace(/{{اسم_المحفظ}}/g,settings.name||'').replace(/{{مستوى_التسميع}}/g,gradeLabel(getAssessmentAverage(ses||{}))).replace(/{{إجمالي_الآيات}}/g,`${calcTotalAyat(s.id)} آية`).replace(/{{نسبة_الحفظ}}/g,gradeLabel(getAssessmentAverage(ses||{}))).replace(/{{نسبة_الإنجاز}}/g,`${calcTotalAyat(s.id)} آية`);
+    return out+academyFooter();
+  }
+  let msg=`السلام عليكم ورحمة الله وبركاته 🌿\n\n✨ متابعة الطالب: *${s.name}*\n📅 ${d}\n\n━━━━━━━━━━━━━━━━━━`;
+  const pg=ses?.prevGrades||{},hasPrev=pg.new||pg.rec||pg.far||pg.juz||pg.surahReview;if(hasPrev){msg+=`\n\n🎧 *نتيجة التسميع:*\n`;if(pg.new)msg+=`📖 الحفظ: ${grIcon(pg.new)} ${pg.new}${ses.actualRecitation?.new?' — '+fmtSection(ses.actualRecitation.new):''}\n`;if(pg.rec)msg+=`📚 المراجعة القريبة: ${grIcon(pg.rec)} ${pg.rec}${ses.actualRecitation?.rec?' — '+fmtSection(ses.actualRecitation.rec):''}\n`;if(pg.far)msg+=`📘 المراجعة البعيدة: ${grIcon(pg.far)} ${pg.far}${ses.actualRecitation?.far?' — '+fmtSection(ses.actualRecitation.far):''}\n`;if(pg.juz)msg+=`📜 مراجعة الأجزاء: ${grIcon(pg.juz)} ${pg.juz}\n`;if(pg.surahReview)msg+=`🕌 مراجعة السور: ${grIcon(pg.surahReview)} ${pg.surahReview}\n`;msg+=`\n━━━━━━━━━━━━━━━━━━`;}
+  msg+=`\n\n📝 *تكليف الحصة القادمة:*\n`;let hasTak=false;if(ses?.new){hasTak=true;msg+=`\n📖 *الحفظ الجديد:*\n${fmtSection(ses.new)}\n`;}if(ses?.rec){hasTak=true;msg+=`\n📚 *المراجعة القريبة:*\n${fmtSection(ses.rec)}\n`;}if(ses?.far){hasTak=true;msg+=`\n📘 *المراجعة البعيدة:*\n${fmtSection(ses.far)}\n`;}if(ses?.juz){hasTak=true;msg+=`\n📜 *مراجعة الأجزاء:*\n${(ses.juz.chips||[]).join('، ')}\n`;}if(ses?.surahReview){hasTak=true;msg+=`\n🕌 *مراجعة السور:*\n${(ses.surahReview.chips||[]).join('، ')}\n`;}if(!hasTak)msg+=`لا يوجد تكليف جديد\n`;msg+=`\n━━━━━━━━━━━━━━━━━━`;if(ses?.notes)msg+=`\n\n💬 *ملاحظات المحفظ:*\n${ses.notes}\n\n━━━━━━━━━━━━━━━━━━`;msg+=`\n\nجزاكم الله خيراً 🤲`;if(settings.name)msg+=`\n— ${settings.name}`;return msg+academyFooter();
+}
+function broadcastPresetText(type){
+  const academy=settings.circle||ACADEMY_NAME,footer=`${academy}\n${ACADEMY_TAGLINE}`;const map={
+    general:`السلام عليكم ورحمة الله وبركاته 🌿\n\nولي أمر الطالب {{اسم_الطالب}}،\n\n[اكتب رسالتك هنا]\n\nجزاكم الله خيرًا.\n${footer}`,
+    schedule:`السلام عليكم ورحمة الله وبركاته 🌿\n\nولي أمر الطالب {{اسم_الطالب}}،\nنحيطكم علمًا بتغيير موعد الحصة.\n\n🕐 الموعد الجديد: [اكتب اليوم والساعة]\n\nنرجو تأكيد الاطلاع، وجزاكم الله خيرًا.\n${footer}`,
+    holiday:`السلام عليكم ورحمة الله وبركاته 🌿\n\nنحيطكم علمًا بأن الحصص ستكون إجازة في: [اكتب التاريخ/الفترة]\nوتُستأنف الحصص بإذن الله في: [اكتب الموعد].\n\nكل عام وأنتم بخير.\n${footer}`,
+    greeting:`السلام عليكم ورحمة الله وبركاته 🌿\n\nيتقدم ${academy} بأطيب التهاني لأسرتكم الكريمة بمناسبة [اكتب المناسبة].\nنسأل الله أن يعيدها عليكم بالخير والبركة، وأن يجعل أبناءنا من أهل القرآن وخاصته.\n\n${ACADEMY_TAGLINE}`,
+    course:`السلام عليكم ورحمة الله وبركاته 🌿\n\n📣 *إعلان من ${academy}*\n\nيسرنا الإعلان عن: [اسم الكورس/البرنامج]\n👥 الفئة: [اكتب الفئة]\n📅 البداية: [اكتب الموعد]\n📝 التفاصيل: [اكتب التفاصيل]\n\nللاستفسار والتسجيل يرجى التواصل معنا.\n${footer}`,
+    reminder:`السلام عليكم ورحمة الله وبركاته 🌿\n\nتذكير لولي أمر الطالب {{اسم_الطالب}}:\n[اكتب التذكير هنا]\n\nجزاكم الله خيرًا.\n${footer}`
+  };return map[type]||map.general;
+}
+function personalizeBroadcast(text,st){const last=[...sessions].filter(x=>x.studentId===st.id&&x.status==='حضر').sort((a,b)=>new Date(b.date)-new Date(a.date))[0],level=last?gradeLabel(getAssessmentAverage(last)):'—',ayat=calcTotalAyat(st.id);return String(text||'').replace(/{{اسم_الطالب}}/g,st.name||'').replace(/{{اسم_ولي_الأمر}}/g,st.parent||'ولي الأمر').replace(/{{مستوى_التسميع}}/g,level).replace(/{{إجمالي_الآيات}}/g,`${ayat} آية`).replace(/{{نسبة_الحفظ}}/g,level).replace(/{{نسبة_الإنجاز}}/g,`${ayat} آية`).replace(/{{اسم_المحفظ}}/g,settings.name||'').replace(/{{اسم_الأكاديمية}}/g,settings.circle||ACADEMY_NAME);}
+
+// v7.1 — واجهات بلا نسب مئوية
+function renderSt(q='',lvl='',group=''){
+  const el=document.getElementById('stList');refreshGroupOptions();const nq=String(q||'').trim().toLowerCase();
+  const list=students.filter(s=>(!nq||String(s.name||'').toLowerCase().includes(nq)||String(s.parent||'').toLowerCase().includes(nq)||String(s.group||'').toLowerCase().includes(nq))&&(!lvl||s.level===lvl)&&(!group||s.group===group));
+  if(!list.length){el.innerHTML='<div class="empty"><div class="ei">👥</div><p>لا يوجد طلاب — اضغط + للإضافة</p></div>';return;}
+  el.innerHTML=list.map(s=>{const init=s.name.trim().split(' ').slice(0,2).map(x=>x[0]).join(''),cls=s.level==='متقدم'?'lv1':s.level==='متوسط'?'lv2':'lv3',cnt=sessions.filter(x=>x.studentId===s.id&&x.status==='حضر').length,studentSes=sessions.filter(x=>x.studentId===s.id).sort((a,b)=>new Date(a.date)-new Date(b.date)),lastSes=studentSes.at(-1)||null,lastDate=lastSes?new Date(lastSes.date).toLocaleDateString('ar-EG',{month:'short',day:'numeric'}):'—',total=calcTotalAyat(s.id),daysSince=lastSes?Math.floor((Date.now()-new Date(lastSes.date))/86400000):999,urgency=daysSince>14?'urgency-red':daysSince>7?'urgency-yellow':'urgency-none';
+    return `<div class="stc" onclick="openProf('${esc(s.id)}')"><div class="av" style="background:${avBg(s.id)};color:${avTx(s.id)}">${esc(init)}</div><div class="si"><div class="fb"><div class="sn2">${esc(s.name)}</div><div class="urgency-dot ${urgency}" title="${daysSince<999?daysSince+' يوم':'لا حصص'}"></div></div><div class="sm">آخر حصة: ${lastDate} · ${cnt} حضور · ${total} آية مُقيّمة</div>${s.group?`<span class="group-chip">👥 ${esc(s.group)}</span>`:''}${s.scheduleTime&&s.scheduleDays?.length?`<span class="schedule-chip">🕐 ${esc(s.scheduleTime)}</span>`:''}<div style="margin-top:5px"><span class="lv ${cls}">${esc(s.level)}</span></div></div><div style="color:var(--mut);font-size:20px">‹</div></div>`;
+  }).join('');
+}
+function openProf(id){
+  curStId=id;const s=students.find(x=>x.id===id);if(!s)return;const init=s.name.trim().split(' ').slice(0,2).map(x=>x[0]).join(''),cls=s.level==='متقدم'?'lv1':s.level==='متوسط'?'lv2':'lv3',stSes=sessions.filter(x=>x.studentId===id),present=stSes.filter(x=>x.status==='حضر').length,absent=stSes.filter(x=>x.status==='غاب').length,streak=calcStreakSt(id),total=calcTotalAyat(id);
+  document.getElementById('profHdr').innerHTML=`<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px"><div class="av" style="width:58px;height:58px;font-size:22px;background:${avBg(s.id)};color:${avTx(s.id)}">${esc(init)}</div><div><div style="font-size:19px;font-weight:800">${esc(s.name)}</div><span class="lv ${cls}">${esc(s.level)}</span>${streak>=3?`<span class="lv lv1" style="margin-right:4px">🔥 ${streak} أيام</span>`:''}</div></div>
+    <div class="ir"><span class="ir-k">👨‍👦 ولي الأمر</span><span>${esc(s.parent||'—')}</span></div><div class="ir"><span class="ir-k">👥 المجموعة</span><span>${esc(s.group||'—')}</span></div><div class="ir"><span class="ir-k">📱 واتساب</span><span dir="ltr">${esc(s.phone)}</span></div><div class="ir"><span class="ir-k">📅 بداية الحفظ</span><span>${esc(s.startDate||'—')}</span></div><div class="ir"><span class="ir-k">🗓️ الموعد الأسبوعي</span><span>${esc(scheduleText(s))}</span></div><div class="ir"><span class="ir-k">✅ حضور</span><span>${present} حصة</span></div><div class="ir"><span class="ir-k">❌ غياب</span><span>${absent} مرة</span></div><div class="ir"><span class="ir-k">📖 آيات تم تقييمها</span><span>${total} آية</span></div><div class="ir"><span class="ir-k">📝 ملاحظات</span><span>${esc(s.notes||'—')}</span></div><div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-g btn-sm" onclick="startFor('${esc(id)}')">📖 ابدأ حصة</button><button class="btn btn-wa btn-sm" onclick="directWA('${esc(id)}')">📲 واتساب</button></div>`;
+  document.getElementById('profTrack').innerHTML='<div class="ch">📈 الحفظ التراكمي</div>'+buildTrackHTML(id);renderWeakness(id);renderProfileChart(id);const hist=[...stSes].sort((a,b)=>new Date(b.date)-new Date(a.date));document.getElementById('profHist').innerHTML=`<div class="ch">📋 سجل الحصص (${stSes.length})</div>`+(!hist.length?'<div class="empty"><p>لا توجد حصص</p></div>':hist.map(ses=>{const d=new Date(ses.date).toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'}),icon=ses.status==='حضر'?'✅':ses.status==='غاب'?'❌':'🌙';return `<div class="hi"><div class="fb"><span style="font-weight:700">${d} ${icon}</span></div><div class="hi-content">${buildSumHTML(ses)}</div></div>`;}).join(''));goPage('profile');
+}
+function buildTrackHTML(id){
+  const total=calcTotalAyat(id),stSes=sessions.filter(x=>x.studentId===id&&x.status==='حضر'&&x.new).sort((a,b)=>new Date(a.date)-new Date(b.date)),assigned=countUniqueAyatFromSessions(stSes),lastNew=stSes.at(-1)||null,lastSurah=lastNew?`سورة ${esc(lastNew.new.surah)} (الآية ${esc(lastNew.new.to)})`:'—';
+  return `<div class="ir"><span class="ir-k">✅ آيات تم تسميعها وتقييمها</span><span style="font-weight:700;color:var(--gm)">${total} آية</span></div><div class="ir"><span class="ir-k">📝 آيات كُلِّف بها</span><span>${assigned} آية</span></div><div class="ir"><span class="ir-k">📍 آخر موضع تكليف جديد</span><span>${lastSurah}</span></div>`;
+}
+function renderComparison(){
+  const tbl=document.getElementById('compTbl');if(!tbl||!students.length){if(tbl)tbl.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--mut)">لا يوجد طلاب</td></tr>';return;}
+  const data=students.map(st=>{const stSes=sessions.filter(x=>x.studentId===st.id),present=stSes.filter(x=>x.status==='حضر'),totalAyat=calcTotalAyat(st.id),gradeVals=present.flatMap(getAssessmentGrades).map(g=>GRADE_MAP[g]||0).filter(Boolean),avgG=gradeVals.length?gradeVals.reduce((a,b)=>a+b,0)/gradeVals.length:0;return{s:st,present:present.length,totalAyat,avgG,avgLabel:gradeLabel(avgG)};}).sort((a,b)=>b.totalAyat-a.totalAyat||b.avgG-a.avgG);const maxAyat=Math.max(...data.map(d=>d.totalAyat),1),medals=['🥇','🥈','🥉'];
+  tbl.innerHTML=`<thead><tr><th>#</th><th>الطالب</th><th>آيات مُسمّعة</th><th>الحضور</th><th>متوسط التقييم</th></tr></thead><tbody>${data.map((d,i)=>`<tr><td><span class="rank ${i===0?'r1':i===1?'r2':i===2?'r3':''}">${medals[i]||i+1}</span></td><td style="font-weight:700;cursor:pointer" onclick="openProf('${esc(d.s.id)}')">${esc(d.s.name)}</td><td><div style="font-weight:700;color:var(--gm)">${d.totalAyat}</div><div class="comp-bar"><div class="comp-fill" style="width:${Math.round(d.totalAyat/maxAyat*100)}%"></div></div></td><td>${d.present} حصة</td><td>${esc(d.avgLabel)}</td></tr>`).join('')}</tbody>`;
+}
+function openCert(){
+  if(!curStId)return;const s=students.find(x=>x.id===curStId);if(!s)return;const total=calcTotalAyat(curStId),d=new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'}),verified=getVerifiedNewSections(curStId),lastVerified=verified.at(-1)||null,wصل=lastVerified?`سورة ${lastVerified.surah} الآية ${lastVerified.to}`:'—';
+  document.getElementById('certContent').innerHTML=`<div class="cert-box"><div class="cert-seal">📿</div><div class="cert-title">شهادة تقدير</div><div class="cert-sub">${esc(settings.circle)||'حلقة تحفيظ القرآن الكريم'}</div><div class="cert-name">${esc(s.name)}</div><div class="cert-body">أتم بحمد الله تسميع وتقييم<br><strong style="font-size:18px;color:var(--gm)">${total} آية كريمة</strong><br>آخر موضع تم تقييمه: ${esc(wصل)}</div><div style="font-size:12px;color:var(--mut);margin-bottom:8px">📅 ${d}</div><div class="cert-teacher">${settings.name?'المحفظ: '+esc(settings.name):''}</div></div>`;document.getElementById('certModal').classList.add('open');
+}
+function renderReport(){
+  const sid=document.getElementById('repSt').value,mv=document.getElementById('repMonth').value,el=document.getElementById('reportContent'),calCard=document.getElementById('calCard'),chartsEl=document.getElementById('reportCharts');if(!sid||!mv){el.innerHTML='<div class="empty"><div class="ei">📊</div><p>اختر الطالب والشهر</p></div>';calCard.style.display='none';chartsEl.innerHTML='';return;}
+  const[y,m]=mv.split('-').map(Number),student=students.find(x=>x.id===sid),stSes=sessions.filter(x=>{if(x.studentId!==sid)return false;const d=new Date(x.date);return d.getFullYear()===y&&d.getMonth()===m;}).sort((a,b)=>new Date(a.date)-new Date(b.date));calCard.style.display='block';renderCalendar(sid,y,m);if(!stSes.length){el.innerHTML='<div class="card"><div class="empty"><p>لا توجد حصص في هذا الشهر</p></div></div>';chartsEl.innerHTML='';return;}
+  const present=stSes.filter(x=>x.status==='حضر'),absent=stSes.filter(x=>x.status==='غاب'),vacation=stSes.filter(x=>x.status==='إجازة'),totalAyat=countUniqueAyatFromSessions(present),allGrades=present.flatMap(getAssessmentGrades),gradeVals=allGrades.map(g=>GRADE_MAP[g]||0).filter(Boolean),avgG=gradeVals.length?gradeVals.reduce((a,b)=>a+b,0)/gradeVals.length:0,avgLabel=gradeLabel(avgG),monthName=new Date(y,m,1).toLocaleDateString('ar-EG',{month:'long',year:'numeric'});renderReportCharts(present.length,absent.length,vacation.length,present);
+  let html=`<div class="card"><div class="ch">📊 تقرير ${esc(student?.name||'')} — ${monthName}</div><div class="month-stat"><div class="ms-item"><div class="ms-num">${present.length}</div><div class="ms-lbl">✅ حضور</div></div><div class="ms-item"><div class="ms-num">${absent.length}</div><div class="ms-lbl">❌ غياب</div></div><div class="ms-item"><div class="ms-num">${vacation.length}</div><div class="ms-lbl">🌙 إجازة</div></div><div class="ms-item"><div class="ms-num">${totalAyat}</div><div class="ms-lbl">📖 آيات تكليف جديد</div></div><div class="ms-item"><div class="ms-num">${stSes.length}</div><div class="ms-lbl">📅 إجمالي السجلات</div></div><div class="ms-item"><div class="ms-num" style="font-size:15px">${avgLabel}</div><div class="ms-lbl">⭐ متوسط التسميع</div></div></div><button class="btn btn-wa mt8" onclick="sendMonthlyReport('${esc(sid)}','${esc(mv)}')">📲 إرسال التقرير الشهري لولي الأمر</button></div><div class="card"><div class="ch">📋 تفصيل الحصص</div>`;[...stSes].sort((a,b)=>new Date(b.date)-new Date(a.date)).forEach(ses=>{const d=new Date(ses.date).toLocaleDateString('ar-EG',{weekday:'short',month:'short',day:'numeric'}),icon=ses.status==='حضر'?'✅':ses.status==='غاب'?'❌':'🌙';html+=`<div class="hi"><div class="fb"><span style="font-weight:700">${d} ${icon}</span></div><div class="hi-content txt-mut">${buildSumHTML(ses)}</div></div>`;});el.innerHTML=html+'</div>';
+}
+function sendMonthlyReport(sid,mv){
+  const st=students.find(x=>x.id===sid);if(!st)return;const[y,m]=mv.split('-').map(Number),stSes=sessions.filter(x=>{if(x.studentId!==sid)return false;const d=new Date(x.date);return d.getFullYear()===y&&d.getMonth()===m;}).sort((a,b)=>new Date(a.date)-new Date(b.date)),present=stSes.filter(x=>x.status==='حضر'),absent=stSes.filter(x=>x.status==='غاب'),vacation=stSes.filter(x=>x.status==='إجازة'),totalAyat=countUniqueAyatFromSessions(present),vals=present.flatMap(getAssessmentGrades).map(g=>GRADE_MAP[g]||0).filter(Boolean),avgG=vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0,monthName=new Date(y,m,1).toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
+  let msg=`السلام عليكم ورحمة الله وبركاته 🌿\n\n📊 *التقرير الشهري*\n✨ الطالب: ${st.name}\n📅 شهر: ${monthName}\n\n━━━━━━━━━━━━━━━━━━\n✅ أيام الحضور: ${present.length}\n❌ أيام الغياب: ${absent.length}\n🌙 الإجازات: ${vacation.length}\n📖 آيات التكليف الجديد الفريدة: ${totalAyat} آية\n⭐ متوسط التسميع: ${gradeLabel(avgG)}\n\n━━━━━━━━━━━━━━━━━━\n\n📋 تفصيل الحصص:\n`;stSes.forEach(s=>{const d=new Date(s.date).toLocaleDateString('ar-EG',{day:'numeric',month:'short'});msg+=`\n${d} — ${s.status}\n${buildSumText(s)}\n`;});msg+=academyFooter();openWhatsApp(st,msg);
+}
+
+// Bridge for the v8 feature layer. Captures the final v7.1-compatible implementations
+// before v8.js intentionally overrides selected UI/workflow functions.
+globalThis.__IMAM_BASE__={
+  renderHome,renderHomeAnalysis,renderHomeCharts,initSettings,openAddSt,editSt,saveSt,openProf,renderSt,
+  initSession,onSesSt,applySessionToEditor,captureDraft,applyDraft,buildSesData,saveSession,loadPrevTask,setPrevGr,
+  smartContinueFromAssessment,buildWAMsg,fillFromLast,renderReport,renderComparison,academyFooter,save,
+  fillAyah,fillSurahSelects,filterSurahDropdown,selectSurahOption,sanitizeBackupData,importData
+};
