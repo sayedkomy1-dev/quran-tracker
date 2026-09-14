@@ -1,12 +1,14 @@
-/* أكاديمية الإمام — Service Worker v8.0 */
-const CACHE_NAME = 'quran-pwa-v8.0.0';
-const APP_VERSION = '8.0.0';
+/* أكاديمية الإمام — Service Worker v9.0 */
+const CACHE_NAME = 'quran-pwa-v9.0.0';
+const APP_VERSION = '9.0.0';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css',
   './app.js',
   './v8.js',
+  './v9.js',
+  './v9.css',
   './manifest.json',
   './favicon.png',
   './icon-96.png',

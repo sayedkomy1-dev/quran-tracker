@@ -56,8 +56,8 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION='8.0.0';
-const SCHEMA_VERSION=10;
+const APP_VERSION='9.0.0';
+const SCHEMA_VERSION=11;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
 const GRADE_MAP={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
@@ -2071,7 +2071,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('contro
 function handleURLParams(){
   const params=new URLSearchParams(location.search);
   const page=params.get('page');
-  if(page&&['session','students','reports','settings','tasks','checkin'].includes(page)) goPage(page);
+  if(page&&['session','students','reports','settings','tasks','checkin','mushaf'].includes(page)) goPage(page);
 }
 
 // ══════════════════════════════════════
@@ -2127,7 +2127,8 @@ window.addEventListener('load',async ()=>{
   setTimeout(checkAndNotify, 5000);
 
   // 9. v8 feature layer
-  if(typeof initV8Layer==='function') initV8Layer();
+  if(typeof initV8Layer==='function') await initV8Layer();
+  if(typeof initV9Layer==='function') await initV9Layer();
 });
 
 // ══════════════════════════════════════

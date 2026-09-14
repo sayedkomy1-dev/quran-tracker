@@ -441,3 +441,12 @@ function importData(e){
 
 
 // v8 initialization is invoked by app.js only after initDB() has completed.
+
+// Bridge for the v9 UX layer. This snapshot is created while v8.js is executing,
+// before v9.js declares its overrides, so v9 can safely call the immediate
+// predecessor implementations without global function-hoisting recursion.
+globalThis.__IMAM_V8_BASE__={
+  renderHome,goPage,renderSt,filterSt,openAddSt,editSt,saveSt,initSession,onSesSt,applySessionToEditor,
+  openQuranTextModal,closeQuranTextModal,playQuranRange,playNextQuranAudio,stopQuranAudio,initSettings,
+  renderCheckin,openProf,save,renderReport,migrateV8Data
+};

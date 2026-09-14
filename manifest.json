@@ -2,7 +2,7 @@
   "id": "./",
   "name": "أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا",
   "short_name": "أكاديمية الإمام",
-  "description": "نظام عربي محلي لمتابعة طلاب تحفيظ القرآن الكريم: الجدول، الحضور، التسميع، المراجعة، المهام، التقارير والتواصل مع أولياء الأمور.",
+  "description": "نظام عربي احترافي لمحفّظي القرآن: الحصة الموجّهة، المتابعة، مصحف المدينة، التقارير، المهام والتواصل مع أولياء الأمور.",
   "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
@@ -54,34 +54,8 @@
     {
       "name": "بدء حصة",
       "short_name": "حصة",
-      "description": "فتح شاشة الحصة مباشرة",
+      "description": "فتح وضع الحصة مباشرة",
       "url": "./?page=session",
-      "icons": [
-        {
-          "src": "icon-192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "تسجيل الحضور",
-      "short_name": "الحضور",
-      "description": "فتح متابعة حضور اليوم",
-      "url": "./?page=checkin",
-      "icons": [
-        {
-          "src": "icon-192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        }
-      ]
-    },
-    {
-      "name": "المهام والمتابعة",
-      "short_name": "المهام",
-      "description": "فتح مهام الطلاب والمتابعة",
-      "url": "./?page=tasks",
       "icons": [
         {
           "src": "icon-192.png",
@@ -103,6 +77,19 @@
       ]
     },
     {
+      "name": "مصحف المدينة",
+      "short_name": "المصحف",
+      "description": "فتح مصحف المدينة النبوية",
+      "url": "./?page=mushaf",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
       "name": "التقارير",
       "short_name": "تقارير",
       "url": "./?page=reports",
@@ -113,22 +100,6 @@
           "type": "image/png"
         }
       ]
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshots/mobile-home.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "الرئيسية على الهاتف"
-    },
-    {
-      "src": "screenshots/desktop-home.png",
-      "sizes": "1366x900",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "لوحة العمل على Windows"
     }
   ]
 }

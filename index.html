@@ -8,12 +8,13 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="8.0.0">
+<meta name="application-version" content="9.0.0">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="v9.css">
 </head>
 <body>
 
@@ -434,6 +435,11 @@
 
 <datalist id="surahList"></datalist>
 
+<!-- ══════════════ MUSHAF LIBRARY v9 ══════════════ -->
+<div class="pg" id="pg-mushaf">
+  <div id="v9MushafApp"></div>
+</div>
+
 <!-- ══════════════ REPORTS ══════════════ -->
 <div class="pg" id="pg-reports">
   <div class="card">
@@ -750,6 +756,13 @@
   <div class="lock-card"><img src="icon-192.png" alt="شعار الأكاديمية"><h2>أكاديمية الإمام</h2><p>أدخل PIN لفتح التطبيق</p><input type="password" inputmode="numeric" id="lockPinInput" maxlength="8" placeholder="••••"><button class="btn btn-g" onclick="unlockWithPin()">فتح</button><button class="btn btn-out" id="biometricUnlockBtn" onclick="unlockWithBiometric()" style="display:none">استخدام البصمة / Windows Hello</button><div id="lockError" class="lock-error"></div></div>
 </div>
 
+<!-- ════════════ v9 EXPERIENCE LAYERS ════════════ -->
+<nav id="v9Nav" class="v9-nav" aria-label="التنقل الرئيسي"></nav>
+<div class="mo v9-more-sheet" id="v9MoreSheet" aria-hidden="true"><div class="mo-box"><div class="mo-title"><span>المزيد</span><button class="mo-x" onclick="closeV9More()" aria-label="إغلاق">✕</button></div><div id="v9MoreGrid" class="v9-more-grid"></div></div></div>
+<div class="mo" id="v9Onboarding"><div class="mo-box v9-onboarding-box"><div id="v9OnboardingBody"></div></div></div>
+<div id="v9ContextMenu" class="v9-context-menu" hidden></div>
+<div id="v9MiniPlayer" class="v9-mini-player" hidden></div>
+
 <!-- ════════════ TOAST ════════════ -->
 <div class="toast" id="toast"></div>
 
@@ -827,5 +840,6 @@
 <!-- ════════════ SCRIPTS ════════════ -->
 <script src="app.js" defer></script>
 <script src="v8.js" defer></script>
+<script src="v9.js" defer></script>
 </body>
 </html>
