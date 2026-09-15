@@ -1,4 +1,4 @@
-/* أكاديمية الإمام — UX/Product Layer v9.0.0
+/* أكاديمية الإمام — UX/Product Layer v9.1.0
  * Professional responsive shell, guided session, Quran focus, Mushaf library, accessibility and workflow optimizations.
  */
 'use strict';
@@ -14,7 +14,7 @@ const V9_OFFICIAL={
 const V9={
   inited:false,step:'assessment',steps:['assessment','new','review','notes'],selectedStudents:new Set(),bulkMode:false,
   quranRepeatLeft:0,quranAdvanceTimer:null,quranPane:'text',mushafObjectURL:'',currentMushafPage:1,
-  textPackCancel:false,onboardingStep:0,contextStudentId:'',undo:null
+  textPackCancel:false,onboardingStep:0,contextStudentId:'',undo:null,sessionDockObserver:null
 };
 
 function v9Esc(v){return typeof esc==='function'?esc(String(v??'')):String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
@@ -53,29 +53,55 @@ function v9Icon(name){
   };
   return `<svg viewBox="0 0 24 24" aria-hidden="true">${p[name]||p.more}</svg>`;
 }
-function v9Toast(msg,type='info'){(typeof v8Toast==='function'?v8Toast:toast)(msg,type);}
+function v9Toast(msg,type='info'){try{if(typeof v8Toast==='function')v8Toast(msg,type);else if(typeof toast==='function')toast(msg,type);else console.log(msg);}catch(_){console.log(msg);}}
 function v9Initials(name){return String(name||'').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('');}
 function v9StudentStatus(st){return ['active','paused','archived'].includes(st?.studentStatus)?st.studentStatus:'active';}
 function v9StatusAr(status){return status==='paused'?'متوقف مؤقتًا':status==='archived'?'مؤرشف':'نشط';}
 function v9TodayDate(){return new Date().toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});}
 
+function v9Safe(label,fn){
+  try{return fn();}catch(err){console.error(`[v9] ${label}`,err);v9Toast(`تعذر تهيئة ${label}، وتم إبقاء الوظائف الأساسية متاحة.`,'error');return null;}
+}
+async function v9SafeAsync(label,fn){
+  try{return await fn();}catch(err){console.error(`[v9] ${label}`,err);v9Toast(`تعذر تحميل ${label}، وتم إبقاء الوظائف الأساسية متاحة.`,'error');return null;}
+}
 async function initV9Layer(){
   if(V9.inited)return;V9.inited=true;
-  migrateV9Data();injectV9Navigation();injectHomeCommandCenter();injectStudentUX();injectSessionUX();injectProfileTabs();injectSettingsUX();injectMushafUX();enhanceQuranModal();injectCheckinUX();setupV9Keyboard();setupContextDismiss();applyV9Prefs();
-  renderHome();renderSt();renderV9Mushaf();renderV9Settings();updateV9Nav(curPage||'home');
-  if(!settings.v9?.onboardingDone&&students.length===0)setTimeout(openV9Onboarding,500);
+  v9Safe('ترقية الإعدادات',migrateV9Data);
+  v9Safe('شريط التنقل',injectV9Navigation);
+  v9Safe('الصفحة الرئيسية',injectHomeCommandCenter);
+  v9Safe('واجهة الطلاب',injectStudentUX);
+  v9Safe('واجهة الحصة',injectSessionUX);
+  v9Safe('ملف الطالب',injectProfileTabs);
+  v9Safe('إعدادات الواجهة',injectSettingsUX);
+  await v9SafeAsync('المصحف',async()=>{injectMushafUX();await renderV9Mushaf();});
+  v9Safe('قارئ القرآن',enhanceQuranModal);
+  v9Safe('الحضور',injectCheckinUX);
+  v9Safe('اختصارات لوحة المفاتيح',setupV9Keyboard);
+  v9Safe('قوائم السياق',setupContextDismiss);
+  v9Safe('تفضيلات الواجهة',applyV9Prefs);
+  v9Safe('الرئيسية',()=>{renderHome();renderSt();renderV9Settings();updateV9Nav(typeof curPage==='string'?curPage:'home');});
+  if(!settings.v9?.onboardingDone&&students.length===0)setTimeout(()=>v9Safe('دليل الاستخدام',()=>openV9Onboarding()),500);
 }
 function migrateV9Data(){
-  settings.v9={mode:'guided',reduceMotion:false,onboardingDone:false,textPackStatus:'',quranSpeed:1,quranRepeat:1,tutorDelay:0,mushafView:'single',mushafBookmarks:[],...settings.v9};
-  if(!['single','spread'].includes(settings.v9.mushafView))settings.v9.mushafView='single';
-  if(!Array.isArray(settings.v9.mushafBookmarks))settings.v9.mushafBookmarks=[];
+  const hadV9=!!settings.v9;
+  const oldLayout=Number(settings.v9?.layoutVersion||0);
+  const existingUser=(students?.length||0)+(sessions?.length||0)>0;
+  const defaultMode=existingUser?'expert':'guided';
+  settings.v9={mode:defaultMode,reduceMotion:false,onboardingDone:existingUser,textPackStatus:'',quranSpeed:1,quranRepeat:1,tutorDelay:0,mushafView:'single',mushafBookmarks:[],...(settings.v9||{})};
   let changed=false;
+  // Existing users coming from v8 or the first v9 build are restored to the full familiar session view once.
+  if(existingUser&&oldLayout<2&&settings.v9.mode!=='expert'){settings.v9.mode='expert';changed=true;}
+  if(!hadV9&&existingUser&&settings.v9.mode!=='expert'){settings.v9.mode='expert';changed=true;}
+  if(!['guided','expert'].includes(settings.v9.mode)){settings.v9.mode=defaultMode;changed=true;}
+  if(oldLayout!==2){settings.v9.layoutVersion=2;changed=true;}
+  if(!['single','spread'].includes(settings.v9.mushafView)){settings.v9.mushafView='single';changed=true;}
+  if(!Array.isArray(settings.v9.mushafBookmarks)){settings.v9.mushafBookmarks=[];changed=true;}
   students.forEach(st=>{if(!['active','paused','archived'].includes(st.studentStatus)){st.studentStatus='active';changed=true;}if(typeof st.pinned!=='boolean'){st.pinned=false;changed=true;}});
   if(settings.schemaVersion!==11){settings.schemaVersion=11;changed=true;}
   if(changed)try{V9_BASE.save();}catch(_){try{save();}catch(__){}}
   return changed;
 }
-function migrateV8Data(){const c8=V9_BASE.migrateV8Data();const c9=migrateV9Data();return !!(c8||c9);}
 function applyV9Prefs(){document.body.classList.toggle('v9-reduce-motion',!!settings.v9?.reduceMotion);}
 
 // ──────────────────────────────────────
@@ -89,6 +115,7 @@ function injectV9Navigation(){
   const g=document.getElementById('v9MoreGrid');if(g)g.innerHTML=[
     ['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة وحزمة العمل دون إنترنت',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
   ].map(([i,t,s,a])=>`<button class="v9-more-item" onclick="${a}">${v9Icon(i)}<b>${t}</b><small>${s}</small></button>`).join('');
+  document.body.classList.add('v9-shell-ready');
 }
 function openV9More(){const m=document.getElementById('v9MoreSheet');if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}}
 function closeV9More(){const m=document.getElementById('v9MoreSheet');if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');}}
@@ -108,7 +135,7 @@ function goPage(p){
 // ──────────────────────────────────────
 function injectHomeCommandCenter(){
   const pg=document.getElementById('pg-home');if(!pg||document.getElementById('v9Home'))return;
-  pg.classList.add('v9-home-ready');pg.insertAdjacentHTML('afterbegin','<div id="v9Home"></div>');
+  pg.insertAdjacentHTML('afterbegin','<div id="v9Home"></div>');
 }
 function activeStudents(){return students.filter(s=>v9StudentStatus(s)==='active');}
 function v9ExpectedToday(){const a=activeStudents(),configured=a.some(s=>Array.isArray(s.scheduleDays)&&s.scheduleDays.length);if(!configured)return a;const dow=weekdayFromDateKey(localDateKey());return a.filter(s=>(s.scheduleDays||[]).includes(dow));}
@@ -135,7 +162,8 @@ function renderV9Home(){
   const recentHtml=recent.length?recent.map(st=>{const last=v9LastSessionFor(st.id);return `<button class="v9-recent-student" onclick="startFor('${v9Esc(st.id)}')"><span class="v9-avatar">${v9Esc(v9Initials(st.name))}</span><b>${v9Esc(st.name.split(' ').slice(0,2).join(' '))}</b><small>${st.pinned?'مثبت · ':''}${last?new Date(last.date).toLocaleDateString('ar-EG',{day:'numeric',month:'short'}):'لم يبدأ'}</small></button>`}).join(''):`<div class="v9-empty" style="grid-column:1/-1">${v9Icon('users')}<b>لا يوجد طلاب بعد</b><span>أضف أول طالب لبدء المتابعة.</span></div>`;
   el.innerHTML=`<div class="v9-hero"><div class="v9-hero-top"><div><div class="v9-eyebrow">${v9Esc(settings.circle||'أكاديمية الإمام')}</div><div class="v9-greeting">${greeting}${settings.name?`، ${v9Esc(settings.name)}`:''}</div><div class="v9-date">${v9Esc(v9TodayDate())}</div></div><button class="v9-search-round" onclick="openQuickSearch()" aria-label="بحث">${v9Icon('search')}</button></div><div class="v9-today-grid"><div class="v9-today-stat"><b>${expected.length}</b><span>طلاب اليوم</span></div><div class="v9-today-stat"><b>${present}</b><span>تم</span></div><div class="v9-today-stat"><b>${pending}</b><span>متبقٍ</span></div><div class="v9-today-stat"><b>${absent}</b><span>غياب</span></div></div><button class="v9-start-session" onclick="goPage('session')">${v9Icon('book')} ابدأ الحصة</button></div>
   <div class="v9-home-main"><section class="v9-section"><div class="v9-section-head"><div class="v9-section-title">الطلاب الأخيرون</div><button class="v9-link-btn" onclick="goPage('students')">كل الطلاب</button></div><div class="v9-recent-row">${recentHtml}</div></section><section class="v9-section"><div class="v9-section-head"><div class="v9-section-title">ملخص آخر 7 أيام</div><button class="v9-link-btn" onclick="goPage('reports')">التفاصيل</button></div><div class="v9-summary-grid"><div class="v9-summary-item"><b>${weekAyat}</b><span>آية حفظ جديد</span></div><div class="v9-summary-item"><b>${reviews}</b><span>مراجعات</span></div><div class="v9-summary-item"><b style="font-size:15px">${v9Esc(avg)}</b><span>متوسط التسميع</span></div></div></section></div>
-  <div class="v9-home-side"><section class="v9-section"><div class="v9-section-title" style="margin-bottom:10px">ملاحظة ذكية</div><div class="v9-insight"><div class="v9-insight-icon">${v9Icon('insight')}</div><div><b>${v9Esc(ins.title)}</b><p>${v9Esc(ins.text)}</p></div></div></section><section class="v9-section"><div class="v9-section-title" style="margin-bottom:10px">اختصارات</div><div class="v9-quick-row"><button class="v9-quick" onclick="goPage('checkin')">${v9Icon('check')}الحضور</button><button class="v9-quick" onclick="openAddSt()">${v9Icon('plus')}طالب</button><button class="v9-quick" onclick="goPage('mushaf')">${v9Icon('book')}المصحف</button><button class="v9-quick" onclick="openGroupOverview()">${v9Icon('group')}الحلقات</button></div></section></div>`;
+  <div class="v9-home-side"><section class="v9-section"><div class="v9-section-title" style="margin-bottom:10px">ملاحظة ذكية</div><div class="v9-insight"><div class="v9-insight-icon">${v9Icon('insight')}</div><div><b>${v9Esc(ins.title)}</b><p>${v9Esc(ins.text)}</p></div></div></section><section class="v9-section"><div class="v9-section-head" style="margin-bottom:10px"><div class="v9-section-title">اختصارات العمل</div><button class="v9-link-btn" onclick="openQuickSearch()">بحث</button></div><div class="v9-quick-row"><button class="v9-quick" onclick="goPage('checkin')">${v9Icon('check')}الحضور</button><button class="v9-quick" onclick="openAddSt()">${v9Icon('plus')}طالب</button><button class="v9-quick" onclick="openBroadcastComposer()">${v9Icon('message')}رسالة جماعية</button><button class="v9-quick" onclick="goPage('tasks')">${v9Icon('tasks')}المهام</button><button class="v9-quick" onclick="goPage('mushaf')">${v9Icon('book')}المصحف</button><button class="v9-quick" onclick="openGroupOverview()">${v9Icon('group')}الحلقات</button></div></section></div>`;
+  document.getElementById('pg-home')?.classList.add('v9-home-ready');
 }
 function renderHome(){V9_BASE.renderHome();renderV9Home();}
 
@@ -174,22 +202,52 @@ function setStudentStatusWithUndo(id,status){const st=students.find(s=>s.id===id
 // Guided session workflow
 // ──────────────────────────────────────
 function injectSessionUX(){
-  const pg=document.getElementById('pg-session'),content=document.getElementById('sesContent');if(!pg||!content||document.getElementById('v9SessionSteps'))return;
-  pg.classList.add('v9-ready');
-  content.insertAdjacentHTML('beforebegin',`<div id="v9SessionSteps" class="v9-session-steps"><div class="v9-session-mode"><small style="color:var(--v9-muted)">مسار الحصة</small><div class="v9-mode-toggle"><button data-mode="guided" onclick="setSessionMode('guided')">مبسّط</button><button data-mode="expert" onclick="setSessionMode('expert')">سريع</button></div></div><div class="v9-step-row">${[['assessment','التسميع'],['new','الحفظ'],['review','المراجعة'],['notes','الملاحظات']].map(([k,l])=>`<button class="v9-step-btn" data-step="${k}" onclick="setSessionStep('${k}')">${l}</button>`).join('')}</div></div>`);
+  const pg=document.getElementById('pg-session'),content=document.getElementById('sesContent');if(!pg||!content)return;
+  pg.classList.remove('v9-ready');
+  if(!document.getElementById('v9SessionSteps')){
+    content.insertAdjacentHTML('beforebegin',`<div id="v9SessionSteps" class="v9-session-steps"><div class="v9-session-mode"><div><small style="color:var(--v9-muted)">مسار الحصة</small><div class="v9-session-help">يمكنك إظهار كل الأقسام في «سريع» دون فقد أي زر.</div></div><div class="v9-mode-toggle"><button data-mode="guided" onclick="setSessionMode('guided')">مبسّط</button><button data-mode="expert" onclick="setSessionMode('expert')">سريع</button></div></div><div class="v9-step-row">${[['assessment','التسميع'],['new','الحفظ'],['review','المراجعة'],['notes','الملاحظات']].map(([k,l])=>`<button class="v9-step-btn" data-step="${k}" onclick="setSessionStep('${k}')">${l}</button>`).join('')}</div></div>`);
+  }
   const cards=[...content.children].filter(x=>x.classList?.contains('card'));
   cards.forEach(c=>{if(c.id==='prevCard'||c.id==='sessionErrorsCard')c.dataset.v9Step='assessment';else if(c.querySelector('#tog-new'))c.dataset.v9Step='new';else if(c.querySelector('#tog-rec')||c.querySelector('#tog-far')||c.querySelector('#tog-juz')||c.querySelector('#tog-surahReview'))c.dataset.v9Step='review';else if(c.querySelector('#sesNotes'))c.dataset.v9Step='notes';});
-  content.insertAdjacentHTML('beforeend',`<div id="v9SessionFooter" class="v9-session-footer"><button class="v9-prev" onclick="moveSessionStep(-1)" aria-label="السابق">${v9Icon('arrowRight')}</button><button class="v9-save" onclick="saveSession()">حفظ الحصة</button><button class="v9-next" onclick="moveSessionStep(1)" aria-label="التالي">${v9Icon('arrowLeft')}</button></div>`);
+  ensureSessionActionDock();
   ['new','rec','far'].forEach(k=>['f','t'].forEach(x=>enhanceAyahInput(`${k}-${x}`)));
-  setSessionMode(settings.v9?.mode||'guided',false);setSessionStep('assessment',false);
+  setSessionMode(settings.v9?.mode||'expert',false);setSessionStep('assessment',false);
+  pg.classList.add('v9-ready');
+}
+function ensureSessionActionDock(){
+  const content=document.getElementById('sesContent');if(!content)return;
+  let footer=document.getElementById('v9SessionFooter');
+  if(!footer){
+    footer=document.createElement('div');footer.id='v9SessionFooter';footer.className='v9-session-footer';
+    footer.innerHTML=`<button type="button" class="v9-prev" onclick="moveSessionStep(-1)" aria-label="الخطوة السابقة">${v9Icon('arrowRight')}</button><div class="v9-action-stack"><div class="v9-main-actions"></div><details class="v9-send-details"><summary>خيارات رسالة ولي الأمر</summary><div class="v9-secondary-actions"></div></details></div><button type="button" class="v9-next" onclick="moveSessionStep(1)" aria-label="الخطوة التالية">${v9Icon('arrowLeft')}</button>`;
+    document.body.appendChild(footer);
+  }else if(footer.parentElement!==document.body){
+    document.body.appendChild(footer);
+  }
+  const sessionPage=document.getElementById('pg-session');
+  const syncDockVisibility=()=>{footer.hidden=!sessionPage?.classList.contains('on');};
+  if(sessionPage&&!V9.sessionDockObserver){
+    V9.sessionDockObserver=new MutationObserver(syncDockVisibility);
+    V9.sessionDockObserver.observe(sessionPage,{attributes:true,attributeFilter:['class']});
+  }
+  syncDockVisibility();
+  const main=footer.querySelector('.v9-main-actions'),secondary=footer.querySelector('.v9-secondary-actions');
+  const saveBtn=document.getElementById('saveSessionBtn');
+  let sendBtn=document.getElementById('saveSendSessionBtn');
+  if(!sendBtn)sendBtn=[...content.querySelectorAll('button')].find(b=>String(b.getAttribute('onclick')||'').includes('saveAndSendWA()'))||null;
+  const waModes=document.getElementById('sessionWaModes')||content.querySelector('.wa-mode-row');
+  if(saveBtn&&main&&saveBtn.parentElement!==main){saveBtn.classList.remove('mb8');saveBtn.classList.add('v9-save-primary');main.appendChild(saveBtn);}
+  if(sendBtn&&main&&sendBtn.parentElement!==main){sendBtn.id='saveSendSessionBtn';sendBtn.classList.add('v9-send-primary');main.appendChild(sendBtn);}
+  if(waModes&&secondary&&waModes.parentElement!==secondary){waModes.id='sessionWaModes';waModes.classList.add('v9-wa-mode-preserved');secondary.appendChild(waModes);}
+  const details=footer.querySelector('.v9-send-details');if(details)details.hidden=!(waModes&&waModes.querySelector('button'));
 }
 function enhanceAyahInput(id){const input=document.getElementById(id);if(!input||input.closest('.v9-ayah-wrap'))return;const w=document.createElement('div');w.className='v9-ayah-wrap';input.parentNode.insertBefore(w,input);w.innerHTML=`<button type="button" class="v9-ayah-step" aria-label="نقصان">−</button><span></span><button type="button" class="v9-ayah-step" aria-label="زيادة">+</button>`;w.children[1].replaceWith(input);w.children[0].onclick=()=>stepAyah(input,-1);w.children[2].onclick=()=>stepAyah(input,1);}
 function stepAyah(input,d){const max=Number(input.max)||999,min=Number(input.min)||1;input.value=Math.max(min,Math.min(max,(Number(input.value)||min)+d));input.dispatchEvent(new Event('input',{bubbles:true}));if(navigator.vibrate)navigator.vibrate(8);}
 function setSessionMode(mode,persist=true){mode=mode==='expert'?'expert':'guided';settings.v9=settings.v9||{};settings.v9.mode=mode;if(persist)save();const pg=document.getElementById('pg-session');pg?.classList.toggle('v9-guided',mode==='guided');pg?.classList.toggle('v9-expert',mode==='expert');document.querySelectorAll('.v9-mode-toggle button').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));applySessionStepVisibility();}
 function setSessionStep(step,scroll=true){if(!V9.steps.includes(step))step='assessment';V9.step=step;document.querySelectorAll('.v9-step-btn').forEach(b=>b.classList.toggle('on',b.dataset.step===step));applySessionStepVisibility();if(scroll&&settings.v9?.mode!=='expert')document.getElementById('v9SessionSteps')?.scrollIntoView({block:'start',behavior:settings.v9?.reduceMotion?'auto':'smooth'});}
-function applySessionStepVisibility(){const guided=(settings.v9?.mode||'guided')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',guided&&c.dataset.v9Step!==V9.step));const idx=V9.steps.indexOf(V9.step),f=document.getElementById('v9SessionFooter');if(f){const prev=f.querySelector('.v9-prev'),next=f.querySelector('.v9-next');if(prev)prev.disabled=idx<=0;if(next)next.disabled=idx>=V9.steps.length-1;}}
+function applySessionStepVisibility(){const guided=(settings.v9?.mode||'expert')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',guided&&c.dataset.v9Step!==V9.step));const idx=V9.steps.indexOf(V9.step),f=document.getElementById('v9SessionFooter');if(f){const prev=f.querySelector('.v9-prev'),next=f.querySelector('.v9-next');if(prev)prev.disabled=idx<=0;if(next)next.disabled=idx>=V9.steps.length-1;}}
 function moveSessionStep(d){let i=Math.max(0,V9.steps.indexOf(V9.step));i=Math.max(0,Math.min(V9.steps.length-1,i+d));setSessionStep(V9.steps[i]);}
-function initSession(){V9_BASE.initSession();setSessionStep('assessment',false);setSessionMode(settings.v9?.mode||'guided',false);refreshV9DraftState();}
+function initSession(){V9_BASE.initSession();ensureSessionActionDock();setSessionStep('assessment',false);setSessionMode(settings.v9?.mode||'expert',false);refreshV9DraftState();}
 function onSesSt(){V9_BASE.onSesSt();setSessionStep('assessment',false);refreshV9DraftState();}
 function applySessionToEditor(s){V9_BASE.applySessionToEditor(s);refreshV9DraftState();}
 function refreshV9DraftState(){const d=document.getElementById('draftState');if(d)d.textContent='✓ الحفظ التلقائي مفعّل';}
@@ -269,9 +327,8 @@ async function downloadQuranTextPack(){if(V9.textPackDownloading){V9.textPackCan
 // Settings / accessibility / quality
 // ──────────────────────────────────────
 function injectSettingsUX(){const pg=document.getElementById('pg-settings');if(!pg||document.getElementById('v9UxSettings'))return;pg.insertAdjacentHTML('afterbegin',`<div class="card" id="v9UxSettings"><div class="ch">تجربة الاستخدام</div><div class="fld"><label>طريقة شاشة الحصة</label><select id="v9ModeSetting" onchange="settings.v9.mode=this.value;save();setSessionMode(this.value,false)"><option value="guided">مبسطة — خطوة بخطوة</option><option value="expert">سريعة — كل الأقسام</option></select></div><label class="switch-line"><input type="checkbox" id="v9ReduceMotion" onchange="settings.v9.reduceMotion=this.checked;save();applyV9Prefs()"><span>تقليل الحركة والانتقالات</span></label><div class="settings-actions mt8"><button class="btn btn-out btn-sm" onclick="openV9Onboarding(true)">عرض دليل الاستخدام</button><button class="btn btn-out btn-sm" onclick="goPage('mushaf')">إدارة المصحف Offline</button></div></div>`);}
-function renderV9Settings(){const m=document.getElementById('v9ModeSetting'),r=document.getElementById('v9ReduceMotion');if(m)m.value=settings.v9?.mode||'guided';if(r)r.checked=!!settings.v9?.reduceMotion;}
+function renderV9Settings(){const m=document.getElementById('v9ModeSetting'),r=document.getElementById('v9ReduceMotion');if(m)m.value=settings.v9?.mode||'expert';if(r)r.checked=!!settings.v9?.reduceMotion;}
 function initSettings(){V9_BASE.initSettings();injectSettingsUX();renderV9Settings();}
-function save(){V9_BASE.save();applyV9Prefs();}
 
 // ──────────────────────────────────────
 // Groups overview

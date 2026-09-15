@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="9.0.0">
+<meta name="application-version" content="9.1.0">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -427,8 +427,8 @@
     </div>
 
     <button class="btn btn-g mb8" id="saveSessionBtn" onclick="saveSession()">💾 حفظ الحصة</button>
-    <button class="btn btn-wa" onclick="saveAndSendWA()">📲 حفظ وإرسال لولي الأمر</button>
-    <div class="wa-mode-row"><button class="btn btn-out btn-sm" onclick="saveAndSendWAMode('short')">رسالة مختصرة</button><button class="btn btn-out btn-sm" onclick="saveAndSendWAMode('detailed')">رسالة تفصيلية</button></div>
+    <button class="btn btn-wa" id="saveSendSessionBtn" onclick="saveAndSendWA()">📲 حفظ وإرسال لولي الأمر</button>
+    <div class="wa-mode-row" id="sessionWaModes"><button class="btn btn-out btn-sm" onclick="saveAndSendWAMode('short')">رسالة مختصرة</button><button class="btn btn-out btn-sm" onclick="saveAndSendWAMode('detailed')">رسالة تفصيلية</button></div>
     <div style="height:20px"></div>
   </div>
 </div>
