@@ -21,7 +21,7 @@ new vm.Script(v8,{filename:'v8.js'});
 new vm.Script(v9,{filename:'v9.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='9.2.1','VERSION must be 9.2.1');
+assert(version==='9.2.2','VERSION must be 9.2.2');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
@@ -66,6 +66,20 @@ assert(css9.includes('body.v9-shell-ready .v9-nav{display:flex}'),'v9 navigation
 assert(v9.includes("document.body.classList.add('v9-shell-ready')"),'v9 shell readiness flag missing');
 assert(sw.includes('self.skipWaiting()'),'stabilization service worker should activate promptly over the broken v9 cache');
 
+assert(sw.includes('trimRuntimeCache'),'service worker runtime cache must be bounded');
+assert(sw.includes('APP_SHELL.map(async url'),'service-worker precache should tolerate a single failed asset');
+assert(app.includes("candidateStatus!=='active'")&&app.includes("st.studentStatus!=='active'"),'paused/archived students must not reserve schedule slots');
+assert(v8.includes("pinKdf:'pbkdf2-sha256'")&&v8.includes('250000'),'PIN must use salted PBKDF2');
+assert(v8.includes('verifyStoredPin')&&v8.includes('pinLockedUntil'),'PIN migration/throttling is missing');
+assert(!v9.includes("addEventListener('timeupdate',renderMiniPlayer)"),'mini-player must not rebuild DOM on every timeupdate');
+assert(v9.includes('تعذر تحديد رقم الصفحة بدقة')&&v9.includes('return null;'),'Mushaf page lookup must fail safely instead of opening page 1');
+assert(v9.includes("bulkSetStatus('active')")&&v9.includes('إعادة تنشيط'),'student reactivation flow missing');
+assert(v9.includes('Promise.allSettled(voiceIds.map(x=>mediaDelete(x)))'),'student deletion must clean local voice notes');
+assert(v9.includes('v9MediaKeys')&&v9.includes('ملف صوتي محلي غير مرتبط بحصة'),'data health must inspect local voice-note lifecycle');
+assert(v9.includes("setAttribute('aria-current','step')"),'guided session stepper must expose aria-current');
+['branding/academy-icon-source.png','branding/academy-badge-source.png','sql/supabase-sync.sql','screenshots/desktop-home.png','screenshots-v9.1/session-mobile-fixed.png'].forEach(f=>assert(fs.existsSync(file(f)),`missing full-project asset ${f}`));
+assert(fs.statSync(file('branding/academy-badge-source.png')).size>1000000,'branding source asset appears incomplete');
+
 // All inline handlers must resolve to an application function or browser builtin.
 const js=app+'\n'+v8+'\n'+v9;
 const defs=new Set([...js.matchAll(/\b(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]));
@@ -85,4 +99,4 @@ assert(css9.includes('.v9-nav')&&css9.includes('.v9-session-steps')&&css9.includ
 assert(html.includes('id="tog-juz"')&&html.includes('id="tog-surahReview"'),'parts and surah review must remain independent');
 assert(!html.includes('id="gr-new"')&&!html.includes('id="gr-rec"')&&!html.includes('id="gr-far"'),'assignment rating controls must not return');
 
-console.log('Static checks passed for Imam Academy v9.2.1');
+console.log('Static checks passed for Imam Academy v9.2.2');

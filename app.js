@@ -56,7 +56,7 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION='9.2.1';
+const APP_VERSION='9.2.2';
 const SCHEMA_VERSION=11;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
@@ -122,11 +122,15 @@ function timeToMinutes(t){
   const[h,m]=t.split(':').map(Number);return h*60+m;
 }
 function getScheduleConflicts(candidate,ignoreId=null){
+  const persisted=ignoreId?students.find(st=>st.id===ignoreId):null;
+  const candidateStatus=candidate?.studentStatus||persisted?.studentStatus||'active';
+  if(candidateStatus!=='active')return [];
   const days=Array.isArray(candidate?.scheduleDays)?candidate.scheduleDays:[];
   const start=timeToMinutes(candidate?.scheduleTime);if(!days.length||start==null)return [];
   const end=start+(Number(candidate.sessionDuration)||30),out=[];
   students.forEach(st=>{
     if(st.id===ignoreId)return;
+    if(st.studentStatus&&st.studentStatus!=='active')return;
     const stStart=timeToMinutes(st.scheduleTime);if(stStart==null)return;
     const shared=days.filter(d=>(st.scheduleDays||[]).includes(d));if(!shared.length)return;
     const stEnd=stStart+(Number(st.sessionDuration)||30);
@@ -136,7 +140,7 @@ function getScheduleConflicts(candidate,ignoreId=null){
 }
 function allScheduleConflicts(){
   const seen=new Set(),out=[];
-  students.forEach(st=>getScheduleConflicts(st,st.id).forEach(c=>{
+  students.filter(st=>!st.studentStatus||st.studentStatus==='active').forEach(st=>getScheduleConflicts(st,st.id).forEach(c=>{
     const pair=[st.id,c.student.id].sort().join('|');
     c.days.forEach(day=>{const key=`${pair}|${day}`;if(!seen.has(key)){seen.add(key);out.push({a:st,b:c.student,day});}});
   }));
@@ -775,6 +779,7 @@ function saveSt(){
     startDate:document.getElementById('m-date').value,level:document.getElementById('m-level').value,
     group:document.getElementById('m-group')?.value.trim().slice(0,120)||'',
     scheduleDays,scheduleTime,sessionDuration,
+    studentStatus:document.getElementById('m-status')?.value||students.find(s=>s.id===editId)?.studentStatus||'active',
     notes:document.getElementById('m-notes').value.trim(),updatedAt:now};
   const conflicts=getScheduleConflicts(d,editId);
   if(conflicts.length){

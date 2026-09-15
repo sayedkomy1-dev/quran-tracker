@@ -1,6 +1,6 @@
-/* أكاديمية الإمام — Service Worker v9.1 */
-const CACHE_NAME = 'quran-pwa-v9.2.1';
-const APP_VERSION = '9.2.1';
+/* أكاديمية الإمام — Service Worker v9.2.2 */
+const CACHE_NAME = 'quran-pwa-v9.2.2';
+const APP_VERSION = '9.2.2';
 const APP_SHELL = [
   './',
   './index.html',
@@ -20,8 +20,11 @@ const APP_SHELL = [
 self.addEventListener('install', event => {
   event.waitUntil((async()=>{
     const cache=await caches.open(CACHE_NAME);
-    await cache.addAll(APP_SHELL);
-    // v9.1 is a stabilization release: activate promptly so a cached broken v9 does not linger.
+    // Cache each shell asset independently. A transient failure for one file
+    // must not prevent the new service worker from installing.
+    await Promise.all(APP_SHELL.map(async url=>{
+      try{await cache.add(url);}catch(err){console.warn('[SW] precache failed',url,err);}
+    }));
     await self.skipWaiting();
   })());
 });
@@ -34,6 +37,12 @@ self.addEventListener('activate', event => {
     await self.clients.claim();
   })());
 });
+
+async function trimRuntimeCache(cache,maxEntries=80){
+  const keys=await cache.keys();
+  if(keys.length<=maxEntries)return;
+  await Promise.all(keys.slice(0,keys.length-maxEntries).map(k=>cache.delete(k)));
+}
 
 self.addEventListener('fetch', event => {
   const req=event.request;
@@ -58,7 +67,10 @@ self.addEventListener('fetch', event => {
   event.respondWith((async()=>{
     const cached=await caches.match(req);
     const network=fetch(req).then(async res=>{
-      if(res&&res.ok){const cache=await caches.open(CACHE_NAME);cache.put(req,res.clone()).catch(()=>{});}
+      if(res&&res.ok){
+        const cache=await caches.open(CACHE_NAME);
+        cache.put(req,res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});
+      }
       return res;
     }).catch(()=>null);
     return cached||(await network)||new Response('',{status:503,statusText:'Offline'});
