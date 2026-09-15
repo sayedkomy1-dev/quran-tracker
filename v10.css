@@ -1,0 +1,22 @@
+/* أكاديمية الإمام v10 — Clean PWA refinement */
+:root{
+  --gm:#145A3A;--gd:#0C3B28;--gold:#C9A84C;--bg:#F7F4EC;--wh:#FFFFFF;--gp:#F0F4F1;
+  --txt:#17221C;--mut:#66736C;--ok:#258553;--warn:#C77A20;--red:#C54242;--bdr:#DDE4DF;
+}
+body{background:var(--bg);color:var(--txt)}
+.v10-accordion{border:1px solid var(--bdr);border-radius:12px;background:var(--wh);overflow:hidden;margin-bottom:10px}
+.v10-accordion>button{width:100%;border:0;background:transparent;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;font:inherit;font-weight:800;color:var(--txt);cursor:pointer;text-align:right}
+.v10-accordion>button:focus-visible,.v10-review-status button:focus-visible,.v10-inline-action:focus-visible{outline:3px solid rgba(20,90,58,.22);outline-offset:2px}
+.v10-accordion-body{padding:0 12px 12px}.v10-accordion:not(.open) .v10-accordion-body{display:none}.v10-chevron{transition:transform .18s ease}.v10-accordion.open .v10-chevron{transform:rotate(180deg)}
+.v10-prev-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.v10-prev-tools{display:flex;gap:6px;flex-wrap:wrap}
+.v10-text-btn,.v10-inline-action{border:1px solid var(--bdr);background:#fff;border-radius:9px;padding:7px 10px;font:inherit;font-size:12px;cursor:pointer;color:var(--gm)}
+.v10-repeat-same{margin-top:8px;border-color:#E1B77B;color:#8A5412;background:#FFF8EB;font-weight:800}
+.v10-review-group{border:1px solid var(--bdr);border-radius:12px;padding:10px;margin-top:9px;background:#fff}.v10-review-group h4{margin:0 0 4px;font-size:14px}.v10-review-note{font-size:11px;color:var(--mut);margin-bottom:8px}
+.v10-review-item{display:grid;grid-template-columns:minmax(90px,1fr) auto;gap:8px;align-items:center;padding:8px 0;border-top:1px solid #EDF0EE}.v10-review-item:first-of-type{border-top:0}.v10-review-name{font-weight:700}.v10-review-status{display:flex;gap:4px;direction:rtl}.v10-review-status button{width:38px;height:34px;border:1px solid var(--bdr);border-radius:8px;background:#fff;cursor:pointer;font-size:15px}.v10-review-status button.on[data-status="completed"]{background:#E8F5EE;border-color:var(--ok);color:var(--ok)}.v10-review-status button.on[data-status="repeat"]{background:#FFF3E2;border-color:var(--warn);color:var(--warn)}.v10-review-status button.on[data-status="not_heard"]{background:#F2F3F3;border-color:#7C8580;color:#46504B}
+.v10-review-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.v10-review-summary{background:var(--gp);border-radius:9px;padding:8px 10px;margin-top:8px;font-size:12px}.v10-empty{font-size:12px;color:var(--mut);padding:8px 0}
+.v10-library-tabs{display:flex;gap:6px;overflow:auto;margin-bottom:10px}.v10-library-tabs button{white-space:nowrap;border:1px solid var(--bdr);background:#fff;border-radius:999px;padding:8px 12px;font:inherit;font-size:12px}.v10-library-tabs button.on{background:var(--gm);color:#fff;border-color:var(--gm)}
+.v10-library-card{border:1px solid var(--bdr);border-radius:14px;background:#fff;padding:14px;margin-bottom:10px}.v10-arabic-text{font-size:20px;line-height:2;text-align:right;margin:10px 0}.v10-meta{font-size:12px;line-height:1.8;color:var(--mut)}.v10-library-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.v10-source-warning{border:1px solid #E4C68F;background:#FFF9ED;border-radius:12px;padding:10px;font-size:12px;color:#73501C;margin-bottom:10px}
+.v10-theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.v10-theme-choice{border:1px solid var(--bdr);border-radius:10px;padding:10px;background:#fff;cursor:pointer}.v10-theme-choice.on{border:2px solid var(--gm)}.v10-theme-swatch{height:14px;border-radius:999px;margin-bottom:6px}
+.v10-weekly-card{border:1px solid var(--bdr);border-radius:12px;padding:10px;margin-top:10px;background:var(--gp)}
+.v10-download-progress{margin-top:10px}.v10-progress-track{height:10px;background:#E7ECE9;border-radius:999px;overflow:hidden}.v10-progress-fill{height:100%;background:var(--gm);width:0}.v10-progress-meta{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--mut);margin-top:5px}
+@media(max-width:520px){.v10-review-item{grid-template-columns:1fr}.v10-review-status{justify-content:flex-start}.v10-theme-grid{grid-template-columns:1fr}.v10-arabic-text{font-size:18px}}

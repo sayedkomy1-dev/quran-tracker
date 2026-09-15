@@ -1,12 +1,95 @@
-const VERSION='v10.1.0-clean';
-const CACHE=`imam-academy-${VERSION}`;
-const SHELL=[
-  './','./index.html','./manifest.webmanifest','./assets/css/tokens.css','./assets/css/app.css',
-  './assets/js/main.js','./assets/js/core/utils.js','./assets/js/core/db.js','./assets/js/core/store.js','./assets/js/core/router.js','./assets/js/core/pwa.js',
-  './assets/js/data/quran-meta.js',
-  './assets/js/features/home.js','./assets/js/features/students.js','./assets/js/features/attendance.js','./assets/js/features/session.js','./assets/js/features/quran.js','./assets/js/features/mushaf.js','./assets/js/features/reports.js','./assets/js/features/library.js','./assets/js/features/profile.js','./assets/js/features/tasks.js','./assets/js/features/security.js','./assets/js/features/health.js','./assets/js/features/groups.js','./assets/js/features/onboarding.js','./assets/js/features/settings.js','./assets/js/features/more.js',
-  './assets/icons/academy-badge.png','./assets/icons/icon-96.png','./assets/icons/icon-192.png','./assets/icons/icon-512.png','./assets/icons/icon-maskable.png','./assets/icons/favicon.png'
+/* أكاديمية الإمام — Service Worker v9.2.2 */
+const CACHE_NAME = 'quran-pwa-v10.0.0';
+const APP_VERSION = '10.0.0';
+const APP_SHELL = [
+  './',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './v8.js',
+  './v9.js',
+  './v9.css',
+  './v10.css',
+  './v10.js',
+  './manifest.json',
+  './favicon.png',
+  './icon-96.png',
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable.png'
 ];
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('imam-academy-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);if(u.origin!==location.origin)return;if(r.mode==='navigate'){e.respondWith(fetch(r).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put('./index.html',copy));return res}).catch(()=>caches.match('./index.html')));return}e.respondWith(caches.match(r).then(cached=>cached||fetch(r).then(res=>{if(res.ok)caches.open(CACHE).then(c=>c.put(r,res.clone()));return res}).catch(()=>new Response('Offline',{status:503,statusText:'Offline'}))))});
+
+self.addEventListener('install', event => {
+  event.waitUntil((async()=>{
+    const cache=await caches.open(CACHE_NAME);
+    // Cache each shell asset independently. A transient failure for one file
+    // must not prevent the new service worker from installing.
+    await Promise.all(APP_SHELL.map(async url=>{
+      try{await cache.add(url);}catch(err){console.warn('[SW] precache failed',url,err);}
+    }));
+    await self.skipWaiting();
+  })());
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil((async()=>{
+    const keys=await caches.keys();
+    await Promise.all(keys.filter(k=>k.startsWith('quran-pwa-')&&k!==CACHE_NAME).map(k=>caches.delete(k)));
+    if(self.registration.navigationPreload) await self.registration.navigationPreload.enable().catch(()=>{});
+    await self.clients.claim();
+  })());
+});
+
+async function trimRuntimeCache(cache,maxEntries=80){
+  const keys=await cache.keys();
+  if(keys.length<=maxEntries)return;
+  await Promise.all(keys.slice(0,keys.length-maxEntries).map(k=>cache.delete(k)));
+}
+
+self.addEventListener('fetch', event => {
+  const req=event.request;
+  if(req.method!=='GET'||!req.url.startsWith('http'))return;
+  const url=new URL(req.url);
+  if(url.origin!==self.location.origin)return;
+
+  if(req.mode==='navigate'){
+    event.respondWith((async()=>{
+      try{
+        const preload=await event.preloadResponse;
+        const res=preload||await fetch(req);
+        if(res&&res.ok){const cache=await caches.open(CACHE_NAME);cache.put('./index.html',res.clone()).catch(()=>{});}
+        return res;
+      }catch(_){
+        return (await caches.match('./index.html'))||(await caches.match('./'))||new Response('Offline',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
+      }
+    })());
+    return;
+  }
+
+  event.respondWith((async()=>{
+    const cached=await caches.match(req);
+    const network=fetch(req).then(async res=>{
+      if(res&&res.ok){
+        const cache=await caches.open(CACHE_NAME);
+        cache.put(req,res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});
+      }
+      return res;
+    }).catch(()=>null);
+    return cached||(await network)||new Response('',{status:503,statusText:'Offline'});
+  })());
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const target=event.notification?.data?.url||'./';
+  event.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(async list=>{
+    const existing=list.find(c=>'focus' in c);
+    if(existing){await existing.focus();if('navigate' in existing)await existing.navigate(target).catch(()=>{});return;}
+    return self.clients.openWindow(target);
+  }));
+});
+
+self.addEventListener('message', event => {
+  if(event.data==='SKIP_WAITING')self.skipWaiting();
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME});
+});
