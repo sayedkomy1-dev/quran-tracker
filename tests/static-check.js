@@ -21,7 +21,7 @@ new vm.Script(v8,{filename:'v8.js'});
 new vm.Script(v9,{filename:'v9.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='9.1.0','VERSION must be 9.1.0');
+assert(version==='9.2.0','VERSION must be 9.2.0');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
@@ -74,12 +74,13 @@ for(const hm of html.matchAll(/\bon(?:click|change|input|submit|contextmenu|keyd
   }
 }
 
-assert(v9.includes('dm.qurancomplex.gov.sa/hafsdownload/'),'official Mushaf portal missing');
-assert(v9.includes('dm.qurancomplex.gov.sa/Download/1441-AI-hafs.zip'),'official AI package missing');
+assert(v9.includes('qurancomplex.gov.sa/en/apps-hafs/'),'official Mushaf app/source link missing');
+assert(v9.includes('pdf.quran.ws/pdfs/hafs/quran-hafs-mushaf.pdf'),'direct 604-page PDF download link missing');
+assert(v9.includes('downloadMadinahMushafDirect'),'direct Mushaf download action missing');
 assert(v9.includes('Husary_128kbps')||v8.includes('Husary_128kbps'),'Husary reciter missing');
 assert(v8.includes('Alafasy_128kbps'),'Alafasy reciter missing');
-assert(css9.includes('.v9-nav')&&css9.includes('.v9-session-steps')&&css9.includes('.v9-mushaf-hero'),'v9 design system incomplete');
+assert(css9.includes('.v9-nav')&&css9.includes('.v9-session-steps')&&css9.includes('.v92-primary-card')&&css9.includes('.v92-install-flow'),'v9.2 design system incomplete');
 assert(html.includes('id="tog-juz"')&&html.includes('id="tog-surahReview"'),'parts and surah review must remain independent');
 assert(!html.includes('id="gr-new"')&&!html.includes('id="gr-rec"')&&!html.includes('id="gr-far"'),'assignment rating controls must not return');
 
-console.log('Static checks passed for Imam Academy v9.1.0');
+console.log('Static checks passed for Imam Academy v9.2.0');

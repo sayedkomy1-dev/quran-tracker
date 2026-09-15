@@ -1,4 +1,4 @@
-/* أكاديمية الإمام — UX/Product Layer v9.1.0
+/* أكاديمية الإمام — UX/Product Layer v9.2.0
  * Professional responsive shell, guided session, Quran focus, Mushaf library, accessibility and workflow optimizations.
  */
 'use strict';
@@ -358,3 +358,106 @@ function setupV9Keyboard(){document.addEventListener('keydown',e=>{const t=e.tar
 function setupContextDismiss(){document.addEventListener('click',e=>{if(!e.target.closest('#v9ContextMenu'))closeV9ContextMenu();});}
 
 // The app invokes initV9Layer() after IndexedDB and the v8 compatibility layer are ready.
+
+/* ═══════════════════════════════════════════════════════════════
+ * v9.2.0 — Clarity & Reliability repair
+ * Simplifies Home, clarifies color semantics, and provides a practical
+ * one-click Mushaf download + explicit local install workflow.
+ * ═══════════════════════════════════════════════════════════════ */
+const V92_MUSHAF={
+  fullPdf:'https://pdf.quran.ws/pdfs/hafs/quran-hafs-mushaf.pdf',
+  mirrorInfo:'https://pdf.quran.ws/hafs/',
+  officialApp:'https://qurancomplex.gov.sa/en/apps-hafs/',
+  officialInfo:'https://qurancomplex.gov.sa/en/techquran/dev/'
+};
+
+function v92ExpectedStatusMap(){
+  const today=localDateKey(),tod=sessions.filter(s=>sessionDay(s)===today),map=new Map();
+  tod.forEach(s=>map.set(s.studentId,s.status||'')); return map;
+}
+
+function renderV9Home(){
+  const el=document.getElementById('v9Home'); if(!el)return;
+  const expected=v9ExpectedToday(), status=v92ExpectedStatusMap();
+  const present=[...status.values()].filter(v=>v==='حضر').length;
+  const absent=[...status.values()].filter(v=>v==='غاب').length;
+  const completed=new Set([...status.entries()].filter(([,v])=>v).map(([k])=>k));
+  const pending=expected.filter(s=>!completed.has(s.id));
+  const total=activeStudents().length;
+  const todayList=expected.length?expected.slice(0,8):activeStudents().slice(0,6);
+  const listHtml=todayList.length?todayList.map(st=>{
+    const s=status.get(st.id)||'';
+    const badge=s==='حضر'?'<span class="v92-state ok">حضر</span>':s==='غاب'?'<span class="v92-state bad">غاب</span>':'<span class="v92-state neutral">لم يبدأ</span>';
+    return `<button class="v92-today-student" onclick="startFor('${v9Esc(st.id)}')"><span class="v92-person"><span class="v92-avatar">${v9Esc(v9Initials(st.name))}</span><span><b>${v9Esc(st.name)}</b><small>${v9Esc(st.group||st.level||'طالب')}</small></span></span>${badge}</button>`;
+  }).join(''):`<div class="v92-empty"><b>لا يوجد طلاب مسجلون</b><span>ابدأ بإضافة أول طالب.</span><button class="btn btn-g btn-sm" onclick="openAddSt()">إضافة طالب</button></div>`;
+  el.innerHTML=`
+    <section class="v92-home-head">
+      <div class="v92-brand-line"><img src="icon-96.png" alt="" class="v92-logo"><div><b>${v9Esc(settings.circle||'أكاديمية الإمام')}</b><span>${v9Esc(v9TodayDate())}</span></div></div>
+      <button class="v92-search" onclick="openQuickSearch()" aria-label="بحث">${v9Icon('search')}</button>
+    </section>
+
+    <section class="v92-primary-card">
+      <div><span class="v92-kicker">العمل اليومي</span><h1>ابدأ الحصة مباشرة</h1><p>اختر الطالب ثم سجّل التسميع والحفظ والمراجعة في شاشة واحدة.</p></div>
+      <button class="v92-start" onclick="goPage('session')">${v9Icon('book')}<span>ابدأ حصة</span></button>
+    </section>
+
+    <section class="v92-stats" aria-label="إحصائيات اليوم">
+      <div><b>${expected.length}</b><span>مواعيد اليوم</span></div>
+      <div><b>${present}</b><span>حضر</span></div>
+      <div><b>${pending.length}</b><span>متبقٍ</span></div>
+      <div><b>${absent}</b><span>غاب</span></div>
+    </section>
+
+    <section class="v92-actions">
+      <button onclick="goPage('checkin')">${v9Icon('check')}<span><b>الحضور</b><small>تسجيل حضور اليوم</small></span></button>
+      <button onclick="openAddSt()">${v9Icon('plus')}<span><b>طالب جديد</b><small>إضافة طالب بسرعة</small></span></button>
+      <button onclick="goPage('students')">${v9Icon('users')}<span><b>كل الطلاب</b><small>${total} طالب نشط</small></span></button>
+      <button onclick="goPage('mushaf')">${v9Icon('book')}<span><b>المصحف</b><small>قراءة وتنزيل Offline</small></span></button>
+    </section>
+
+    <section class="v92-today-card">
+      <div class="v92-section-head"><div><b>${expected.length?'طلاب اليوم':'الطلاب'}</b><span>${expected.length?'اضغط على الطالب لبدء حصته':'لم يتم تحديد جدول يومي بعد'}</span></div><button onclick="goPage('students')">عرض الكل</button></div>
+      <div class="v92-today-list">${listHtml}</div>
+    </section>`;
+  document.getElementById('pg-home')?.classList.add('v9-home-ready','v92-home-ready');
+}
+
+function v92TriggerMushafFile(){document.getElementById('v9MushafFile')?.click();}
+function downloadMadinahMushafDirect(){
+  const a=document.createElement('a');
+  a.href=V92_MUSHAF.fullPdf; a.target='_blank'; a.rel='noopener'; a.download='Madinah-Mushaf-Hafs-604.pdf';
+  document.body.appendChild(a); a.click(); a.remove();
+  v9Toast('بدأ فتح ملف المصحف الكامل. بعد اكتمال التنزيل اضغط «تثبيت الملف داخل البرنامج».','info');
+}
+function openOfficialMushafPortal(){window.open(V92_MUSHAF.officialApp,'_blank','noopener');}
+function openMushafMirrorInfo(){window.open(V92_MUSHAF.mirrorInfo,'_blank','noopener');}
+
+async function renderV9Mushaf(){
+  const el=document.getElementById('v9MushafApp');if(!el)return;
+  const blob=await mediaGet('mushaf:madinah:pdf').catch(()=>null),metaRaw=await idbKvGet('mushaf:madinah:meta').catch(()=>null),lastRaw=await idbKvGet('mushaf:lastPage').catch(()=>null);
+  const meta=(()=>{try{return JSON.parse(metaRaw||'{}')}catch(_){return{}}})();
+  const lastPage=Math.max(1,Math.min(604,Number(lastRaw)||1)); if((V9.currentMushafPage||1)===1&&lastPage>1)V9.currentMushafPage=lastPage;
+  const st=await storageInfo(),pct=st.quota?Math.min(100,Math.round((st.usage||0)/st.quota*100)):0;
+  const marks=(settings.v9?.mushafBookmarks||[]).map(Number).filter(n=>n>=1&&n<=604).sort((a,b)=>a-b);
+  const installed=!!blob;
+  el.innerHTML=`
+  <section class="v92-mushaf-head">
+    <div><span class="v92-kicker">مصحف المدينة النبوية</span><h1>المصحف الكامل — حفص عن عاصم</h1><p>604 صفحات. يمكنك تنزيل نسخة PDF كاملة، ثم تثبيتها داخل البرنامج مرة واحدة لتعمل بدون إنترنت.</p></div>
+    <div class="v92-mushaf-status ${installed?'ready':''}">${installed?'✓ المصحف مثبت على هذا الجهاز':'غير مثبت بعد'}</div>
+  </section>
+
+  <section class="v92-install-flow">
+    <div class="v92-step"><span>1</span><div><b>نزّل المصحف الكامل</b><p>زر مباشر لملف PDF كامل (حوالي 220 MB). النسخة المتاحة عبر مرآة PDF مبنية من أصول مصحف المدينة؛ وللتأكد من المصدر الرسمي يوجد رابط منفصل لمجمع الملك فهد.</p><div class="v92-step-actions"><button class="btn btn-g" onclick="downloadMadinahMushafDirect()">${v9Icon('download')} تنزيل المصحف الكامل</button><button class="btn btn-out" onclick="openOfficialMushafPortal()">موقع/تطبيق المجمع الرسمي</button></div></div></div>
+    <div class="v92-step"><span>2</span><div><b>ثبّت الملف داخل البرنامج</b><p>بعد اكتمال التنزيل اختر ملف PDF من جهازك. هذه الخطوة تحفظه محليًا داخل التطبيق ولا ترفع الملف إلى أي خادم.</p><input type="file" id="v9MushafFile" accept="application/pdf,.pdf" onchange="importMushafPDF(event)" hidden><button class="btn ${installed?'btn-out':'btn-g'}" onclick="v92TriggerMushafFile()">${v9Icon('upload')} ${installed?'استبدال ملف المصحف':'تثبيت ملف PDF داخل البرنامج'}</button>${installed?`<div class="v92-file-ok"><b>${v9Esc(meta.name||'Madinah Mushaf.pdf')}</b><span>${fmtBytes(meta.size||blob.size)} · محفوظ Offline</span></div>`:''}</div></div>
+    <div class="v92-step"><span>3</span><div><b>ابدأ القراءة</b><p>${installed?'المصحف جاهز الآن للعمل بدون إنترنت.':'بعد التثبيت سيظهر قارئ المصحف هنا تلقائيًا.'}</p>${installed?`<div class="v92-step-actions"><button class="btn btn-g" onclick="openMushafReader(${lastPage})">متابعة من صفحة ${lastPage}</button><button class="btn btn-out" onclick="openMushafReader(1)">من البداية</button><button class="btn btn-red btn-sm" onclick="deleteMushafPDF()">حذف الملف فقط</button></div>`:''}</div></div>
+  </section>
+
+  <section class="v92-offline-card"><div><b>التخزين Offline</b><span>المستخدم ${fmtBytes(st.usage)} من ${fmtBytes(st.quota)}</span></div><div class="v92-storage"><i style="width:${pct}%"></i></div><div class="v92-step-actions"><button class="btn btn-out btn-sm" onclick="requestPersistentStorage().then(()=>renderV9Mushaf())">حماية التخزين</button><button class="btn btn-out btn-sm" onclick="downloadQuranTextPack()">تنزيل النص العثماني Offline</button></div><div id="v9TextPackProgress" class="v9-mushaf-progress">${v9Esc(settings.v9?.textPackStatus||'')}</div></section>
+
+  ${installed?`<section class="v9-reader-shell" id="v9ReaderShell"><div class="v9-reader-toolbar"><b>قارئ المصحف</b><label class="v9-page-label">الصفحة</label><input type="number" id="v9MushafPage" min="1" max="604" value="${V9.currentMushafPage||lastPage}" onkeydown="if(event.key==='Enter')openMushafReader(this.value)"><button class="btn btn-out btn-xs" onclick="openMushafReader(Math.max(1,(V9.currentMushafPage||1)-1))">السابق</button><button class="btn btn-out btn-xs" onclick="openMushafReader(Math.min(604,(V9.currentMushafPage||1)+1))">التالي</button><button class="btn btn-out btn-xs" onclick="toggleMushafView()">${settings.v9?.mushafView==='spread'?'صفحة واحدة':'صفحتان'}</button><button class="btn btn-out btn-xs" onclick="toggleMushafBookmark()">${marks.includes(Number(V9.currentMushafPage))?'★ إزالة العلامة':'☆ علامة'}</button><button class="btn btn-out btn-xs" onclick="openMushafFullscreen()">ملء الشاشة</button></div>${marks.length?`<div class="v9-mushaf-marks"><span>العلامات:</span>${marks.map(n=>`<button onclick="openMushafReader(${n})">${n}</button>`).join('')}</div>`:''}<div id="v9MushafReaderFrame" class="v9-reader-frame"><div class="v9-mushaf-empty"><div><b>المصحف جاهز</b><p>اضغط «متابعة» أو أدخل رقم صفحة من 1 إلى 604.</p></div></div></div></section>`:''}`;
+}
+
+// Refresh visible surfaces after the v9.2 overrides are defined.
+if(document.readyState==='complete'||document.readyState==='interactive'){
+  setTimeout(()=>{try{if(document.getElementById('v9Home'))renderV9Home();if(curPage==='mushaf')renderV9Mushaf();}catch(e){console.error('[v9.2 refresh]',e)}},0);
+}
