@@ -1,14 +1,4 @@
-# Local/editor files
 .DS_Store
 Thumbs.db
-.vscode/
-.idea/
-
-# Node/tooling
 node_modules/
-npm-debug.log*
-
-# Local release archives and temporary files
-*.zip
-*.tmp
-*.bak
+*.log
