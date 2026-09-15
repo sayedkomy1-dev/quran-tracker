@@ -1,4 +1,4 @@
-/* أكاديمية الإمام — UX/Product Layer v9.2.0
+/* أكاديمية الإمام — UX/Product Layer v9.2.1
  * Professional responsive shell, guided session, Quran focus, Mushaf library, accessibility and workflow optimizations.
  */
 'use strict';
@@ -218,19 +218,15 @@ function ensureSessionActionDock(){
   const content=document.getElementById('sesContent');if(!content)return;
   let footer=document.getElementById('v9SessionFooter');
   if(!footer){
-    footer=document.createElement('div');footer.id='v9SessionFooter';footer.className='v9-session-footer';
-    footer.innerHTML=`<button type="button" class="v9-prev" onclick="moveSessionStep(-1)" aria-label="الخطوة السابقة">${v9Icon('arrowRight')}</button><div class="v9-action-stack"><div class="v9-main-actions"></div><details class="v9-send-details"><summary>خيارات رسالة ولي الأمر</summary><div class="v9-secondary-actions"></div></details></div><button type="button" class="v9-next" onclick="moveSessionStep(1)" aria-label="الخطوة التالية">${v9Icon('arrowLeft')}</button>`;
-    document.body.appendChild(footer);
-  }else if(footer.parentElement!==document.body){
-    document.body.appendChild(footer);
+    footer=document.createElement('section');
+    footer.id='v9SessionFooter';
+    footer.className='v9-session-footer';
+    footer.setAttribute('aria-label','إجراءات إنهاء الحصة');
+    footer.innerHTML=`<div class="v9-action-head"><div><b>إنهاء الحصة</b><small>احفظ بعد الانتهاء من إدخال بيانات الحصة.</small></div><span class="v9-action-safe">✓ لا يغطي محتوى الصفحة</span></div><div class="v9-action-stack"><div class="v9-main-actions"></div><details class="v9-send-details"><summary>خيارات رسالة ولي الأمر</summary><div class="v9-secondary-actions"></div></details></div>`;
+    content.appendChild(footer);
+  }else if(footer.parentElement!==content){
+    content.appendChild(footer);
   }
-  const sessionPage=document.getElementById('pg-session');
-  const syncDockVisibility=()=>{footer.hidden=!sessionPage?.classList.contains('on');};
-  if(sessionPage&&!V9.sessionDockObserver){
-    V9.sessionDockObserver=new MutationObserver(syncDockVisibility);
-    V9.sessionDockObserver.observe(sessionPage,{attributes:true,attributeFilter:['class']});
-  }
-  syncDockVisibility();
   const main=footer.querySelector('.v9-main-actions'),secondary=footer.querySelector('.v9-secondary-actions');
   const saveBtn=document.getElementById('saveSessionBtn');
   let sendBtn=document.getElementById('saveSendSessionBtn');
@@ -240,12 +236,13 @@ function ensureSessionActionDock(){
   if(sendBtn&&main&&sendBtn.parentElement!==main){sendBtn.id='saveSendSessionBtn';sendBtn.classList.add('v9-send-primary');main.appendChild(sendBtn);}
   if(waModes&&secondary&&waModes.parentElement!==secondary){waModes.id='sessionWaModes';waModes.classList.add('v9-wa-mode-preserved');secondary.appendChild(waModes);}
   const details=footer.querySelector('.v9-send-details');if(details)details.hidden=!(waModes&&waModes.querySelector('button'));
+  applySessionStepVisibility();
 }
 function enhanceAyahInput(id){const input=document.getElementById(id);if(!input||input.closest('.v9-ayah-wrap'))return;const w=document.createElement('div');w.className='v9-ayah-wrap';input.parentNode.insertBefore(w,input);w.innerHTML=`<button type="button" class="v9-ayah-step" aria-label="نقصان">−</button><span></span><button type="button" class="v9-ayah-step" aria-label="زيادة">+</button>`;w.children[1].replaceWith(input);w.children[0].onclick=()=>stepAyah(input,-1);w.children[2].onclick=()=>stepAyah(input,1);}
 function stepAyah(input,d){const max=Number(input.max)||999,min=Number(input.min)||1;input.value=Math.max(min,Math.min(max,(Number(input.value)||min)+d));input.dispatchEvent(new Event('input',{bubbles:true}));if(navigator.vibrate)navigator.vibrate(8);}
 function setSessionMode(mode,persist=true){mode=mode==='expert'?'expert':'guided';settings.v9=settings.v9||{};settings.v9.mode=mode;if(persist)save();const pg=document.getElementById('pg-session');pg?.classList.toggle('v9-guided',mode==='guided');pg?.classList.toggle('v9-expert',mode==='expert');document.querySelectorAll('.v9-mode-toggle button').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));applySessionStepVisibility();}
 function setSessionStep(step,scroll=true){if(!V9.steps.includes(step))step='assessment';V9.step=step;document.querySelectorAll('.v9-step-btn').forEach(b=>b.classList.toggle('on',b.dataset.step===step));applySessionStepVisibility();if(scroll&&settings.v9?.mode!=='expert')document.getElementById('v9SessionSteps')?.scrollIntoView({block:'start',behavior:settings.v9?.reduceMotion?'auto':'smooth'});}
-function applySessionStepVisibility(){const guided=(settings.v9?.mode||'expert')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',guided&&c.dataset.v9Step!==V9.step));const idx=V9.steps.indexOf(V9.step),f=document.getElementById('v9SessionFooter');if(f){const prev=f.querySelector('.v9-prev'),next=f.querySelector('.v9-next');if(prev)prev.disabled=idx<=0;if(next)next.disabled=idx>=V9.steps.length-1;}}
+function applySessionStepVisibility(){const guided=(settings.v9?.mode||'expert')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',guided&&c.dataset.v9Step!==V9.step));const f=document.getElementById('v9SessionFooter');if(f)f.hidden=guided&&V9.step!=='notes';}
 function moveSessionStep(d){let i=Math.max(0,V9.steps.indexOf(V9.step));i=Math.max(0,Math.min(V9.steps.length-1,i+d));setSessionStep(V9.steps[i]);}
 function initSession(){V9_BASE.initSession();ensureSessionActionDock();setSessionStep('assessment',false);setSessionMode(settings.v9?.mode||'expert',false);refreshV9DraftState();}
 function onSesSt(){V9_BASE.onSesSt();setSessionStep('assessment',false);refreshV9DraftState();}

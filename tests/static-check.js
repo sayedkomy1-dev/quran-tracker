@@ -21,7 +21,7 @@ new vm.Script(v8,{filename:'v8.js'});
 new vm.Script(v9,{filename:'v9.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='9.2.0','VERSION must be 9.2.0');
+assert(version==='9.2.1','VERSION must be 9.2.1');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
@@ -56,7 +56,9 @@ assert(!/function\s+save\s*\(/.test(v9),'v9 must not override the stable save() 
 assert(!/#saveSessionBtn[^{}]*\{[^{}]*display\s*:\s*none/i.test(css9),'save button is hidden by v9 CSS');
 assert(!/#saveSendSessionBtn[^{}]*\{[^{}]*display\s*:\s*none/i.test(css9),'save+send button is hidden by v9 CSS');
 assert(!/\.wa-mode-row[^{}]*\{[^{}]*display\s*:\s*none/i.test(css9),'WhatsApp message modes are hidden by v9 CSS');
-assert(v9.includes("main.appendChild(saveBtn)")&&v9.includes("main.appendChild(sendBtn)"),'session action dock does not preserve the original save/send buttons');
+assert(v9.includes("main.appendChild(saveBtn)")&&v9.includes("main.appendChild(sendBtn)"),'session action area does not preserve the original save/send buttons');
+assert(v9.includes('content.appendChild(footer)'),'session save/send area must live inside session content');
+assert(!/\.v9-session-footer\{[^}]*position\s*:\s*fixed/i.test(css9),'session save/send area must not float over the page');
 assert(v9.includes("secondary.appendChild(waModes)"),'session action dock does not preserve message mode controls');
 assert(!css9.includes('\n#mainNav{display:none!important}'),'legacy navigation must remain available if v9 initialization fails');
 assert(css9.includes('body.v9-shell-ready #mainNav{display:none!important}'),'new shell must hide legacy navigation only after successful initialization');
@@ -83,4 +85,4 @@ assert(css9.includes('.v9-nav')&&css9.includes('.v9-session-steps')&&css9.includ
 assert(html.includes('id="tog-juz"')&&html.includes('id="tog-surahReview"'),'parts and surah review must remain independent');
 assert(!html.includes('id="gr-new"')&&!html.includes('id="gr-rec"')&&!html.includes('id="gr-far"'),'assignment rating controls must not return');
 
-console.log('Static checks passed for Imam Academy v9.2.0');
+console.log('Static checks passed for Imam Academy v9.2.1');
