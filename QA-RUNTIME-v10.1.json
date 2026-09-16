@@ -1,0 +1,169 @@
+{
+  "home_details_count": 4,
+  "home_keys": [
+    {
+      "key": "primary",
+      "open": true,
+      "title": "الحصة التالية"
+    },
+    {
+      "key": "stats",
+      "open": true,
+      "title": "ملخص اليوم"
+    },
+    {
+      "key": "actions",
+      "open": true,
+      "title": "اختصارات العمل"
+    },
+    {
+      "key": "students",
+      "open": true,
+      "title": "طلاب اليوم"
+    }
+  ],
+  "stats_closed_after_click": true,
+  "stats_saved": true,
+  "stats_closed_after_rerender": true,
+  "dropdown_open_1": true,
+  "dropdown_closed_2": true,
+  "dropdown_stays_open_after_stale_blur": true,
+  "dropdown_option_count": 114,
+  "selected_surah": "النساء",
+  "dropdown_closed_after_select": true,
+  "aria_expanded_after_select": "false",
+  "juz29": [
+    "الملك",
+    "القلم",
+    "الحاقة",
+    "المعارج",
+    "نوح",
+    "الجن",
+    "المزمل",
+    "المدثر",
+    "القيامة",
+    "الإنسان",
+    "المرسلات"
+  ],
+  "juz30": [
+    "النبأ",
+    "النازعات",
+    "عبس",
+    "التكوير",
+    "الانفطار",
+    "المطففين",
+    "الانشقاق",
+    "البروج",
+    "الطارق",
+    "الأعلى",
+    "الغاشية",
+    "الفجر",
+    "البلد",
+    "الشمس",
+    "الليل",
+    "الضحى",
+    "الشرح",
+    "التين",
+    "العلق",
+    "القدر",
+    "البينة",
+    "الزلزلة",
+    "العاديات",
+    "القارعة",
+    "التكاثر",
+    "العصر",
+    "الهمزة",
+    "الفيل",
+    "قريش",
+    "الماعون",
+    "الكوثر",
+    "الكافرون",
+    "النصر",
+    "المسد",
+    "الإخلاص",
+    "الفلق",
+    "الناس"
+  ],
+  "theme_D_tokens": {
+    "theme": "light",
+    "gm": "#173D4E",
+    "v9": "#173D4E",
+    "rootBg": "#F5F7F5",
+    "bodyBgVar": "#F5F7F5",
+    "body": "rgb(245, 247, 245)",
+    "bodyStyle": null
+  },
+  "desktop_details_count": 4,
+  "desktop_overflow_x": false,
+  "navigation_smoke": {
+    "home": {
+      "ok": true,
+      "cur": "home",
+      "visible": true
+    },
+    "students": {
+      "ok": true,
+      "cur": "students",
+      "visible": true
+    },
+    "session": {
+      "ok": true,
+      "cur": "session",
+      "visible": true
+    },
+    "reports": {
+      "ok": true,
+      "cur": "reports",
+      "visible": true
+    },
+    "checkin": {
+      "ok": true,
+      "cur": "checkin",
+      "visible": true
+    },
+    "tasks": {
+      "ok": true,
+      "cur": "tasks",
+      "visible": true
+    },
+    "settings": {
+      "ok": true,
+      "cur": "settings",
+      "visible": true
+    },
+    "mushaf": {
+      "ok": true,
+      "cur": "mushaf",
+      "visible": true
+    },
+    "compare": {
+      "ok": true,
+      "cur": "compare",
+      "visible": true
+    }
+  },
+  "settings_facebook": true,
+  "settings_theme_choices": 4,
+  "hadith_library_cards": 4,
+  "dua_library_cards": 4,
+  "more_menu_items": 6,
+  "session_scenarios": {
+    "suggestion": "المتبقي المقترح: عبس، الانفطار، الانشقاقإضافة السور غير المُتقنة فقطاتركه كاقتراح فقط",
+    "chips": [
+      "سورة عبس",
+      "سورة الانفطار",
+      "سورة الانشقاق"
+    ],
+    "weakButton": true,
+    "beforeRepeat": {
+      "enabled": false,
+      "value": ""
+    },
+    "afterRepeat": {
+      "enabled": true,
+      "value": "المنافقون"
+    }
+  },
+  "page_errors": [],
+  "console_error_lines": []
+}

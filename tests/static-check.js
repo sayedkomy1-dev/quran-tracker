@@ -24,7 +24,7 @@ new vm.Script(v9,{filename:'v9.js'});
 new vm.Script(v10,{filename:'v10.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='10.0.0','VERSION must be 10.0.0');
+assert(version==='10.1.0','VERSION must be 10.1.0');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
@@ -102,9 +102,26 @@ assert(css9.includes('.v9-nav')&&css9.includes('.v9-session-steps')&&css9.includ
 assert(html.includes('id="tog-juz"')&&html.includes('id="tog-surahReview"'),'parts and surah review must remain independent');
 assert(!html.includes('id="gr-new"')&&!html.includes('id="gr-rec"')&&!html.includes('id="gr-far"'),'assignment rating controls must not return');
 
+
+// v10.1 runtime UX regression guards.
+assert(v10.includes('V10_HOME_SECTIONS')&&v10.includes('enhanceV10HomeSections'),'collapsible home-section enhancer missing');
+assert(v10.includes("homeSections={primary:true,stats:true,actions:true,students:true"),'home-section persisted state defaults missing');
+assert(v10.includes("closeSurahDropdown(key,true);return"),'explicit Surah dropdown close must bypass stale-blur focus guard');
+assert(v10.includes('onpointerdown="event.preventDefault();selectSurahOption'),'Surah dropdown touch/pointer selection missing');
+assert(v10.includes("classList.toggle('open-up',up)"),'adaptive Surah dropdown placement missing');
+const juzMatch=v10.match(/const V10_JUZ_RANGES=(\[[^;]+\]);/);
+assert(juzMatch,'Juz range map missing');
+const juzRanges=vm.runInNewContext(juzMatch[1]);
+assert(juzRanges.length===30,'Juz range map must contain exactly 30 Ajza');
+assert(JSON.stringify(juzRanges[28])==='[67,77]'&&JSON.stringify(juzRanges[29])==='[78,114]','Juz Tabarak/Amma Surah ranges are misaligned');
+assert(v10.includes("hadithNumber:'6013'")&&!v10.includes("6013/6018"),'starter hadith reference must not be ambiguous');
+assert(v10.includes("root.style.setProperty('--v9-primary',t.p)"),'theme palette must drive visible v9.2 shell tokens');
+assert((v8.match(/globalThis\.v10Migrate/g)||[]).length>=3,'backup/import/cloud restore paths must re-run v10 migration');
+assert(v10.includes("Object.prototype.hasOwnProperty.call(settings,'facebookUrl')"),'Facebook config must permit an intentionally empty value');
+
 assert(v10.includes('reviewAssignments')&&v10.includes('not_heard')&&v10.includes('repeat'),'v10 item-level review model missing');
 assert(v10.includes('نفس التكليف للحصة القادمة'),'weak-grade repeat action missing');
 assert(v10.includes('facebookUrl')&&v10.includes('settings.facebookUrl'),'Facebook setting must be configurable');
 assert(v10.includes('V10_THEMES')&&css10.includes('#145A3A'),'theme architecture/palette A missing');
 assert(manifest.short_name==='أكاديمية الإمام'&&manifest.display==='standalone','PWA install identity mismatch');
-console.log('Static checks passed for Imam Academy v10.0.0');
+console.log('Static checks passed for Imam Academy v10.1.0');

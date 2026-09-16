@@ -270,3 +270,10 @@
 - فصل عبارة «آيات كُلِّف بها» عن «آيات تم تسميعها وتقييمها».
 - دعم Dark Mode مع إعادة رسم الرسوم محلياً.
 - السماح بتكبير الصفحة بدلاً من تعطيل Zoom على الهاتف.
+
+## 10.1.0 — Runtime UX hardening
+- Made all visible v9.2 home content sections collapsible with persisted open/closed state.
+- Fixed Surah combobox arrow close/reopen race, stale blur race, touch selection, ARIA wiring, and adaptive up/down placement.
+- Corrected the 30 Juz-to-Surah intersection map used by item-level review expansion.
+- Corrected the starter mercy hadith reference to Sahih al-Bukhari 6013.
+- Connected v10 palette selection to the visible v9.2 shell theme tokens.

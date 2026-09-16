@@ -20,3 +20,21 @@ body{background:var(--bg);color:var(--txt)}
 .v10-weekly-card{border:1px solid var(--bdr);border-radius:12px;padding:10px;margin-top:10px;background:var(--gp)}
 .v10-download-progress{margin-top:10px}.v10-progress-track{height:10px;background:#E7ECE9;border-radius:999px;overflow:hidden}.v10-progress-fill{height:100%;background:var(--gm);width:0}.v10-progress-meta{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--mut);margin-top:5px}
 @media(max-width:520px){.v10-review-item{grid-template-columns:1fr}.v10-review-status{justify-content:flex-start}.v10-theme-grid{grid-template-columns:1fr}.v10-arabic-text{font-size:18px}}
+
+/* v10.1 — collapsible home sections */
+.v10-home-details{margin-top:12px}
+.v10-home-details.v10-home-primary{margin-top:0}
+.v10-home-details>summary{list-style:none;min-height:38px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px 6px;color:var(--mut);font-size:11px;font-weight:800;cursor:pointer;user-select:none}
+.v10-home-details>summary::-webkit-details-marker{display:none}
+.v10-home-details>summary:focus-visible{outline:3px solid rgba(20,90,58,.20);outline-offset:2px;border-radius:8px}
+.v10-home-details .v10-home-chevron{font-size:18px;line-height:1;transition:transform .18s ease;color:var(--gm)}
+.v10-home-details[open] .v10-home-chevron{transform:rotate(180deg)}
+.v10-home-details>.v92-primary-card,.v10-home-details>.v92-stats,.v10-home-details>.v92-actions,.v10-home-details>.v92-today-card{margin-top:0!important}
+.v10-home-details:not([open])>summary{padding-bottom:4px;border-bottom:1px solid var(--bdr)}
+
+/* v10.1 — robust mobile/desktop Surah combobox */
+.surah-dropdown.open-up{top:auto!important;bottom:calc(100% + 5px)}
+.surah-dropdown[role="listbox"]{overscroll-behavior:contain;scrollbar-gutter:stable}
+.surah-dropdown button{touch-action:manipulation;min-height:44px}
+.surah-combo:has(.surah-dropdown.open){z-index:430}
+@media(max-width:520px){.surah-dropdown{max-height:min(46vh,320px)}.v10-home-details>summary{min-height:42px;padding-inline:2px}}

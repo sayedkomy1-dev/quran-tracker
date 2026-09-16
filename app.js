@@ -56,7 +56,7 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION='10.0.0';
+const APP_VERSION='10.1.0';
 const SCHEMA_VERSION=12;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
@@ -2116,7 +2116,7 @@ window.addEventListener('load',async ()=>{
   renderSt();
 
   // 5. Hide splash
-  setTimeout(()=>document.getElementById('splash').classList.add('hide'),650);
+  setTimeout(()=>document.getElementById('splash')?.classList.add('hide'),650);
 
   // 6. PWA setup
   setupInstallPrompt();
@@ -2729,7 +2729,7 @@ function fillSurahSelects(){
   if(dl)dl.innerHTML=S.map((x,i)=>`<option value="${esc(x.n)}">${i+1}. سورة ${esc(x.n)}</option>`).join('');
   ['new','rec','far'].forEach(k=>{
     const input=document.getElementById(k+'-s');if(!input)return;
-    input.addEventListener('blur',()=>setTimeout(()=>closeSurahDropdown(k),180));
+    input.addEventListener('blur',()=>setTimeout(()=>{if(document.activeElement===input)return;closeSurahDropdown(k,true);},120));
   });
   renderSurahChecklist();
 }

@@ -1,7 +1,7 @@
 'use strict';
 /* أكاديمية الإمام v10 — data-model + session workflow extension */
-const V10={reviewResults:{},accordion:{errors:false,suggestion:false},library:{hadithFilter:'الكل',duaFilter:'الكل'},mushafDownload:null};
-const V10_JUZ_RANGES=[[1,2],[2,2],[2,2],[2,4],[4,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,11],[11,12],[12,14],[15,16],[17,18],[18,20],[20,21],[21,23],[23,25],[25,27],[27,29],[29,33],[33,36],[36,39],[39,41],[41,45],[46,51],[51,57],[58,66],[67,77],[78,114]];
+const V10={reviewResults:{},accordion:{errors:false,suggestion:false},library:{hadithFilter:'الكل',duaFilter:'الكل'},mushafDownload:null,homeEnhanceQueued:false};
+const V10_JUZ_RANGES=[[1,2],[2,2],[2,3],[3,4],[4,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,11],[11,12],[12,14],[15,16],[17,18],[18,20],[21,22],[23,25],[25,27],[27,29],[29,33],[33,36],[36,39],[39,41],[41,45],[46,51],[51,57],[58,66],[67,77],[78,114]];
 const V10_THEMES={
  A:{name:'Emerald & Ivory',p:'#145A3A',d:'#0C3B28',a:'#C9A84C',bg:'#F7F4EC'},
  B:{name:'Deep Teal & Sand',p:'#0D5B55',d:'#083E3A',a:'#C6A15B',bg:'#F7F2E8'},
@@ -13,7 +13,7 @@ const V10_HADITH=[
  {id:'bukhari-10',text:'الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ',narrator:'عبد الله بن عمرو رضي الله عنهما',source:'صحيح البخاري',hadithNumber:'10',grade:'صحيح',category:'الأخلاق',reference:'Sahih al-Bukhari 10'},
  {id:'bukhari-1',text:'إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ',narrator:'عمر بن الخطاب رضي الله عنه',source:'صحيح البخاري',hadithNumber:'1',grade:'صحيح',category:'النية',reference:'Sahih al-Bukhari 1'},
  {id:'bukhari-13',text:'لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ',narrator:'أنس بن مالك رضي الله عنه',source:'صحيح البخاري',hadithNumber:'13',grade:'صحيح',category:'الأخلاق',reference:'Sahih al-Bukhari 13'},
- {id:'bukhari-6018',text:'مَنْ لاَ يَرْحَمْ لاَ يُرْحَمْ',narrator:'جرير بن عبد الله رضي الله عنه',source:'صحيح البخاري',hadithNumber:'6013/6018 بحسب الترقيم',grade:'صحيح',category:'الرحمة',reference:'صحيح البخاري — كتاب الأدب؛ يراجع الترقيم بحسب الطبعة'}
+ {id:'bukhari-6013',text:'مَنْ لاَ يَرْحَمْ لاَ يُرْحَمْ',narrator:'جرير بن عبد الله رضي الله عنه',source:'صحيح البخاري',hadithNumber:'6013',grade:'صحيح',category:'الرحمة',reference:'صحيح البخاري 6013 — كتاب الأدب'}
 ];
 const V10_DUA=[
  {id:'hisn-sleep-1',text:'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',occasion:'قبل النوم',source:'صحيح البخاري',repeatCount:1,category:'قبل النوم',reference:'صحيح البخاري 6324'},
@@ -27,9 +27,9 @@ function v10NormalizeGrade(g){return g==='جيد جدًا'?'جيد جداً':g;}
 function v10SurahItem(name,status='not_heard'){const n=String(name||'').replace(/^سورة\s+/,'').trim(),idx=S.findIndex(s=>s.n===n);if(idx<0)return null;return{id:`surah-${idx+1}`,type:'surah',surahId:idx+1,surahName:S[idx].n,status,evaluation:'',errors:[],notes:''};}
 function v10ExpandJuz(name){const idx=JZ.indexOf(name);if(idx<0)return[];const range=V10_JUZ_RANGES[idx]||[];return S.slice(range[0]-1,range[1]).map(s=>v10SurahItem(s.n)).filter(Boolean);}
 function v10Assignment(type,name,chips=[]){let items=[];for(const chip0 of chips){const chip=String(chip0||'').trim();if(chip.startsWith('جزء '))items.push(...v10ExpandJuz(chip));else{const it=v10SurahItem(chip);if(it)items.push(it);}}const seen=new Set();items=items.filter(i=>!seen.has(i.id)&&seen.add(i.id));return{id:v10Id('rev'),type,groupId:type==='juz'?name.replace(/\s+/g,'-'):v10Id('group'),groupName:name,items};}
-function v10Migrate(){let changed=false;settings.v10=settings.v10||{};settings.facebookUrl=settings.facebookUrl||'https://www.facebook.com/AlImamEdu';settings.themePalette=settings.themePalette||'A';settings.contentAssignments=settings.contentAssignments||{};for(const ses of sessions){if(!Array.isArray(ses.reviewAssignments)){const arr=[];if(ses.juz?.chips?.length)arr.push(v10Assignment('juz','مراجعة الأجزاء',ses.juz.chips));if(ses.surahReview?.chips?.length)arr.push(v10Assignment('surah_group','مراجعة السور',ses.surahReview.chips));ses.reviewAssignments=arr;changed=true;}if(!ses.reviewResults)ses.reviewResults={};}
- if(changed)save();applyV10Theme(settings.themePalette);}
-function applyV10Theme(key='A'){const t=V10_THEMES[key]||V10_THEMES.A;document.documentElement.style.setProperty('--gm',t.p);document.documentElement.style.setProperty('--gd',t.d);document.documentElement.style.setProperty('--gold',t.a);document.documentElement.style.setProperty('--bg',t.bg);document.querySelector('meta[name="theme-color"]')?.setAttribute('content',t.p);settings.themePalette=key;}
+function v10Migrate(){let changed=false;if(!settings.v10||typeof settings.v10!=='object'){settings.v10={};changed=true;}const homeDefaults={primary:true,stats:true,actions:true,students:true},oldHome=settings.v10.homeSections&&typeof settings.v10.homeSections==='object'?settings.v10.homeSections:{};settings.v10.homeSections={...homeDefaults,...oldHome};if(Object.keys(homeDefaults).some(k=>typeof oldHome[k]!=='boolean'))changed=true;if(!Object.prototype.hasOwnProperty.call(settings,'facebookUrl')){settings.facebookUrl='https://www.facebook.com/AlImamEdu';changed=true;}if(!V10_THEMES[settings.themePalette]){settings.themePalette='A';changed=true;}if(!settings.contentAssignments||typeof settings.contentAssignments!=='object'){settings.contentAssignments={};changed=true;}for(const ses of sessions){if(!Array.isArray(ses.reviewAssignments)){const arr=[];if(ses.juz?.chips?.length)arr.push(v10Assignment('juz','مراجعة الأجزاء',ses.juz.chips));if(ses.surahReview?.chips?.length)arr.push(v10Assignment('surah_group','مراجعة السور',ses.surahReview.chips));ses.reviewAssignments=arr;changed=true;}if(!Array.isArray(ses.reviewResults)){ses.reviewResults=[];changed=true;}}
+ if(changed)save();applyV10Theme(settings.themePalette);return changed;}
+function applyV10Theme(key='A'){const t=V10_THEMES[key]||V10_THEMES.A,root=document.documentElement;root.style.setProperty('--gm',t.p);root.style.setProperty('--gd',t.d);root.style.setProperty('--gold',t.a);root.style.setProperty('--bg',t.bg);/* v9.2 owns the visible shell, so feed the selected palette into its semantic tokens too. */if(root.dataset.theme!=='dark'){root.style.setProperty('--v9-primary',t.p);root.style.setProperty('--v9-primary-2',t.d);root.style.setProperty('--v9-gold',t.a);root.style.setProperty('--v9-bg',t.bg);}document.querySelector('meta[name="theme-color"]')?.setAttribute('content',root.dataset.theme==='dark'?'#101613':t.p);settings.themePalette=key;}
 function setV10Theme(key){applyV10Theme(key);save();renderV10ThemeSettings();}
 function v10Accordion(id,title,body,open=false,extra=''){return `<section class="v10-accordion ${open?'open':''}" id="${id}"><button type="button" aria-expanded="${open}" onclick="toggleV10Accordion('${id}')"><span>${title}</span><span class="v10-chevron">⌄</span></button><div class="v10-accordion-body">${extra}${body}</div></section>`;}
 function toggleV10Accordion(id){const el=document.getElementById(id);if(!el)return;const open=!el.classList.contains('open');el.classList.toggle('open',open);el.querySelector(':scope > button')?.setAttribute('aria-expanded',String(open));V10.accordion[id==='v10ErrorsAccordion'?'errors':'suggestion']=open;scheduleDraftSave?.();}
@@ -50,6 +50,60 @@ function v10BuildReviewAssignments(){const out=[];if(secOn.juz&&juzChips.length)
 function buildSesData(){const d=globalThis.__IMAM_BASE__.buildSesData();d.reviewAssignments=v10BuildReviewAssignments();const results=[];const prev=v10Prev();for(const a of prev?.reviewAssignments||[]){const map=V10.reviewResults[a.id]||{};results.push({...a,items:(a.items||[]).map(it=>({...it,status:map[it.id]?.status||'not_heard'}))});}d.reviewResults=results;return d;}
 function captureDraft(){const d=globalThis.__IMAM_BASE__.captureDraft();d.v10ReviewResults=JSON.parse(JSON.stringify(V10.reviewResults));d.v10Accordion={...V10.accordion};return d;}
 function applyDraft(d){globalThis.__IMAM_BASE__.applyDraft(d);const restoredResults=d?.v10ReviewResults||{};V10.reviewResults=restoredResults;V10.accordion={errors:false,suggestion:false,...(d?.v10Accordion||{})};setTimeout(()=>{loadPrevTask(editingSessionId||'');V10.reviewResults=restoredResults;document.querySelectorAll('.v10-review-item').forEach(row=>{const g=row.dataset.reviewGroup,i=row.dataset.reviewItem,st=V10.reviewResults[g]?.[i]?.status;row.querySelectorAll('button[data-status]').forEach(b=>b.classList.toggle('on',b.dataset.status===st));});updateReviewSuggestion();for(const [id,k] of [['v10ErrorsAccordion','errors'],['v10SuggestionAccordion','suggestion']]){const e=document.getElementById(id);if(e){e.classList.toggle('open',!!V10.accordion[k]);e.querySelector(':scope > button')?.setAttribute('aria-expanded',String(!!V10.accordion[k]));}}},0);}
+
+// ──────────────────────────────────────
+// v10.1 Home progressive disclosure + robust Surah dropdowns
+// ──────────────────────────────────────
+const V10_HOME_SECTIONS=[
+ {key:'primary',selector:'.v92-primary-card',title:'الحصة التالية'},
+ {key:'stats',selector:'.v92-stats',title:'ملخص اليوم'},
+ {key:'actions',selector:'.v92-actions',title:'اختصارات العمل'},
+ {key:'students',selector:'.v92-today-card',title:'طلاب اليوم'}
+];
+function enhanceV10HomeSections(){
+ const root=document.getElementById('v9Home');if(!root)return;
+ settings.v10=settings.v10||{};settings.v10.homeSections={primary:true,stats:true,actions:true,students:true,...(settings.v10.homeSections||{})};
+ for(const cfg of V10_HOME_SECTIONS){
+  const section=root.querySelector(cfg.selector);if(!section||section.closest('.v10-home-details'))continue;
+  const details=document.createElement('details');details.className='v10-home-details v10-home-'+cfg.key;details.dataset.homeKey=cfg.key;details.open=settings.v10.homeSections[cfg.key]!==false;
+  const summary=document.createElement('summary');summary.innerHTML=`<span>${cfg.title}</span><span class="v10-home-chevron" aria-hidden="true">⌄</span>`;
+  section.parentNode.insertBefore(details,section);details.append(summary,section);
+  details.addEventListener('toggle',()=>{settings.v10=settings.v10||{};settings.v10.homeSections=settings.v10.homeSections||{};settings.v10.homeSections[cfg.key]=details.open;try{save();}catch(_){}});
+ }
+}
+function queueV10HomeEnhance(){if(V10.homeEnhanceQueued)return;V10.homeEnhanceQueued=true;requestAnimationFrame(()=>{V10.homeEnhanceQueued=false;enhanceV10HomeSections();});}
+const V10_BASE_RENDER_HOME=globalThis.renderHome;
+if(typeof V10_BASE_RENDER_HOME==='function')globalThis.renderHome=function(...args){const out=V10_BASE_RENDER_HOME.apply(this,args);queueV10HomeEnhance();return out;};
+
+function v10SurahSearchValue(v){const fn=globalThis.v8NormArabic||globalThis.normalizeSurahName;return fn?fn(String(v||'')):String(v||'').trim();}
+function v10PositionSurahDropdown(key){
+ const input=document.getElementById(key+'-s'),el=document.getElementById(`${key}-surah-dropdown`);if(!input||!el||!el.classList.contains('open'))return;
+ const r=input.getBoundingClientRect(),bottomNav=document.getElementById('v9Nav'),navTop=bottomNav&&getComputedStyle(bottomNav).position==='fixed'?bottomNav.getBoundingClientRect().top:window.innerHeight;
+ const safeBottom=Math.min(window.innerHeight,navTop||window.innerHeight),below=Math.max(0,safeBottom-r.bottom-10),above=Math.max(0,r.top-10),up=below<220&&above>below;
+ el.classList.toggle('open-up',up);const room=up?above:below;el.style.maxHeight=Math.max(150,Math.min(320,room-8))+'px';
+}
+function v10CloseOtherSurahDropdowns(exceptKey=''){document.querySelectorAll('.surah-dropdown.open').forEach(x=>{if(x.id!==`${exceptKey}-surah-dropdown`){x.classList.remove('open','open-up');x.style.maxHeight='';const k=x.id.replace(/-surah-dropdown$/,'');document.getElementById(k+'-s')?.setAttribute('aria-expanded','false');}});}
+function openSurahDropdown(key){
+ const input=document.getElementById(key+'-s'),el=document.getElementById(`${key}-surah-dropdown`);if(!input||!el)return;v10CloseOtherSurahDropdowns(key);filterSurahDropdown(key);el.classList.add('open');input.setAttribute('aria-expanded','true');requestAnimationFrame(()=>v10PositionSurahDropdown(key));
+}
+function closeSurahDropdown(key,force=false){const el=document.getElementById(`${key}-surah-dropdown`),input=document.getElementById(key+'-s');if(!force&&input&&document.activeElement===input)return;if(el){el.classList.remove('open','open-up');el.style.maxHeight='';}input?.setAttribute('aria-expanded','false');}
+function toggleSurahDropdown(key){
+ const el=document.getElementById(`${key}-surah-dropdown`),input=document.getElementById(key+'-s');if(!el)return;
+ if(el.classList.contains('open')){closeSurahDropdown(key,true);return;}
+ if(input&&document.activeElement!==input)input.focus({preventScroll:true});else openSurahDropdown(key);
+}
+function selectSurahOption(key,i){if(!S[i])return;const input=document.getElementById(key+'-s');if(!input)return;input.value=S[i].n;input.dataset.userTouched='1';fillAyah(key);closeSurahDropdown(key,true);scheduleDraftSave();}
+function filterSurahDropdown(key){
+ const input=document.getElementById(key+'-s'),el=document.getElementById(`${key}-surah-dropdown`);if(!input||!el)return;input.dataset.userTouched='1';
+ const q=v10SurahSearchValue(input.value),rows=S.map((surah,i)=>({surah,i,n:v10SurahSearchValue(surah.n)})).filter(x=>!q||x.n.includes(q)||String(x.i+1)===q||String(x.i+1).startsWith(q)).slice(0,114);
+ el.innerHTML=rows.map(({surah,i})=>`<button type="button" role="option" data-surah-index="${i}" onpointerdown="event.preventDefault();selectSurahOption('${key}',${i})" onclick="if(event.detail===0)selectSurahOption('${key}',${i})"><b>${i+1}</b><span>سورة ${v10Esc(surah.n)}</span><small>${surah.a} آية</small></button>`).join('')||'<div class="surah-dropdown-empty">لا توجد سورة مطابقة</div>';
+ el.classList.add('open');el.setAttribute('role','listbox');input.setAttribute('aria-controls',`${key}-surah-dropdown`);input.setAttribute('aria-expanded','true');requestAnimationFrame(()=>v10PositionSurahDropdown(key));
+}
+function initV10SurahDropdowns(){
+ ['new','rec','far'].forEach(key=>{const input=document.getElementById(key+'-s'),btn=input?.closest('.surah-combo')?.querySelector('.surah-drop-btn'),el=document.getElementById(`${key}-surah-dropdown`);if(!input||!el)return;input.setAttribute('role','combobox');input.setAttribute('aria-autocomplete','list');input.setAttribute('aria-expanded','false');input.setAttribute('aria-controls',`${key}-surah-dropdown`);if(btn)btn.setAttribute('aria-controls',`${key}-surah-dropdown`);});
+ if(!document.documentElement.dataset.v10SurahResizeBound){document.documentElement.dataset.v10SurahResizeBound='1';window.addEventListener('resize',()=>['new','rec','far'].forEach(v10PositionSurahDropdown),{passive:true});window.addEventListener('scroll',()=>['new','rec','far'].forEach(v10PositionSurahDropdown),{passive:true,capture:true});}
+}
+
 function injectFacebookSetting(){const pg=document.getElementById('pg-settings');if(!pg||document.getElementById('v10FacebookSetting'))return;const el=document.createElement('div');el.className='card';el.id='v10FacebookSetting';el.innerHTML=`<div class="ch">🔗 التواصل والهوية</div><div class="fld"><label>رابط صفحة Facebook</label><input id="v10FacebookUrl" type="url" dir="ltr" placeholder="https://www.facebook.com/..." value="${v10Esc(settings.facebookUrl||'')}" oninput="settings.facebookUrl=this.value.trim();save()"></div>`;pg.prepend(el);}
 function renderV10ThemeSettings(){const host=document.getElementById('v10ThemeSettings');if(!host)return;host.innerHTML=`<div class="ch">🎨 نمط الألوان</div><div class="v10-theme-grid">${Object.entries(V10_THEMES).map(([k,t])=>`<button class="v10-theme-choice ${settings.themePalette===k?'on':''}" onclick="setV10Theme('${k}')"><div class="v10-theme-swatch" style="background:${t.p}"></div><b>${k} — ${t.name}</b></button>`).join('')}</div>`;}
 function injectThemeSettings(){const pg=document.getElementById('pg-settings');if(!pg||document.getElementById('v10ThemeSettings'))return;const el=document.createElement('div');el.className='card';el.id='v10ThemeSettings';pg.insertBefore(el,pg.children[1]||null);renderV10ThemeSettings();}
@@ -63,5 +117,5 @@ function assignV10Content(type,id){const data=type==='hadith'?V10_HADITH:V10_DUA
 function injectProfileWeeklyContent(){if(!curStId)return;const host=document.getElementById('profHdr')?.parentElement;if(!host)return;document.getElementById('v10WeeklyContent')?.remove();const a=settings.contentAssignments?.[curStId];if(!a)return;const parts=[];for(const type of ['hadith','dua']){const as=a[type];if(!as)continue;const item=(type==='hadith'?V10_HADITH:V10_DUA).find(x=>x.id===as.contentId);if(item)parts.push(`<div><b>${type==='hadith'?'حديث الحفظ':'دعاء الأسبوع'}:</b> ${v10Esc(item.text)}<br><small>الحالة: ${as.status==='learning'?'قيد الحفظ':as.status}</small> <button class="v10-inline-action" onclick="gradeV10Content('${type}','completed')">✓ حفظه</button> <button class="v10-inline-action" onclick="gradeV10Content('${type}','repeat')">↺ يعاد</button></div>`);}if(parts.length)host.insertAdjacentHTML('afterbegin',`<div class="v10-weekly-card" id="v10WeeklyContent">${parts.join('<hr>')}</div>`);}
 function gradeV10Content(type,status){const a=settings.contentAssignments?.[curStId]?.[type];if(!a)return;a.history=a.history||[];a.history.push({status,at:new Date().toISOString()});a.status=status==='completed'?'completed':'learning';save();injectProfileWeeklyContent();}
 function injectMushafDirectDownload(){/* v9.2 already provides explicit external download + import fallback; preserve it and label the distinction clearly. */const el=document.getElementById('v9MushafApp');if(!el)return;setTimeout(()=>{const head=el.querySelector('.v92-mushaf-head');if(head&&!head.querySelector('.v10-source-warning'))head.insertAdjacentHTML('afterend','<div class="v10-source-warning"><b>نوع التنزيل:</b> الزر الحالي يفتح تنزيلًا خارجيًا ثم تستورد PDF داخل التطبيق. إذا منع المصدر CORS فلا يدّعي التطبيق وجود تنزيل مباشر داخلي أو Resume غير حقيقي.</div>');},0);}
-function initV10(){v10Migrate();enhanceSessionAccordions();injectFacebookSetting();injectThemeSettings();injectLibraries();if(curPage==='mushaf')renderV9Mushaf();}
+function initV10(){v10Migrate();enhanceSessionAccordions();initV10SurahDropdowns();injectFacebookSetting();injectThemeSettings();injectLibraries();queueV10HomeEnhance();if(curPage==='mushaf')renderV9Mushaf();}
 document.addEventListener('DOMContentLoaded',()=>setTimeout(initV10,50));
