@@ -1,3 +1,25 @@
+# v10.1.2 — Google Login & Access Control
+
+- ربط Google OAuth عبر Supabase Auth بمشروع `We Live Quran`.
+- Gate قبل تحميل بيانات التطبيق: لا يتم تهيئة IndexedDB/الواجهة للمستخدم غير المصرح له.
+- Owner تلقائي للحساب `info.welivequran@gmail.com`؛ الحسابات الجديدة تبدأ Pending.
+- لوحة Owner لتفعيل/إيقاف المستخدمين باستخدام RLS server-side.
+- Trusted Device يسمح بالعمل Local-First عند انقطاع الشبكة بعد تحقق ناجح سابق.
+- Cloud Sync يستعمل Bearer access token للمستخدم authenticated بدل التعامل مع Publishable key كهوية.
+- RPC للمزامنة مقيدة بـ`auth.uid()` ومالك السجل، ولا تمنح `anon` حق التنفيذ.
+- إضافة Privacy Policy وTerms of Service وروابط OAuth القانونية.
+- تحديث Service Worker إلى `quran-pwa-v10.1.2`.
+- Schema التطبيق ما زال 12؛ لا Migration لبيانات الطلاب أو الحصص.
+
+# v10.1.1 — Security & Stabilization
+
+- فصل Portable Backup عن النسخ المحلية: ملفات JSON المشاركة/المنزلة لا تتضمن PIN hashes/salts أو WebAuthn credential ID أو مفاتيح/كلمات/أسرار المزامنة.
+- الحفاظ على Internal Auto Backup للاستعادة على نفس الجهاز مع إبقاء أسرار الجهاز محلية.
+- تأمين Supabase Sync: إلغاء سياسات `anon using(true)` ومنع الوصول المباشر للجدول، واستخدام RPC مع Sync ID عالي entropy وسر وصول مستقل.
+- إضافة زر لتوليد Sync ID وSync authorization secret قويين محليًا.
+- إبقاء AES-GCM/PBKDF2 لتشفير payload منفصلًا عن authorization secret.
+- توحيد Version/Service Worker/Documentation على 10.1.1 مع Schema 12 دون Migration.
+
 # v10.0.0 — Clean PWA / item-level review
 
 - مراجعة الأجزاء والمجموعات أصبحت على مستوى السورة (`completed/repeat/not_heard`).

@@ -1,113 +1,60 @@
-# نشر أكاديمية الإمام v9.2.2 — GitHub Ready
+# نشر We Live Quran v10.1.2
 
-## قبل الترقية
+## قبل النشر
 
-> ارفع **كل ملفات v9.2.2** مع الاستبدال، بما فيها المجلدات `branding/`, `screenshots/`, `screenshots-v9.1/`, `sql/`, `tests/` و`.github/`. الكاش الجديد `quran-pwa-v9.2.2` و`skipWaiting` يساعدان على استبدال النسخة السابقة سريعًا.
+1. خذ Backup JSON من النسخة الحالية.
+2. لا تمسح Site Data؛ الإصدار ما زال على **Schema 12**.
+3. تأكد أن Google OAuth Client يحتوي:
+   - Origin: `https://welivequran.online`
+   - Redirect URI: `https://svtcntalwfmexthcnvqe.supabase.co/auth/v1/callback`
+4. في Supabase Authentication > URL Configuration:
+   - Site URL: `https://welivequran.online`
+   - Redirect URL: `https://welivequran.online/**`
 
+## إعداد قاعدة Supabase
 
-1. افتح النسخة الحالية المستخدمة فعليًا.
-2. صدّر Backup JSON واحفظه خارج المتصفح.
-3. لا تمسح Site Data بعد رفع النسخة الجديدة.
-4. اختبر v9 على نفس الدومين، وتأكد أن الطلاب والحصص ظهرت قبل حذف أي نسخة احتياطية.
-
-Schema الحالي: **11**.
-
-## الملفات المطلوبة في جذر المستودع
-
-```text
-index.html
-styles.css
-v9.css
-app.js
-v8.js
-v9.js
-sw.js
-manifest.json
-favicon.png
-icon-96.png
-icon-192.png
-icon-512.png
-icon-maskable.png
-CNAME
-README.md
-CHANGELOG.md
-MUSHAF-SOURCES.md
-```
-
-ومع المجلدات الموجودة مثل:
+نفّذ مرة واحدة من SQL Editor:
 
 ```text
-branding/
-sql/
-tests/
+sql/supabase-setup.sql
 ```
 
-## الفحص قبل الرفع
+الملف ينشئ `app_users` وRLS/trigger، ويجعل `info.welivequran@gmail.com` Owner نشطًا، ويؤمّن Cloud Sync للمستخدم authenticated.
+
+**لا تستخدم `service_role` أو `sb_secret_...` داخل الموقع.** الواجهة تستخدم فقط الـPublishable key.
+
+## رفع الموقع
+
+ارفع المشروع كاملًا إلى GitHub Pages/المصدر المتصل بالدومين `welivequran.online`، بما في ذلك:
+
+- `auth.js`, `auth.css`
+- `privacy.html`, `terms.html`
+- `sql/`
+- بقية ملفات PWA
+
+## الفحص
 
 ```bash
 npm test
+node --check auth.js
 node --check app.js
 node --check v8.js
 node --check v9.js
+node --check v10.js
+node --check sw.js
 ```
 
-ثم:
+بعد النشر اختبر:
 
-```bash
-python3 -m http.server 8080
-```
+1. دخول `info.welivequran@gmail.com` — يجب أن يدخل كـOwner.
+2. دخول Gmail آخر — يجب أن يظهر «الحساب في انتظار التفعيل».
+3. من حساب Owner: الإعدادات > صلاحيات الدخول > تفعيل الحساب.
+4. تسجيل خروج ثم دخول الحساب الثاني.
+5. افتح التطبيق مرة Online ثم افصل الإنترنت وأعد فتحه للتحقق من Trusted Device Offline.
+6. أعد الإنترنت وتأكد من إعادة التحقق.
 
-وافتح `http://localhost:8080`.
+## PWA
 
-## GitHub Pages
+Cache namespace: `quran-pwa-v10.1.2`.
 
-**Settings → Pages → Build and deployment → Deploy from a branch**
-
-- Branch: `main`
-- Folder: `/(root)`
-
-`CNAME` يحتوي على:
-
-```text
-welivequran.online
-```
-
-فعّل **Enforce HTTPS** بعد اكتمال إعداد DNS. HTTPS ضروري لأفضل تجربة PWA وWebAuthn.
-
-## الترقية من v8
-
-ارفع ملفات v9 فوق ملفات v8 مع الاستبدال. لا ترفع ZIP نفسه إلى Pages.
-
-الملفات الجديدة الأهم:
-
-- `v9.js` — طبقة UX/Product الجديدة.
-- `v9.css` — Design System والـresponsive layouts.
-- `MUSHAF-SOURCES.md` — مصادر المصحف الرسمي.
-
-كما تغيرت `index.html`, `app.js`, `sw.js`, `manifest.json` وملفات التوثيق.
-
-## Checklist بعد النشر
-
-- الرئيسية تعرض Command Center الجديدة ولا تعرض بطاقات v8 القديمة.
-- Bottom Nav على الهاتف وSidebar على Windows.
-- الطلاب يدعمون Active / Paused / Archived والتثبيت.
-- التحديد المتعدد يعمل دون تحديد مستلمين غير مختارين عند الرسالة الجماعية.
-- شاشة الحصة تدعم «مبسّط» و«سريع».
-- خطوات الحصة الأربع تعمل والتنقل لا يمس البيانات المدخلة.
-- الحفظ التلقائي للمسودة يعمل.
-- زر «النص» يفتح النص العثماني ويشغل الحصري/العفاسي.
-- السرعة والتكرار ووضع التلقين تعمل.
-- Mini Player يبقى بعد إغلاق نافذة النص أثناء التشغيل.
-- صفحة «المصحف» تفتح المصدر الرسمي.
-- استيراد PDF يحفظه على الجهاز، ويفتح الصفحات 1–604.
-- آخر صفحة والعلامات ووضع الصفحتين يعملان.
-- من زر «صفحة المصحف» في نطاق الحفظ يفتح موضع الآية الصحيح بعد تثبيت PDF.
-- «حضر الجميع» يعمل ثم يمكن تعديل الحالات فرديًا.
-- PIN/Windows Hello والنسخ الاحتياطية والمزامنة من v8 ما زالت تعمل.
-- أوقف الشبكة بعد أول تحميل وتأكد أن App Shell يعمل Offline.
-
-## ملاحظة عن مصحف المدينة
-
-v9 لا يضم ملف المصحف الكبير داخل ZIP الخاص بالتطبيق حتى يبقى التثبيت خفيفًا. زر التحميل يفتح المصدر الرسمي لمجمع الملك فهد. بعد تنزيل PDF يثبته المستخدم محليًا داخل التطبيق، وبذلك يصبح متاحًا Offline دون رفع الملف إلى GitHub أو إلى خادم التطبيق.
-
-راجع `MUSHAF-SOURCES.md`.
+`privacy.html` و`terms.html` ضمن App Shell حتى تظل الصفحات متاحة بعد التثبيت.

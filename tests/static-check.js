@@ -10,6 +10,8 @@ const app=read('app.js');
 const v8=read('v8.js');
 const v9=read('v9.js');
 const v10=read('v10.js');
+const auth=read('auth.js');
+const authCss=read('auth.css');
 const css9=read('v9.css');
 const css10=read('v10.css');
 const sw=read('sw.js');
@@ -22,20 +24,21 @@ new vm.Script(app,{filename:'app.js'});
 new vm.Script(v8,{filename:'v8.js'});
 new vm.Script(v9,{filename:'v9.js'});
 new vm.Script(v10,{filename:'v10.js'});
+new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='10.1.0','VERSION must be 10.1.0');
+assert(version==='10.1.2','VERSION must be 10.1.2');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
 assert(app.includes(`const APP_VERSION='${version}'`),'app.js APP_VERSION mismatch');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'"),'service worker must cache v9/v10 assets');
+assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./auth.js'")&&sw.includes("'./auth.css'"),'service worker must cache v9/v10/auth assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.
-['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','styles.css','v9.css','v10.css','app.js','v8.js','v9.js','v10.js','MUSHAF-SOURCES.md','V9-IMPLEMENTATION.md'].forEach(f=>assert(fs.existsSync(file(f)),`missing ${f}`));
+['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','styles.css','v9.css','v10.css','auth.css','app.js','auth.js','v8.js','v9.js','v10.js','privacy.html','terms.html','MUSHAF-SOURCES.md','V9-IMPLEMENTATION.md'].forEach(f=>assert(fs.existsSync(file(f)),`missing ${f}`));
 for(const m of html.matchAll(/\b(?:src|href)=["']([^"']+)["']/g)){
   const ref=m[1].split(/[?#]/)[0];
   if(!ref||/^(?:https?:|data:|mailto:|tel:|javascript:)/i.test(ref))continue;
@@ -123,5 +126,59 @@ assert(v10.includes('reviewAssignments')&&v10.includes('not_heard')&&v10.include
 assert(v10.includes('نفس التكليف للحصة القادمة'),'weak-grade repeat action missing');
 assert(v10.includes('facebookUrl')&&v10.includes('settings.facebookUrl'),'Facebook setting must be configurable');
 assert(v10.includes('V10_THEMES')&&css10.includes('#145A3A'),'theme architecture/palette A missing');
+
+// v10.1.1 security regression guards.
+assert(app.includes('function sanitizeSettingsForExport'),'portable backup sanitizer missing');
+assert(app.includes('delete cfg.sync.key')&&app.includes('delete cfg.sync.passphrase')&&app.includes('delete cfg.sync.authSecret'),'portable backup must strip sync credentials');
+assert(app.includes('delete cfg.security.pinHash')&&app.includes('delete cfg.security.pinSalt')&&app.includes('delete cfg.security.credentialId'),'portable backup must strip local security secrets');
+assert(app.includes("backupType:'portable'")&&app.includes('settings:sanitizeSettingsForExport(settings)'),'portable backup must use sanitized settings');
+const sanitizerMatch=app.match(/function sanitizeSettingsForExport\(source=settings\)\{([\s\S]*?)\n\}/);
+assert(sanitizerMatch,'portable backup sanitizer source not found');
+const sanitizeSettingsForExport=vm.runInNewContext(`(function(source){${sanitizerMatch[1]}})`);
+const sanitized=sanitizeSettingsForExport({sync:{url:'https://x.supabase.co',id:'safe-id',key:'KEY',passphrase:'PASS',authSecret:'AUTH'},security:{lockEnabled:true,pinHash:'HASH',pinSalt:'SALT',pinKdf:'KDF',pinIterations:250000,credentialId:'CRED'},theme:'light'});
+assert(sanitized.theme==='light'&&sanitized.sync.url==='https://x.supabase.co','portable backup sanitizer must preserve non-secret settings');
+assert(!('key' in sanitized.sync)&&!('passphrase' in sanitized.sync)&&!('authSecret' in sanitized.sync),'portable backup leaked sync credentials');
+assert(!('pinHash' in sanitized.security)&&!('pinSalt' in sanitized.security)&&!('credentialId' in sanitized.security),'portable backup leaked local security credentials');
+assert(sanitized.security.lockEnabled===false,'portable backup must not reactivate a device lock without its credentials');
+assert(v8.includes('function v8BackupPayload')&&v8.includes('settings:JSON.parse(JSON.stringify(settings))'),'internal local recovery backup should remain device-complete');
+assert(v8.includes('syncAuthSecret')&&v8.includes('generateSecureSyncCredentials'),'secure sync authorization controls missing');
+assert(v8.includes("callSyncRpc('imam_sync_push'")&&v8.includes("callSyncRpc('imam_sync_pull'"),'cloud sync must use protected RPC endpoints');
+assert(!v8.includes('/rest/v1/imam_sync?on_conflict='),'direct cloud table write must be removed');
+assert(!v8.includes('/rest/v1/imam_sync?select=payload'),'direct cloud table read must be removed');
+const syncSql=fs.readFileSync(file('sql/supabase-sync.sql'),'utf8');
+assert(syncSql.includes('revoke all on table public.imam_sync from anon, authenticated'),'sync table direct grants must be revoked');
+assert(syncSql.includes('imam_sync_push')&&syncSql.includes('imam_sync_pull'),'secure sync RPC functions missing');
+assert(!/for select to anon using\s*\(true\)/i.test(syncSql),'broad anon SELECT policy must not return');
+assert(!/for update to anon using\s*\(true\)/i.test(syncSql),'broad anon UPDATE policy must not return');
+assert(!/for insert to anon with check\s*\(true\)/i.test(syncSql),'broad anon INSERT policy must not return');
+assert(v8.includes('const localSync=settings.sync,localSecurity=settings.security')&&v8.includes('sync:localSync,security:localSecurity'),'backup/cloud restore must preserve current device sync/security secrets');
+assert(sw.includes("quran-pwa-v10.1.2"),'service worker cache must match v10.1.2');
+
+
+// v10.1.2 Google Auth and access-control regression guards.
+assert(html.includes('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2')&&html.includes('src="auth.js"'),'Supabase auth bootstrap scripts missing');
+assert(html.includes('href="auth.css"'),'auth stylesheet missing');
+assert(auth.includes("supabaseUrl:'https://svtcntalwfmexthcnvqe.supabase.co'"),'Supabase project URL mismatch');
+assert(auth.includes("publishableKey:'sb_publishable_qYw8VdT1IXQ5WsdB2rhtEA_F6dSAN-j'"),'Supabase publishable key mismatch');
+assert(auth.includes("ownerEmail:'info.welivequran@gmail.com'"),'owner account mismatch');
+assert(app.includes('WeLiveQuranAuth.beforeAppInit')&&app.indexOf('WeLiveQuranAuth.beforeAppInit')<app.indexOf('await initDB()'),'auth gate must run before IndexedDB app initialization');
+assert(app.includes('WeLiveQuranAuth.afterAppInit'),'post-auth UI hook missing');
+assert(auth.includes('wlq.auth.trusted.v1')&&auth.includes('useTrustedFallback'),'trusted-device offline fallback missing');
+assert(auth.includes("profile.status!=='active'")&&auth.includes("profile.status==='blocked'"),'pending/blocked access gating missing');
+assert(auth.includes('loadAdminUsers')&&auth.includes('setUserStatus'),'owner access-management UI missing');
+assert(v8.includes('WeLiveQuranAuth?.getAccessToken')&&v8.includes('Authorization:`Bearer ${accessToken}`'),'cloud sync must use authenticated bearer session');
+assert(!v8.includes('Authorization:`Bearer ${settings.sync.key}`'),'cloud sync must not authenticate as the publishable key');
+const authSql=fs.readFileSync(file('sql/auth-access.sql'),'utf8');
+const setupSql=fs.readFileSync(file('sql/supabase-setup.sql'),'utf8');
+assert(authSql.includes('create table if not exists public.app_users'),'app_users table setup missing');
+assert(authSql.includes("'info.welivequran@gmail.com'")&&authSql.includes("then 'owner'")&&authSql.includes("then 'active'"),'owner auto-activation trigger missing');
+assert(authSql.includes('app_users_select_self_or_owner')&&authSql.includes('app_users_owner_update'),'app_users RLS policies missing');
+assert(setupSql.includes('grant execute on function public.imam_sync_push(text,text,text) to authenticated'),'sync RPC must be authenticated');
+assert(!/grant execute on function public\.imam_sync_(?:push|pull)[^\n]*to anon/i.test(setupSql),'anonymous sync RPC execute must not be granted');
+assert(syncSql.includes('v_uid uuid := auth.uid()')&&syncSql.includes('owner_user_id'),'sync rows must be scoped to auth.uid()');
+assert(fs.existsSync(file('privacy.html'))&&fs.existsSync(file('terms.html')),'OAuth legal pages missing');
+assert(sw.includes("'./privacy.html'")&&sw.includes("'./terms.html'"),'legal pages should be available offline after install');
+assert(authCss.includes('.wlq-auth-gate'),'auth gate styling missing');
+
 assert(manifest.short_name==='أكاديمية الإمام'&&manifest.display==='standalone','PWA install identity mismatch');
-console.log('Static checks passed for Imam Academy v10.1.0');
+console.log('Static checks passed for We Live Quran v10.1.2');

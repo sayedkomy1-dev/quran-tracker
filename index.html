@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.1.0">
+<meta name="application-version" content="10.1.2">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="v9.css">
 <link rel="stylesheet" href="v10.css">
+<link rel="stylesheet" href="auth.css">
 </head>
 <body>
 
@@ -560,10 +561,12 @@
 
   <div class="card">
     <div class="ch">☁️ مزامنة Android وWindows <span class="beta-badge">Beta</span></div>
-    <p class="txt-mut mb8" style="font-size:12px">مزامنة مشفرة اختيارية عبر Supabase. لا يُرفع النص الصريح لبيانات الطلاب؛ تُشفّر النسخة بكلمة مرور قبل الإرسال.</p>
-    <div class="fld"><label>Supabase Project URL</label><input type="url" id="syncUrl" placeholder="https://xxxx.supabase.co" oninput="saveV8Settings()"></div>
-    <div class="fld"><label>Supabase anon key</label><input type="password" id="syncKey" placeholder="anon / publishable key" oninput="saveV8Settings()"></div>
-    <div class="frow"><div class="fld"><label>Sync ID</label><input type="text" id="syncId" placeholder="مثال: imam-academy-main" oninput="saveV8Settings()"></div><div class="fld"><label>كلمة تشفير المزامنة</label><input type="password" id="syncPassphrase" placeholder="لا تُحفظ على السحابة" oninput="saveV8Settings()"></div></div>
+    <p class="txt-mut mb8" style="font-size:12px">مزامنة مشفرة اختيارية عبر حساب We Live Quran المعتمد. البيانات تُشفّر محليًا قبل الرفع، ولا تقبل خدمة المزامنة طلبات المستخدم المجهول.</p>
+    <div class="fld"><label>Supabase Project URL — مربوط تلقائيًا</label><input type="url" id="syncUrl" readonly></div>
+    <div class="fld"><label>Supabase Publishable key — مربوط تلقائيًا</label><input type="password" id="syncKey" readonly></div>
+    <div class="frow"><div class="fld"><label>Sync ID الآمن</label><input type="text" id="syncId" placeholder="استخدم زر إنشاء بيانات آمنة" oninput="saveV8Settings()"></div><div class="fld"><label>سر الوصول للمزامنة</label><input type="password" id="syncAuthSecret" autocomplete="new-password" placeholder="24 حرفًا على الأقل" oninput="saveV8Settings()"></div></div>
+    <div class="fld"><label>كلمة تشفير البيانات</label><input type="password" id="syncPassphrase" autocomplete="new-password" placeholder="8 أحرف على الأقل — مختلفة عن سر الوصول" oninput="saveV8Settings()"></div>
+    <div class="settings-actions mt8"><button class="btn btn-out btn-sm" onclick="generateSecureSyncCredentials()">🔐 إنشاء Sync ID وسر وصول آمنين</button></div>
     <label class="switch-line"><input type="checkbox" id="syncAuto" onchange="saveV8Settings()"><span>مزامنة تلقائية بعد التغييرات</span></label>
     <div class="settings-actions mt8"><button class="btn btn-g btn-sm" onclick="pushCloudSync()">⬆️ رفع الآن</button><button class="btn btn-out btn-sm" onclick="pullCloudSync()">⬇️ تنزيل ودمج</button></div>
     <div id="syncStatus" class="txt-mut mt8"></div>
@@ -571,6 +574,7 @@
 
   <div class="card">
     <div class="ch">💾 النسخ الاحتياطي</div>
+    <p class="txt-mut mb8" style="font-size:11px">الملف الذي يتم تنزيله أو مشاركته نسخة محمولة ولا يتضمن PIN أو كلمات/أسرار المزامنة. النسخ التلقائية المحلية تبقى مخصصة للاستعادة على نفس الجهاز.</p>
     <div class="settings-actions">
       <button class="btn btn-g mb8" onclick="exportData()">📤 تنزيل نسخة JSON</button>
       <button class="btn btn-out mb8" onclick="shareBackup()">📲 مشاركة نسخة احتياطية</button>
@@ -839,6 +843,8 @@
 
 
 <!-- ════════════ SCRIPTS ════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="auth.js" defer></script>
 <script src="app.js" defer></script>
 <script src="v8.js" defer></script>
 <script src="v9.js" defer></script>

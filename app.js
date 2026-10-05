@@ -56,7 +56,7 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION='10.1.0';
+const APP_VERSION='10.1.2';
 const SCHEMA_VERSION=12;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
@@ -1897,7 +1897,25 @@ async function checkAndNotify(){
 // ══════════════════════════════════════
 // BACKUP — VERSIONED + VALIDATED
 // ══════════════════════════════════════
-function backupPayload(){return {meta:{app:'أكاديمية الإمام — بالقرآن نحيا',appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,exportDate:new Date().toISOString()},students,sessions,tasks,settings};}
+function sanitizeSettingsForExport(source=settings){
+  const cfg=JSON.parse(JSON.stringify(source||{}));
+  if(cfg.sync&&typeof cfg.sync==='object'){
+    delete cfg.sync.key;
+    delete cfg.sync.passphrase;
+    delete cfg.sync.authSecret;
+  }
+  if(cfg.security&&typeof cfg.security==='object'){
+    delete cfg.security.pinHash;
+    delete cfg.security.pinSalt;
+    delete cfg.security.pinKdf;
+    delete cfg.security.pinIterations;
+    delete cfg.security.credentialId;
+    cfg.security.lockEnabled=false;
+  }
+  return cfg;
+}
+function buildPortableBackup(){return {meta:{app:'أكاديمية الإمام — بالقرآن نحيا',appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,exportDate:new Date().toISOString(),backupType:'portable'},students,sessions,tasks,settings:sanitizeSettingsForExport(settings)};}
+function backupPayload(){return buildPortableBackup();}
 function exportData(){
   const data=JSON.stringify(backupPayload(),null,2),blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download=`quran-backup-v${SCHEMA_VERSION}-${localDateKey()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('تم تصدير النسخة الاحتياطية','success');
@@ -2099,6 +2117,13 @@ window.addEventListener('resize',()=>{
 });
 
 window.addEventListener('load',async ()=>{
+  // 0. Authentication gate. First use requires online Google authentication;
+  // previously trusted devices may continue locally while offline.
+  if(globalThis.WeLiveQuranAuth){
+    const allowed=await globalThis.WeLiveQuranAuth.beforeAppInit();
+    if(!allowed)return;
+  }
+
   // 1. Load data (IndexedDB + localStorage fallback)
   await initDB();
 
@@ -2134,6 +2159,7 @@ window.addEventListener('load',async ()=>{
   // 9. v8 feature layer
   if(typeof initV8Layer==='function') await initV8Layer();
   if(typeof initV9Layer==='function') await initV9Layer();
+  if(globalThis.WeLiveQuranAuth?.afterAppInit) await globalThis.WeLiveQuranAuth.afterAppInit();
 });
 
 // ══════════════════════════════════════
