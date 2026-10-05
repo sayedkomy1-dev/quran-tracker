@@ -36,11 +36,11 @@ new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='10.3.0','VERSION must be 10.3.0');
+assert(version==='10.3.1','VERSION must be 10.3.1');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
-assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.3.0'"),'app.js APP_VERSION must come from ImamApp runtime');
+assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.3.1'"),'app.js APP_VERSION must come from ImamApp runtime');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
 assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./js/core/runtime.js'")&&sw.includes("'./js/features/v10-data.js'")&&sw.includes("'./js/features/quran-engine.js'")&&sw.includes("'./quran-engine.css'")&&sw.includes("'./auth.js'")&&sw.includes("'./sync-core.js'")&&sw.includes("'./auth.css'"),'service worker must cache architecture/v9/v10/auth assets');
@@ -163,7 +163,7 @@ assert(!/for select to anon using\s*\(true\)/i.test(syncSql),'broad anon SELECT 
 assert(!/for update to anon using\s*\(true\)/i.test(syncSql),'broad anon UPDATE policy must not return');
 assert(!/for insert to anon with check\s*\(true\)/i.test(syncSql),'broad anon INSERT policy must not return');
 assert(v8.includes('localSync=settings.sync')&&v8.includes('accountOwner:owner'),'backup/cloud restore must preserve current account ownership and device secrets');
-assert(sw.includes("quran-pwa-v10.3.0"),'service worker cache must match v10.3.0');
+assert(sw.includes("quran-pwa-v10.3.1"),'service worker cache must match v10.3.1');
 
 
 // v10.1.2 Google Auth and access-control regression guards.
@@ -257,5 +257,9 @@ assert(quranEngine.includes('mediaPut')&&quranEngine.includes('mediaGet')&&quran
 assert(quranEngine.includes('rangeLoopsLeft')&&quranEngine.includes('itemRepeatsLeft'),'flexible range/ayah repeat engine missing');
 assert(quranEngine.includes('tutorPauseSec')&&quranEngine.includes('setTimeout'),'manual tutoring pause missing');
 assert(quranCss.includes('.quran-ayah.selected')&&quranCss.includes('.quran-offline-tools'),'Quran engine UI styles missing');
+assert(quranCss.includes('min-height:32dvh')&&quranCss.includes('max-height:38dvh'),'mobile Quran text must keep viewport priority');
+assert(quranCss.includes('.quran-play-actions')&&quranCss.includes('.quran-action-primary'),'compact Quran action layout missing');
+assert(quranEngine.includes('requestIdleCallback')&&quranEngine.includes('g.__IMAM_BASE__?.save?.()'),'Quran preferences must save in the background without the heavy auto-sync save path');
+assert(!quranEngine.includes("content.addEventListener('dblclick'"),'double-click Quran selection should not be used on touch devices');
 
-console.log('Static checks passed for We Live Quran v10.3.0');
+console.log('Static checks passed for We Live Quran v10.3.1');

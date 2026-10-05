@@ -1,4 +1,4 @@
-/* We Live Quran — Authentication & Access Control v10.3.0
+/* We Live Quran — Authentication & Access Control v10.3.1
  * Google OAuth via Supabase, server-enforced app access, trusted-device offline fallback.
  */
 'use strict';
