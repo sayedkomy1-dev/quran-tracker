@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran — Quran teaching engine v10.4.0
+/* We Live Quran — Quran teaching engine v10.4.1
    Flexible reciters, repetition/tutoring timing, ayah selection, and per-surah offline audio. */
 (function registerQuranEngine(g){
   const root=g.ImamApp||(g.ImamApp={});
@@ -226,12 +226,12 @@
   }
   root.QuranEngine=Object.freeze({RECITERS,init,open,close,playRange,playSelectedAyah,selectAyah,stop,downloadSurah,deleteSurah,refreshOfflineStatus,controlsChanged,reciterChanged,state:Q});
   g.initQuranEngine=init;
-  root.Legacy?.override?.('openQuranTextModal',open,'quran-engine-10.4.0');
-  root.Legacy?.override?.('closeQuranTextModal',close,'quran-engine-10.4.0');
-  root.Legacy?.override?.('playQuranRange',()=>playRange(),'quran-engine-10.4.0');
-  root.Legacy?.override?.('playNextQuranAudio',()=>advance(true),'quran-engine-10.4.0');
-  root.Legacy?.override?.('stopQuranAudio',stop,'quran-engine-10.4.0');
-  root.Legacy?.override?.('repeatCurrentRange',()=>playRange('range'),'quran-engine-10.4.0');
+  root.Legacy?.override?.('openQuranTextModal',open,'quran-engine-10.4.1');
+  root.Legacy?.override?.('closeQuranTextModal',close,'quran-engine-10.4.1');
+  root.Legacy?.override?.('playQuranRange',()=>playRange(),'quran-engine-10.4.1');
+  root.Legacy?.override?.('playNextQuranAudio',()=>advance(true),'quran-engine-10.4.1');
+  root.Legacy?.override?.('stopQuranAudio',stop,'quran-engine-10.4.1');
+  root.Legacy?.override?.('repeatCurrentRange',()=>playRange('range'),'quran-engine-10.4.1');
   g.playSelectedQuranAyah=playSelectedAyah;
   g.quranSelectAyah=selectAyah;
   g.quranEngineControlsChanged=controlsChanged;

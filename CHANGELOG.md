@@ -361,3 +361,8 @@
 - Corrected the 30 Juz-to-Surah intersection map used by item-level review expansion.
 - Corrected the starter mercy hadith reference to Sahih al-Bukhari 6013.
 - Connected v10 palette selection to the visible v9.2 shell theme tokens.
+
+## 10.4.1 — Mushaf Mobile Reader Fix
+- Fixed Android PDF placeholder problem by switching the page reader to SVG.
+- Made the lightweight page reader the primary Mushaf experience.
+- Added gzip-compressed local SVG page storage and legacy PDF cleanup controls.

@@ -1,4 +1,4 @@
-/* We Live Quran — safe multi-device sync core v10.4.0
+/* We Live Quran — safe multi-device sync core v10.4.1
  * Pure helpers only: deterministic record merge + durable tombstones.
  */
 'use strict';
