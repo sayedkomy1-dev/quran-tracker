@@ -27,7 +27,7 @@ new vm.Script(v10,{filename:'v10.js'});
 new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='10.1.2','VERSION must be 10.1.2');
+assert(version==='10.1.3','VERSION must be 10.1.3');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
@@ -135,14 +135,15 @@ assert(app.includes("backupType:'portable'")&&app.includes('settings:sanitizeSet
 const sanitizerMatch=app.match(/function sanitizeSettingsForExport\(source=settings\)\{([\s\S]*?)\n\}/);
 assert(sanitizerMatch,'portable backup sanitizer source not found');
 const sanitizeSettingsForExport=vm.runInNewContext(`(function(source){${sanitizerMatch[1]}})`);
-const sanitized=sanitizeSettingsForExport({sync:{url:'https://x.supabase.co',id:'safe-id',key:'KEY',passphrase:'PASS',authSecret:'AUTH'},security:{lockEnabled:true,pinHash:'HASH',pinSalt:'SALT',pinKdf:'KDF',pinIterations:250000,credentialId:'CRED'},theme:'light'});
+const sanitized=sanitizeSettingsForExport({sync:{url:'https://x.supabase.co',id:'safe-id',key:'KEY',passphrase:'PASS',authSecret:'AUTH'},security:{lockEnabled:true,pinHash:'HASH',pinSalt:'SALT',pinKdf:'KDF',pinIterations:250000,credentialId:'CRED'},accountOwner:{userId:'u1',email:'x@example.com'},theme:'light'});
 assert(sanitized.theme==='light'&&sanitized.sync.url==='https://x.supabase.co','portable backup sanitizer must preserve non-secret settings');
 assert(!('key' in sanitized.sync)&&!('passphrase' in sanitized.sync)&&!('authSecret' in sanitized.sync),'portable backup leaked sync credentials');
+assert(!('accountOwner' in sanitized),'portable backup leaked authenticated account ownership metadata');
 assert(!('pinHash' in sanitized.security)&&!('pinSalt' in sanitized.security)&&!('credentialId' in sanitized.security),'portable backup leaked local security credentials');
 assert(sanitized.security.lockEnabled===false,'portable backup must not reactivate a device lock without its credentials');
 assert(v8.includes('function v8BackupPayload')&&v8.includes('settings:JSON.parse(JSON.stringify(settings))'),'internal local recovery backup should remain device-complete');
-assert(v8.includes('syncAuthSecret')&&v8.includes('generateSecureSyncCredentials'),'secure sync authorization controls missing');
-assert(v8.includes("callSyncRpc('imam_sync_push'")&&v8.includes("callSyncRpc('imam_sync_pull'"),'cloud sync must use protected RPC endpoints');
+assert(v8.includes('generateSecureSyncCredentials'),'legacy sync credential adapter missing');
+assert(v8.includes("callAccountSyncRpc('account_sync_push'")&&v8.includes("callAccountSyncRpc('account_sync_pull'"),'account cloud sync must use authenticated account RPC endpoints');
 assert(!v8.includes('/rest/v1/imam_sync?on_conflict='),'direct cloud table write must be removed');
 assert(!v8.includes('/rest/v1/imam_sync?select=payload'),'direct cloud table read must be removed');
 const syncSql=fs.readFileSync(file('sql/supabase-sync.sql'),'utf8');
@@ -151,8 +152,8 @@ assert(syncSql.includes('imam_sync_push')&&syncSql.includes('imam_sync_pull'),'s
 assert(!/for select to anon using\s*\(true\)/i.test(syncSql),'broad anon SELECT policy must not return');
 assert(!/for update to anon using\s*\(true\)/i.test(syncSql),'broad anon UPDATE policy must not return');
 assert(!/for insert to anon with check\s*\(true\)/i.test(syncSql),'broad anon INSERT policy must not return');
-assert(v8.includes('const localSync=settings.sync,localSecurity=settings.security')&&v8.includes('sync:localSync,security:localSecurity'),'backup/cloud restore must preserve current device sync/security secrets');
-assert(sw.includes("quran-pwa-v10.1.2"),'service worker cache must match v10.1.2');
+assert(v8.includes('localSync=settings.sync')&&v8.includes('accountOwner:owner'),'backup/cloud restore must preserve current account ownership and device secrets');
+assert(sw.includes("quran-pwa-v10.1.3"),'service worker cache must match v10.1.3');
 
 
 // v10.1.2 Google Auth and access-control regression guards.
@@ -180,5 +181,25 @@ assert(fs.existsSync(file('privacy.html'))&&fs.existsSync(file('terms.html')),'O
 assert(sw.includes("'./privacy.html'")&&sw.includes("'./terms.html'"),'legal pages should be available offline after install');
 assert(authCss.includes('.wlq-auth-gate'),'auth gate styling missing');
 
+// v10.1.3 account ownership + account-scoped storage/cloud regression guards.
+assert(app.includes("const WLQ_LEGACY_CLAIM_KEY='wlq.legacy.claim.v1'"),'legacy ownership marker missing');
+assert(app.includes('function accountIdbKey(kind)')&&app.includes('acct:${storageScopeUserId}:${kind}'),'IndexedDB account namespace missing');
+assert(app.includes('function accountLocalKey(kind)')&&app.includes('wlq.account.${storageScopeUserId}.${kind}'),'localStorage account namespace missing');
+assert(app.includes('askLegacyDataClaim')&&app.includes('ربط البيانات بهذا الحساب'),'legacy ownership confirmation flow missing');
+assert(app.includes('writeLegacyClaim(counts)')&&app.includes('migrateLegacyDraftsToAccount'),'legacy claim persistence/draft migration missing');
+assert(app.includes('isCurrentAccountDraftKey'),'session drafts must be account scoped');
+assert(v8.includes('function autoBackupPrefix()')&&v8.includes('autobackup:${storageScopeUserId}:'),'automatic backups must be account scoped');
+assert(html.includes('id="syncAccount"')&&!html.includes('id="syncId"')&&!html.includes('id="syncAuthSecret"'),'sync settings UI must be account-owned, without manual sync ID/secret');
+assert(v8.includes("callAccountSyncRpc('account_sync_push'")&&v8.includes("callAccountSyncRpc('account_sync_pull'"),'account-owned cloud RPC calls missing');
+assert(v8.includes('ownerUserId:storageScopeUserId'),'encrypted cloud payload must bind to the local authenticated account');
+const accountSyncSql=fs.readFileSync(file('sql/account-sync.sql'),'utf8');
+assert(accountSyncSql.includes('create table if not exists public.account_sync'),'account_sync table setup missing');
+assert(accountSyncSql.includes('owner_user_id uuid primary key references auth.users(id)'),'account_sync must be one row per authenticated account');
+assert(accountSyncSql.includes('where s.owner_user_id = auth.uid()'),'account_sync pull must scope to auth.uid()');
+assert(accountSyncSql.includes('revoke all on table public.account_sync from anon, authenticated'),'account_sync direct table access must be revoked');
+assert(accountSyncSql.includes('grant execute on function public.account_sync_push(text) to authenticated'),'account_sync push RPC grant missing');
+assert(accountSyncSql.includes('grant execute on function public.account_sync_pull() to authenticated'),'account_sync pull RPC grant missing');
+assert(!/grant execute on function public\.account_sync_(?:push|pull)[^\n]*to anon/i.test(accountSyncSql),'anonymous account sync RPC execute must not be granted');
+
 assert(manifest.short_name==='أكاديمية الإمام'&&manifest.display==='standalone','PWA install identity mismatch');
-console.log('Static checks passed for We Live Quran v10.1.2');
+console.log('Static checks passed for We Live Quran v10.1.3');

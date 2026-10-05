@@ -223,7 +223,7 @@ async function runDataHealthCheck(){
   const orphanVoice=[...voiceKeys].filter(k=>!voiceRefs.has(k)),missingVoice=[...voiceRefs].filter(k=>!voiceKeys.has(k));
   if(orphanVoice.length)issues.push(`${orphanVoice.length} ملف صوتي محلي غير مرتبط بحصة`);
   if(missingVoice.length)issues.push(`${missingVoice.length} حصة تشير إلى ملاحظة صوتية غير موجودة على هذا الجهاز`);
-  const draftCount=Object.keys(localStorage).filter(k=>/^qt_draft_v[678]_/.test(k)).length;if(draftCount)notes.push(`${draftCount} مسودة حصة محفوظة تلقائيًا`);
+  const draftCount=Object.keys(localStorage).filter(k=>typeof isCurrentAccountDraftKey==='function'?isCurrentAccountDraftKey(k):/^qt_draft_v[678]_/.test(k)).length;if(draftCount)notes.push(`${draftCount} مسودة حصة محفوظة تلقائيًا لهذا الحساب`);
   if(navigator.storage?.estimate){try{const q=await navigator.storage.estimate(),ratio=q.quota?Number(q.usage||0)/q.quota:0;if(ratio>.85)issues.push(`استخدام التخزين مرتفع (${Math.round(ratio*100)}%)`);else if(q.quota)notes.push(`استخدام التخزين ${Math.round(ratio*100)}%`);}catch(_){}}
   const el=document.getElementById('dataHealthResult');if(!el)return;
   if(!issues.length){el.innerHTML=`✅ لا توجد مشكلات بنيوية ظاهرة في البيانات.${notes.length?'<br><span class="txt-mut">'+notes.map(v9Esc).join(' · ')+'</span>':''}`;v9Toast('فحص البيانات سليم','success');}

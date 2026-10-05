@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.1.2">
+<meta name="application-version" content="10.1.3">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -560,15 +560,13 @@
   </div>
 
   <div class="card">
-    <div class="ch">☁️ مزامنة Android وWindows <span class="beta-badge">Beta</span></div>
-    <p class="txt-mut mb8" style="font-size:12px">مزامنة مشفرة اختيارية عبر حساب We Live Quran المعتمد. البيانات تُشفّر محليًا قبل الرفع، ولا تقبل خدمة المزامنة طلبات المستخدم المجهول.</p>
-    <div class="fld"><label>Supabase Project URL — مربوط تلقائيًا</label><input type="url" id="syncUrl" readonly></div>
-    <div class="fld"><label>Supabase Publishable key — مربوط تلقائيًا</label><input type="password" id="syncKey" readonly></div>
-    <div class="frow"><div class="fld"><label>Sync ID الآمن</label><input type="text" id="syncId" placeholder="استخدم زر إنشاء بيانات آمنة" oninput="saveV8Settings()"></div><div class="fld"><label>سر الوصول للمزامنة</label><input type="password" id="syncAuthSecret" autocomplete="new-password" placeholder="24 حرفًا على الأقل" oninput="saveV8Settings()"></div></div>
-    <div class="fld"><label>كلمة تشفير البيانات</label><input type="password" id="syncPassphrase" autocomplete="new-password" placeholder="8 أحرف على الأقل — مختلفة عن سر الوصول" oninput="saveV8Settings()"></div>
-    <div class="settings-actions mt8"><button class="btn btn-out btn-sm" onclick="generateSecureSyncCredentials()">🔐 إنشاء Sync ID وسر وصول آمنين</button></div>
+    <div class="ch">☁️ نسخة سحابية للحساب <span class="beta-badge">Beta</span></div>
+    <p class="txt-mut mb8" style="font-size:12px">كل حساب معتمد يملك مساحة مزامنة منفصلة. البيانات تُشفّر داخل جهازك قبل الرفع، ولا يستطيع حساب آخر قراءة نسخة هذا الحساب.</p>
+    <div class="fld"><label>الحساب الحالي</label><input type="text" id="syncAccount" readonly></div>
+    <div class="fld"><label>كلمة تشفير النسخة السحابية</label><input type="password" id="syncPassphrase" autocomplete="new-password" placeholder="8 أحرف على الأقل — احتفظ بها لاستعادة البيانات على جهاز جديد" oninput="saveV8Settings()"></div>
+    <p class="txt-mut" style="font-size:11px">عند فتح الحساب على جهاز جديد، اكتب نفس كلمة التشفير ثم اختر «تنزيل ودمج». لا يتم إرسال كلمة التشفير إلى Supabase.</p>
     <label class="switch-line"><input type="checkbox" id="syncAuto" onchange="saveV8Settings()"><span>مزامنة تلقائية بعد التغييرات</span></label>
-    <div class="settings-actions mt8"><button class="btn btn-g btn-sm" onclick="pushCloudSync()">⬆️ رفع الآن</button><button class="btn btn-out btn-sm" onclick="pullCloudSync()">⬇️ تنزيل ودمج</button></div>
+    <div class="settings-actions mt8"><button class="btn btn-g btn-sm" onclick="pushCloudSync()">⬆️ رفع نسخة مشفرة</button><button class="btn btn-out btn-sm" onclick="pullCloudSync()">⬇️ تنزيل ودمج</button></div>
     <div id="syncStatus" class="txt-mut mt8"></div>
   </div>
 

@@ -1,4 +1,4 @@
-# نشر We Live Quran v10.1.2
+# نشر We Live Quran v10.1.3
 
 ## قبل النشر
 
@@ -19,7 +19,7 @@
 sql/supabase-setup.sql
 ```
 
-الملف ينشئ `app_users` وRLS/trigger، ويجعل `info.welivequran@gmail.com` Owner نشطًا، ويؤمّن Cloud Sync للمستخدم authenticated.
+الملف ينشئ `app_users` وRLS/trigger، ويجعل `info.welivequran@gmail.com` Owner نشطًا، ويؤمّن المزامنة للمستخدم authenticated. إذا كان إعداد v10.1.2 منفذًا بالفعل، يكفي تشغيل `sql/account-sync.sql` فقط لإضافة مساحة النسخة السحابية المملوكة للحساب.
 
 **لا تستخدم `service_role` أو `sb_secret_...` داخل الموقع.** الواجهة تستخدم فقط الـPublishable key.
 
@@ -52,9 +52,12 @@ node --check sw.js
 4. تسجيل خروج ثم دخول الحساب الثاني.
 5. افتح التطبيق مرة Online ثم افصل الإنترنت وأعد فتحه للتحقق من Trusted Device Offline.
 6. أعد الإنترنت وتأكد من إعادة التحقق.
+7. على جهاز المعلم القديم: سجّل بالحساب المعتمد، وافق على «ربط البيانات بهذا الحساب»، وتأكد أن عدد الطلاب القديم يظهر كما هو.
+8. سجّل خروجًا وادخل بحساب Active مختلف على نفس الجهاز؛ يجب ألا تظهر بيانات المعلم.
+9. من الإعدادات ضع كلمة تشفير، ارفع نسخة مشفرة، ثم اختبر التنزيل على جهاز/متصفح آخر بنفس الحساب والكلمة.
 
 ## PWA
 
-Cache namespace: `quran-pwa-v10.1.2`.
+Cache namespace: `quran-pwa-v10.1.3`.
 
 `privacy.html` و`terms.html` ضمن App Shell حتى تظل الصفحات متاحة بعد التثبيت.

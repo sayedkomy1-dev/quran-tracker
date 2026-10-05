@@ -56,7 +56,7 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION='10.1.2';
+const APP_VERSION='10.1.3';
 const SCHEMA_VERSION=12;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
@@ -246,25 +246,107 @@ function migrateData(){
 }
 
 // ══════════════════════════════════════
-// DATABASE — Native IndexedDB + localStorage safety copy
+// DATABASE — account-scoped IndexedDB + localStorage safety copy
+// v10.1.3 keeps legacy keys untouched until the teacher explicitly claims them.
 // ══════════════════════════════════════
-function readLocalFallback(){
-  try{
-    students=JSON.parse(localStorage.getItem('qt_st')||'[]');
-    sessions=JSON.parse(localStorage.getItem('qt_ses')||'[]');
-    tasks=JSON.parse(localStorage.getItem('qt_tasks')||'[]');
-    settings={...settings,...JSON.parse(localStorage.getItem('qt_cfg')||'{}')};
-  }catch(e){
-    console.warn('تعذر قراءة النسخة المحلية الاحتياطية',e);
-    students=[];sessions=[];tasks=[];
+const WLQ_LEGACY_CLAIM_KEY='wlq.legacy.claim.v1';
+let storageScopeUserId='';
+let storageScopeEmail='';
+let accountMigrationNotice=null;
+
+function currentAccountAccess(){return globalThis.WeLiveQuranAuth?.getAccess?.()||null;}
+function initStorageScope(){
+  const a=currentAccountAccess();
+  storageScopeUserId=String(a?.user_id||'').trim();
+  storageScopeEmail=String(a?.email||'').trim().toLowerCase();
+  if(!storageScopeUserId)throw new Error('ACCOUNT_SCOPE_MISSING');
+}
+function accountIdbKey(kind){return `acct:${storageScopeUserId}:${kind}`;}
+function accountLocalKey(kind){return `wlq.account.${storageScopeUserId}.${kind}`;}
+function accountDraftPrefix(version=7){return `qt_draft_v${version}_${storageScopeUserId}_`;}
+function isCurrentAccountDraftKey(key){return /^qt_draft_v[678]_/.test(String(key||''))&&String(key||'').includes(`_${storageScopeUserId}_`);}
+function parseJSONSafe(raw,fallback){try{return raw==null?fallback:JSON.parse(raw);}catch(_){return fallback;}}
+function freshAccountSettings(){return{name:'',circle:ACADEMY_NAME,theme:'light',fontSize:'md',notifEnabled:false,waTemplate:'',schemaVersion:SCHEMA_VERSION};}
+function snapshotHasData(x){return !!((x?.students?.length||0)+(x?.sessions?.length||0)+(x?.tasks?.length||0));}
+function snapshotCounts(x){return{students:x?.students?.length||0,sessions:x?.sessions?.length||0,tasks:x?.tasks?.length||0};}
+function readLegacyClaim(){try{return JSON.parse(localStorage.getItem(WLQ_LEGACY_CLAIM_KEY)||'null');}catch(_){return null;}}
+function writeLegacyClaim(counts){localStorage.setItem(WLQ_LEGACY_CLAIM_KEY,JSON.stringify({userId:storageScopeUserId,email:storageScopeEmail,claimedAt:new Date().toISOString(),counts}));}
+function ownerStamp(source){return{userId:storageScopeUserId,email:storageScopeEmail,source,claimedAt:new Date().toISOString()};}
+
+function snapshotFromMap(map,prefix=''){
+  const k=n=>prefix?`${prefix}${n}`:n;
+  const present=[k('students'),k('sessions'),k('tasks'),k('settings')].some(x=>map[x]!==undefined);
+  if(!present)return null;
+  return{
+    students:parseJSONSafe(map[k('students')],[]),
+    sessions:parseJSONSafe(map[k('sessions')],[]),
+    tasks:parseJSONSafe(map[k('tasks')],[]),
+    settings:parseJSONSafe(map[k('settings')],{})
+  };
+}
+function legacySnapshotFromLocalStorage(){
+  const present=['qt_st','qt_ses','qt_tasks','qt_cfg'].some(k=>localStorage.getItem(k)!=null);
+  if(!present)return null;
+  return{
+    students:parseJSONSafe(localStorage.getItem('qt_st'),[]),
+    sessions:parseJSONSafe(localStorage.getItem('qt_ses'),[]),
+    tasks:parseJSONSafe(localStorage.getItem('qt_tasks'),[]),
+    settings:parseJSONSafe(localStorage.getItem('qt_cfg'),{})
+  };
+}
+function accountSnapshotFromLocalStorage(){
+  const present=['students','sessions','tasks','settings'].some(k=>localStorage.getItem(accountLocalKey(k))!=null);
+  if(!present)return null;
+  return{
+    students:parseJSONSafe(localStorage.getItem(accountLocalKey('students')),[]),
+    sessions:parseJSONSafe(localStorage.getItem(accountLocalKey('sessions')),[]),
+    tasks:parseJSONSafe(localStorage.getItem(accountLocalKey('tasks')),[]),
+    settings:parseJSONSafe(localStorage.getItem(accountLocalKey('settings')),{})
+  };
+}
+function applySnapshot(x,source='account'){
+  students=Array.isArray(x?.students)?x.students:[];
+  sessions=Array.isArray(x?.sessions)?x.sessions:[];
+  tasks=Array.isArray(x?.tasks)?x.tasks:[];
+  settings={...freshAccountSettings(),...(x?.settings&&typeof x.settings==='object'?x.settings:{})};
+  settings.accountOwner={...(settings.accountOwner||{}),...ownerStamp(source)};
+  if(settings.sync&&typeof settings.sync==='object'){
+    settings.sync={...settings.sync,mode:'account',id:'',authSecret:''};
   }
+}
+function migrateLegacyDraftsToAccount(){
+  try{
+    const keys=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^qt_draft_v[678]_/.test(k||'')&&!String(k).includes(`_${storageScopeUserId}_`))keys.push(k);}
+    keys.forEach(k=>{
+      const m=String(k).match(/^qt_draft_v([678])_(.+)$/);if(!m)return;
+      const nk=`qt_draft_v${m[1]}_${storageScopeUserId}_${m[2]}`;
+      if(localStorage.getItem(nk)==null)localStorage.setItem(nk,localStorage.getItem(k));
+    });
+  }catch(e){console.warn('تعذر ترحيل مسودات الحصص القديمة',e);}
+}
+function askLegacyDataClaim(snapshot){
+  const c=snapshotCounts(snapshot),email=storageScopeEmail||'الحساب الحالي';
+  return new Promise(resolve=>{
+    const old=document.getElementById('wlqLegacyClaim');if(old)old.remove();
+    const box=document.createElement('div');box.id='wlqLegacyClaim';box.className='wlq-legacy-overlay';
+    box.innerHTML=`<section class="wlq-legacy-card" role="dialog" aria-modal="true" aria-labelledby="wlqLegacyTitle"><div class="wlq-legacy-icon">🔐</div><h2 id="wlqLegacyTitle">ربط البيانات القديمة بالحساب</h2><p>وجدنا بيانات محفوظة على هذا الجهاز من قبل إضافة تسجيل الدخول.</p><div class="wlq-legacy-stats"><b>${c.students}</b><span>طالب</span><b>${c.sessions}</b><span>حصة</span><b>${c.tasks}</b><span>مهمة</span></div><p class="wlq-legacy-account">سيتم ربطها بالحساب:<br><strong>${esc(email)}</strong></p><p class="wlq-legacy-note">لن نحذف النسخة القديمة الآن، لذلك يمكن الرجوع إليها إذا حدثت مشكلة أثناء الترحيل.</p><button type="button" class="wlq-legacy-primary" data-claim>ربط البيانات بهذا الحساب</button><button type="button" class="wlq-legacy-secondary" data-empty>فتح حساب فارغ بدلًا من ذلك</button></section>`;
+    document.body.appendChild(box);
+    box.querySelector('[data-claim]').addEventListener('click',()=>{box.remove();resolve(true);});
+    box.querySelector('[data-empty]').addEventListener('click',()=>{box.remove();resolve(false);});
+  });
+}
+
+function readAccountLocalFallback(){
+  const x=accountSnapshotFromLocalStorage();
+  if(x){applySnapshot(x,'account-localstorage');return true;}
+  students=[];sessions=[];tasks=[];settings=freshAccountSettings();settings.accountOwner=ownerStamp('new-account');
+  return false;
 }
 
 function openQuranDB(){
   return new Promise((resolve,reject)=>{
     if(!('indexedDB' in window)){reject(new Error('IndexedDB غير مدعوم'));return;}
-    // فتح قاعدة البيانات بدون رقم إصدار يحافظ على التوافق مع قواعد Dexie القديمة
-    // (Dexie قد يكون استخدم رقم إصدار داخلي مختلفاً).
+    // فتح قاعدة البيانات بدون رقم إصدار يحافظ على التوافق مع قواعد Dexie القديمة.
     const req=indexedDB.open('QuranApp');
     req.onupgradeneeded=()=>{
       const database=req.result;
@@ -274,7 +356,6 @@ function openQuranDB(){
       const database=req.result;
       database.onversionchange=()=>database.close();
       if(database.objectStoreNames.contains('kv')){resolve(database);return;}
-      // قاعدة موجودة من إصدار غير متوقع: أنشئ مخزن kv بترقية آمنة.
       const nextVersion=database.version+1;database.close();
       const up=indexedDB.open('QuranApp',nextVersion);
       up.onupgradeneeded=()=>{if(!up.result.objectStoreNames.contains('kv'))up.result.createObjectStore('kv',{keyPath:'key'});};
@@ -303,52 +384,83 @@ function idbGetAll(database){
 }
 
 function idbWriteSnapshot(){
-  if(!db||!db.objectStoreNames.contains('kv')) return;
+  if(!db||!db.objectStoreNames.contains('kv')||!storageScopeUserId) return;
   try{
-    const tx=db.transaction('kv','readwrite');
-    const store=tx.objectStore('kv');
-    store.put({key:'students',val:JSON.stringify(students)});
-    store.put({key:'sessions',val:JSON.stringify(sessions)});
-    store.put({key:'tasks',val:JSON.stringify(tasks)});
-    store.put({key:'settings',val:JSON.stringify(settings)});
-    tx.onerror=()=>console.warn('تعذر حفظ نسخة IndexedDB',tx.error);
-  }catch(e){console.warn('تعذر الكتابة إلى IndexedDB',e);}
+    const tx=db.transaction('kv','readwrite'),store=tx.objectStore('kv');
+    store.put({key:accountIdbKey('students'),val:JSON.stringify(students)});
+    store.put({key:accountIdbKey('sessions'),val:JSON.stringify(sessions)});
+    store.put({key:accountIdbKey('tasks'),val:JSON.stringify(tasks)});
+    store.put({key:accountIdbKey('settings'),val:JSON.stringify(settings)});
+    tx.onerror=()=>console.warn('تعذر حفظ نسخة IndexedDB للحساب',tx.error);
+  }catch(e){console.warn('تعذر الكتابة إلى IndexedDB للحساب',e);}
 }
 
 async function initDB(){
+  initStorageScope();
+  const baseSettings=freshAccountSettings();
+  let rows=[],map={},accountSnapshot=null,legacySnapshot=null;
   try{
     db=await openQuranDB();
-    const rows=await idbGetAll(db);
-    const map={};
+    rows=await idbGetAll(db);
     rows.forEach(r=>{if(r&&r.key!=null)map[r.key]=r.val;});
-    if(map.students!==undefined||map.sessions!==undefined||map.tasks!==undefined||map.settings!==undefined){
-      students=JSON.parse(map.students||'[]');
-      sessions=JSON.parse(map.sessions||'[]');
-      tasks=JSON.parse(map.tasks||'[]');
-      settings={...settings,...JSON.parse(map.settings||'{}')};
-    }else{
-      readLocalFallback();
-    }
+    accountSnapshot=snapshotFromMap(map,`acct:${storageScopeUserId}:`)||accountSnapshotFromLocalStorage();
+    legacySnapshot=snapshotFromMap(map,'')||legacySnapshotFromLocalStorage();
   }catch(e){
-    console.warn('IndexedDB غير متاح؛ سيتم استخدام النسخة المحلية',e);
+    console.warn('IndexedDB غير متاح؛ سيتم استخدام النسخة المحلية الخاصة بالحساب',e);
     db=null;
-    readLocalFallback();
+    accountSnapshot=accountSnapshotFromLocalStorage();
+    legacySnapshot=legacySnapshotFromLocalStorage();
   }
+
+  if(accountSnapshot){
+    applySnapshot(accountSnapshot,'account');
+  }else if(snapshotHasData(legacySnapshot)){
+    const claim=readLegacyClaim();
+    if(claim?.userId===storageScopeUserId){
+      applySnapshot(legacySnapshot,'legacy-recovery');
+      accountMigrationNotice={type:'claimed',counts:snapshotCounts(legacySnapshot),recovered:true};
+      migrateLegacyDraftsToAccount();
+    }else if(claim?.userId&&claim.userId!==storageScopeUserId){
+      students=[];sessions=[];tasks=[];settings={...baseSettings,accountOwner:ownerStamp('new-account')};
+      accountMigrationNotice={type:'legacy-owned-by-other',email:claim.email||''};
+    }else{
+      const take=await askLegacyDataClaim(legacySnapshot);
+      if(take){
+        applySnapshot(legacySnapshot,'legacy-claim');
+        const counts=snapshotCounts(legacySnapshot);writeLegacyClaim(counts);migrateLegacyDraftsToAccount();
+        accountMigrationNotice={type:'claimed',counts};
+      }else{
+        students=[];sessions=[];tasks=[];settings={...baseSettings,accountOwner:ownerStamp('new-account')};
+        accountMigrationNotice={type:'empty'};
+      }
+    }
+  }else{
+    readAccountLocalFallback();
+  }
+
+  settings.accountOwner={...(settings.accountOwner||{}),userId:storageScopeUserId,email:storageScopeEmail};
   const changed=migrateData();
-  if(changed) save();
+  if(changed||!accountSnapshot) save();
   else idbWriteSnapshot();
 }
 
+
+function showAccountMigrationNotice(){
+  const n=accountMigrationNotice;accountMigrationNotice=null;if(!n)return;
+  if(n.type==='claimed'){const c=n.counts||{};toast(`تم ربط ${c.students||0} طالب و${c.sessions||0} حصة بهذا الحساب${n.recovered?' واستعادة الترحيل':''}`,'success');}
+  else if(n.type==='legacy-owned-by-other')toast('توجد بيانات قديمة على هذا الجهاز مرتبطة بحساب آخر؛ تم فتح مساحة فارغة لهذا الحساب.','info');
+  else if(n.type==='empty')toast('تم فتح مساحة بيانات فارغة لهذا الحساب، والبيانات القديمة لم تُحذف.','info');
+}
 function save(){
-  // localStorage هنا نسخة أمان سريعة، وIndexedDB هو مخزن البيانات الرئيسي.
+  // كل حساب يملك نسخة محلية منفصلة. مفاتيح v10.1.3 القديمة لا تُكتب بعد الآن.
   try{
-    localStorage.setItem('qt_st',JSON.stringify(students));
-    localStorage.setItem('qt_ses',JSON.stringify(sessions));
-    localStorage.setItem('qt_tasks',JSON.stringify(tasks));
-    localStorage.setItem('qt_cfg',JSON.stringify(settings));
-  }catch(e){console.warn('تعذر حفظ نسخة localStorage الاحتياطية',e);}
+    localStorage.setItem(accountLocalKey('students'),JSON.stringify(students));
+    localStorage.setItem(accountLocalKey('sessions'),JSON.stringify(sessions));
+    localStorage.setItem(accountLocalKey('tasks'),JSON.stringify(tasks));
+    localStorage.setItem(accountLocalKey('settings'),JSON.stringify(settings));
+  }catch(e){console.warn('تعذر حفظ نسخة localStorage الخاصة بالحساب',e);}
   idbWriteSnapshot();
-  queueMicrotask(()=>{try{updateTaskBadge();}catch(_){}});
+  queueMicrotask(()=>{try{updateTaskBadge();}catch(_){} });
 }
 
 // ══════════════════════════════════════
@@ -1027,7 +1139,7 @@ function setDraftState(text,cls=''){
 }
 function draftKey(){
   const sid=document.getElementById('sesSt')?.value,date=document.getElementById('sesDate')?.value;
-  return sid&&date?`qt_draft_v6_${sid}_${date}`:'';
+  return sid&&date?`${accountDraftPrefix(6)}${sid}_${date}`:'';
 }
 function captureDraft(){
   const fields={};
@@ -1863,7 +1975,7 @@ function runDataHealthCheck(){
   const badPhones=students.filter(x=>!/^20\d{10}$/.test(String(x.phone||''))).length;if(badPhones)issues.push(`${badPhones} رقم واتساب يحتاج مراجعة`);
   const scheduleConflicts=allScheduleConflicts();if(scheduleConflicts.length)issues.push(`${scheduleConflicts.length} تعارضاً في مواعيد الطلاب`);
   const orphanTasks=tasks.filter(t=>t.studentId&&!studentIds.has(t.studentId)).length;if(orphanTasks)issues.push(`${orphanTasks} مهمة مرتبطة بطالب غير موجود`);
-  const draftCount=Object.keys(localStorage).filter(k=>/^qt_draft_v[678]_/.test(k)).length;if(draftCount)issues.push(`${draftCount} مسودة حصة محفوظة تلقائياً`);
+  const draftCount=Object.keys(localStorage).filter(isCurrentAccountDraftKey).length;if(draftCount)issues.push(`${draftCount} مسودة حصة محفوظة تلقائياً لهذا الحساب`);
   const el=document.getElementById('dataHealthResult');
   if(!issues.length){el.innerHTML='✅ لا توجد مشكلات بنيوية ظاهرة في البيانات.';toast('فحص البيانات سليم','success');}
   else{el.innerHTML='⚠️ '+issues.map(esc).join('<br>⚠️ ');toast(`تم العثور على ${issues.length} ملاحظة`,'info');}
@@ -1904,6 +2016,7 @@ function sanitizeSettingsForExport(source=settings){
     delete cfg.sync.passphrase;
     delete cfg.sync.authSecret;
   }
+  delete cfg.accountOwner;
   if(cfg.security&&typeof cfg.security==='object'){
     delete cfg.security.pinHash;
     delete cfg.security.pinSalt;
@@ -2012,7 +2125,7 @@ function importData(e){
 function clearAll(){
   if(!confirm('⚠️ هذا سيحذف جميع الطلاب والحصص من هذا الجهاز. هل أنت متأكد؟'))return;
   if(!confirm('تأكيد أخير: احذف كل البيانات المحلية؟'))return;
-  students=[];sessions=[];tasks=[];Object.keys(localStorage).filter(k=>/^qt_draft_v[678]_/.test(k)).forEach(k=>localStorage.removeItem(k));save();toast('تم مسح جميع البيانات','success');goPage('home');
+  students=[];sessions=[];tasks=[];Object.keys(localStorage).filter(isCurrentAccountDraftKey).forEach(k=>localStorage.removeItem(k));save();toast('تم مسح بيانات هذا الحساب من الجهاز','success');goPage('home');
 }
 
 // ══════════════════════════════════════
@@ -2160,6 +2273,7 @@ window.addEventListener('load',async ()=>{
   if(typeof initV8Layer==='function') await initV8Layer();
   if(typeof initV9Layer==='function') await initV9Layer();
   if(globalThis.WeLiveQuranAuth?.afterAppInit) await globalThis.WeLiveQuranAuth.afterAppInit();
+  showAccountMigrationNotice();
 });
 
 // ══════════════════════════════════════
@@ -2399,7 +2513,7 @@ function captureDraft(){
 }
 function draftKey(){
   const sid=document.getElementById('sesSt')?.value,date=document.getElementById('sesDate')?.value;
-  return sid&&date?`qt_draft_v7_${sid}_${date}`:'';
+  return sid&&date?`${accountDraftPrefix(7)}${sid}_${date}`:'';
 }
 function applyDraft(d){
   if(!d)return;

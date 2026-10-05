@@ -1,3 +1,13 @@
+# v10.1.3 — Account Ownership & Cloud Backup
+
+- عزل البيانات المحلية حسب حساب Google (`auth.uid`).
+- Wizard لربط بيانات ما قبل تسجيل الدخول بالحساب الصحيح بدون حذف Legacy snapshot.
+- عزل مسودات الحصص والنسخ التلقائية بين الحسابات على نفس الجهاز.
+- مزامنة سحابية جديدة تعتمد على حساب المستخدم بدل Sync ID/Access Secret.
+- البيانات السحابية تبقى مشفرة AES-GCM محليًا، وكلمة التشفير لا تُرسل إلى Supabase.
+- إضافة `account_sync` وRPCs مملوكة للحساب.
+- Schema يبقى 12.
+
 # v10.1.2 — Google Login & Access Control
 
 - ربط Google OAuth عبر Supabase Auth بمشروع `We Live Quran`.
