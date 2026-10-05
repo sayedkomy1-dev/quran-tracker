@@ -1,0 +1,105 @@
+{
+  "id": "./",
+  "name": "أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا",
+  "short_name": "أكاديمية الإمام",
+  "description": "نظام عربي احترافي لمحفّظي القرآن: الحصة الموجّهة، المتابعة، مصحف المدينة، التقارير، المهام والتواصل مع أولياء الأمور.",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#F7F4EC",
+  "theme_color": "#145A3A",
+  "orientation": "any",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": [
+    "education",
+    "productivity"
+  ],
+  "prefer_related_applications": false,
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "icons": [
+    {
+      "src": "icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "بدء حصة",
+      "short_name": "حصة",
+      "description": "فتح وضع الحصة مباشرة",
+      "url": "./?page=session",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "الطلاب",
+      "short_name": "الطلاب",
+      "url": "./?page=students",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "مصحف المدينة",
+      "short_name": "المصحف",
+      "description": "فتح مصحف المدينة النبوية",
+      "url": "./?page=mushaf",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "التقارير",
+      "short_name": "تقارير",
+      "url": "./?page=reports",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
