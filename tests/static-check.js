@@ -10,6 +10,8 @@ const app=read('app.js');
 const v8=read('v8.js');
 const v9=read('v9.js');
 const v10=read('v10.js');
+const runtime=read('js/core/runtime.js');
+const v10Data=read('js/features/v10-data.js');
 const auth=read('auth.js');
 const syncCore=read('sync-core.js');
 const authCss=read('auth.css');
@@ -25,22 +27,24 @@ new vm.Script(app,{filename:'app.js'});
 new vm.Script(v8,{filename:'v8.js'});
 new vm.Script(v9,{filename:'v9.js'});
 new vm.Script(v10,{filename:'v10.js'});
+new vm.Script(runtime,{filename:'js/core/runtime.js'});
+new vm.Script(v10Data,{filename:'js/features/v10-data.js'});
 new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='10.1.5','VERSION must be 10.1.4');
+assert(version==='10.2.0','VERSION must be 10.2.0');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
-assert(app.includes(`const APP_VERSION='${version}'`),'app.js APP_VERSION mismatch');
+assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.2.0'"),'app.js APP_VERSION must come from ImamApp runtime');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./auth.js'")&&sw.includes("'./sync-core.js'")&&sw.includes("'./auth.css'"),'service worker must cache v9/v10/auth assets');
+assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./js/core/runtime.js'")&&sw.includes("'./js/features/v10-data.js'")&&sw.includes("'./auth.js'")&&sw.includes("'./sync-core.js'")&&sw.includes("'./auth.css'"),'service worker must cache architecture/v9/v10/auth assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.
-['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','styles.css','v9.css','v10.css','auth.css','sync-core.js','app.js','auth.js','v8.js','v9.js','v10.js','privacy.html','terms.html','MUSHAF-SOURCES.md','V9-IMPLEMENTATION.md'].forEach(f=>assert(fs.existsSync(file(f)),`missing ${f}`));
+['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','styles.css','v9.css','v10.css','auth.css','sync-core.js','app.js','auth.js','v8.js','v9.js','v10.js','js/core/runtime.js','js/features/v10-data.js','privacy.html','terms.html','MUSHAF-SOURCES.md','V9-IMPLEMENTATION.md','ARCHITECTURE-10.2.md'].forEach(f=>assert(fs.existsSync(file(f)),`missing ${f}`));
 for(const m of html.matchAll(/\b(?:src|href)=["']([^"']+)["']/g)){
   const ref=m[1].split(/[?#]/)[0];
   if(!ref||/^(?:https?:|data:|mailto:|tel:|javascript:)/i.test(ref))continue;
@@ -89,8 +93,9 @@ assert(v9.includes("setAttribute('aria-current','step')"),'guided session steppe
 assert(fs.statSync(file('branding/academy-badge-source.png')).size>1000000,'branding source asset appears incomplete');
 
 // All inline handlers must resolve to an application function or browser builtin.
-const js=app+'\n'+v8+'\n'+v9+'\n'+v10;
+const js=runtime+'\n'+v10Data+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+v10;
 const defs=new Set([...js.matchAll(/\b(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]));
+for(const m of v10.matchAll(/\b([A-Za-z_$][\w$]*)\s*:\s*v10[A-Za-z_$][\w$]*/g))defs.add(m[1]);
 const builtins=new Set(['if','for','while','switch','confirm','prompt','alert','setTimeout','setInterval','clearTimeout','clearInterval','parseInt','parseFloat','Number','String','Boolean','Date','Math','JSON','encodeURIComponent','decodeURIComponent']);
 for(const hm of html.matchAll(/\bon(?:click|change|input|submit|contextmenu|keydown|keyup|blur|focus)=["']([^"']+)["']/gi)){
   for(const fm of hm[1].matchAll(/(?<![.\w])([A-Za-z_$][\w$]*)\s*\(/g)){
@@ -114,12 +119,12 @@ assert(v10.includes("homeSections={primary:true,stats:true,actions:true,students
 assert(v10.includes("closeSurahDropdown(key,true);return"),'explicit Surah dropdown close must bypass stale-blur focus guard');
 assert(v10.includes('onpointerdown="event.preventDefault();selectSurahOption'),'Surah dropdown touch/pointer selection missing');
 assert(v10.includes("classList.toggle('open-up',up)"),'adaptive Surah dropdown placement missing');
-const juzMatch=v10.match(/const V10_JUZ_RANGES=(\[[^;]+\]);/);
-assert(juzMatch,'Juz range map missing');
-const juzRanges=vm.runInNewContext(juzMatch[1]);
+const dataSandbox={};dataSandbox.globalThis=dataSandbox;vm.runInNewContext(runtime,dataSandbox,{filename:'js/core/runtime.js'});vm.runInNewContext(v10Data,dataSandbox,{filename:'js/features/v10-data.js'});
+const juzRanges=JSON.parse(JSON.stringify(dataSandbox.ImamApp.V10Data.juzRanges));
+assert(Array.isArray(juzRanges),'Juz range map missing');
 assert(juzRanges.length===30,'Juz range map must contain exactly 30 Ajza');
 assert(JSON.stringify(juzRanges[28])==='[67,77]'&&JSON.stringify(juzRanges[29])==='[78,114]','Juz Tabarak/Amma Surah ranges are misaligned');
-assert(v10.includes("hadithNumber:'6013'")&&!v10.includes("6013/6018"),'starter hadith reference must not be ambiguous');
+assert(v10Data.includes("hadithNumber:'6013'")&&!v10Data.includes("6013/6018"),'starter hadith reference must not be ambiguous');
 assert(v10.includes("root.style.setProperty('--v9-primary',t.p)"),'theme palette must drive visible v9.2 shell tokens');
 assert((v8.match(/globalThis\.v10Migrate/g)||[]).length>=3,'backup/import/cloud restore paths must re-run v10 migration');
 assert(v10.includes("Object.prototype.hasOwnProperty.call(settings,'facebookUrl')"),'Facebook config must permit an intentionally empty value');
@@ -155,7 +160,7 @@ assert(!/for select to anon using\s*\(true\)/i.test(syncSql),'broad anon SELECT 
 assert(!/for update to anon using\s*\(true\)/i.test(syncSql),'broad anon UPDATE policy must not return');
 assert(!/for insert to anon with check\s*\(true\)/i.test(syncSql),'broad anon INSERT policy must not return');
 assert(v8.includes('localSync=settings.sync')&&v8.includes('accountOwner:owner'),'backup/cloud restore must preserve current account ownership and device secrets');
-assert(sw.includes("quran-pwa-v10.1.5"),'service worker cache must match v10.1.4');
+assert(sw.includes("quran-pwa-v10.2.0"),'service worker cache must match v10.2.0');
 
 
 // v10.1.2 Google Auth and access-control regression guards.
@@ -231,4 +236,13 @@ const mergedTs=C.mergeTombstones(ts,C.markTombstone(null,'students','st-1',t4,'d
 assert(mergedTs.students['st-1'].deviceId==='device-b','newer tombstone must win across devices');
 const deleted=C.deletedStudentIds([],ts);assert(C.filterDeletedChildren([{id:'ses-1',studentId:'st-1'}],deleted).length===0,'deleted student must remove descendant sessions/tasks');
 
-console.log('Static checks passed for We Live Quran v10.1.5');
+
+// v10.2.0 architecture regression guards.
+assert(html.indexOf('js/core/runtime.js')<html.indexOf('app.js'),'architecture runtime must load before legacy application scripts');
+assert(html.indexOf('js/features/v10-data.js')<html.indexOf('v10.js'),'v10 data module must load before v10 feature layer');
+assert(runtime.includes('root.Legacy')&&runtime.includes('override(name,impl'),'explicit legacy override registry missing');
+assert(v10.includes("globalThis.ImamApp.Legacy.override(name,impl,'v10.2')"),'v10 explicit compatibility registration missing');
+assert(!/function\s+(?:loadPrevTask|setPrevGr|buildSesData|captureDraft|applyDraft|openSurahDropdown|closeSurahDropdown|toggleSurahDropdown|selectSurahOption|filterSurahDropdown|academyFooter|buildWAMsg)\s*\(/.test(v10),'v10 must not re-declare legacy override names implicitly');
+assert(v10Data.includes('juzRanges:Object.freeze')&&v10Data.includes('themes:Object.freeze')&&v10Data.includes('hadith:Object.freeze')&&v10Data.includes('dua:Object.freeze'),'v10 static data separation incomplete');
+
+console.log('Static checks passed for We Live Quran v10.2.0');

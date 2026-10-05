@@ -1,3 +1,9 @@
+## v10.2.0 — Architecture Refactor (Stage 1)
+- إضافة `ImamApp` namespace وLegacy override registry صريح.
+- فصل V10 static data إلى `js/features/v10-data.js`.
+- تحويل 12 override في v10 من implicit duplicate declarations إلى explicit compatibility adapters.
+- تحديث Service Worker والاختبارات للهيكل الجديد، بدون تغيير Schema أو البيانات.
+
 # v10.1.5 — UI Polish
 
 - إصلاح طبقة «المزيد» التي كانت تظهر خلف الشريط الجانبي على الكمبيوتر.
