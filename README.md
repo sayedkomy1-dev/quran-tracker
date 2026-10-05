@@ -1,3 +1,7 @@
+# We Live Quran — v10.3.0
+
+> Quran Teaching Engine: flexible repetition/tutoring timing, Minshawy & Muaiqly, ayah selection, and per-surah Offline audio. Existing student data remains on Schema 12.
+
 > **الإصدار الحالي: v10.2.0** — Architecture Refactor (Stage 1): namespace/runtime واضح، بيانات v10 منفصلة، وOverrides صريحة بدل الاعتماد على ترتيب تعريف الدوال. Schema 12 دون تغيير بيانات المستخدم.
 
 # أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا

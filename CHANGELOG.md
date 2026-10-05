@@ -1,3 +1,12 @@
+# Changelog
+
+## v10.3.0 — Quran Teaching Engine
+- Flexible manual ayah repetition, full-range repetition, and tutoring pause in seconds.
+- Added Minshawy and Maher Al-Muaiqly reciters plus teaching recitations.
+- Tap-to-select ayah playback.
+- Per-surah encrypted-account-independent local Offline audio packs in IndexedDB.
+- No schema or Supabase changes.
+
 ## v10.2.0 — Architecture Refactor (Stage 1)
 - إضافة `ImamApp` namespace وLegacy override registry صريح.
 - فصل V10 static data إلى `js/features/v10-data.js`.

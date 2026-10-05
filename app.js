@@ -56,7 +56,7 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.2.0';
+const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.3.0';
 const SCHEMA_VERSION=12;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
@@ -2292,6 +2292,7 @@ window.addEventListener('load',async ()=>{
   // 9. v8 feature layer
   if(typeof initV8Layer==='function') await initV8Layer();
   if(typeof initV9Layer==='function') await initV9Layer();
+  if(typeof initQuranEngine==='function') await initQuranEngine();
   if(globalThis.WeLiveQuranAuth?.afterAppInit) await globalThis.WeLiveQuranAuth.afterAppInit();
   showAccountMigrationNotice();
 });

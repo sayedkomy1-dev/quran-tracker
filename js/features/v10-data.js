@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran — source-backed static feature data, v10.2.0 */
+/* We Live Quran — source-backed static feature data, v10.3.0 */
 (function registerV10Data(g){
   const root=g.ImamApp||(g.ImamApp={});
   root.V10Data=Object.freeze({

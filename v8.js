@@ -63,7 +63,7 @@ function migrateV8Data(){
   settings.weeklyGoals={
     newAyat:v8Clamp(wg.newAyat??40,0,5000),reviews:v8Clamp(wg.reviews??6,0,500),sessions:v8Clamp(wg.sessions??8,0,500),attendance:v8Clamp(wg.attendance??8,0,500)
   };
-  settings.quranReciter=['Husary_128kbps','Alafasy_128kbps'].includes(settings.quranReciter)?settings.quranReciter:'Husary_128kbps';
+  settings.quranReciter=['Husary_128kbps','Husary_Muallim_128kbps','Alafasy_128kbps','Minshawy_Murattal_128kbps','Minshawy_Teacher_128kbps','MaherAlMuaiqly128kbps'].includes(settings.quranReciter)?settings.quranReciter:'Husary_128kbps';
   settings.security={lockEnabled:false,pinHash:'',credentialId:'',...(settings.security||{})};
   const previousSync=settings.sync&&typeof settings.sync==='object'?settings.sync:{};
   settings.sync={mode:'account',passphrase:'',auto:false,lastPush:'',lastPull:'',deviceId:'',serverRevision:0,safeSyncVersion:2,lastLocalSaveAt:'',...previousSync};

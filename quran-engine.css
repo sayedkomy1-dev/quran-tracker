@@ -1,0 +1,14 @@
+/* We Live Quran — Quran teaching engine v10.3.0 */
+.quran-engine-controls{grid-template-columns:repeat(5,minmax(0,1fr))!important;align-items:end}
+.quran-engine-controls input[type="number"],.quran-engine-controls select{min-height:44px}
+.quran-selected-box{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px dashed var(--v9-border,#dbe2de);border-radius:13px;padding:9px 11px;background:var(--v9-surface-2,#f1f4f2)}
+.quran-selected-box b{font-size:11px;color:var(--v9-muted,#68746d)}
+.quran-engine-toolbar{display:grid!important;grid-template-columns:minmax(220px,1fr) auto auto;gap:8px;align-items:end}
+.quran-offline-tools{margin-top:9px;border:1px solid var(--v9-border,#dbe2de);border-radius:14px;padding:11px;background:var(--v9-surface,#fff)}
+.quran-offline-tools>div:first-child{display:flex;justify-content:space-between;gap:10px;align-items:center}.quran-offline-tools b{font-size:12px}.quran-offline-tools span{font-size:10px;color:var(--v9-muted,#68746d)}
+.quran-offline-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.quran-download-progress{height:6px;background:var(--v9-surface-2,#f1f4f2);border-radius:999px;overflow:hidden;margin-top:9px}.quran-download-progress i{display:block;width:0;height:100%;background:var(--v9-primary,#0b5d3b);transition:width .18s ease}
+#quranVerseContent .quran-ayah{cursor:pointer;border-radius:9px;padding:2px 3px;transition:background .15s ease,box-shadow .15s ease}
+#quranVerseContent .quran-ayah.selected{background:color-mix(in srgb,var(--v9-primary,#0b5d3b) 10%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--v9-primary,#0b5d3b) 28%,transparent)}
+#quranVerseContent .quran-ayah.playing{background:color-mix(in srgb,var(--v9-gold,#c7a23b) 18%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--v9-gold,#c7a23b) 38%,transparent)}
+@media(max-width:850px){.quran-engine-controls{grid-template-columns:1fr 1fr!important}.quran-selected-box{grid-column:1/-1}.quran-engine-toolbar{grid-template-columns:1fr 1fr}.quran-engine-toolbar .fld{grid-column:1/-1}.quran-offline-actions{display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.quran-engine-controls{grid-template-columns:1fr!important}.quran-selected-box{display:grid}.quran-selected-box .btn{width:100%}.quran-engine-toolbar{grid-template-columns:1fr}.quran-engine-toolbar .btn{width:100%}.quran-offline-tools>div:first-child{display:block}.quran-offline-tools span{display:block;margin-top:4px}.quran-offline-actions{grid-template-columns:1fr}}

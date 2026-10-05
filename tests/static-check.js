@@ -10,6 +10,7 @@ const app=read('app.js');
 const v8=read('v8.js');
 const v9=read('v9.js');
 const v10=read('v10.js');
+const quranEngine=read('js/features/quran-engine.js');
 const runtime=read('js/core/runtime.js');
 const v10Data=read('js/features/v10-data.js');
 const auth=read('auth.js');
@@ -17,6 +18,7 @@ const syncCore=read('sync-core.js');
 const authCss=read('auth.css');
 const css9=read('v9.css');
 const css10=read('v10.css');
+const quranCss=read('quran-engine.css');
 const sw=read('sw.js');
 const manifest=JSON.parse(read('manifest.json'));
 const pkg=JSON.parse(read('package.json'));
@@ -27,24 +29,25 @@ new vm.Script(app,{filename:'app.js'});
 new vm.Script(v8,{filename:'v8.js'});
 new vm.Script(v9,{filename:'v9.js'});
 new vm.Script(v10,{filename:'v10.js'});
+new vm.Script(quranEngine,{filename:'js/features/quran-engine.js'});
 new vm.Script(runtime,{filename:'js/core/runtime.js'});
 new vm.Script(v10Data,{filename:'js/features/v10-data.js'});
 new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='10.2.0','VERSION must be 10.2.0');
+assert(version==='10.3.0','VERSION must be 10.3.0');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
-assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.2.0'"),'app.js APP_VERSION must come from ImamApp runtime');
+assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.3.0'"),'app.js APP_VERSION must come from ImamApp runtime');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./js/core/runtime.js'")&&sw.includes("'./js/features/v10-data.js'")&&sw.includes("'./auth.js'")&&sw.includes("'./sync-core.js'")&&sw.includes("'./auth.css'"),'service worker must cache architecture/v9/v10/auth assets');
+assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./js/core/runtime.js'")&&sw.includes("'./js/features/v10-data.js'")&&sw.includes("'./js/features/quran-engine.js'")&&sw.includes("'./quran-engine.css'")&&sw.includes("'./auth.js'")&&sw.includes("'./sync-core.js'")&&sw.includes("'./auth.css'"),'service worker must cache architecture/v9/v10/auth assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.
-['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','styles.css','v9.css','v10.css','auth.css','sync-core.js','app.js','auth.js','v8.js','v9.js','v10.js','js/core/runtime.js','js/features/v10-data.js','privacy.html','terms.html','MUSHAF-SOURCES.md','V9-IMPLEMENTATION.md','ARCHITECTURE-10.2.md'].forEach(f=>assert(fs.existsSync(file(f)),`missing ${f}`));
+['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','styles.css','v9.css','v10.css','auth.css','sync-core.js','app.js','auth.js','v8.js','v9.js','v10.js','js/core/runtime.js','js/features/v10-data.js','js/features/quran-engine.js','quran-engine.css','privacy.html','terms.html','MUSHAF-SOURCES.md','V9-IMPLEMENTATION.md','ARCHITECTURE-10.2.md'].forEach(f=>assert(fs.existsSync(file(f)),`missing ${f}`));
 for(const m of html.matchAll(/\b(?:src|href)=["']([^"']+)["']/g)){
   const ref=m[1].split(/[?#]/)[0];
   if(!ref||/^(?:https?:|data:|mailto:|tel:|javascript:)/i.test(ref))continue;
@@ -93,7 +96,7 @@ assert(v9.includes("setAttribute('aria-current','step')"),'guided session steppe
 assert(fs.statSync(file('branding/academy-badge-source.png')).size>1000000,'branding source asset appears incomplete');
 
 // All inline handlers must resolve to an application function or browser builtin.
-const js=runtime+'\n'+v10Data+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+v10;
+const js=runtime+'\n'+v10Data+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+quranEngine+'\n'+v10;
 const defs=new Set([...js.matchAll(/\b(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]));
 for(const m of v10.matchAll(/\b([A-Za-z_$][\w$]*)\s*:\s*v10[A-Za-z_$][\w$]*/g))defs.add(m[1]);
 const builtins=new Set(['if','for','while','switch','confirm','prompt','alert','setTimeout','setInterval','clearTimeout','clearInterval','parseInt','parseFloat','Number','String','Boolean','Date','Math','JSON','encodeURIComponent','decodeURIComponent']);
@@ -160,7 +163,7 @@ assert(!/for select to anon using\s*\(true\)/i.test(syncSql),'broad anon SELECT 
 assert(!/for update to anon using\s*\(true\)/i.test(syncSql),'broad anon UPDATE policy must not return');
 assert(!/for insert to anon with check\s*\(true\)/i.test(syncSql),'broad anon INSERT policy must not return');
 assert(v8.includes('localSync=settings.sync')&&v8.includes('accountOwner:owner'),'backup/cloud restore must preserve current account ownership and device secrets');
-assert(sw.includes("quran-pwa-v10.2.0"),'service worker cache must match v10.2.0');
+assert(sw.includes("quran-pwa-v10.3.0"),'service worker cache must match v10.3.0');
 
 
 // v10.1.2 Google Auth and access-control regression guards.
@@ -245,4 +248,14 @@ assert(v10.includes("globalThis.ImamApp.Legacy.override(name,impl,'v10.2')"),'v1
 assert(!/function\s+(?:loadPrevTask|setPrevGr|buildSesData|captureDraft|applyDraft|openSurahDropdown|closeSurahDropdown|toggleSurahDropdown|selectSurahOption|filterSurahDropdown|academyFooter|buildWAMsg)\s*\(/.test(v10),'v10 must not re-declare legacy override names implicitly');
 assert(v10Data.includes('juzRanges:Object.freeze')&&v10Data.includes('themes:Object.freeze')&&v10Data.includes('hadith:Object.freeze')&&v10Data.includes('dua:Object.freeze'),'v10 static data separation incomplete');
 
-console.log('Static checks passed for We Live Quran v10.2.0');
+// v10.3 Quran teaching engine regression guards.
+assert(html.indexOf('v9.js')<html.indexOf('js/features/quran-engine.js')&&html.indexOf('js/features/quran-engine.js')<html.indexOf('v10.js'),'Quran engine load order invalid');
+assert(app.includes("if(typeof initQuranEngine==='function') await initQuranEngine()"),'Quran engine init hook missing');
+['Minshawy_Murattal_128kbps','Minshawy_Teacher_128kbps','MaherAlMuaiqly128kbps','Husary_128kbps','Alafasy_128kbps'].forEach(id=>assert(quranEngine.includes(id),`missing Quran reciter ${id}`));
+['quranAyahRepeat','quranRangeRepeat','quranTutorPause','quranPlayMode','quranDownloadSurahBtn'].forEach(id=>assert(quranEngine.includes(id),`missing Quran engine control ${id}`));
+assert(quranEngine.includes('mediaPut')&&quranEngine.includes('mediaGet')&&quranEngine.includes('mediaDelete'),'offline surah audio must use IndexedDB media store');
+assert(quranEngine.includes('rangeLoopsLeft')&&quranEngine.includes('itemRepeatsLeft'),'flexible range/ayah repeat engine missing');
+assert(quranEngine.includes('tutorPauseSec')&&quranEngine.includes('setTimeout'),'manual tutoring pause missing');
+assert(quranCss.includes('.quran-ayah.selected')&&quranCss.includes('.quran-offline-tools'),'Quran engine UI styles missing');
+
+console.log('Static checks passed for We Live Quran v10.3.0');
