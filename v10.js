@@ -94,7 +94,33 @@ function injectFacebookSetting(){const pg=document.getElementById('pg-settings')
 function renderV10ThemeSettings(){const host=document.getElementById('v10ThemeSettings');if(!host)return;host.innerHTML=`<div class="ch">🎨 نمط الألوان</div><div class="v10-theme-grid">${Object.entries(V10_THEMES).map(([k,t])=>`<button class="v10-theme-choice ${settings.themePalette===k?'on':''}" onclick="setV10Theme('${k}')"><div class="v10-theme-swatch" style="background:${t.p}"></div><b>${k} — ${t.name}</b></button>`).join('')}</div>`;}
 function injectThemeSettings(){const pg=document.getElementById('pg-settings');if(!pg||document.getElementById('v10ThemeSettings'))return;const el=document.createElement('div');el.className='card';el.id='v10ThemeSettings';pg.insertBefore(el,pg.children[1]||null);renderV10ThemeSettings();}
 function v10AcademyFooter(){let x=`${settings.circle||ACADEMY_NAME}\n${ACADEMY_TAGLINE}`;if(settings.facebookUrl)x+=`\n\nتابعونا على فيسبوك:\n${settings.facebookUrl}`;return x;}
-function v10BuildWAMsg(st,ses){const date=new Date(ses?.date||Date.now()).toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const pg=ses?.prevGrades||{};let msg=`السلام عليكم ورحمة الله وبركاته\n\nتقرير حصة الطالب: *${st.name}*\n📅 ${date}`;const assessed=[['new','الحفظ'],['rec','المراجعة القريبة'],['far','المراجعة البعيدة']].filter(([k])=>pg[k]);if(assessed.length){msg+='\n\n🎧 *نتيجة التسميع*';for(const [k,l] of assessed)msg+=`\n${l}: ${pg[k]}${ses.actualRecitation?.[k]?' — '+fmtSection(ses.actualRecitation[k]):''}`;}msg+='\n\n*التكليف القادم*';if(ses?.new)msg+=`\nالحفظ: ${fmtSection(ses.new)}`;if(ses?.rec)msg+=`\nالمراجعة القريبة: ${fmtSection(ses.rec)}`;if(ses?.far)msg+=`\nالمراجعة البعيدة: ${fmtSection(ses.far)}`;const rev=(ses?.reviewAssignments||[]).flatMap(a=>a.items||[]).map(i=>i.surahName);if(rev.length)msg+=`\nالمراجعة: ${[...new Set(rev)].join('، ')}`;if(!ses?.new&&!ses?.rec&&!ses?.far&&!rev.length)msg+='\nلا يوجد تكليف مسجل';if(ses?.notes)msg+=`\n\nملاحظة المحفظ:\n${ses.notes}`;msg+=`\n\n──────────\n\n${v10AcademyFooter()}`;return msg;}
+function v10WaGrade(g){const x=String(g||'').trim();if(x==='ممتاز')return 'ممتاز ⭐⭐⭐';if(x==='جيد جداً'||x==='جيد جدًا')return 'جيد جدًا ⭐⭐';if(x==='جيد')return 'جيد ⭐';if(x==='ضعيف')return 'يحتاج متابعة 😕';return x||'—';}
+function v10WaSection(sec){if(!sec)return '';return sec.full?`سورة ${sec.surah} كاملة`:`سورة ${sec.surah} — الآيات ${sec.from}–${sec.to}`;}
+function v10BuildWAMsg(st,ses){
+  const date=new Date(ses?.date||Date.now()).toLocaleDateString('ar-EG',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),pg=ses?.prevGrades||{};
+  let msg=`السلام عليكم ورحمة الله وبركاته\n\n*تقرير حصة: ${st.name}*\n*التاريخ:* ${date}`;
+  const assessed=[['new','الحفظ'],['rec','المراجعة القريبة'],['far','المراجعة البعيدة']].filter(([k])=>pg[k]);
+  if(assessed.length){
+    msg+='\n\n🎧 *نتيجة التسميع*';
+    for(const [k,label] of assessed){const range=ses?.actualRecitation?.[k]||ses?.[k];msg+=`\n\n*${label}:* ${v10WaGrade(pg[k])}`;if(range)msg+=`\n${v10WaSection(range)}`;}
+    if(pg.juz)msg+=`\n\n*مراجعة الأجزاء:* ${v10WaGrade(pg.juz)}`;
+    if(pg.surahReview)msg+=`\n\n*مراجعة السور:* ${v10WaGrade(pg.surahReview)}`;
+  }
+  msg+='\n\n📖 *التكليف للحصة القادمة*';
+  let hasNext=false;
+  if(ses?.new){hasNext=true;msg+=`\n*الحفظ:* ${v10WaSection(ses.new)}`;}
+  if(ses?.rec){hasNext=true;msg+=`\n*المراجعة القريبة:* ${v10WaSection(ses.rec)}`;}
+  if(ses?.far){hasNext=true;msg+=`\n*المراجعة البعيدة:* ${v10WaSection(ses.far)}`;}
+  if(ses?.juz?.chips?.length){hasNext=true;msg+=`\n*مراجعة الأجزاء:* ${ses.juz.chips.join('، ')}`;}
+  if(ses?.surahReview?.chips?.length){hasNext=true;msg+=`\n*مراجعة السور:* ${ses.surahReview.chips.join('، ')}`;}
+  const rev=(ses?.reviewAssignments||[]).flatMap(a=>a.items||[]).map(i=>i.surahName).filter(Boolean);
+  if(rev.length){hasNext=true;msg+=`\n*مراجعة إضافية:* ${[...new Set(rev)].join('، ')}`;}
+  if(!hasNext)msg+='\nلا يوجد تكليف مسجل';
+  if(ses?.notes?.trim())msg+=`\n\n📝 *ملاحظات المحفظ*\n${ses.notes.trim()}`;
+  msg+='\n\nبارك الله في هذا الجهد، ونسأل الله مزيدًا من التوفيق والثبات 🌿';
+  msg+=`\n\n──────────\n${v10AcademyFooter()}`;
+  return msg;
+}
 function injectLibraries(){const more=document.getElementById('pg-more')||document.getElementById('pg-settings');if(!more||document.getElementById('v10Libraries'))return;const card=document.createElement('div');card.className='card';card.id='v10Libraries';card.innerHTML=`<div class="ch">📚 المحتوى التربوي</div><div class="settings-actions"><button class="btn btn-out btn-sm" onclick="openV10Library('hadith')">الحديث النبوي</button><button class="btn btn-out btn-sm" onclick="openV10Library('dua')">الأدعية والأذكار</button></div>`;more.prepend(card);if(!document.getElementById('v10LibraryModal'))document.body.insertAdjacentHTML('beforeend',`<div class="mo" id="v10LibraryModal"><div class="mo-box"><div class="mo-title"><span id="v10LibraryTitle">المكتبة</span><button class="mo-x" onclick="document.getElementById('v10LibraryModal').classList.remove('open')">✕</button></div><div class="v10-source-warning">المحتوى الظاهر هنا لا يُنشأ بالذكاء الاصطناعي. لا يُقبل أي عنصر دون مصدر ومرجع. النسخة الحالية تحتوي مجموعة بداية موثقة، وبنية المكتبة جاهزة لاستيراد المجموعة الكاملة بعد مراجعة المصدر.</div><div id="v10LibraryBody"></div></div></div>`);}
 function openV10Library(type){V10.library.type=type;document.getElementById('v10LibraryTitle').textContent=type==='hadith'?'الحديث النبوي':'الأدعية والأذكار';renderV10Library();document.getElementById('v10LibraryModal').classList.add('open');}
 function renderV10Library(){const type=V10.library.type||'hadith',data=type==='hadith'?V10_HADITH:V10_DUA,cats=['الكل',...new Set(data.map(x=>x.category))],f=type==='hadith'?V10.library.hadithFilter:V10.library.duaFilter,rows=data.filter(x=>f==='الكل'||x.category===f),body=document.getElementById('v10LibraryBody');body.innerHTML=`<div class="v10-library-tabs">${cats.map(c=>`<button class="${f===c?'on':''}" onclick="setV10LibraryFilter('${v10Esc(c)}')">${v10Esc(c)}</button>`).join('')}</div>${rows.map(x=>`<article class="v10-library-card"><div class="v10-arabic-text">«${v10Esc(x.text)}»</div><div class="v10-meta">${type==='hadith'?`الراوي: ${v10Esc(x.narrator)}<br>المصدر: ${v10Esc(x.source)}<br>رقم الحديث: ${v10Esc(x.hadithNumber)}<br>الدرجة: ${v10Esc(x.grade)}`:`المناسبة: ${v10Esc(x.occasion)}<br>المصدر: ${v10Esc(x.source)}<br>التكرار: ${x.repeatCount||1}` }<br>المرجع: ${v10Esc(x.reference)}</div><div class="v10-library-actions"><button class="btn btn-g btn-sm" onclick="assignV10Content('${type}','${v10Esc(x.id)}')">إضافة لطالب</button><button class="btn btn-out btn-sm" onclick="copyTextSafe('${v10Esc(x.text).replace(/'/g,"\\'")}').then(()=>toast('تم النسخ','success'))">نسخ</button></div></article>`).join('')||'<div class="v10-empty">لا توجد عناصر في هذا التصنيف.</div>'}`;}

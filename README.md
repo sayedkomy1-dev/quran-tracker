@@ -1,4 +1,9 @@
-# We Live Quran v10.4.2
+# We Live Quran v10.5.0
+
+## v10.5.0 — Guardian Report Upgrade
+- تقارير WhatsApp محسنة مع النجوم التحفيزية وملاحظات المحفظ.
+- لا تغيير في Schema أو بيانات الطلاب.
+
 
 > Hotfix: يجبر Android على استخدام قارئ صفحات المصحف SVG الجديد بدل مسار PDF القديم، مع Cache-busting لأصول التطبيق.
 

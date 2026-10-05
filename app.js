@@ -56,7 +56,7 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.4.2';
+const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.5.0';
 const SCHEMA_VERSION=12;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
@@ -1849,7 +1849,7 @@ function buildWAMsg(s,ses){
   if(settings.circle) msg+=`\n${settings.circle}`;
   return msg;
 }
-function grIcon(g){ return g==='ممتاز'?'⭐⭐⭐':g==='جيد جداً'?'⭐⭐':g==='جيد'?'⭐':'⚠️'; }
+function grIcon(g){ return g==='ممتاز'?'⭐⭐⭐':g==='جيد جداً'?'⭐⭐':g==='جيد'?'⭐':'😕'; }
 
 // ══════════════════════════════════════
 // CUMULATIVE TRACKING
