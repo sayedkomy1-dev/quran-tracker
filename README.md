@@ -1,4 +1,4 @@
-# We Live Quran — v10.3.1
+# We Live Quran — v10.4.0
 
 > Quran Teaching Engine: flexible repetition/tutoring timing, Minshawy & Muaiqly, ayah selection, and per-surah Offline audio. Existing student data remains on Schema 12.
 

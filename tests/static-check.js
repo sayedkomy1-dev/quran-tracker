@@ -11,6 +11,7 @@ const v8=read('v8.js');
 const v9=read('v9.js');
 const v10=read('v10.js');
 const quranEngine=read('js/features/quran-engine.js');
+const mushafOffline=read('js/features/mushaf-offline.js');
 const runtime=read('js/core/runtime.js');
 const v10Data=read('js/features/v10-data.js');
 const auth=read('auth.js');
@@ -30,24 +31,25 @@ new vm.Script(v8,{filename:'v8.js'});
 new vm.Script(v9,{filename:'v9.js'});
 new vm.Script(v10,{filename:'v10.js'});
 new vm.Script(quranEngine,{filename:'js/features/quran-engine.js'});
+new vm.Script(mushafOffline,{filename:'js/features/mushaf-offline.js'});
 new vm.Script(runtime,{filename:'js/core/runtime.js'});
 new vm.Script(v10Data,{filename:'js/features/v10-data.js'});
 new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='10.3.1','VERSION must be 10.3.1');
+assert(version==='10.4.0','VERSION must be 10.4.0');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
-assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.3.1'"),'app.js APP_VERSION must come from ImamApp runtime');
+assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.4.0'"),'app.js APP_VERSION must come from ImamApp runtime');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./js/core/runtime.js'")&&sw.includes("'./js/features/v10-data.js'")&&sw.includes("'./js/features/quran-engine.js'")&&sw.includes("'./quran-engine.css'")&&sw.includes("'./auth.js'")&&sw.includes("'./sync-core.js'")&&sw.includes("'./auth.css'"),'service worker must cache architecture/v9/v10/auth assets');
+assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./js/core/runtime.js'")&&sw.includes("'./js/features/v10-data.js'")&&sw.includes("'./js/features/quran-engine.js'")&&sw.includes("'./js/features/mushaf-offline.js'")&&sw.includes("'./quran-engine.css'")&&sw.includes("'./auth.js'")&&sw.includes("'./sync-core.js'")&&sw.includes("'./auth.css'"),'service worker must cache architecture/v9/v10/auth assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.
-['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','styles.css','v9.css','v10.css','auth.css','sync-core.js','app.js','auth.js','v8.js','v9.js','v10.js','js/core/runtime.js','js/features/v10-data.js','js/features/quran-engine.js','quran-engine.css','privacy.html','terms.html','MUSHAF-SOURCES.md','V9-IMPLEMENTATION.md','ARCHITECTURE-10.2.md'].forEach(f=>assert(fs.existsSync(file(f)),`missing ${f}`));
+['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','styles.css','v9.css','v10.css','auth.css','sync-core.js','app.js','auth.js','v8.js','v9.js','v10.js','js/core/runtime.js','js/features/v10-data.js','js/features/quran-engine.js','js/features/mushaf-offline.js','quran-engine.css','privacy.html','terms.html','MUSHAF-SOURCES.md','V9-IMPLEMENTATION.md','ARCHITECTURE-10.2.md'].forEach(f=>assert(fs.existsSync(file(f)),`missing ${f}`));
 for(const m of html.matchAll(/\b(?:src|href)=["']([^"']+)["']/g)){
   const ref=m[1].split(/[?#]/)[0];
   if(!ref||/^(?:https?:|data:|mailto:|tel:|javascript:)/i.test(ref))continue;
@@ -96,7 +98,7 @@ assert(v9.includes("setAttribute('aria-current','step')"),'guided session steppe
 assert(fs.statSync(file('branding/academy-badge-source.png')).size>1000000,'branding source asset appears incomplete');
 
 // All inline handlers must resolve to an application function or browser builtin.
-const js=runtime+'\n'+v10Data+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+quranEngine+'\n'+v10;
+const js=runtime+'\n'+v10Data+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+mushafOffline+'\n'+quranEngine+'\n'+v10;
 const defs=new Set([...js.matchAll(/\b(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]));
 for(const m of v10.matchAll(/\b([A-Za-z_$][\w$]*)\s*:\s*v10[A-Za-z_$][\w$]*/g))defs.add(m[1]);
 const builtins=new Set(['if','for','while','switch','confirm','prompt','alert','setTimeout','setInterval','clearTimeout','clearInterval','parseInt','parseFloat','Number','String','Boolean','Date','Math','JSON','encodeURIComponent','decodeURIComponent']);
@@ -163,7 +165,7 @@ assert(!/for select to anon using\s*\(true\)/i.test(syncSql),'broad anon SELECT 
 assert(!/for update to anon using\s*\(true\)/i.test(syncSql),'broad anon UPDATE policy must not return');
 assert(!/for insert to anon with check\s*\(true\)/i.test(syncSql),'broad anon INSERT policy must not return');
 assert(v8.includes('localSync=settings.sync')&&v8.includes('accountOwner:owner'),'backup/cloud restore must preserve current account ownership and device secrets');
-assert(sw.includes("quran-pwa-v10.3.1"),'service worker cache must match v10.3.1');
+assert(sw.includes("quran-pwa-v10.4.0"),'service worker cache must match v10.4.0');
 
 
 // v10.1.2 Google Auth and access-control regression guards.
@@ -262,4 +264,15 @@ assert(quranCss.includes('.quran-play-actions')&&quranCss.includes('.quran-actio
 assert(quranEngine.includes('requestIdleCallback')&&quranEngine.includes('g.__IMAM_BASE__?.save?.()'),'Quran preferences must save in the background without the heavy auto-sync save path');
 assert(!quranEngine.includes("content.addEventListener('dblclick'"),'double-click Quran selection should not be used on touch devices');
 
-console.log('Static checks passed for We Live Quran v10.3.1');
+console.log('Static checks passed for We Live Quran v10.4.0');
+
+
+// v10.4 lightweight Mushaf offline page-pack regression guards.
+assert(html.indexOf('v9.js')<html.indexOf('js/features/mushaf-offline.js'),'Mushaf offline layer must load after v9');
+assert(sw.includes("'./js/features/mushaf-offline.js'"),'service worker must cache Mushaf offline feature');
+assert(mushafOffline.includes('quran-hafs-page-${page}.pdf'),'page-level Madani Mushaf source URL missing');
+assert(mushafOffline.includes("PAGE_COUNT=604")&&mushafOffline.includes("PAGE_PREFIX='mushaf:lite:page:'"),'604-page offline pack keys missing');
+assert(mushafOffline.includes('downloadRange(1,PAGE_COUNT)'),'full lightweight Mushaf download action missing');
+assert(mushafOffline.includes('downloadCurrentRangePages'),'memorization-range page download missing');
+assert(mushafOffline.includes("Legacy.override('renderV9Mushaf'")&&mushafOffline.includes("Legacy.override('openCurrentMushafPage'"),'Mushaf integration must use explicit compatibility overrides');
+assert(mushafOffline.includes('مرآة مستقلة')&&mushafOffline.includes('لم نعتمد ادعاء'),'source-trust disclosure missing');

@@ -1,6 +1,15 @@
+# v10.4.0 — Lightweight Mushaf Offline
+
+- Added optional page-by-page Madani Mushaf offline cache (604 vector PDF pages).
+- Added single-page, memorization-range and full-pack downloads with stop/resume-by-skip behavior.
+- Added lightweight page reader and actual local size/page count.
+- Kept existing full-PDF import path unchanged.
+- Added explicit source-trust disclosure: quran.ws is an independent mirror; KFGQPC remains the official reference.
+- No database schema change (Schema 12).
+
 # Changelog
 
-## v10.3.1 — Quran UX & Performance Hotfix
+## v10.4.0 — Quran UX & Performance Hotfix
 - القرآن أصبح أولوية بصريًا داخل نافذة التلقين مع مساحة ثابتة ومقروءة للنص على الهاتف.
 - إعادة تصميم أزرار التشغيل والإيقاف والتنزيل إلى أزرار مدمجة ومتناسقة.
 - ضغط إعدادات التكرار والتلقين إلى شبكة ثنائية على الهاتف بدل التكديس الرأسي الطويل.
