@@ -1,4 +1,4 @@
-/* We Live Quran — Authentication & Access Control v10.1.3
+/* We Live Quran — Authentication & Access Control v10.1.4
  * Google OAuth via Supabase, server-enforced app access, trusted-device offline fallback.
  */
 'use strict';
@@ -166,7 +166,7 @@
       console.error('[auth] startup check failed',err);
       if(await useTrustedFallback(err?.message||String(err)))return true;
       const missing=/relation .*app_users|ACCESS_PROFILE_MISSING|schema cache|42P01/i.test(String(err?.message||err));
-      setGate({state:missing?'إعداد قاعدة بيانات الدخول غير مكتمل':'تعذر التحقق من الحساب',note:missing?'يلزم تشغيل ملف إعداد Supabase الخاص بالإصدار 10.1.3 أولًا.':'تحقق من الإنترنت ثم أعد المحاولة.',retry:true,signout:true,kind:'error'});
+      setGate({state:missing?'إعداد قاعدة بيانات الدخول غير مكتمل':'تعذر التحقق من الحساب',note:missing?'يلزم تشغيل ملف إعداد Supabase الخاص بالإصدار 10.1.4 أولًا.':'تحقق من الإنترنت ثم أعد المحاولة.',retry:true,signout:true,kind:'error'});
       return false;
     }
   }

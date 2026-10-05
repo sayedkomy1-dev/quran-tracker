@@ -206,6 +206,7 @@ async function deleteSt(){
   const voiceIds=[...new Set(sessions.filter(s=>s.studentId===id&&s.voiceNoteId).map(s=>s.voiceNoteId))];
   if(typeof mediaDelete==='function')await Promise.allSettled(voiceIds.map(x=>mediaDelete(x)));
   if(V8.voiceNoteId&&voiceIds.includes(V8.voiceNoteId)){V8.voiceNoteId='';V8.pendingVoiceBlob=null;}
+  markStudentCascadeDeletion(id);
   students=students.filter(s=>s.id!==id);sessions=sessions.filter(s=>s.studentId!==id);tasks=tasks.filter(t=>t.studentId!==id);
   curStId='';save();renderHome();renderSt();v9Toast('تم حذف الطالب وبياناته المحلية','success');goPage('students');
 }

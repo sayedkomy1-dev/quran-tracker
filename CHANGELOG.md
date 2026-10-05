@@ -1,3 +1,15 @@
+# v10.1.4 — Safe Multi-Device Sync
+
+- إضافة `sync-core.js` كطبقة pure logic لدمج السجلات وTombstones بصورة deterministic.
+- تسجيل حذف الطلاب/الحصص/المهام التابعة وحذف المهام كـTombstones بدل اختفاء الحذف من تاريخ المزامنة.
+- إضافة `deviceId`, `updatedByDevice`, `syncProtocol: 2` و`sourceDeviceId`.
+- تحويل المزامنة إلى Pull/Merge قبل كل Push.
+- إضافة `revision` إلى `account_sync` وRPCs جديدة `account_sync_pull_v2` / `account_sync_push_v2`.
+- Compare-And-Swap + Retry يمنع Lost Update بين جهازين.
+- تعطيل RPCs القديمة Last-Write-Wins للمستخدمين authenticated.
+- Auto Sync يُطفأ مرة واحدة عند ترقية بروتوكول المزامنة ثم يمكن تفعيله بعد اختبار جهازين.
+- Schema يبقى 12.
+
 # v10.1.3 — Account Ownership & Cloud Backup
 
 - عزل البيانات المحلية حسب حساب Google (`auth.uid`).

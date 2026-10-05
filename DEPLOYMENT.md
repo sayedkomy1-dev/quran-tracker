@@ -1,4 +1,4 @@
-# نشر We Live Quran v10.1.3
+# نشر We Live Quran v10.1.4
 
 ## قبل النشر
 
@@ -19,7 +19,7 @@
 sql/supabase-setup.sql
 ```
 
-الملف ينشئ `app_users` وRLS/trigger، ويجعل `info.welivequran@gmail.com` Owner نشطًا، ويؤمّن المزامنة للمستخدم authenticated. إذا كان إعداد v10.1.2 منفذًا بالفعل، يكفي تشغيل `sql/account-sync.sql` فقط لإضافة مساحة النسخة السحابية المملوكة للحساب.
+الملف ينشئ `app_users` وRLS/trigger، ويجعل `info.welivequran@gmail.com` Owner نشطًا، ويؤمّن المزامنة للمستخدم authenticated. إذا كان إعداد v10.1.3 منفذًا بالفعل، شغّل `sql/account-sync.sql` من v10.1.4 لترقية المزامنة إلى Revision/CAS وتعطيل RPCs القديمة غير الآمنة.
 
 **لا تستخدم `service_role` أو `sb_secret_...` داخل الموقع.** الواجهة تستخدم فقط الـPublishable key.
 
@@ -27,7 +27,7 @@ sql/supabase-setup.sql
 
 ارفع المشروع كاملًا إلى GitHub Pages/المصدر المتصل بالدومين `welivequran.online`، بما في ذلك:
 
-- `auth.js`, `auth.css`
+- `auth.js`, `auth.css`, `sync-core.js`
 - `privacy.html`, `terms.html`
 - `sql/`
 - بقية ملفات PWA
@@ -37,6 +37,7 @@ sql/supabase-setup.sql
 ```bash
 npm test
 node --check auth.js
+node --check sync-core.js
 node --check app.js
 node --check v8.js
 node --check v9.js
@@ -58,6 +59,17 @@ node --check sw.js
 
 ## PWA
 
-Cache namespace: `quran-pwa-v10.1.3`.
+Cache namespace: `quran-pwa-v10.1.4`.
 
 `privacy.html` و`terms.html` ضمن App Shell حتى تظل الصفحات متاحة بعد التثبيت.
+
+
+## اختبار المزامنة متعددة الأجهزة قبل تفعيل Auto Sync
+
+1. على الجهاز A: عدّل اسم طالب ثم اضغط «رفع نسخة مشفرة».
+2. على الجهاز B: «تنزيل ودمج» وتأكد أن التعديل وصل.
+3. على الجهاز A: احذف طالبًا تجريبيًا/مؤقتًا ثم ارفع.
+4. على الجهاز B: نزّل وادمج وتأكد أن الطالب لم يعد.
+5. على الجهاز B: أضف طالبًا تجريبيًا جديدًا ثم ارفع.
+6. على الجهاز A: نزّل وادمج وتأكد أن الإضافة وصلت وأن الطالب المحذوف لم يرجع.
+7. فقط بعد نجاح الخطوات السابقة فعّل «مزامنة تلقائية بعد التغييرات».

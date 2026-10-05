@@ -65,8 +65,14 @@ function migrateV8Data(){
   };
   settings.quranReciter=['Husary_128kbps','Alafasy_128kbps'].includes(settings.quranReciter)?settings.quranReciter:'Husary_128kbps';
   settings.security={lockEnabled:false,pinHash:'',credentialId:'',...(settings.security||{})};
-  settings.sync={mode:'account',passphrase:'',auto:false,lastPush:'',lastPull:'',...(settings.sync||{})};
+  const previousSync=settings.sync&&typeof settings.sync==='object'?settings.sync:{};
+  settings.sync={mode:'account',passphrase:'',auto:false,lastPush:'',lastPull:'',deviceId:'',serverRevision:0,safeSyncVersion:2,lastLocalSaveAt:'',...previousSync};
   if(settings.sync.mode!=='account'||settings.sync.id||settings.sync.authSecret){settings.sync.mode='account';settings.sync.id='';settings.sync.authSecret='';changed=true;}
+  if(!settings.sync.deviceId){settings.sync.deviceId=makeId('device');changed=true;}
+  if(Number(previousSync.safeSyncVersion)!==2){settings.sync.safeSyncVersion=2;settings.sync.serverRevision=0;settings.sync.auto=false;changed=true;}
+  const syncCore=globalThis.WLQSyncCore;
+  if(syncCore?.normalizeTombstones){const normalized=syncCore.normalizeTombstones(settings.syncTombstones);if(JSON.stringify(normalized)!==JSON.stringify(settings.syncTombstones||{}))changed=true;settings.syncTombstones=normalized;}
+  for(const list of [students,sessions,tasks])for(const item of list){if(item&&!item.updatedByDevice){item.updatedByDevice=settings.sync.deviceId;changed=true;}}
   settings.schemaVersion=SCHEMA_VERSION;
   return changed;
 }
@@ -431,7 +437,13 @@ async function renderAutoBackupStatus(list=null){const el=document.getElementByI
 async function restoreAutoBackup(){const list=await listAutoBackups();if(!list.length)return v8Toast('لا توجد نسخ تلقائية لهذا الحساب','error');const lines=list.map((x,i)=>`${i+1}) ${new Date(x.createdAt).toLocaleString('ar-EG')}`).join('\n'),pick=prompt(`اختر رقم النسخة التي تريد استعادتها:\n${lines}`);if(pick==null)return;const x=list[Number(pick)-1];if(!x)return v8Toast('اختيار غير صحيح','error');if(!confirm('سيتم استبدال بيانات الحساب الحالية بهذه النسخة. هل تستمر؟'))return;const localSync=settings.sync,localSecurity=settings.security,owner=settings.accountOwner;students=x.students||[];sessions=x.sessions||[];tasks=x.tasks||[];settings={...settings,...(x.settings||{}),sync:localSync,security:localSecurity,accountOwner:owner};migrateV8Data();if(typeof globalThis.v10Migrate==='function')globalThis.v10Migrate();__IMAM_BASE__.save();renderHome();renderV8Settings();v8Toast('تمت استعادة النسخة التلقائية للحساب','success');}
 
 // Override normal save: keep base persistence, then v8 maintenance.
-function save(){__IMAM_BASE__.save();scheduleAutoBackup();if(settings.sync?.auto&&!V8.syncing)scheduleCloudPush();}
+function stampLocalSyncChanges(){
+  const deviceId=String(settings.sync?.deviceId||'');if(!deviceId)return;
+  const since=new Date(settings.sync?.lastLocalSaveAt||0).getTime()||0;
+  for(const list of [students,sessions,tasks])for(const item of list){if(item&&itemTimestamp(item)>=since)item.updatedByDevice=deviceId;}
+  settings.sync.lastLocalSaveAt=v8Now();
+}
+function save(){if(!V8.syncing)stampLocalSyncChanges();__IMAM_BASE__.save();scheduleAutoBackup();if(settings.sync?.auto&&!V8.syncing)scheduleCloudPush();}
 
 // ──────────────────────────────────────
 // Account-owned encrypted Supabase sync
@@ -439,13 +451,13 @@ function save(){__IMAM_BASE__.save();scheduleAutoBackup();if(settings.sync?.auto
 // passphrase is required on another device; it never leaves the browser.
 // ──────────────────────────────────────
 function syncConfigValid(){const s=settings.sync||{};return !!globalThis.WeLiveQuranAuth?.isActive?.()&&String(s.passphrase||'').length>=8;}
-function renderSyncStatus(msg='',isErr=false){const el=document.getElementById('syncStatus');if(!el)return;const s=settings.sync||{};el.className=isErr?'sync-err':'txt-mut';el.textContent=msg||(s.lastPull||s.lastPush?`آخر مزامنة للحساب — رفع: ${s.lastPush?new Date(s.lastPush).toLocaleString('ar-EG'):'—'} · تنزيل: ${s.lastPull?new Date(s.lastPull).toLocaleString('ar-EG'):'—'}`:'لم تتم مزامنة بعد. ضع كلمة تشفير من 8 أحرف على الأقل، ثم ارفع نسخة مشفرة للحساب.');}
+function renderSyncStatus(msg='',isErr=false){const el=document.getElementById('syncStatus');if(!el)return;const s=settings.sync||{},dev=String(s.deviceId||'').replace(/^device-/,'').slice(0,8)||'—',rev=Number(s.serverRevision)||0;el.className=isErr?'sync-err':'txt-mut';el.textContent=msg||(s.lastPull||s.lastPush?`مزامنة آمنة · الجهاز ${dev} · إصدار السحابة ${rev} · رفع: ${s.lastPush?new Date(s.lastPush).toLocaleString('ar-EG'):'—'} · تنزيل: ${s.lastPull?new Date(s.lastPull).toLocaleString('ar-EG'):'—'}`:`مزامنة آمنة جاهزة · الجهاز ${dev}. ضع كلمة تشفير من 8 أحرف على الأقل، ثم ارفع نسخة مشفرة للحساب.`);}
 function bytesToB64(arr){let s='';const u=arr instanceof Uint8Array?arr:new Uint8Array(arr);for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode(...u.subarray(i,i+0x8000));return btoa(s);}
 function b64ToBytes(s){const b=atob(s);return Uint8Array.from(b,c=>c.charCodeAt(0));}
 async function deriveSyncKey(pass,salt){const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:200000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
 async function encryptSyncPayload(obj,pass){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await deriveSyncKey(pass,salt),plain=new TextEncoder().encode(JSON.stringify(obj)),cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,plain);return JSON.stringify({v:2,s:bytesToB64(salt),i:bytesToB64(iv),d:bytesToB64(new Uint8Array(cipher))});}
 async function decryptSyncPayload(blob,pass){const p=JSON.parse(blob),salt=b64ToBytes(p.s),iv=b64ToBytes(p.i),data=b64ToBytes(p.d),key=await deriveSyncKey(pass,salt),plain=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,data);return JSON.parse(new TextDecoder().decode(plain));}
-function cloudPayload(){const cfg=JSON.parse(JSON.stringify(settings));if(cfg.sync){cfg.sync.passphrase='';cfg.sync.id='';cfg.sync.authSecret='';cfg.sync.key='';}if(cfg.security){cfg.security.pinHash='';cfg.security.pinSalt='';cfg.security.pinKdf='';cfg.security.pinIterations=0;cfg.security.credentialId='';cfg.security.lockEnabled=false;}return{version:APP_VERSION,schemaVersion:SCHEMA_VERSION,updatedAt:v8Now(),ownerUserId:storageScopeUserId||'',students:JSON.parse(JSON.stringify(students)),sessions:JSON.parse(JSON.stringify(sessions)),tasks:JSON.parse(JSON.stringify(tasks)),settings:cfg};}
+function cloudPayload(){const cfg=JSON.parse(JSON.stringify(settings)),core=globalThis.WLQSyncCore;if(cfg.sync){cfg.sync.passphrase='';cfg.sync.id='';cfg.sync.authSecret='';cfg.sync.key='';}if(cfg.security){cfg.security.pinHash='';cfg.security.pinSalt='';cfg.security.pinKdf='';cfg.security.pinIterations=0;cfg.security.credentialId='';cfg.security.lockEnabled=false;}delete cfg.syncTombstones;return{version:APP_VERSION,schemaVersion:SCHEMA_VERSION,syncProtocol:2,updatedAt:v8Now(),ownerUserId:storageScopeUserId||'',sourceDeviceId:String(settings.sync?.deviceId||''),tombstones:core?.normalizeTombstones?core.normalizeTombstones(settings.syncTombstones):{students:{},sessions:{},tasks:{}},students:JSON.parse(JSON.stringify(students)),sessions:JSON.parse(JSON.stringify(sessions)),tasks:JSON.parse(JSON.stringify(tasks)),settings:cfg};}
 function supaHeaders(accessToken){const cfg=globalThis.WeLiveQuranAuth?.config||{};return{'Content-Type':'application/json',apikey:cfg.publishableKey||'',Authorization:`Bearer ${accessToken}`};}
 function generateSecureSyncCredentials(){v8Toast('لم يعد Sync ID أو سر وصول مطلوبًا؛ الحساب المسجل هو هوية المزامنة الآن.','info');}
 async function callAccountSyncRpc(name,body={}){
@@ -453,15 +465,62 @@ async function callAccountSyncRpc(name,body={}){
   if(!accessToken)throw new Error('AUTH_REQUIRED: سجّل الدخول واتصل بالإنترنت لاستخدام المزامنة السحابية');
   if(!cfg.supabaseUrl||!cfg.publishableKey)throw new Error('SYNC_CONFIG_MISSING');
   const res=await fetch(`${cfg.supabaseUrl}/rest/v1/rpc/${name}`,{method:'POST',headers:supaHeaders(accessToken),body:JSON.stringify(body)});
-  if(!res.ok){const msg=await res.text();throw new Error(`HTTP ${res.status}: ${msg.slice(0,300)}`);}
+  if(!res.ok){const msg=await res.text();throw new Error(`HTTP ${res.status}: ${msg.slice(0,500)}`);}
   const text=await res.text();return text?JSON.parse(text):null;
 }
-async function pushCloudSync(opts={}){if(!syncConfigValid()){if(!opts.silent)v8Toast('اكتب كلمة تشفير للنسخة السحابية من 8 أحرف على الأقل','error');return false;}if(!crypto?.subtle){v8Toast('التشفير غير مدعوم','error');return false;}V8.syncing=true;renderSyncStatus('جارٍ تشفير ورفع بيانات هذا الحساب…');try{const payload=await encryptSyncPayload(cloudPayload(),settings.sync.passphrase);await callAccountSyncRpc('account_sync_push',{p_payload:payload});settings.sync.lastPush=v8Now();__IMAM_BASE__.save();renderSyncStatus();if(!opts.silent)v8Toast('تم رفع نسخة مشفرة خاصة بهذا الحساب','success');return true;}catch(e){renderSyncStatus('فشل الرفع: '+(e.message||e),true);if(!opts.silent)v8Toast('تعذر رفع النسخة السحابية','error');return false;}finally{V8.syncing=false;}}
-function itemTimestamp(x){return new Date(x?.updatedAt||x?.createdAt||x?.date||0).getTime()||0;}
-function mergeById(local,remote){const m=new Map();[...(remote||[]),...(local||[])].forEach(x=>{if(!x?.id)return;const old=m.get(x.id);if(!old||itemTimestamp(x)>=itemTimestamp(old))m.set(x.id,x);});return [...m.values()];}
-async function pullCloudSync(opts={}){if(!syncConfigValid()){if(!opts.silent)v8Toast('اكتب نفس كلمة التشفير المستخدمة عند رفع النسخة','error');return false;}V8.syncing=true;renderSyncStatus('جارٍ تنزيل وفك تشفير بيانات هذا الحساب…');try{const rows=await callAccountSyncRpc('account_sync_pull',{}),row=Array.isArray(rows)?rows[0]:rows;if(!row?.payload){renderSyncStatus('لا توجد نسخة سحابية لهذا الحساب.');if(!opts.silent)v8Toast('لا توجد نسخة سحابية لهذا الحساب بعد','info');return false;}const remote=await decryptSyncPayload(row.payload,settings.sync.passphrase);if(remote.ownerUserId&&remote.ownerUserId!==storageScopeUserId)throw new Error('ACCOUNT_MISMATCH');const localSync=settings.sync,localSecurity=settings.security,owner=settings.accountOwner;students=mergeById(students,remote.students);sessions=mergeById(sessions,remote.sessions);tasks=mergeById(tasks,remote.tasks);settings={...settings,...(remote.settings||{}),sync:localSync,security:localSecurity,accountOwner:owner};migrateV8Data();if(typeof globalThis.v10Migrate==='function')globalThis.v10Migrate();settings.sync.lastPull=v8Now();__IMAM_BASE__.save();renderHome();if(curPage==='students')renderSt();renderV8Settings();if(!opts.silent)v8Toast('تم دمج النسخة السحابية الخاصة بالحساب بنجاح','success');return true;}catch(e){const wrong=e?.name==='OperationError'||String(e?.message||'').includes('ACCOUNT_MISMATCH');renderSyncStatus(wrong?'تعذر فك النسخة — تحقق من كلمة التشفير والحساب':'فشل التنزيل: '+(e.message||e),true);if(!opts.silent)v8Toast('تعذر تنزيل النسخة السحابية','error');return false;}finally{V8.syncing=false;}}
+function itemTimestamp(x){return globalThis.WLQSyncCore?.itemTimestamp?globalThis.WLQSyncCore.itemTimestamp(x):(new Date(x?.updatedAt||x?.createdAt||x?.date||0).getTime()||0);}
+function mergeById(local,remote,kind='students',tombstones=settings.syncTombstones){const core=globalThis.WLQSyncCore;return core?.mergeById?core.mergeById(local,remote,kind,tombstones):[...(local||[])];}
+function mergeCloudPayload(remote,revision){
+  const core=globalThis.WLQSyncCore;if(!core)throw new Error('SYNC_CORE_MISSING');
+  if(remote.ownerUserId&&remote.ownerUserId!==storageScopeUserId)throw new Error('ACCOUNT_MISMATCH');
+  const localSync=settings.sync,localSecurity=settings.security,owner=settings.accountOwner;
+  const mergedTombstones=core.mergeTombstones(settings.syncTombstones,remote.tombstones||remote.settings?.syncTombstones);
+  students=core.mergeById(students,remote.students,'students',mergedTombstones);
+  const deletedStudents=core.deletedStudentIds(students,mergedTombstones);
+  sessions=core.filterDeletedChildren(core.mergeById(sessions,remote.sessions,'sessions',mergedTombstones),deletedStudents);
+  tasks=core.filterDeletedChildren(core.mergeById(tasks,remote.tasks,'tasks',mergedTombstones),deletedStudents);
+  const remoteSettings={...(remote.settings&&typeof remote.settings==='object'?remote.settings:{})};
+  delete remoteSettings.sync;delete remoteSettings.security;delete remoteSettings.accountOwner;delete remoteSettings.syncTombstones;
+  settings={...settings,...remoteSettings,sync:localSync,security:localSecurity,accountOwner:owner,syncTombstones:mergedTombstones};
+  migrateV8Data();if(typeof globalThis.v10Migrate==='function')globalThis.v10Migrate();
+  settings.sync.serverRevision=Number(revision)||0;settings.sync.lastPull=v8Now();
+}
+async function pullRemoteIntoLocal(){
+  const rows=await callAccountSyncRpc('account_sync_pull_v2',{}),row=Array.isArray(rows)?rows[0]:rows;
+  if(!row?.payload){settings.sync.serverRevision=0;return{found:false,revision:0};}
+  const remote=await decryptSyncPayload(row.payload,settings.sync.passphrase);
+  mergeCloudPayload(remote,row.revision);
+  __IMAM_BASE__.save();
+  return{found:true,revision:Number(row.revision)||0};
+}
+function isSyncRevisionConflict(err){return /SYNC_REVISION_CONFLICT/i.test(String(err?.message||err));}
+async function pushCloudSync(opts={}){
+  if(!syncConfigValid()){if(!opts.silent)v8Toast('اكتب كلمة تشفير للنسخة السحابية من 8 أحرف على الأقل','error');return false;}
+  if(!crypto?.subtle){v8Toast('التشفير غير مدعوم','error');return false;}
+  V8.syncing=true;renderSyncStatus('جارٍ تنزيل أحدث تغييرات الحساب ثم الدمج والرفع الآمن…');
+  try{
+    for(let attempt=0;attempt<3;attempt++){
+      await pullRemoteIntoLocal();
+      const expected=Number(settings.sync.serverRevision)||0;
+      const payload=await encryptSyncPayload(cloudPayload(),settings.sync.passphrase);
+      try{
+        const result=await callAccountSyncRpc('account_sync_push_v2',{p_payload:payload,p_expected_revision:expected});
+        settings.sync.serverRevision=Number(result?.revision)||expected+1;settings.sync.lastPush=v8Now();__IMAM_BASE__.save();renderSyncStatus();
+        renderHome();if(curPage==='students')renderSt();renderV8Settings();
+        if(!opts.silent)v8Toast('تمت مزامنة الحساب ورفع النسخة المشفرة بأمان','success');return true;
+      }catch(e){if(isSyncRevisionConflict(e)&&attempt<2)continue;throw e;}
+    }
+    throw new Error('SYNC_RETRY_EXHAUSTED');
+  }catch(e){const wrong=e?.name==='OperationError'||String(e?.message||'').includes('ACCOUNT_MISMATCH');renderSyncStatus(wrong?'تعذر فك النسخة — تحقق من كلمة التشفير والحساب':'فشل الرفع الآمن: '+(e.message||e),true);if(!opts.silent)v8Toast('تعذر مزامنة النسخة السحابية','error');return false;}finally{V8.syncing=false;}
+}
+async function pullCloudSync(opts={}){
+  if(!syncConfigValid()){if(!opts.silent)v8Toast('اكتب نفس كلمة التشفير المستخدمة عند رفع النسخة','error');return false;}
+  V8.syncing=true;renderSyncStatus('جارٍ تنزيل وفك تشفير ودمج أحدث نسخة للحساب…');
+  try{const result=await pullRemoteIntoLocal();if(!result.found){renderSyncStatus('لا توجد نسخة سحابية لهذا الحساب.');if(!opts.silent)v8Toast('لا توجد نسخة سحابية لهذا الحساب بعد','info');return false;}renderHome();if(curPage==='students')renderSt();renderV8Settings();renderSyncStatus();if(!opts.silent)v8Toast('تم تنزيل ودمج النسخة السحابية بأمان','success');return true;}
+  catch(e){const wrong=e?.name==='OperationError'||String(e?.message||'').includes('ACCOUNT_MISMATCH');renderSyncStatus(wrong?'تعذر فك النسخة — تحقق من كلمة التشفير والحساب':'فشل التنزيل: '+(e.message||e),true);if(!opts.silent)v8Toast('تعذر تنزيل النسخة السحابية','error');return false;}finally{V8.syncing=false;}
+}
 function scheduleCloudPush(){clearTimeout(V8.syncTimer);V8.syncTimer=setTimeout(()=>pushCloudSync({silent:true}),5000);}
-async function autoCloudSync(){if(!settings.sync?.auto||!syncConfigValid())return;await pullCloudSync({silent:true});await pushCloudSync({silent:true});}
+async function autoCloudSync(){if(!settings.sync?.auto||!syncConfigValid())return;await pushCloudSync({silent:true});}
 
 // ──────────────────────────────────────
 // Import extension preserving v8 fields

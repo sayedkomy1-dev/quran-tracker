@@ -56,7 +56,7 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION='10.1.3';
+const APP_VERSION='10.1.4';
 const SCHEMA_VERSION=12;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
@@ -247,7 +247,7 @@ function migrateData(){
 
 // ══════════════════════════════════════
 // DATABASE — account-scoped IndexedDB + localStorage safety copy
-// v10.1.3 keeps legacy keys untouched until the teacher explicitly claims them.
+// v10.1.4 keeps legacy keys untouched until the teacher explicitly claims them.
 // ══════════════════════════════════════
 const WLQ_LEGACY_CLAIM_KEY='wlq.legacy.claim.v1';
 let storageScopeUserId='';
@@ -272,6 +272,25 @@ function snapshotCounts(x){return{students:x?.students?.length||0,sessions:x?.se
 function readLegacyClaim(){try{return JSON.parse(localStorage.getItem(WLQ_LEGACY_CLAIM_KEY)||'null');}catch(_){return null;}}
 function writeLegacyClaim(counts){localStorage.setItem(WLQ_LEGACY_CLAIM_KEY,JSON.stringify({userId:storageScopeUserId,email:storageScopeEmail,claimedAt:new Date().toISOString(),counts}));}
 function ownerStamp(source){return{userId:storageScopeUserId,email:storageScopeEmail,source,claimedAt:new Date().toISOString()};}
+
+// Durable deletion metadata for safe multi-device synchronization.
+// Records stay physically absent from the UI; only compact tombstones are kept.
+function currentSyncDeviceId(){return String(settings?.sync?.deviceId||'');}
+function ensureSyncTombstones(){
+  const core=globalThis.WLQSyncCore;
+  const normalized=core?.normalizeTombstones?core.normalizeTombstones(settings.syncTombstones):{students:{},sessions:{},tasks:{}};
+  settings.syncTombstones=normalized;return normalized;
+}
+function markSyncDeletion(kind,itemOrId,deletedAt=new Date().toISOString()){
+  const id=typeof itemOrId==='string'?itemOrId:itemOrId?.id;if(!id)return;
+  const core=globalThis.WLQSyncCore;if(!core?.markTombstone)return;
+  settings.syncTombstones=core.markTombstone(ensureSyncTombstones(),kind,id,deletedAt,currentSyncDeviceId());
+}
+function markStudentCascadeDeletion(studentId,deletedAt=new Date().toISOString()){
+  const st=students.find(x=>x.id===studentId);if(st)markSyncDeletion('students',st,deletedAt);else markSyncDeletion('students',studentId,deletedAt);
+  sessions.filter(x=>x.studentId===studentId).forEach(x=>markSyncDeletion('sessions',x,deletedAt));
+  tasks.filter(x=>x.studentId===studentId).forEach(x=>markSyncDeletion('tasks',x,deletedAt));
+}
 
 function snapshotFromMap(map,prefix=''){
   const k=n=>prefix?`${prefix}${n}`:n;
@@ -452,7 +471,7 @@ function showAccountMigrationNotice(){
   else if(n.type==='empty')toast('تم فتح مساحة بيانات فارغة لهذا الحساب، والبيانات القديمة لم تُحذف.','info');
 }
 function save(){
-  // كل حساب يملك نسخة محلية منفصلة. مفاتيح v10.1.3 القديمة لا تُكتب بعد الآن.
+  // كل حساب يملك نسخة محلية منفصلة. مفاتيح v10.1.4 القديمة لا تُكتب بعد الآن.
   try{
     localStorage.setItem(accountLocalKey('students'),JSON.stringify(students));
     localStorage.setItem(accountLocalKey('sessions'),JSON.stringify(sessions));
@@ -990,6 +1009,7 @@ function editSt(){
 }
 function deleteSt(){
   if(!confirm('هل تريد حذف هذا الطالب وجميع بياناته؟')) return;
+  markStudentCascadeDeletion(curStId);
   students=students.filter(s=>s.id!==curStId);
   sessions=sessions.filter(s=>s.studentId!==curStId);
   tasks=tasks.filter(t=>t.studentId!==curStId);
@@ -2719,7 +2739,7 @@ function saveTask(){
   save();closeTaskModal();renderTasks();renderSmartHub();toast(wasEditing?'تم تحديث المهمة':'تمت إضافة المهمة','success');
 }
 function toggleTask(id){const t=tasks.find(x=>x.id===id);if(!t)return;t.done=!t.done;t.updatedAt=new Date().toISOString();save();renderTasks();renderSmartHub();vibrate([25]);}
-function deleteTaskItem(id){const t=tasks.find(x=>x.id===id);if(!t)return;if(!confirm(`حذف المهمة: ${t.title}؟`))return;tasks=tasks.filter(x=>x.id!==id);save();renderTasks();renderSmartHub();toast('تم حذف المهمة','success');}
+function deleteTaskItem(id){const t=tasks.find(x=>x.id===id);if(!t)return;if(!confirm(`حذف المهمة: ${t.title}؟`))return;markSyncDeletion('tasks',t);tasks=tasks.filter(x=>x.id!==id);save();renderTasks();renderSmartHub();toast('تم حذف المهمة','success');}
 function renderTasks(){
   updateTaskBadge();
   const today=localDateKey(),open=tasks.filter(t=>!t.done),overdue=open.filter(t=>t.dueDate&&t.dueDate<today),todayTasks=open.filter(t=>t.dueDate===today),done=tasks.filter(t=>t.done);

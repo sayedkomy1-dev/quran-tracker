@@ -11,6 +11,7 @@ const v8=read('v8.js');
 const v9=read('v9.js');
 const v10=read('v10.js');
 const auth=read('auth.js');
+const syncCore=read('sync-core.js');
 const authCss=read('auth.css');
 const css9=read('v9.css');
 const css10=read('v10.css');
@@ -25,20 +26,21 @@ new vm.Script(v8,{filename:'v8.js'});
 new vm.Script(v9,{filename:'v9.js'});
 new vm.Script(v10,{filename:'v10.js'});
 new vm.Script(auth,{filename:'auth.js'});
+new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='10.1.3','VERSION must be 10.1.3');
+assert(version==='10.1.4','VERSION must be 10.1.4');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
 assert(app.includes(`const APP_VERSION='${version}'`),'app.js APP_VERSION mismatch');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./auth.js'")&&sw.includes("'./auth.css'"),'service worker must cache v9/v10/auth assets');
+assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./auth.js'")&&sw.includes("'./sync-core.js'")&&sw.includes("'./auth.css'"),'service worker must cache v9/v10/auth assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.
-['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','styles.css','v9.css','v10.css','auth.css','app.js','auth.js','v8.js','v9.js','v10.js','privacy.html','terms.html','MUSHAF-SOURCES.md','V9-IMPLEMENTATION.md'].forEach(f=>assert(fs.existsSync(file(f)),`missing ${f}`));
+['icon-96.png','icon-192.png','icon-512.png','icon-maskable.png','styles.css','v9.css','v10.css','auth.css','sync-core.js','app.js','auth.js','v8.js','v9.js','v10.js','privacy.html','terms.html','MUSHAF-SOURCES.md','V9-IMPLEMENTATION.md'].forEach(f=>assert(fs.existsSync(file(f)),`missing ${f}`));
 for(const m of html.matchAll(/\b(?:src|href)=["']([^"']+)["']/g)){
   const ref=m[1].split(/[?#]/)[0];
   if(!ref||/^(?:https?:|data:|mailto:|tel:|javascript:)/i.test(ref))continue;
@@ -143,7 +145,7 @@ assert(!('pinHash' in sanitized.security)&&!('pinSalt' in sanitized.security)&&!
 assert(sanitized.security.lockEnabled===false,'portable backup must not reactivate a device lock without its credentials');
 assert(v8.includes('function v8BackupPayload')&&v8.includes('settings:JSON.parse(JSON.stringify(settings))'),'internal local recovery backup should remain device-complete');
 assert(v8.includes('generateSecureSyncCredentials'),'legacy sync credential adapter missing');
-assert(v8.includes("callAccountSyncRpc('account_sync_push'")&&v8.includes("callAccountSyncRpc('account_sync_pull'"),'account cloud sync must use authenticated account RPC endpoints');
+assert(v8.includes("callAccountSyncRpc('account_sync_push_v2'")&&v8.includes("callAccountSyncRpc('account_sync_pull_v2'"),'account cloud sync must use revision-safe authenticated account RPC endpoints');
 assert(!v8.includes('/rest/v1/imam_sync?on_conflict='),'direct cloud table write must be removed');
 assert(!v8.includes('/rest/v1/imam_sync?select=payload'),'direct cloud table read must be removed');
 const syncSql=fs.readFileSync(file('sql/supabase-sync.sql'),'utf8');
@@ -153,7 +155,7 @@ assert(!/for select to anon using\s*\(true\)/i.test(syncSql),'broad anon SELECT 
 assert(!/for update to anon using\s*\(true\)/i.test(syncSql),'broad anon UPDATE policy must not return');
 assert(!/for insert to anon with check\s*\(true\)/i.test(syncSql),'broad anon INSERT policy must not return');
 assert(v8.includes('localSync=settings.sync')&&v8.includes('accountOwner:owner'),'backup/cloud restore must preserve current account ownership and device secrets');
-assert(sw.includes("quran-pwa-v10.1.3"),'service worker cache must match v10.1.3');
+assert(sw.includes("quran-pwa-v10.1.4"),'service worker cache must match v10.1.4');
 
 
 // v10.1.2 Google Auth and access-control regression guards.
@@ -190,16 +192,43 @@ assert(app.includes('writeLegacyClaim(counts)')&&app.includes('migrateLegacyDraf
 assert(app.includes('isCurrentAccountDraftKey'),'session drafts must be account scoped');
 assert(v8.includes('function autoBackupPrefix()')&&v8.includes('autobackup:${storageScopeUserId}:'),'automatic backups must be account scoped');
 assert(html.includes('id="syncAccount"')&&!html.includes('id="syncId"')&&!html.includes('id="syncAuthSecret"'),'sync settings UI must be account-owned, without manual sync ID/secret');
-assert(v8.includes("callAccountSyncRpc('account_sync_push'")&&v8.includes("callAccountSyncRpc('account_sync_pull'"),'account-owned cloud RPC calls missing');
+assert(v8.includes("callAccountSyncRpc('account_sync_push_v2'")&&v8.includes("callAccountSyncRpc('account_sync_pull_v2'"),'revision-safe account-owned cloud RPC calls missing');
 assert(v8.includes('ownerUserId:storageScopeUserId'),'encrypted cloud payload must bind to the local authenticated account');
 const accountSyncSql=fs.readFileSync(file('sql/account-sync.sql'),'utf8');
 assert(accountSyncSql.includes('create table if not exists public.account_sync'),'account_sync table setup missing');
 assert(accountSyncSql.includes('owner_user_id uuid primary key references auth.users(id)'),'account_sync must be one row per authenticated account');
-assert(accountSyncSql.includes('where s.owner_user_id = auth.uid()'),'account_sync pull must scope to auth.uid()');
+assert(accountSyncSql.includes('v_uid uuid := auth.uid()')&&accountSyncSql.includes('where s.owner_user_id = v_uid'),'account_sync pull must scope to auth.uid()');
 assert(accountSyncSql.includes('revoke all on table public.account_sync from anon, authenticated'),'account_sync direct table access must be revoked');
-assert(accountSyncSql.includes('grant execute on function public.account_sync_push(text) to authenticated'),'account_sync push RPC grant missing');
-assert(accountSyncSql.includes('grant execute on function public.account_sync_pull() to authenticated'),'account_sync pull RPC grant missing');
-assert(!/grant execute on function public\.account_sync_(?:push|pull)[^\n]*to anon/i.test(accountSyncSql),'anonymous account sync RPC execute must not be granted');
+assert(accountSyncSql.includes('revision bigint not null default 0'),'account_sync revision column missing');
+assert(accountSyncSql.includes('account_sync_push_v2')&&accountSyncSql.includes('p_expected_revision bigint'),'revision-safe push RPC missing');
+assert(accountSyncSql.includes('account_sync_pull_v2')&&accountSyncSql.includes('revision bigint'),'revision-safe pull RPC missing');
+assert(accountSyncSql.includes('SYNC_REVISION_CONFLICT'),'compare-and-swap conflict guard missing');
+assert(accountSyncSql.includes('grant execute on function public.account_sync_push_v2(text,bigint) to authenticated'),'account_sync v2 push RPC grant missing');
+assert(accountSyncSql.includes('grant execute on function public.account_sync_pull_v2() to authenticated'),'account_sync v2 pull RPC grant missing');
+assert(accountSyncSql.includes("revoke all on function public.account_sync_push(text) from anon, authenticated"),'unsafe v1 push RPC must be revoked');
+assert(!/grant execute on function public\.account_sync_(?:push|pull)(?:_v2)?[^\n]*to anon/i.test(accountSyncSql),'anonymous account sync RPC execute must not be granted');
 
 assert(manifest.short_name==='أكاديمية الإمام'&&manifest.display==='standalone','PWA install identity mismatch');
-console.log('Static checks passed for We Live Quran v10.1.3');
+
+// v10.1.4 safe multi-device sync behavior.
+assert(html.includes('src="sync-core.js"'),'safe sync core script missing from HTML');
+assert(app.includes('function markStudentCascadeDeletion')&&v9.includes('markStudentCascadeDeletion(id)'),'student deletion tombstones missing');
+assert(app.includes("markSyncDeletion('tasks',t)"),'task deletion tombstone missing');
+assert(v8.includes('safeSyncVersion:2')&&v8.includes('settings.sync.auto=false'),'safe-sync migration must disable legacy auto-sync once');
+assert(v8.includes("callAccountSyncRpc('account_sync_pull_v2'")&&v8.includes("callAccountSyncRpc('account_sync_push_v2'"),'v2 sync RPC calls missing');
+assert(v8.indexOf("await pullRemoteIntoLocal()")<v8.indexOf("callAccountSyncRpc('account_sync_push_v2'"),'push must pull/merge before uploading');
+assert(v8.includes('isSyncRevisionConflict')&&v8.includes('attempt<3'),'sync conflict retry missing');
+assert(v8.includes('sourceDeviceId')&&v8.includes('tombstones:'),'cloud payload must include device identity and deletion tombstones');
+
+const syncSandbox={};syncSandbox.globalThis=syncSandbox;vm.runInNewContext(syncCore,syncSandbox,{filename:'sync-core.js'});const C=syncSandbox.WLQSyncCore;
+assert(C&&typeof C.mergeById==='function'&&typeof C.mergeTombstones==='function','safe sync core exports missing');
+const t1='2026-10-05T08:00:00.000Z',t2='2026-10-05T09:00:00.000Z',t3='2026-10-05T10:00:00.000Z',t4='2026-10-05T11:00:00.000Z';
+let ts=C.markTombstone(null,'students','st-1',t3,'device-a');
+assert(C.mergeById([{id:'st-1',updatedAt:t1,name:'old'}],[{id:'st-1',updatedAt:t2,name:'new'}],'students',{} )[0].name==='new','newer record must win');
+assert(C.mergeById([{id:'st-1',updatedAt:t2,name:'new'}],[],'students',ts).length===0,'newer tombstone must delete record');
+assert(C.mergeById([{id:'st-1',updatedAt:t4,name:'restored'}],[],'students',ts)[0].name==='restored','record newer than tombstone must allow explicit restore');
+const mergedTs=C.mergeTombstones(ts,C.markTombstone(null,'students','st-1',t4,'device-b'));
+assert(mergedTs.students['st-1'].deviceId==='device-b','newer tombstone must win across devices');
+const deleted=C.deletedStudentIds([],ts);assert(C.filterDeletedChildren([{id:'ses-1',studentId:'st-1'}],deleted).length===0,'deleted student must remove descendant sessions/tasks');
+
+console.log('Static checks passed for We Live Quran v10.1.4');

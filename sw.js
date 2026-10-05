@@ -1,6 +1,6 @@
-/* أكاديمية الإمام — Service Worker v10.1.3 */
-const CACHE_NAME = 'quran-pwa-v10.1.3';
-const APP_VERSION = '10.1.3';
+/* أكاديمية الإمام — Service Worker v10.1.4 */
+const CACHE_NAME = 'quran-pwa-v10.1.4';
+const APP_VERSION = '10.1.4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const APP_SHELL = [
   './v10.css',
   './v10.js',
   './auth.js',
+  './sync-core.js',
   './auth.css',
   './privacy.html',
   './terms.html',

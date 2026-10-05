@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.1.3">
+<meta name="application-version" content="10.1.4">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -561,11 +561,11 @@
 
   <div class="card">
     <div class="ch">☁️ نسخة سحابية للحساب <span class="beta-badge">Beta</span></div>
-    <p class="txt-mut mb8" style="font-size:12px">كل حساب معتمد يملك مساحة مزامنة منفصلة. البيانات تُشفّر داخل جهازك قبل الرفع، ولا يستطيع حساب آخر قراءة نسخة هذا الحساب.</p>
+    <p class="txt-mut mb8" style="font-size:12px">كل حساب معتمد يملك مساحة مزامنة منفصلة. قبل أي رفع آمن يتم تنزيل أحدث نسخة ودمجها أولًا، ثم يُرفع Snapshot جديد برقم Revision لمنع الكتابة فوق تغييرات أحدث.</p>
     <div class="fld"><label>الحساب الحالي</label><input type="text" id="syncAccount" readonly></div>
     <div class="fld"><label>كلمة تشفير النسخة السحابية</label><input type="password" id="syncPassphrase" autocomplete="new-password" placeholder="8 أحرف على الأقل — احتفظ بها لاستعادة البيانات على جهاز جديد" oninput="saveV8Settings()"></div>
     <p class="txt-mut" style="font-size:11px">عند فتح الحساب على جهاز جديد، اكتب نفس كلمة التشفير ثم اختر «تنزيل ودمج». لا يتم إرسال كلمة التشفير إلى Supabase.</p>
-    <label class="switch-line"><input type="checkbox" id="syncAuto" onchange="saveV8Settings()"><span>مزامنة تلقائية بعد التغييرات</span></label>
+    <label class="switch-line"><input type="checkbox" id="syncAuto" onchange="saveV8Settings()"><span>مزامنة تلقائية آمنة بعد التغييرات</span></label>
     <div class="settings-actions mt8"><button class="btn btn-g btn-sm" onclick="pushCloudSync()">⬆️ رفع نسخة مشفرة</button><button class="btn btn-out btn-sm" onclick="pullCloudSync()">⬇️ تنزيل ودمج</button></div>
     <div id="syncStatus" class="txt-mut mt8"></div>
   </div>
@@ -843,6 +843,7 @@
 <!-- ════════════ SCRIPTS ════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="auth.js" defer></script>
+<script src="sync-core.js" defer></script>
 <script src="app.js" defer></script>
 <script src="v8.js" defer></script>
 <script src="v9.js" defer></script>
