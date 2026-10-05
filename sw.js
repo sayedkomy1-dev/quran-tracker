@@ -1,27 +1,27 @@
-/* أكاديمية الإمام — Service Worker v10.4.1 */
-const CACHE_NAME = 'quran-pwa-v10.4.1';
-const APP_VERSION = '10.4.1';
+/* أكاديمية الإمام — Service Worker v10.4.2 */
+const CACHE_NAME = 'quran-pwa-v10.4.2';
+const APP_VERSION = '10.4.2';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css',
-  './app.js',
-  './v8.js',
-  './v9.js',
-  './js/features/mushaf-offline.js',
-  './v9.css',
-  './v10.css',
-  './quran-engine.css',
-  './v10.js',
-  './js/features/quran-engine.js',
-  './js/core/runtime.js',
-  './js/features/v10-data.js',
-  './auth.js',
-  './sync-core.js',
-  './auth.css',
+  './styles.css?v=10.4.2',
+  './app.js?v=10.4.2',
+  './v8.js?v=10.4.2',
+  './v9.js?v=10.4.2',
+  './js/features/mushaf-offline.js?v=10.4.2',
+  './v9.css?v=10.4.2',
+  './v10.css?v=10.4.2',
+  './quran-engine.css?v=10.4.2',
+  './v10.js?v=10.4.2',
+  './js/features/quran-engine.js?v=10.4.2',
+  './js/core/runtime.js?v=10.4.2',
+  './js/features/v10-data.js?v=10.4.2',
+  './auth.js?v=10.4.2',
+  './sync-core.js?v=10.4.2',
+  './auth.css?v=10.4.2',
   './privacy.html',
   './terms.html',
-  './manifest.json',
+  './manifest.json?v=10.4.2',
   './favicon.png',
   './icon-96.png',
   './icon-192.png',
@@ -77,14 +77,18 @@ self.addEventListener('fetch', event => {
   }
 
   event.respondWith((async()=>{
+    const isCodeAsset=/\.(?:js|css)$/.test(url.pathname)||url.pathname.endsWith('/manifest.json');
     const cached=await caches.match(req);
-    const network=fetch(req).then(async res=>{
+    const network=fetch(req,{cache:'no-store'}).then(async res=>{
       if(res&&res.ok){
         const cache=await caches.open(CACHE_NAME);
         cache.put(req,res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});
       }
       return res;
     }).catch(()=>null);
+    // Code/config is network-first so a newly deployed reader cannot be shadowed
+    // by the previous service worker cache. Other same-origin assets stay cache-first.
+    if(isCodeAsset)return (await network)||cached||new Response('',{status:503,statusText:'Offline'});
     return cached||(await network)||new Response('',{status:503,statusText:'Offline'});
   })());
 });

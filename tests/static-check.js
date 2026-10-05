@@ -38,14 +38,14 @@ new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='10.4.1','VERSION must be 10.4.1');
+assert(version==='10.4.2','VERSION must be 10.4.2');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
-assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.4.1'"),'app.js APP_VERSION must come from ImamApp runtime');
+assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.4.2'"),'app.js APP_VERSION must come from ImamApp runtime');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js'")&&sw.includes("'./v9.css'")&&sw.includes("'./v10.js'")&&sw.includes("'./v10.css'")&&sw.includes("'./js/core/runtime.js'")&&sw.includes("'./js/features/v10-data.js'")&&sw.includes("'./js/features/quran-engine.js'")&&sw.includes("'./js/features/mushaf-offline.js'")&&sw.includes("'./quran-engine.css'")&&sw.includes("'./auth.js'")&&sw.includes("'./sync-core.js'")&&sw.includes("'./auth.css'"),'service worker must cache architecture/v9/v10/auth assets');
+assert(sw.includes("'./v9.js?v=10.4.2'")&&sw.includes("'./v9.css?v=10.4.2'")&&sw.includes("'./v10.js?v=10.4.2'")&&sw.includes("'./v10.css?v=10.4.2'")&&sw.includes("'./js/core/runtime.js?v=10.4.2'")&&sw.includes("'./js/features/v10-data.js?v=10.4.2'")&&sw.includes("'./js/features/quran-engine.js?v=10.4.2'")&&sw.includes("'./js/features/mushaf-offline.js?v=10.4.2'")&&sw.includes("'./quran-engine.css?v=10.4.2'")&&sw.includes("'./auth.js?v=10.4.2'")&&sw.includes("'./sync-core.js?v=10.4.2'")&&sw.includes("'./auth.css?v=10.4.2'"),'service worker must cache versioned architecture/v9/v10/auth assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.
@@ -165,12 +165,12 @@ assert(!/for select to anon using\s*\(true\)/i.test(syncSql),'broad anon SELECT 
 assert(!/for update to anon using\s*\(true\)/i.test(syncSql),'broad anon UPDATE policy must not return');
 assert(!/for insert to anon with check\s*\(true\)/i.test(syncSql),'broad anon INSERT policy must not return');
 assert(v8.includes('localSync=settings.sync')&&v8.includes('accountOwner:owner'),'backup/cloud restore must preserve current account ownership and device secrets');
-assert(sw.includes("quran-pwa-v10.4.1"),'service worker cache must match v10.4.1');
+assert(sw.includes("quran-pwa-v10.4.2"),'service worker cache must match v10.4.2');
 
 
 // v10.1.2 Google Auth and access-control regression guards.
-assert(html.includes('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2')&&html.includes('src="auth.js"'),'Supabase auth bootstrap scripts missing');
-assert(html.includes('href="auth.css"'),'auth stylesheet missing');
+assert(html.includes('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2')&&html.includes('src="auth.js?v=10.4.2"'),'Supabase auth bootstrap scripts missing');
+assert(html.includes('href="auth.css?v=10.4.2"'),'auth stylesheet missing');
 assert(auth.includes("supabaseUrl:'https://svtcntalwfmexthcnvqe.supabase.co'"),'Supabase project URL mismatch');
 assert(auth.includes("publishableKey:'sb_publishable_qYw8VdT1IXQ5WsdB2rhtEA_F6dSAN-j'"),'Supabase publishable key mismatch');
 assert(auth.includes("ownerEmail:'info.welivequran@gmail.com'"),'owner account mismatch');
@@ -221,7 +221,7 @@ assert(!/grant execute on function public\.account_sync_(?:push|pull)(?:_v2)?[^\
 assert(manifest.short_name==='أكاديمية الإمام'&&manifest.display==='standalone','PWA install identity mismatch');
 
 // v10.1.4 safe multi-device sync behavior.
-assert(html.includes('src="sync-core.js"'),'safe sync core script missing from HTML');
+assert(html.includes('src="sync-core.js?v=10.4.2"'),'safe sync core script missing from HTML');
 assert(app.includes('function markStudentCascadeDeletion')&&v9.includes('markStudentCascadeDeletion(id)'),'student deletion tombstones missing');
 assert(app.includes("markSyncDeletion('tasks',t)"),'task deletion tombstone missing');
 assert(v8.includes('safeSyncVersion:2')&&v8.includes('settings.sync.auto=false'),'safe-sync migration must disable legacy auto-sync once');
@@ -264,12 +264,20 @@ assert(quranCss.includes('.quran-play-actions')&&quranCss.includes('.quran-actio
 assert(quranEngine.includes('requestIdleCallback')&&quranEngine.includes('g.__IMAM_BASE__?.save?.()'),'Quran preferences must save in the background without the heavy auto-sync save path');
 assert(!quranEngine.includes("content.addEventListener('dblclick'"),'double-click Quran selection should not be used on touch devices');
 
-console.log('Static checks passed for We Live Quran v10.4.1');
+console.log('Static checks passed for We Live Quran v10.4.2');
 
+
+
+// v10.4.2 runtime/cache bridge guards.
+assert(html.includes('js/features/mushaf-offline.js?v=10.4.2'),'Mushaf feature must be cache-busted in HTML');
+assert(sw.includes('isCodeAsset')&&sw.includes("fetch(req,{cache:'no-store'})"),'service worker must use network-first for code assets');
+assert(v9.includes('ImamApp?.MushafOffline?.render')&&v9.includes('ImamApp?.MushafOffline?.openCurrent'),'v9 must explicitly bridge to the new Mushaf runtime');
+assert(mushafOffline.includes('render:renderPrimaryUI')&&mushafOffline.includes('openCurrent:currentMushafPage'),'Mushaf runtime must export explicit render/openCurrent entry points');
+assert(mushafOffline.includes('قارئ 10.4.2'),'Mushaf UI field verification marker missing');
 
 // v10.4 lightweight Mushaf offline page-pack regression guards.
 assert(html.indexOf('v9.js')<html.indexOf('js/features/mushaf-offline.js'),'Mushaf offline layer must load after v9');
-assert(sw.includes("'./js/features/mushaf-offline.js'"),'service worker must cache Mushaf offline feature');
+assert(sw.includes("'./js/features/mushaf-offline.js?v=10.4.2'"),'service worker must cache versioned Mushaf offline feature');
 assert(mushafOffline.includes('cdn.quran.ws/svg/pages')&&mushafOffline.includes('hafs-kfqc'),'versioned SVG Mushaf CDN missing');
 assert(mushafOffline.includes("PAGE_COUNT=604")&&mushafOffline.includes("PAGE_PREFIX='mushaf:svg:gzip:page:'"),'604-page compressed SVG offline pack keys missing');
 assert(mushafOffline.includes('downloadRange(1,PAGE_COUNT)'),'full lightweight Mushaf download action missing');

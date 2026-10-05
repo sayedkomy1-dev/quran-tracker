@@ -1,3 +1,7 @@
+# We Live Quran v10.4.2
+
+> Hotfix: يجبر Android على استخدام قارئ صفحات المصحف SVG الجديد بدل مسار PDF القديم، مع Cache-busting لأصول التطبيق.
+
 # We Live Quran — v10.4.0
 
 > Quran Teaching Engine: flexible repetition/tutoring timing, Minshawy & Muaiqly, ayah selection, and per-surah Offline audio. Existing student data remains on Schema 12.

@@ -123,5 +123,5 @@ for(const [name,impl] of Object.entries(V10_OVERRIDES)){
   globalThis.ImamApp.Legacy.override(name,impl,'v10.2');
 }
 
-function initV10(){v10Migrate();enhanceSessionAccordions();initV10SurahDropdowns();injectFacebookSetting();injectThemeSettings();injectLibraries();queueV10HomeEnhance();if(curPage==='mushaf')renderV9Mushaf();}
+function initV10(){v10Migrate();enhanceSessionAccordions();initV10SurahDropdowns();injectFacebookSetting();injectThemeSettings();injectLibraries();queueV10HomeEnhance();if(curPage==='mushaf'){if(globalThis.ImamApp?.MushafOffline?.render)globalThis.ImamApp.MushafOffline.render();else renderV9Mushaf();}}
 document.addEventListener('DOMContentLoaded',()=>setTimeout(initV10,50));

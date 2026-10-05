@@ -1,3 +1,8 @@
+## 10.4.2
+- إصلاح بقاء قارئ PDF القديم ظاهرًا على Android بعد 10.4.1.
+- Cache-busting لأصول JS/CSS وتغيير استراتيجية SW للكود إلى network-first.
+- Bridge صريح من v9 إلى قارئ صفحات SVG الجديد في صفحة المصحف وداخل شاشة التلقين.
+
 # v10.4.0 — Lightweight Mushaf Offline
 
 - Added optional page-by-page Madani Mushaf offline cache (604 vector PDF pages).
