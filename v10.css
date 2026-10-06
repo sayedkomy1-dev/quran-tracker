@@ -71,3 +71,26 @@ body{background:var(--bg);color:var(--txt)}
   .mushaf-lite-toolbar{grid-template-columns:76px 1fr 1fr}
   .mushaf-lite-source{font-size:9px;line-height:1.65}
 }
+
+/* v10.5.1 — Smart Recitation & Carry Forward */
+.v1051-juz-picker{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+.v1051-juz-picker .fld{margin:0}
+.v1051-add-juz{min-height:46px;white-space:nowrap}
+.v1051-quarter-note{font-size:12px;color:var(--v9-muted,var(--muted));background:var(--gp);border:1px solid var(--line);border-radius:10px;padding:9px 11px;line-height:1.7;margin-top:8px}
+.v10-review-group{border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;background:var(--card)}
+.v10-review-group h4{margin:0 0 4px;font-size:15px}
+.v10-review-note{font-size:12px;color:var(--v9-muted,var(--muted));margin-bottom:10px;line-height:1.6}
+.v10-review-item{padding:10px 0;border-top:1px solid var(--line)}
+.v10-review-item:first-of-type{border-top:0}
+.v10-review-name{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:700;margin-bottom:8px}
+.v1051-grade-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.v1051-grade-grid button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 4px;font:inherit;font-size:11px;line-height:1.25;color:var(--text);cursor:pointer}
+.v1051-grade-grid button.on{border-color:var(--gm);background:var(--gp);color:var(--gm);font-weight:800;box-shadow:0 0 0 1px color-mix(in srgb,var(--gm) 18%,transparent)}
+.v1051-grade-grid button.repeat.on{border-color:#b54747;background:#fff1f1;color:#9e2f2f}
+.v1051-carry-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;background:#fff7df;color:#73520a;border:1px solid #ecd99f;font-size:11px;font-weight:700}
+.v1051-review-summary-list{display:grid;gap:6px;margin-top:8px}
+.v1051-review-summary-list div{padding:8px 10px;border-radius:10px;background:var(--gp);font-size:12px}
+@media(max-width:680px){
+ .v1051-juz-picker{grid-template-columns:1fr 1fr}.v1051-add-juz{grid-column:1/-1;width:100%}
+ .v1051-grade-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.v1051-grade-grid button:last-child{grid-column:1/-1}
+}
