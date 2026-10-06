@@ -1,6 +1,6 @@
 {
   "name": "imam-academy-pwa",
-  "version": "10.5.7",
+  "version": "10.5.8",
   "private": true,
   "description": "أكاديمية الإمام لتحفيظ القرآن الكريم — PWA",
   "scripts": {

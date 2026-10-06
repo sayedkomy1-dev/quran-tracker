@@ -1,3 +1,11 @@
+# v10.5.8 — Mushaf Final Polish
+
+- Full-pack download controls disappear after 604/604 pages are stored and the footer reflows without an empty slot.
+- Surah/Juz drawers show only the KFGQPC calligraphic title plus number/page metadata; duplicate plain labels were removed.
+- Search inputs no longer auto-focus on drawer open; the soft keyboard dismisses on list scrolling and navigation.
+- Text fallbacks remain available if a calligraphic title asset fails.
+- No SQL, Supabase, sync, or Schema 12 changes.
+
 # v10.5.7 — KFGQPC Composite Mushaf
 
 - حزمة تخزين جديدة للمصحف مع حذف آمن لحزمة الصفحات القديمة عند أول تشغيل.

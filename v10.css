@@ -262,3 +262,23 @@ body.v1053-reader-open{overflow:hidden}
 .mushaf-auth-page .mushaf-page-paper .mushaf-svg-page{width:100%!important;height:100%!important;object-fit:contain!important;display:block}
 .mushaf-auth-page .mushaf-kfg-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:3;pointer-events:none}
 .mushaf-auth-page .mushaf-opening-night{display:none}
+
+/* v10.5.8 — Mushaf Final Polish */
+/* Navigation drawers: show one canonical KFGQPC calligraphic name only. */
+.v1054-surah-row{grid-template-columns:40px minmax(0,1fr) 48px!important;gap:10px!important}
+.v1055-nav-row{grid-template-columns:40px minmax(0,1fr) 50px!important;gap:10px!important}
+.v1054-surah-art,.v1055-nav-art{justify-content:center!important;overflow:visible!important}
+.v1054-surah-art img{max-width:128px!important;max-height:36px!important}
+.v1055-nav-art img{max-width:190px!important;max-height:36px!important}
+.v1058-nav-fallback{font-size:13px;font-weight:900;color:#183d31;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.v1055-reader-shell[data-theme="night"] .v1058-nav-fallback{color:#efe5c8}
+/* When the full 604-page pack is present, remove the download slot completely. */
+.v1055-reader-bar.v1058-pack-complete{grid-template-columns:44px 44px auto minmax(0,1fr)!important}
+.v1055-reader-bar.v1058-pack-complete #v1053TeacherDownload{display:none!important}
+@media(max-width:680px){
+ .v1054-surah-row{grid-template-columns:34px minmax(0,1fr) 42px!important;gap:7px!important}
+ .v1055-nav-row{grid-template-columns:34px minmax(0,1fr) 42px!important;gap:7px!important}
+ .v1054-surah-art img{max-width:118px!important;max-height:32px!important}
+ .v1055-nav-art img{max-width:170px!important;max-height:32px!important}
+ .v1055-reader-bar.v1058-pack-complete{grid-template-columns:40px 40px auto minmax(0,1fr)!important}
+}
