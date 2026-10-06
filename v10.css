@@ -193,7 +193,7 @@ body.v1053-reader-open{overflow:hidden}
  .v1055-nav-drawer{width:92vw}.v1055-quick-card{width:94vw}.v1055-edge-turn{width:10%}
 }
 
-/* v10.5.6 — Teacher Mushaf visual refinement: Madani-inspired page skin */
+/* v10.5.7 — Teacher Mushaf visual refinement: Madani-inspired page skin */
 .v1056-mushaf-frame{--mushaf-green:#0a6845;--mushaf-green-2:#1f855b;--mushaf-gold:#b8943f;--mushaf-pink:#d88fa9;--mushaf-paper:#fffbea;padding:15px 14px 13px!important;border:0!important;border-radius:0!important;background:
  linear-gradient(var(--mushaf-paper),var(--mushaf-paper)) padding-box,
  repeating-linear-gradient(90deg,#e7edd9 0 6px,#b8d1ad 6px 10px,#f5d7e1 10px 14px,#f7edc7 14px 18px) border-box!important;
@@ -217,3 +217,48 @@ body.v1053-reader-open{overflow:hidden}
 /* Night mode keeps the sacred-page contrast without making the text disappear. */
 .v1055-reader-shell[data-theme="night"] .v1056-mushaf-frame{--mushaf-paper:#bdb49e;--mushaf-green:#245b45;--mushaf-green-2:#326c52;--mushaf-gold:#8e7b4d;--mushaf-pink:#755668;background:linear-gradient(#bdb49e,#bdb49e) padding-box,repeating-linear-gradient(90deg,#3b493e 0 6px,#56604c 6px 10px,#65505a 10px 14px,#655f49 14px 18px) border-box!important;box-shadow:inset 0 0 0 2px #6d6652,inset 0 0 0 5px #214d3a,inset 0 0 0 7px #827044,inset 0 0 0 9px #766e5a,inset 0 0 0 11px #2b5e47,0 3px 14px rgba(0,0,0,.35)!important}.v1055-reader-shell[data-theme="night"] .v1056-corner-art{filter:brightness(.72) saturate(.72)}.v1055-reader-shell[data-theme="night"] .v1056-page-title{filter:brightness(.73) saturate(.72) drop-shadow(0 2px 2px rgba(0,0,0,.18))}.v1055-reader-shell[data-theme="night"] .v1056-page-title b{color:#244d3b}.v1055-reader-shell[data-theme="night"] .v1056-mushaf-frame .v1053-teacher-frame,.v1055-reader-shell[data-theme="night"] .v1056-mushaf-frame .v1053-teacher-frame .mushaf-svg-page-wrap{background:#c5bca6!important}.v1055-reader-shell[data-theme="night"] .v1056-mushaf-frame .v1053-teacher-frame .mushaf-svg-page{filter:brightness(.70) contrast(1.23) sepia(.20) saturate(.72)!important}.v1055-reader-shell[data-theme="night"] .v1056-mushaf-frame[data-page-kind="fatiha"] .v1053-teacher-frame .mushaf-svg-page-wrap{background:radial-gradient(ellipse at center,#c9bea5 0 64%,#938a73 65% 67%,#b8ad93 68%)!important}
 @media(max-width:680px){.v1056-mushaf-frame{padding:11px 10px 10px!important}.v1056-corner-art{width:46px;height:46px}.v1056-page-title{top:11px;height:42px;width:80%;padding-inline:34px}.v1056-page-title b{font-size:12px}.v1056-mushaf-frame.v1056-is-surah-start .v1053-teacher-frame .mushaf-svg-page-wrap{padding-top:48px!important}.v1056-mushaf-frame[data-page-kind="fatiha"] .v1053-teacher-frame{margin:5px 4px 4px;border-radius:46%/31%!important}.v1056-mushaf-frame[data-page-kind="fatiha"] .v1053-teacher-frame .mushaf-svg-page-wrap{padding:55px 12px 34px!important}.v1056-mushaf-frame[data-page-kind="baqarah"] .v1053-teacher-frame .mushaf-svg-page-wrap{padding:56px 8px 10px!important}.v1055-mushaf-header{min-height:48px!important}.v1055-reader-bar{min-height:47px!important}}
+
+/* v10.5.7 — KFGQPC-styled composite Mushaf pack */
+.v1057-mushaf-frame{padding:0!important;border:0!important;background:#f8f4df!important;box-shadow:none!important;overflow:hidden!important}
+.v1057-mushaf-frame:before,.v1057-mushaf-frame:after,.v1057-mushaf-frame .v1056-corner-art,.v1057-mushaf-frame .v1056-page-title{display:none!important}
+.v1057-mushaf-frame .v1053-teacher-frame{height:100%;background:#f8f4df!important;overflow:hidden!important}
+.v1057-mushaf-frame .mushaf-auth-page{position:relative;width:100%;height:100%;display:grid;place-items:center;overflow:hidden;background:#f8f4df}
+.v1057-mushaf-frame .mushaf-opening-page img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;display:block}
+.v1057-mushaf-frame .mushaf-opening-night{display:none!important}
+.v1057-mushaf-frame .mushaf-framed-page{background:#fffbea}
+.v1057-mushaf-frame .mushaf-page-paper{position:absolute;inset:2.4% 4.6% 2.5%;display:grid;place-items:center;overflow:hidden;background:#fffbea;z-index:1}
+.v1057-mushaf-frame .mushaf-page-paper .mushaf-svg-page{display:block;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:contain;background:transparent!important;filter:none!important;opacity:1!important}
+.v1057-mushaf-frame .mushaf-kfg-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;z-index:3;filter:none!important}
+.v1057-mushaf-frame .mushaf-svg-page-wrap{padding:0!important;background:transparent!important;height:100%!important}
+.v1055-reader-shell[data-theme="night"] .v1057-mushaf-frame{background:#141b17!important}
+.v1055-reader-shell[data-theme="night"] .v1057-mushaf-frame .mushaf-opening-day{display:none!important}
+.v1055-reader-shell[data-theme="night"] .v1057-mushaf-frame .mushaf-opening-night{display:block!important}
+.v1055-reader-shell[data-theme="night"] .v1057-mushaf-frame .mushaf-framed-page{background:#17211c!important}
+.v1055-reader-shell[data-theme="night"] .v1057-mushaf-frame .mushaf-page-paper{background:#1b241f!important}
+.v1055-reader-shell[data-theme="night"] .v1057-mushaf-frame .mushaf-page-paper .mushaf-svg-page{filter:invert(.90) sepia(.13) saturate(.72) brightness(.98) contrast(1.08)!important}
+.v1055-reader-shell[data-theme="night"] .v1057-mushaf-frame .mushaf-kfg-frame{filter:brightness(.72) saturate(.68) contrast(1.06)!important}
+.v1055-reader-shell[data-theme="night"] .v1057-mushaf-frame .v1053-teacher-frame{background:#141b17!important}
+
+.v1054-surah-row{grid-template-columns:38px 72px minmax(0,1fr) 46px!important}
+.v1055-nav-row{grid-template-columns:40px 92px minmax(0,1fr) 50px!important}
+.v1054-surah-art,.v1055-nav-art{display:flex;align-items:center;justify-content:center;min-width:0;overflow:hidden}
+.v1054-surah-art img{display:block;max-width:68px;max-height:30px;width:auto;height:auto;object-fit:contain}
+.v1055-nav-art img{display:block;max-width:88px;max-height:30px;width:auto;height:auto;object-fit:contain}
+.v1055-reader-shell[data-theme="night"] .v1054-surah-art img,.v1055-reader-shell[data-theme="night"] .v1055-nav-art img{filter:invert(.90) sepia(.18) saturate(.65) brightness(1.12)}
+
+@media(max-width:680px){
+ .v1057-mushaf-frame{width:100%!important;height:100%!important}
+ .v1057-mushaf-frame .mushaf-page-paper{inset:2.2% 4.4% 2.4%}
+ .v1054-surah-row{grid-template-columns:34px 58px minmax(0,1fr) 40px!important;gap:5px!important}
+ .v1055-nav-row{grid-template-columns:34px 72px minmax(0,1fr) 40px!important;gap:5px!important}
+ .v1054-surah-art img{max-width:56px;max-height:25px}.v1055-nav-art img{max-width:70px;max-height:25px}
+ .v1054-surah-name,.v1055-nav-name{font-size:11px!important}.v1054-surah-page,.v1055-nav-page{font-size:9px!important}
+}
+
+/* Shared KFGQPC page composition (also used by the Mushaf management preview). */
+.mushaf-auth-page{position:relative;width:100%;aspect-ratio:1064/1713;max-height:100%;margin:auto;overflow:hidden;background:#fffbea}
+.mushaf-auth-page.mushaf-opening-page img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.mushaf-auth-page .mushaf-page-paper{position:absolute;inset:2.4% 4.6% 2.5%;display:grid;place-items:center;overflow:hidden;background:#fffbea;z-index:1}
+.mushaf-auth-page .mushaf-page-paper .mushaf-svg-page{width:100%!important;height:100%!important;object-fit:contain!important;display:block}
+.mushaf-auth-page .mushaf-kfg-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:3;pointer-events:none}
+.mushaf-auth-page .mushaf-opening-night{display:none}

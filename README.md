@@ -1,3 +1,7 @@
+## v10.5.7 — KFGQPC Composite Mushaf
+
+إصدار مصحف المحفظ الجديد: يستفيد من موارد تطبيق مصحف المدينة الذي قدمه المستخدم (صفحتا الافتتاح، الإطار، فهارس السور والأجزاء، وبيانات الأرباع) مع حزمة Offline جديدة مستقلة عن الحزمة القديمة. راجع `RELEASE-10.5.7.md` و `QA-REPORT-10.5.7.md`.
+
 # We Live Quran — Quran Tracker
 
 ## v10.5.6 — Madani Page Skin & Opening Pages
