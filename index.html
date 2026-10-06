@@ -8,16 +8,16 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.5.8">
-<link rel="manifest" href="manifest.json?v=10.5.8">
+<meta name="application-version" content="10.5.9">
+<link rel="manifest" href="manifest.json?v=10.5.9">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<link rel="stylesheet" href="styles.css?v=10.5.8">
-<link rel="stylesheet" href="v9.css?v=10.5.8">
-<link rel="stylesheet" href="v10.css?v=10.5.8">
-<link rel="stylesheet" href="quran-engine.css?v=10.5.8">
-<link rel="stylesheet" href="auth.css?v=10.5.8">
+<link rel="stylesheet" href="styles.css?v=10.5.9">
+<link rel="stylesheet" href="v9.css?v=10.5.9">
+<link rel="stylesheet" href="v10.css?v=10.5.9">
+<link rel="stylesheet" href="quran-engine.css?v=10.5.9">
+<link rel="stylesheet" href="auth.css?v=10.5.9">
 </head>
 <body>
 
@@ -222,10 +222,27 @@
     </div>
   </div>
 
-  <div class="card session-journey-card" id="sessionJourneyCard" style="display:none">
-    <div class="fb mb8"><div class="ch" style="margin:0">📍 أين توقفنا؟</div><button class="btn btn-out btn-xs" onclick="fillFromLast()">♻️ نفس التكليف</button></div>
-    <div id="sessionJourneyStrip" class="journey-strip"></div>
-    <div id="smartReviewSuggestions" class="review-suggestions"></div>
+  <div class="card session-journey-card v1059-session-insights" id="sessionJourneyCard" style="display:none">
+    <section class="v1059-insight" id="v1059StopPanel">
+      <button type="button" class="v1059-insight-toggle" id="v1059StopToggle" aria-expanded="false" onclick="toggleV1059SessionPanel('stop')">
+        <span class="v1059-insight-title"><b>📍 أين توقفنا؟</b><small id="v1059StopHint">آخر مواضع الطالب والتكليف القادم</small></span>
+        <span class="v1059-insight-action"><span id="v1059StopBadge" class="v1059-count-badge" hidden></span><span id="v1059StopAction">فتح</span><span class="v1059-chevron">⌄</span></span>
+      </button>
+      <div class="v1059-insight-body" id="v1059StopBody" hidden>
+        <div id="v1059JourneyMeta" class="v1059-journey-meta"></div>
+        <div id="sessionJourneyStrip" class="journey-strip v1059-journey-grid"></div>
+        <div class="v1059-panel-actions"><button class="btn btn-out btn-sm" onclick="fillFromLast()">♻️ تحميل نفس التكليف السابق</button></div>
+      </div>
+    </section>
+    <section class="v1059-insight" id="v1059ReviewPanel">
+      <button type="button" class="v1059-insight-toggle" id="v1059ReviewToggle" aria-expanded="false" onclick="toggleV1059SessionPanel('review')">
+        <span class="v1059-insight-title"><b>🧠 اقتراح المراجعة</b><small id="v1059ReviewHint">الأولوية حسب الاستحقاق والأداء</small></span>
+        <span class="v1059-insight-action"><span id="v1059ReviewBadge" class="v1059-count-badge" hidden></span><span id="v1059ReviewAction">فتح</span><span class="v1059-chevron">⌄</span></span>
+      </button>
+      <div class="v1059-insight-body" id="v1059ReviewBody" hidden>
+        <div id="smartReviewSuggestions" class="review-suggestions v1059-review-suggestions"></div>
+      </div>
+    </section>
   </div>
 
   <div id="absentNotice" style="display:none">
@@ -374,20 +391,26 @@
       <div id="bod-juz" style="display:none">
         <div class="v1051-juz-picker">
           <div class="fld"><label>الجزء</label>
-            <select id="juz-j"><option value="">— اختر الجزء باسمه —</option></select>
+            <select id="juz-j" onchange="v1052OnJuzChanged()"><option value="">— اختر الجزء باسمه —</option></select>
           </div>
           <div class="fld"><label>المقدار</label>
             <select id="v1051-juz-quarter">
-              <option value="all">الجزء كاملًا — 4 أرباع</option>
-              <option value="1">الربع الأول 1/4</option>
-              <option value="2">الربع الثاني 2/4</option>
-              <option value="3">الربع الثالث 3/4</option>
-              <option value="4">الربع الرابع 4/4</option>
+              <option value="all">الجزء كاملًا — حزبان — 8 أرباع</option>
+              <option value="h1">الحزب الأول — 4 أرباع</option>
+              <option value="h2">الحزب الثاني — 4 أرباع</option>
+              <option value="q1">الربع الأول 1/8</option>
+              <option value="q2">الربع الثاني 2/8</option>
+              <option value="q3">الربع الثالث 3/8</option>
+              <option value="q4">الربع الرابع 4/8</option>
+              <option value="q5">الربع الخامس 5/8</option>
+              <option value="q6">الربع السادس 6/8</option>
+              <option value="q7">الربع السابع 7/8</option>
+              <option value="q8">الربع الثامن 8/8</option>
             </select>
           </div>
           <button type="button" class="btn btn-g btn-sm v1051-add-juz" onclick="addJuz()">+ إضافة للمراجعة</button>
         </div>
-        <div class="v1051-quarter-note">كل جزء مقسّم هنا إلى 4 أرباع تعليمية. عند اختيار الجزء كاملًا سيظهر كل ربع كتقييم مستقل في الحصة التالية.</div>
+        <div class="v1051-quarter-note">كل جزء = حزبان = 8 أرباع. يمكنك اختيار الجزء كاملًا أو حزبًا أو ربعًا بعينه، وكل ربع يظهر كتقييم مستقل.</div>
         <div id="juz-chips" style="margin:8px 0 10px"></div>
         <div class="direction-picker">
           <span class="direction-label">اتجاه مراجعة الأجزاء</span>
@@ -856,16 +879,17 @@
 
 <!-- ════════════ SCRIPTS ════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="js/core/runtime.js?v=10.5.8" defer></script>
-<script src="js/features/v10-data.js?v=10.5.8" defer></script>
-<script src="auth.js?v=10.5.8" defer></script>
-<script src="sync-core.js?v=10.5.8" defer></script>
-<script src="app.js?v=10.5.8" defer></script>
-<script src="v8.js?v=10.5.8" defer></script>
-<script src="v9.js?v=10.5.8" defer></script>
-<script src="js/features/mushaf-offline.js?v=10.5.8" defer></script>
-<script src="js/features/quran-engine.js?v=10.5.8" defer></script>
-<script src="js/features/recitation-carry.js?v=10.5.8" defer></script>
-<script src="v10.js?v=10.5.8" defer></script>
+<script src="js/core/runtime.js?v=10.5.9" defer></script>
+<script src="js/features/v10-data.js?v=10.5.9" defer></script>
+<script src="auth.js?v=10.5.9" defer></script>
+<script src="sync-core.js?v=10.5.9" defer></script>
+<script src="app.js?v=10.5.9" defer></script>
+<script src="v8.js?v=10.5.9" defer></script>
+<script src="v9.js?v=10.5.9" defer></script>
+<script src="js/features/mushaf-offline.js?v=10.5.9" defer></script>
+<script src="js/features/quran-engine.js?v=10.5.9" defer></script>
+<script src="js/features/quran-structure.js?v=10.5.9" defer></script>
+<script src="js/features/recitation-carry.js?v=10.5.9" defer></script>
+<script src="v10.js?v=10.5.9" defer></script>
 </body>
 </html>

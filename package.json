@@ -1,9 +1,9 @@
 {
   "name": "imam-academy-pwa",
-  "version": "10.5.8",
+  "version": "10.5.9",
   "private": true,
   "description": "أكاديمية الإمام لتحفيظ القرآن الكريم — PWA",
   "scripts": {
-    "test": "node tests/static-check.js && node tests/recitation-carry-check.js"
+    "test": "node tests/static-check.js && node tests/recitation-carry-check.js && node tests/quran-structure-check.js"
   }
 }

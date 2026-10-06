@@ -63,6 +63,10 @@ function v1051AddJuz(){
   if(sel)sel.value='';v1052RefreshJuzUnitOptions();renderJuzChips();scheduleDraftSave();
 }
 function v10SurahItem(name,status='not_heard'){const n=String(name||'').replace(/^سورة\s+/,'').trim(),idx=S.findIndex(s=>s.n===n);if(idx<0)return null;return{id:`surah-${idx+1}`,type:'surah',surahId:idx+1,surahName:S[idx].n,label:`سورة ${S[idx].n}`,status,evaluation:'',grade:'',errors:[],notes:''};}
+function v1059RenderJuzChips(){
+  const el=document.getElementById('juz-chips');if(!el)return;
+  el.innerHTML=juzChips.map((raw,i)=>{const parsed=V1051_CARRY.parseJuzChip(raw,JZ);let label=String(raw||'');if(parsed){const j=JZ.indexOf(parsed.juzName)+1;label=parsed.quarter?`${parsed.juzName} — ${V1052_STRUCTURE.quarterLabel(j,parsed.quarter)}`:`${parsed.juzName} — حزبان · 8 أرباع`;}return `<span class="chip v1059-structure-chip" title="${v10Esc(label)}">${v10Esc(label)}<span class="chip-x" onclick="rmJuzChip(${i})">✕</span></span>`;}).join('');
+}
 function v1051QuarterItem(juzName,quarter,status='not_heard'){const idx=JZ.indexOf(juzName);if(idx<0||quarter<1||quarter>8)return null;return{id:`juz-${idx+1}-q${quarter}`,type:'juz_quarter',juzIndex:idx+1,juzName,quarter,label:V1051_CARRY.quarterChip(juzName,quarter),status,evaluation:'',grade:'',errors:[],notes:''};}
 function v10ExpandJuz(chip){const parsed=V1051_CARRY.parseJuzChip(chip,JZ);if(!parsed)return[];if(parsed.quarter)return[v1051QuarterItem(parsed.juzName,parsed.quarter)].filter(Boolean);return[1,2,3,4,5,6,7,8].map(q=>v1051QuarterItem(parsed.juzName,q)).filter(Boolean);}
 function v10Assignment(type,name,chips=[]){let items=[];for(const chip0 of chips){const chip=String(chip0||'').trim(),jp=V1051_CARRY.parseJuzChip(chip,JZ);if(type==='juz'||jp)items.push(...v10ExpandJuz(chip));else{const it=v10SurahItem(chip);if(it)items.push(it);}}const seen=new Set();items=items.filter(i=>!seen.has(i.id)&&seen.add(i.id));return{id:v10Id('rev'),type,groupId:type==='juz'?name.replace(/\s+/g,'-'):v10Id('group'),groupName:name,items};}
@@ -76,6 +80,8 @@ function v10Migrate(){
   else settings.v10.sessionPanels={stop:false,review:false,...(settings.v10.sessionPanels||{})};
   // v10.5.3: reset Today's Students once so the new compact home actually starts closed.
   if(!settings.v10.layout1053){settings.v10.homeSections.students=false;settings.v10.layout1053=true;changed=true;}
+  // v10.5.9: the two teacher-insight panels start compact and open only on demand.
+  if(!settings.v10.layout1059){settings.v10.sessionPanels={stop:false,review:false};settings.v10.layout1059=true;changed=true;}
   if(!Object.prototype.hasOwnProperty.call(settings,'facebookUrl')){settings.facebookUrl='https://www.facebook.com/AlImamEdu';changed=true;}
   if(!V10_THEMES[settings.themePalette]){settings.themePalette='A';changed=true;}
   if(!settings.contentAssignments||typeof settings.contentAssignments!=='object'){settings.contentAssignments={};changed=true;}
@@ -131,6 +137,118 @@ function v1051AddPendingToNextUI(items){
   if(juzChanged)secOn.juz=true;if(surahChanged)secOn.surahReview=true;updateTogs();renderChips();renderSurahChecklist();
 }
 function applyRemainingReviewSuggestion(){const pending=v1051PendingFromPrev();if(!pending.length)return toast('لا توجد عناصر تحتاج إعادة','info');v1051AddPendingToNextUI(pending);scheduleDraftSave();toast('تمت إضافة العناصر التي ستُعاد إلى التكليف القادم','success');}
+
+// ──────────────────────────────────────
+// v10.5.9 Teacher Insight: practical "Where we stopped" + smart review queue
+// ──────────────────────────────────────
+function v1059SessionDay(s){return typeof sessionDay==='function'?sessionDay(s):String(s?.date||'').slice(0,10);}
+function v1059DateLabel(value){
+  if(!value)return '—';
+  try{return new Date(String(value).slice(0,10)+'T12:00:00').toLocaleDateString('ar-EG',{day:'numeric',month:'short'});}catch(_){return String(value);}
+}
+function v1059DaysBetween(a,b){
+  const A=new Date(String(a||'').slice(0,10)+'T12:00:00'),B=new Date(String(b||'').slice(0,10)+'T12:00:00');
+  if(Number.isNaN(A.getTime())||Number.isNaN(B.getTime()))return 0;
+  return Math.round((B-A)/86400000);
+}
+function v1059Short(text,max=58){const t=String(text||'—').replace(/\s+/g,' ').trim();return t.length>max?t.slice(0,max-1)+'…':t;}
+function v1059SecText(sec){
+  if(!sec)return '—';
+  if(sec.surah){const idx=S.findIndex(x=>x.n===sec.surah),max=idx>=0?S[idx].a:0,full=sec.full||(Number(sec.from||1)===1&&max&&Number(sec.to||0)>=max);return full?`سورة ${sec.surah} كاملة`:`${sec.surah} ${Number(sec.from)||1}–${Number(sec.to)||Number(sec.from)||1}`;}
+  if(sec.chips?.length)return v1059Short(sec.chips.join('، '),72);
+  return '—';
+}
+function v1059GradeText(g){
+  const n=V1051_CARRY.normalizeGrade(g||'');
+  if(n==='ممتاز')return 'ممتاز ⭐⭐⭐';if(n==='جيد جداً')return 'جيد جدًا ⭐⭐';if(n==='جيد')return 'جيد ⭐';if(n==='ضعيف')return 'يحتاج متابعة 😕';if(n==='إعادة')return 'إعادة 🔄';return '';
+}
+function v1059GradeClass(g){const n=V1051_CARRY.normalizeGrade(g||'');return n==='ممتاز'?'excellent':n==='جيد جداً'?'verygood':n==='جيد'?'good':(n==='ضعيف'||n==='إعادة')?'repeat':'';}
+function v1059StopSnapshot(studentId,dateKey){
+  const ordered=sessions.filter(x=>x.studentId===studentId&&x.status==='حضر'&&v1059SessionDay(x)<=dateKey&&x.id!==(editingSessionId||'')).sort((a,b)=>v1059SessionDay(a).localeCompare(v1059SessionDay(b))||String(a.updatedAt||'').localeCompare(String(b.updatedAt||'')));
+  const result={new:null,rec:null,far:null,juz:null,surahReview:null,latest:ordered.at(-1)||null};
+  for(const ses of ordered){
+    for(const k of ['new','rec','far']){const actual=ses.actualRecitation?.[k]||ses[k];if(actual)result[k]={...actual,date:ses.date,grade:ses.prevGrades?.[k]||ses[k]?.grade||''};}
+    if(ses.juz?.chips?.length)result.juz={chips:[...ses.juz.chips],date:ses.date,grade:ses.prevGrades?.juz||''};
+    if(ses.surahReview?.chips?.length)result.surahReview={chips:[...ses.surahReview.chips],date:ses.date,grade:ses.prevGrades?.surahReview||''};
+  }
+  return result;
+}
+function v1059Upcoming(studentId,dateKey){
+  const list=sessions.filter(s=>s.studentId===studentId&&s.status==='حضر'&&v1059SessionDay(s)<=dateKey&&s.id!==(editingSessionId||'')).sort((a,b)=>v1059SessionDay(b).localeCompare(v1059SessionDay(a))||String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
+  const s=list[0]||null;return s?{new:s.new||null,rec:s.rec||null,far:s.far||null,juz:s.juz||null,surahReview:s.surahReview||null,date:s.date}:{};
+}
+function v1059SyncPanelState(key){
+  settings.v10=settings.v10||{};settings.v10.sessionPanels={stop:false,review:false,...(settings.v10.sessionPanels||{})};
+  const open=!!settings.v10.sessionPanels[key],cap=key==='stop'?'Stop':'Review',body=document.getElementById(`v1059${cap}Body`),toggle=document.getElementById(`v1059${cap}Toggle`),action=document.getElementById(`v1059${cap}Action`),panel=document.getElementById(`v1059${cap}Panel`);
+  if(body)body.hidden=!open;if(toggle)toggle.setAttribute('aria-expanded',String(open));if(action)action.textContent=open?'إغلاق':'فتح';if(panel)panel.classList.toggle('open',open);
+}
+function toggleV1059SessionPanel(key){
+  if(!['stop','review'].includes(key))return;settings.v10=settings.v10||{};settings.v10.sessionPanels={stop:false,review:false,...(settings.v10.sessionPanels||{})};settings.v10.sessionPanels[key]=!settings.v10.sessionPanels[key];
+  v1059SyncPanelState(key);try{save();}catch(_){/* preference only */}
+}
+function v1059JourneyRef(key,last,next){
+  const sec=next||last;if(!sec)return null;
+  if(sec.surah)return{surah:sec.surah};
+  if(key==='surahReview'&&sec.chips?.length)return{surah:String(sec.chips[0]).replace(/^سورة\s+/,'')};
+  if(key==='juz'&&sec.chips?.length){const parsed=V1051_CARRY.parseJuzChip(sec.chips[0],JZ);if(parsed){const q=parsed.quarter||1,j=JZ.indexOf(parsed.juzName)+1,m=V1052_STRUCTURE.refFor(j,q);if(m)return{surah:S[m.surah-1]?.n||'',ayah:m.ayah};}}
+  return null;
+}
+async function v1059OpenJourneyMushaf(key){
+  if(!curStId)return;const dateKey=document.getElementById('sesDate')?.value||localDateKey(),stops=v1059StopSnapshot(curStId,dateKey),up=v1059Upcoming(curStId,dateKey),ref=v1059JourneyRef(key,stops[key],up[key]);if(!ref?.surah)return toast('لا يوجد موضع مصحف محدد لهذا القسم','info');
+  try{const api=globalThis.ImamApp?.MushafOffline;if(!api?.openTeacherReader)return toast('قارئ المصحف غير متاح الآن','error');const idx=S.findIndex(x=>x.n===ref.surah),rows=await api.loadSurahIndex?.(),row=Array.isArray(rows)?rows.find(x=>Number(x.id)===idx+1):null;await api.openTeacherReader(Number(row?.page)||1);}catch(_){toast('تعذر فتح موضع المصحف الآن','error');}
+}
+function v1059RenderSessionJourney(){
+  const card=document.getElementById('sessionJourneyCard'),strip=document.getElementById('sessionJourneyStrip');if(!card||!strip)return;
+  if(!curStId){card.style.display='none';return;}card.style.display='block';
+  const dateKey=document.getElementById('sesDate')?.value||localDateKey(),stops=v1059StopSnapshot(curStId,dateKey),up=v1059Upcoming(curStId,dateKey),latest=stops.latest;
+  const rows=[['new','📖','الحفظ',stops.new,up.new],['rec','📚','قريب',stops.rec,up.rec],['far','📘','بعيد',stops.far,up.far],['juz','📜','الأجزاء',stops.juz,up.juz],['surahReview','🕌','السور',stops.surahReview,up.surahReview]];
+  let active=0;strip.innerHTML=rows.map(([key,icon,label,last,next])=>{if(last||next)active++;const lastTxt=v1059SecText(last),nextTxt=v1059SecText(next),grade=v1059GradeText(last?.grade),canOpen=!!v1059JourneyRef(key,last,next);return `<article class="v1059-journey-item${(!last&&!next)?' empty':''}"><div class="v1059-journey-head"><span><b>${icon} ${label}</b>${last?.date?`<small>${v10Esc(v1059DateLabel(last.date))}</small>`:''}</span>${grade?`<span class="v1059-grade ${v1059GradeClass(last.grade)}">${v10Esc(grade)}</span>`:''}</div><div class="v1059-journey-line"><small>آخر تسميع</small><strong title="${v10Esc(lastTxt)}">${v10Esc(v1059Short(lastTxt))}</strong></div><div class="v1059-journey-line next"><small>القادم</small><strong title="${v10Esc(nextTxt)}">${v10Esc(v1059Short(nextTxt))}</strong></div>${canOpen?`<button type="button" class="v1059-mushaf-link" onclick="v1059OpenJourneyMushaf('${key}')">📖 فتح الموضع في المصحف</button>`:''}</article>`;}).join('');
+  const carry=Array.isArray(latest?.carryForward?.items)?latest.carryForward.items:[],meta=document.getElementById('v1059JourneyMeta'),badge=document.getElementById('v1059StopBadge'),hint=document.getElementById('v1059StopHint');
+  if(meta)meta.innerHTML=latest?`<span>آخر حصة <b>${v10Esc(v1059DateLabel(latest.date))}</b></span><span>أقسام نشطة <b>${active}</b></span>${carry.length?`<span class="warn">إعادة معلقة <b>${carry.length}</b></span>`:'<span class="ok">لا توجد إعادة محفوظة</span>'}`:'<span>لا توجد حصة سابقة لهذا الطالب</span>';
+  if(badge){badge.hidden=!active;badge.textContent=active;}if(hint)hint.textContent=latest?`آخر حصة ${v1059DateLabel(latest.date)} · ${active} مسارات`:'لا توجد حصة سابقة';v1059SyncPanelState('stop');
+}
+function v1059ReviewInterval(grade,status,successes=0){
+  const g=V1051_CARRY.normalizeGrade(grade||'');if(status==='repeat'||status==='not_heard'||g==='ضعيف'||g==='إعادة')return{days:1,successes:0};
+  if(g==='ممتاز'){successes++;return{days:[3,7,14,28,42][Math.min(successes-1,4)],successes};}
+  if(g==='جيد جداً'){successes=Math.max(1,successes+1);return{days:[2,5,10,21][Math.min(successes-1,3)],successes};}
+  if(g==='جيد')return{days:2,successes:Math.max(0,successes)};return{days:1,successes:0};
+}
+function v1059AddDays(dateKey,days){const d=new Date(String(dateKey).slice(0,10)+'T12:00:00');d.setDate(d.getDate()+Number(days||0));return typeof localDateKey==='function'?localDateKey(d):d.toISOString().slice(0,10);}
+function v1059ItemReviewLedger(studentId){
+  const by=new Map(),success=new Map(),ordered=sessions.filter(s=>s.studentId===studentId&&s.status==='حضر').sort((a,b)=>v1059SessionDay(a).localeCompare(v1059SessionDay(b)));
+  for(const ses of ordered){for(const group of (ses.reviewResults||[])){for(const item of (group.items||[])){const grade=V1051_CARRY.normalizeGrade(item.grade||item.evaluation||''),status=V1051_CARRY.resultStatus(item);if(!grade&&status==='not_heard'&&!item.status)continue;let key='',entry={type:item.type||group.type,grade,status,lastDate:v1059SessionDay(ses)};
+      if(item.type==='juz_quarter'){key=`juz:${item.juzIndex||JZ.indexOf(item.juzName)+1}:q${item.quarter}`;entry={...entry,juzName:item.juzName,quarter:Number(item.quarter),label:v1051ItemDisplay(item)};}
+      else if(item.surahName){key=`surah:${item.surahName}`;entry={...entry,type:'surah',surah:item.surahName,from:1,to:S[item.surahId-1]?.a||1,label:`سورة ${item.surahName}`};}
+      if(!key)continue;const iv=v1059ReviewInterval(grade,status,success.get(key)||0);success.set(key,iv.successes);entry.due=v1059AddDays(entry.lastDate,iv.days);by.set(key,entry);
+  }}}
+  return by;
+}
+function v1059SmartReviewItems(studentId){
+  const today=document.getElementById('sesDate')?.value||localDateKey(),by=new Map();
+  for(const x of (typeof smartReviewLedger==='function'?smartReviewLedger(studentId):[])){by.set(`surah:${x.surah}`,{type:'surah',surah:x.surah,from:x.from||1,to:x.to||S[S.findIndex(s=>s.n===x.surah)]?.a||1,label:`سورة ${x.surah}`,grade:x.lastGrade||'',lastDate:x.lastDate,due:x.due,status:'completed'});}
+  for(const [key,x] of v1059ItemReviewLedger(studentId)){const prev=by.get(key);if(!prev||String(prev.lastDate||'')<=String(x.lastDate||''))by.set(key,x);}
+  return [...by.values()].map(x=>{const overdue=v1059DaysBetween(x.due,today),repeat=x.status==='repeat'||x.status==='not_heard'||V1051_CARRY.normalizeGrade(x.grade)==='ضعيف',dueNow=x.due<=today;return{...x,overdue,dueNow,repeat,priority:repeat?0:dueNow&&overdue>=7?1:dueNow?2:3};}).sort((a,b)=>a.priority-b.priority||b.overdue-a.overdue||String(a.due).localeCompare(String(b.due)));
+}
+function v1059ReviewReason(x){if(x.repeat)return x.status==='not_heard'?'لم يُسمع — أولوية إعادة':'يحتاج تثبيت — أولوية عالية';if(x.dueNow)return x.overdue>0?`متأخر ${x.overdue} يوم`:'مستحق اليوم';const days=Math.max(1,-x.overdue);return `يستحق بعد ${days} يوم`;}
+function v1059SuggestionMushafRef(x){if(x.type==='surah'&&x.surah)return{surah:x.surah};if(x.type==='juz_quarter'){const j=JZ.indexOf(x.juzName)+1,m=V1052_STRUCTURE.refFor(j,x.quarter);if(m)return{surah:S[m.surah-1]?.n||'',ayah:m.ayah};}return null;}
+async function v1059OpenSuggestionMushaf(i){const x=V10.smartReviewItems?.[i],ref=v1059SuggestionMushafRef(x);if(!ref?.surah)return toast('لا يوجد موضع مصحف محدد','info');try{const api=globalThis.ImamApp?.MushafOffline,idx=S.findIndex(s=>s.n===ref.surah),rows=await api?.loadSurahIndex?.(),row=Array.isArray(rows)?rows.find(r=>Number(r.id)===idx+1):null;await api?.openTeacherReader?.(Number(row?.page)||1);}catch(_){toast('تعذر فتح المصحف الآن','error');}}
+function applyV1059ReviewSuggestion(i,target='rec'){
+  const x=V10.smartReviewItems?.[i];if(!x)return;
+  if(x.type==='juz_quarter'){const chip=V1051_CARRY.quarterChip(x.juzName,x.quarter);if(!juzChips.includes(chip))juzChips.push(chip);secOn.juz=true;updateTogs();renderChips();toast('تمت إضافة الربع إلى مراجعة الأجزاء','success');}
+  else if(x.surah){const idx=S.findIndex(s=>s.n===x.surah);if(idx<0)return;const key=target==='far'?'far':'rec';secOn[key]=true;updateTogs();setSectionAutoValue(key,idx,x.from||1,x.to||S[idx].a);toast(`تمت إضافة ${x.surah} إلى ${key==='rec'?'المراجعة القريبة':'المراجعة البعيدة'}`,'success');}
+  scheduleDraftSave();v1059RenderSessionJourney();v1059RenderReviewSuggestions();
+}
+function v1059RenderReviewSuggestions(){
+  const el=document.getElementById('smartReviewSuggestions'),badge=document.getElementById('v1059ReviewBadge'),hint=document.getElementById('v1059ReviewHint');if(!el)return;
+  if(!curStId){el.innerHTML='';if(badge)badge.hidden=true;return;}
+  const all=v1059SmartReviewItems(curStId),due=all.filter(x=>x.dueNow||x.repeat),upcoming=all.filter(x=>!x.dueNow&&!x.repeat).slice(0,3),rows=[...due.slice(0,8),...(!due.length?upcoming:[])];V10.smartReviewItems=rows;
+  if(badge){badge.hidden=!due.length;badge.textContent=due.length;}if(hint)hint.textContent=due.length?`${due.length} عنصر مستحق أو يحتاج تثبيت`:(upcoming.length?'لا يوجد مستحق الآن · القادم قريبًا':'لا يوجد سجل كافٍ للاقتراح');
+  if(!rows.length){el.innerHTML='<div class="v1059-review-empty"><b>✓ لا توجد مراجعة مستحقة الآن</b><span>سيبني النظام اقتراحاته تلقائيًا مع تراكم تقييمات الطالب.</span></div>';v1059SyncPanelState('review');return;}
+  const dueCount=due.length,repeatCount=due.filter(x=>x.repeat).length,overdueCount=due.filter(x=>!x.repeat&&x.overdue>0).length;
+  el.innerHTML=`<div class="v1059-review-overview"><span>مستحق الآن <b>${dueCount}</b></span>${repeatCount?`<span class="danger">إعادة/تثبيت <b>${repeatCount}</b></span>`:''}${overdueCount?`<span class="warn">متأخر <b>${overdueCount}</b></span>`:''}</div><div class="v1059-review-list">${rows.map((x,i)=>{const future=!x.dueNow&&!x.repeat,grade=v1059GradeText(x.grade),ref=v1059SuggestionMushafRef(x);return `<article class="v1059-review-card ${x.repeat?'urgent':future?'upcoming':x.overdue>=7?'late':''}"><div class="v1059-review-main"><div><b>${v10Esc(x.label||x.surah||'مراجعة')}</b><small>${v10Esc(v1059ReviewReason(x))}${grade?` · آخر تقييم: ${v10Esc(grade)}`:''}</small></div><span class="v1059-due">${future?v10Esc(v1059DateLabel(x.due)):(x.repeat?'إعادة':'اليوم')}</span></div><div class="v1059-review-actions">${x.type==='juz_quarter'?`<button type="button" onclick="applyV1059ReviewSuggestion(${i},'juz')">+ أضف للأجزاء</button>`:`<button type="button" onclick="applyV1059ReviewSuggestion(${i},'rec')">+ قريب</button><button type="button" onclick="applyV1059ReviewSuggestion(${i},'far')">+ بعيد</button>`}${ref?`<button type="button" class="mushaf" onclick="v1059OpenSuggestionMushaf(${i})">📖 المصحف</button>`:''}</div></article>`;}).join('')}</div>`;
+  v1059SyncPanelState('review');
+}
+
 function v10BuildReviewAssignmentsFromData(d){const out=[];if(d?.juz?.chips?.length)out.push(v10Assignment('juz','مراجعة الأجزاء',d.juz.chips));if(d?.surahReview?.chips?.length)out.push(v10Assignment('surah_group','مراجعة السور',d.surahReview.chips));return out;}
 function v1051MergeJuzChips(baseChips,extraChips){
   const out=[];
@@ -336,11 +454,14 @@ const V10_OVERRIDES={
   buildWAMsg:v10BuildWAMsg,
   normalizeJuzChip:v1051NormalizeJuzChip,
   addJuz:v1051AddJuz,
-  getAssessmentGrades:v1051GetAssessmentGrades
+  getAssessmentGrades:v1051GetAssessmentGrades,
+  renderSessionJourney:v1059RenderSessionJourney,
+  renderReviewSuggestions:v1059RenderReviewSuggestions,
+  renderJuzChips:v1059RenderJuzChips
 };
 for(const [name,impl] of Object.entries(V10_OVERRIDES)){
   globalThis.ImamApp.Legacy.override(name,impl,'v10.2');
 }
 
-function initV10(){v10Migrate();enhanceSessionAccordions();initV10SurahDropdowns();injectFacebookSetting();injectThemeSettings();injectLibraries();queueV10HomeEnhance();if(curPage==='mushaf'){if(globalThis.ImamApp?.MushafOffline?.render)globalThis.ImamApp.MushafOffline.render();else renderV9Mushaf();}}
+function initV10(){v10Migrate();enhanceSessionAccordions();initV10SurahDropdowns();injectFacebookSetting();injectThemeSettings();injectLibraries();queueV10HomeEnhance();v1059SyncPanelState('stop');v1059SyncPanelState('review');v1052RefreshJuzUnitOptions();document.addEventListener('imam:quran-structure-labels',()=>{v1052RefreshJuzUnitOptions();v1059RenderJuzChips();});if(curStId){v1059RenderSessionJourney();v1059RenderReviewSuggestions();}if(curPage==='mushaf'){if(globalThis.ImamApp?.MushafOffline?.render)globalThis.ImamApp.MushafOffline.render();else renderV9Mushaf();}}
 document.addEventListener('DOMContentLoaded',()=>setTimeout(initV10,50));

@@ -1,0 +1,16 @@
+'use strict';
+const assert=require('assert');
+const path=require('path');
+globalThis.ImamApp={};
+globalThis.S=[{n:'الفاتحة'},{n:'البقرة'},{n:'آل عمران'},{n:'النساء'},{n:'المائدة'},{n:'الأنعام'},{n:'الأعراف'},{n:'الأنفال'},{n:'التوبة'},{n:'يونس'}];
+globalThis.JZ=Array.from({length:30},(_,i)=>`جزء ${i+1}`);
+require(path.join('..','js','features','quran-structure.js'));
+const Q=globalThis.ImamApp.QuranStructure;
+assert(Q,'QuranStructure export missing');
+assert.strictEqual(Q.RUB_STARTS.length,240,'must expose exactly 240 rub al-hizb starts');
+assert.deepStrictEqual(Q.refFor(1,1),{ref:'1:1',surah:1,ayah:1,rubIndex:1,hizbIndex:1,juz:1,quarter:1});
+assert.strictEqual(Q.refFor(1,8).hizbIndex,2,'eighth quarter must belong to second hizb');
+assert.strictEqual(Q.refFor(30,8).rubIndex,240,'last quarter must be rub 240');
+assert(Q.hizbLabel(1,1).includes('الحزب الأول'),'first hizb label missing');
+assert(Q.quarterLabel(1,8).includes('الربع الثامن 8/8'),'eighth-quarter label missing');
+console.log('Quran structure checks passed: 30 juz / 60 hizb / 240 quarters');
