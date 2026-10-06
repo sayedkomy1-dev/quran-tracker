@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran — mobile-first Madani Mushaf offline pages v10.5.2
+/* We Live Quran — mobile-first Madani Mushaf offline pages v10.5.3
    Fixes Android's inability to render cached PDF pages inline by using the
    versioned quran.ws SVG CDN. Each SVG is optionally gzip-compressed before
    being persisted in IndexedDB, then inflated only when displayed. */
@@ -15,7 +15,7 @@
   const CDN_ROOT=`https://cdn.quran.ws/svg/pages/${CDN_VERSION}/hafs-kfqc`;
   const SOURCE_INFO='https://quran.ws/blocks/quran-svg/';
   const OFFICIAL_INFO='https://qurancomplex.gov.sa/en/apps-hafs/';
-  const state={running:false,cancel:false,objectUrl:'',lastError:'',lastPage:1};
+  const state={running:false,cancel:false,objectUrl:'',lastError:'',lastPage:1,teacherPage:1,readerBound:false,audioCtx:null};
 
   function clampPage(n){return Math.max(1,Math.min(PAGE_COUNT,Number(n)||1));}
   function padPage(page){return String(clampPage(page)).padStart(3,'0');}
@@ -74,13 +74,83 @@
     return {page,size:stored.size,cached:false};
   }
 
-  function progressText(text){const el=document.getElementById('mushafLiteProgress');if(el)el.textContent=text||'';}
+  function progressText(text){for(const id of ['mushafLiteProgress','v1053TeacherDownloadStatus']){const el=document.getElementById(id);if(el)el.textContent=text||'';}}
   async function saveMeta(extra={}){
     const s=await stats();const raw=await g.idbKvGet(META_KEY).catch(()=>null);let old={};
     try{old=JSON.parse(raw||'{}')}catch(_){old={};}
     await g.idbKvPut(META_KEY,JSON.stringify({...old,...extra,format:'svg-gzip',cdnVersion:CDN_VERSION,count:s.count,bytes:s.bytes,updatedAt:new Date().toISOString()}));
     return s;
   }
+  async function refreshHomeState(){
+    try{if(typeof g.v1052RefreshMushafQuickStatus==='function')await g.v1052RefreshMushafQuickStatus();}catch(_){ }
+    try{await updateTeacherDownloadState();}catch(_){ }
+  }
+
+  async function cleanupLegacyStorageOnce(){
+    const flag='mushaf:v1053:legacy-cleaned';
+    if(await g.idbKvGet(flag).catch(()=>null))return;
+    // v10.5.3 no longer uses the 200+ MB PDF path at all.
+    await g.mediaDelete('mushaf:madinah:pdf').catch(()=>{});
+    await g.idbKvPut('mushaf:madinah:meta','{}').catch(()=>{});
+    const old=await oldKeys().catch(()=>[]);
+    for(const k of old)await g.mediaDelete(k).catch(()=>{});
+    await g.idbKvPut(flag,new Date().toISOString()).catch(()=>{});
+  }
+
+  function playPageFlipSound(){
+    try{
+      const AC=g.AudioContext||g.webkitAudioContext;if(!AC)return;
+      const ctx=state.audioCtx||(state.audioCtx=new AC());if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+      const dur=.13,frames=Math.max(1,Math.floor(ctx.sampleRate*dur)),buf=ctx.createBuffer(1,frames,ctx.sampleRate),data=buf.getChannelData(0);
+      for(let i=0;i<frames;i++){const t=i/frames;data[i]=(Math.random()*2-1)*(1-t)*(.55+.45*Math.sin(Math.PI*t));}
+      const src=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+      filter.type='bandpass';filter.frequency.value=1450;filter.Q.value=.55;gain.gain.setValueAtTime(.0001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.16,ctx.currentTime+.012);gain.gain.exponentialRampToValueAtTime(.0001,ctx.currentTime+dur);
+      src.buffer=buf;src.connect(filter);filter.connect(gain);gain.connect(ctx.destination);src.start();
+    }catch(_){ }
+  }
+
+  function ensureTeacherReader(){
+    let mo=document.getElementById('v1053TeacherMushaf');if(mo)return mo;
+    mo=document.createElement('div');mo.id='v1053TeacherMushaf';mo.className='v1053-reader-modal';mo.setAttribute('aria-hidden','true');
+    mo.innerHTML=`<div class="v1053-reader-shell" role="dialog" aria-modal="true" aria-label="مصحف المحفظ">
+      <header class="v1053-reader-top"><button type="button" class="v1053-reader-close" onclick="closeTeacherMushafReader()" aria-label="إغلاق">✕</button><div><b>مصحف المدينة النبوية</b><span>حفص عن عاصم · صفحات المصحف من الإنترنت</span></div><button id="v1053TeacherDownload" type="button" class="v1053-reader-download" onclick="downloadTeacherMushafPages()">تنزيل Offline</button></header>
+      <div class="v1053-reader-meta"><button type="button" onclick="teacherMushafTurn(-1)" aria-label="الصفحة السابقة">‹</button><label>صفحة <input id="v1053TeacherPageInput" type="number" min="1" max="604" value="1" onchange="openTeacherMushafPage(this.value,false)"></label><button type="button" onclick="teacherMushafTurn(1)" aria-label="الصفحة التالية">›</button></div>
+      <div class="v1053-mushaf-ornament"><span class="v1053-corner c1">۞</span><span class="v1053-corner c2">۞</span><span class="v1053-corner c3">۞</span><span class="v1053-corner c4">۞</span><div id="v1053TeacherMushafFrame" class="v1053-teacher-frame"><div class="v9-mushaf-empty"><div><b>جاري فتح المصحف…</b></div></div></div></div>
+      <footer class="v1053-reader-bottom"><span id="v1053TeacherPageState">صفحة 1</span><span id="v1053TeacherDownloadStatus"></span><small>اسحب لليسار للصفحة التالية، ولليمين للسابقة.</small></footer>
+    </div>`;
+    document.body.appendChild(mo);
+    const frame=mo.querySelector('#v1053TeacherMushafFrame');let x0=0,y0=0,t0=0;
+    frame.addEventListener('touchstart',e=>{const t=e.changedTouches?.[0];if(!t)return;x0=t.clientX;y0=t.clientY;t0=Date.now();},{passive:true});
+    frame.addEventListener('touchend',e=>{const t=e.changedTouches?.[0];if(!t)return;const dx=t.clientX-x0,dy=t.clientY-y0,dt=Date.now()-t0;if(dt<700&&Math.abs(dx)>52&&Math.abs(dx)>Math.abs(dy)*1.25){teacherTurn(dx<0?1:-1);}}, {passive:true});
+    mo.addEventListener('click',e=>{if(e.target===mo)closeTeacherReader();});
+    return mo;
+  }
+
+  async function updateTeacherDownloadState(){
+    const btn=document.getElementById('v1053TeacherDownload');if(!btn)return;
+    const s=await stats();
+    if(s.count>=PAGE_COUNT){btn.hidden=true;btn.textContent='مكتمل';}
+    else{btn.hidden=false;btn.textContent=s.count?`استكمال ${s.count}/${PAGE_COUNT}`:'تنزيل Offline';}
+  }
+
+  async function teacherPage(page,withSound=true){
+    page=clampPage(page);state.teacherPage=page;
+    const target=document.getElementById('v1053TeacherMushafFrame');if(!target)return;
+    await showLitePage(page,'v1053TeacherMushafFrame');
+    target.querySelectorAll('.mushaf-lite-online-note').forEach(x=>x.remove());
+    const inp=document.getElementById('v1053TeacherPageInput');if(inp)inp.value=page;
+    const st=document.getElementById('v1053TeacherPageState');if(st)st.textContent=`صفحة ${page} من ${PAGE_COUNT}`;
+    if(withSound)playPageFlipSound();
+    updateTeacherDownloadState().catch(()=>{});
+  }
+  function teacherTurn(delta){const next=clampPage((state.teacherPage||1)+Number(delta||0));if(next===state.teacherPage)return;teacherPage(next,true).catch(()=>{});}
+  async function openTeacherReader(page){
+    const mo=ensureTeacherReader(),last=clampPage(page||Number(await g.idbKvGet('mushaf:lastPage').catch(()=>1))||1);state.teacherPage=last;
+    mo.classList.add('open');mo.setAttribute('aria-hidden','false');document.body.classList.add('v1053-reader-open');
+    await teacherPage(last,false);await updateTeacherDownloadState();
+  }
+  function closeTeacherReader(){const mo=document.getElementById('v1053TeacherMushaf');if(!mo)return;mo.classList.remove('open');mo.setAttribute('aria-hidden','true');document.body.classList.remove('v1053-reader-open');}
+  async function downloadTeacherPages(){await downloadRange(1,PAGE_COUNT);await refreshHomeState();}
 
   async function downloadRange(from=1,to=PAGE_COUNT){
     if(state.running){notify('يوجد تنزيل صفحات جارٍ بالفعل','info');return;}
@@ -106,7 +176,7 @@
     if(failed){progressText(`تعذر تنزيل بعض الصفحات (${failed}). ${state.lastError||''}`);notify('تعذر تنزيل بعض صفحات المصحف. أعد المحاولة لاحقًا.','error');}
     else if(state.cancel){progressText(`تم إيقاف التنزيل. المحفوظ ${s.count}/${PAGE_COUNT} صفحة (${fmt(s.bytes)}).`);notify('تم إيقاف تنزيل الصفحات','info');}
     else{progressText(`✓ محفوظ ${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}`);notify(from===1&&to===PAGE_COUNT?'تم تنزيل المصحف للعمل دون إنترنت':'تم تنزيل الصفحات المطلوبة','success');}
-    await renderPrimaryUI();
+    await renderPrimaryUI();await refreshHomeState();
   }
   function cancelDownload(){state.cancel=true;progressText('جارٍ إيقاف التنزيل بعد الصفحة الحالية…');}
 
@@ -173,25 +243,24 @@
     page=clampPage(page);progressText(`جارٍ تنزيل الصفحة ${page}…`);
     try{await fetchPage(page);await saveMeta({lastRange:[page,page]});progressText(`✓ الصفحة ${page} محفوظة Offline`);notify(`تم تنزيل الصفحة ${page}`,'success');await showLitePage(page);}
     catch(err){state.lastError=String(err?.message||err);progressText(`تعذر تنزيل الصفحة ${page}: ${state.lastError}`);notify('تعذر تنزيل الصفحة','error');}
-    await renderPrimaryUI({keepPage:true});
+    await renderPrimaryUI({keepPage:true});await refreshHomeState();
   }
 
   async function renderPrimaryUI(opts={}){
     const root=document.getElementById('v9MushafApp');if(!root)return;
-    const s=await stats(),legacy=await legacyStats();
+    const s=await stats();
     const last=clampPage(Number(await g.idbKvGet('mushaf:lastPage').catch(()=>1))||1);state.lastPage=last;
     const st=await (typeof g.storageInfo==='function'?g.storageInfo():Promise.resolve({usage:0,quota:0}));
     const pct=st.quota?Math.min(100,Math.round((st.usage||0)/st.quota*100)):0;
     root.classList.add('mushaf-mobile-reader-v1041');
     root.innerHTML=`
       <section class="mushaf-lite-card mushaf-lite-primary">
-        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 10.5.2</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>الصفحات تُعرض كصورة SVG واضحة داخل التطبيق بدل PDF، لذلك تعمل على Android بدون شاشة «فتح PDF».</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
-        <div class="mushaf-lite-actions"><button class="btn btn-g" onclick="downloadMushafLitePage(${last})">تنزيل الصفحة ${last}</button><button class="btn btn-out" onclick="downloadMushafRangePages()">تنزيل نطاق الحفظ</button><button class="btn btn-out" onclick="downloadMushafLiteAll()">تنزيل 604 صفحة</button>${state.running?'<button class="btn btn-red" onclick="cancelMushafLiteDownload()">إيقاف</button>':''}</div>
+        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 10.5.3</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>الصفحات تُعرض كصورة SVG واضحة داخل التطبيق بدل PDF، لذلك تعمل على Android بدون شاشة «فتح PDF».</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
+        <div class="mushaf-lite-actions">${s.count<PAGE_COUNT?`<button class="btn btn-g" onclick="downloadMushafLiteAll()">${s.count?`استكمال تنزيل المصحف ${s.count}/${PAGE_COUNT}`:'تنزيل المصحف Offline'}</button>`:''}<button class="btn btn-out" onclick="downloadMushafRangePages()">تنزيل نطاق الحفظ</button>${state.running?'<button class="btn btn-red" onclick="cancelMushafLiteDownload()">إيقاف</button>':''}</div>
         <div id="mushafLiteProgress" class="v9-mushaf-progress">${state.running?'جارٍ التنزيل…':s.count?`✓ محفوظ ${s.count} صفحة (${fmt(s.bytes)})`:'لم يتم تنزيل صفحات بعد'}</div>
         <div class="mushaf-lite-reader"><div class="mushaf-lite-toolbar"><b>قارئ الصفحات</b><input id="mushafLitePageInput" type="number" min="1" max="604" value="${last}" onkeydown="if(event.key==='Enter')openMushafLitePage(this.value)"><button onclick="openMushafLitePage(Math.max(1,(Number(document.getElementById('mushafLitePageInput')?.value)||1)-1))">السابق</button><button onclick="openMushafLitePage(Math.min(604,(Number(document.getElementById('mushafLitePageInput')?.value)||1)+1))">التالي</button></div><div id="mushafLiteFrame" class="mushaf-lite-frame"><div class="v9-mushaf-empty"><div><b>صفحة ${last}</b><p>اضغط «فتح الصفحة» لعرضها.</p><button class="btn btn-g btn-sm" onclick="openMushafLitePage(${last})">فتح الصفحة</button></div></div></div></div>
       </section>
       <section class="v92-offline-card"><div><b>التخزين Offline</b><span>المستخدم ${fmt(st.usage)} من ${fmt(st.quota)}</span></div><div class="v92-storage"><i style="width:${pct}%"></i></div><div class="v92-step-actions"><button class="btn btn-out btn-sm" onclick="requestPersistentStorage().then(()=>renderV9Mushaf())">حماية التخزين</button><button class="btn btn-out btn-sm" onclick="downloadQuranTextPack()">تنزيل النص العثماني Offline</button></div><div id="v9TextPackProgress" class="v9-mushaf-progress">${(g.settings?.v9?.textPackStatus)||''}</div></section>
-      ${(legacy.pdfBytes||legacy.oldPages)?`<details class="mushaf-legacy-card"><summary>تنظيف ملفات المصحف القديمة وتوفير مساحة</summary><div class="mushaf-legacy-body">${legacy.pdfBytes?`<p>ملف PDF القديم ما زال مثبتًا: <b>${fmt(legacy.pdfBytes)}</b>. بعد التأكد أن القارئ الجديد يعمل يمكنك حذفه بأمان.</p><button class="btn btn-red btn-sm" onclick="deleteLegacyMushafPdf()">حذف PDF القديم</button>`:''}${legacy.oldPages?`<p>يوجد ${legacy.oldPages} صفحة PDF من تجربة 10.4.0 (${fmt(legacy.oldPageBytes)}).</p><button class="btn btn-out btn-sm" onclick="cleanupOldMushafPageCache()">حذف كاش الصفحات القديم</button>`:''}</div></details>`:''}
       <section class="mushaf-lite-source"><b>المصدر التقني:</b> صفحات مصحف المدينة بصيغة SVG من Quran.ws CDN، الإصدار ${CDN_VERSION}. <button onclick="openMushafLiteSourceInfo()">تفاصيل المصدر</button> <button onclick="openMushafOfficialInfo()">مرجع مجمع الملك فهد</button></section>`;
     if(opts.keepPage||s.count||navigator.onLine)setTimeout(()=>showLitePage(last).catch(()=>{}),0);
   }
@@ -210,7 +279,7 @@
   }
 
   async function wrappedRender(){await renderPrimaryUI();}
-  if(Legacy){Legacy.override('renderV9Mushaf',wrappedRender,'mushaf-offline-v10.5.2');Legacy.override('openCurrentMushafPage',currentMushafPage,'mushaf-offline-v10.5.2');}
+  if(Legacy){Legacy.override('renderV9Mushaf',wrappedRender,'mushaf-offline-v10.5.3');Legacy.override('openCurrentMushafPage',currentMushafPage,'mushaf-offline-v10.5.3');}
   else{g.renderV9Mushaf=wrappedRender;g.openCurrentMushafPage=currentMushafPage;}
 
   g.downloadMushafLitePage=downloadPage;
@@ -223,8 +292,13 @@
   g.openMushafLitePage=showLitePage;
   g.openMushafLiteSourceInfo=()=>window.open(SOURCE_INFO,'_blank','noopener');
   g.openMushafOfficialInfo=()=>window.open(OFFICIAL_INFO,'_blank','noopener');
-  APP.MushafOffline={pageUrl,stats,downloadRange,downloadPage,showPage:showLitePage,render:renderPrimaryUI,openCurrent:currentMushafPage,source:SOURCE_INFO,official:OFFICIAL_INFO,cdnVersion:CDN_VERSION};
-  // v9 can paint its legacy PDF UI before deferred feature modules finish loading.
-  // Replace it immediately once this feature is ready; no user refresh should be required.
-  setTimeout(()=>renderPrimaryUI().catch(err=>console.error('[mushaf-offline] initial render',err)),0);
+  g.openTeacherMushaf=openTeacherReader;
+  g.downloadMadinahMushafDirect=downloadTeacherPages;
+  g.closeTeacherMushafReader=closeTeacherReader;
+  g.teacherMushafTurn=teacherTurn;
+  g.openTeacherMushafPage=(page,sound=true)=>teacherPage(page,sound!==false);
+  g.downloadTeacherMushafPages=downloadTeacherPages;
+  APP.MushafOffline={pageUrl,stats,downloadRange,downloadAll:downloadTeacherPages,downloadPage,showPage:showLitePage,render:renderPrimaryUI,openCurrent:currentMushafPage,openTeacherReader,closeTeacherReader,pageCount:PAGE_COUNT,source:SOURCE_INFO,official:OFFICIAL_INFO,cdnVersion:CDN_VERSION};
+  // v10.5.3 removes the legacy PDF storage path. Only SVG pages downloaded from the web remain.
+  setTimeout(()=>{cleanupLegacyStorageOnce().then(()=>refreshHomeState()).catch(()=>{});renderPrimaryUI().catch(err=>console.error('[mushaf-offline] initial render',err));},0);
 })(globalThis);

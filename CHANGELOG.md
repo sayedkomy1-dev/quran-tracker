@@ -1,4 +1,13 @@
-## 10.5.2 — Stage 1: Home Workspace + Teacher Mushaf
+# Changelog
+
+## 10.5.3
+- Home: Today’s Students is closed by default with a reliable switch-style toggle.
+- Teacher Mushaf: page-based in-app reader only; no PDF opening/downloading path.
+- Teacher Mushaf: swipe left/right, previous/next controls, page-turn sound, decorative frame.
+- Offline pack: full-download button hides when all 604 pages are stored and shows resume state for partial packs.
+- Storage: one-time cleanup of the obsolete full PDF and old experimental PDF page cache.
+
+## 10.5.3 — Stage 1: Home Workspace + Teacher Mushaf
 - جعل «طلاب اليوم» قائمة قابلة للفتح/الإغلاق مع حفظ الحالة، ومغلقة افتراضيًا لتقليل الزحام.
 - إضافة بطاقة «مصحف المحفظ» في الرئيسية بفتح سريع للمصحف وزر تنزيل مستقل.
 - فصل «فتح المصحف للمراجعة» عن «إدارة المصحف/Offline» حتى تظل الرئيسية عملية.

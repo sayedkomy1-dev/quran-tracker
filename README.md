@@ -1,6 +1,6 @@
-# We Live Quran v10.5.2
+# We Live Quran v10.5.3
 
-## v10.5.2 — Stage 1: Home Workspace + Teacher Mushaf
+## v10.5.3 — Stage 1: Home Workspace + Teacher Mushaf
 
 - جعل قسم «طلاب اليوم» قابلاً للفتح والإغلاق بزر واضح، ومغلقًا افتراضيًا لتوفير مساحة.
 - إضافة بطاقة «مصحف المحفظ» في الرئيسية لفتح مصحف المدينة سريعًا أثناء المراجعة.

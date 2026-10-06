@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v10.5.2 — pure helpers for item-level recitation assessment + carry-forward. */
+/* We Live Quran v10.5.3 — pure helpers for item-level recitation assessment + carry-forward. */
 (function initRecitationCarry(g){
   const root=g.ImamApp||(g.ImamApp={});
   const QUARTER_LABELS=['الأول','الثاني','الثالث','الرابع','الخامس','السادس','السابع','الثامن'];

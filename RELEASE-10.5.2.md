@@ -1,4 +1,4 @@
-# Release 10.5.2 — Stage 1: Home Workspace + Teacher Mushaf
+# Release 10.5.3 — Stage 1: Home Workspace + Teacher Mushaf
 
 هذه هي المرحلة الأولى فقط من تحسين شاشة المحفظ.
 

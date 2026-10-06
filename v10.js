@@ -14,7 +14,6 @@ const V1051_CARRY=globalThis.ImamApp?.RecitationCarry;
 if(!V1051_CARRY)throw new Error('ImamApp.RecitationCarry is required before v10.js');
 const V1052_STRUCTURE=globalThis.ImamApp?.QuranStructure;
 if(!V1052_STRUCTURE)throw new Error('ImamApp.QuranStructure is required before v10.js');
-const V1052_MUSHAF_URL='https://pdf.quran.ws/pdfs/hafs/quran-hafs-mushaf.pdf';
 const V1051_GRADE_CHOICES=[
   {value:'ممتاز',label:'ممتاز ⭐⭐⭐'},
   {value:'جيد جداً',label:'جيد جدًا ⭐⭐'},
@@ -75,6 +74,8 @@ function v10Migrate(){
   if(Object.keys(homeDefaults).some(k=>typeof oldHome[k]!=='boolean'))changed=true;
   if(!settings.v10.layout1052){settings.v10.homeSections.students=false;settings.v10.sessionPanels={stop:false,review:false};settings.v10.layout1052=true;changed=true;}
   else settings.v10.sessionPanels={stop:false,review:false,...(settings.v10.sessionPanels||{})};
+  // v10.5.3: reset Today's Students once so the new compact home actually starts closed.
+  if(!settings.v10.layout1053){settings.v10.homeSections.students=false;settings.v10.layout1053=true;changed=true;}
   if(!Object.prototype.hasOwnProperty.call(settings,'facebookUrl')){settings.facebookUrl='https://www.facebook.com/AlImamEdu';changed=true;}
   if(!V10_THEMES[settings.themePalette]){settings.themePalette='A';changed=true;}
   if(!settings.contentAssignments||typeof settings.contentAssignments!=='object'){settings.contentAssignments={};changed=true;}
@@ -188,39 +189,35 @@ function v1052HomeSummary(cfg,section){
   return `<span class="v1052-home-summary-main"><b>👥 طلاب اليوم</b><small>${rows?`${rows} طالب${pending?` · ${pending} لم يبدأ`:''}`:'اضغط لعرض الطلاب'}</small></span><span class="v1052-home-summary-action">فتح <span class="v10-home-chevron" aria-hidden="true">⌄</span></span>`;
 }
 async function v1052RefreshMushafQuickStatus(){
-  const el=document.getElementById('v1052MushafStatus');if(!el)return;
+  const status=document.getElementById('v1053HomeMushafStatus')||document.getElementById('v1052MushafStatus');
+  const download=document.getElementById('v1053HomeMushafDownload');
+  const downloadText=document.getElementById('v1053HomeMushafDownloadText');
   try{
-    const blob=await mediaGet('mushaf:madinah:pdf').catch(()=>null);
-    if(blob){el.textContent=`مثبّت على الجهاز · ${(blob.size/1024/1024).toFixed(1)} MB`;el.dataset.ready='1';}
-    else{el.textContent='غير مثبّت — يمكنك فتح النسخة أو تنزيلها';el.dataset.ready='0';}
-  }catch(_){el.textContent='افتح أو نزّل المصحف عند الحاجة';}
-}
-async function v1052OpenMushafQuick(){
-  const win=window.open('about:blank','_blank');
-  try{
-    const blob=await mediaGet('mushaf:madinah:pdf').catch(()=>null);
-    if(blob){
-      const url=URL.createObjectURL(blob);
-      if(win)win.location.href=url;else window.location.href=url;
-      setTimeout(()=>URL.revokeObjectURL(url),120000);
-      return;
+    const api=globalThis.ImamApp?.MushafOffline;
+    const s=api?.stats?await api.stats():{count:0,bytes:0};
+    const count=Number(s?.count||0),total=Number(api?.pageCount||604);
+    if(status){
+      status.textContent=count>=total?`المصحف كامل محفوظ Offline · ${total} صفحة`:count?`${count}/${total} صفحة محفوظة — الباقي يُعرض من الإنترنت`:'جاهز للقراءة من الإنترنت — يمكنك تنزيل الصفحات للعمل Offline';
+      status.dataset.ready=count>=total?'1':'0';
     }
-    if(win)win.location.href=V1052_MUSHAF_URL;else window.open(V1052_MUSHAF_URL,'_blank','noopener');
-    toast('لا توجد نسخة محلية مثبتة؛ تم فتح المصحف الكامل في عارض المتصفح.','info');
-  }catch(_){
-    if(win)win.location.href=V1052_MUSHAF_URL;
-  }
+    if(download){
+      download.hidden=count>=total;
+      if(downloadText)downloadText.textContent=count?`استكمال التنزيل ${count}/${total}`:'تنزيل المصحف Offline';
+    }
+  }catch(_){if(status)status.textContent='افتح المصحف أو نزّل صفحاته عند الحاجة';}
+}
+function v1052OpenMushafQuick(){
+  const api=globalThis.ImamApp?.MushafOffline;
+  if(api?.openTeacherReader)return api.openTeacherReader();
+  if(typeof goPage==='function')goPage('mushaf');
 }
 function v1052DownloadMushafQuick(){
-  if(typeof downloadMadinahMushafDirect==='function')return downloadMadinahMushafDirect();
-  const a=document.createElement('a');a.href=V1052_MUSHAF_URL;a.target='_blank';a.rel='noopener';a.download='Madinah-Mushaf-Hafs-604.pdf';document.body.appendChild(a);a.click();a.remove();
+  const api=globalThis.ImamApp?.MushafOffline;
+  if(api?.downloadAll)return api.downloadAll();
+  if(typeof goPage==='function')goPage('mushaf');
 }
 function v1052EnsureMushafQuick(root){
-  if(root.querySelector('.v1052-mushaf-quick')){v1052RefreshMushafQuickStatus();return;}
-  const students=root.querySelector('.v10-home-students')||root.querySelector('.v92-today-card');
-  const card=document.createElement('section');card.className='v1052-mushaf-quick';
-  card.innerHTML=`<div class="v1052-mushaf-icon">📖</div><div class="v1052-mushaf-copy"><b>مصحف المدينة — وصول سريع</b><span id="v1052MushafStatus">جارٍ فحص النسخة المحلية…</span><small>يفتح المصحف في عارض الجهاز مباشرة؛ القارئ المدمج المؤجل لا يعيق الاستخدام.</small></div><div class="v1052-mushaf-actions"><button type="button" class="v1052-mushaf-open" onclick="v1052OpenMushafQuick()">فتح المصحف</button><button type="button" onclick="v1052DownloadMushafQuick()">تنزيل المصحف</button></div>`;
-  if(students?.parentNode)students.parentNode.insertBefore(card,students);else root.appendChild(card);
+  // v9.2 renders the single home Mushaf card. Do not insert a duplicate card.
   v1052RefreshMushafQuickStatus();
 }
 function enhanceV10HomeSections(){

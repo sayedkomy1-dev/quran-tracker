@@ -396,7 +396,6 @@ function setupContextDismiss(){document.addEventListener('click',e=>{if(!e.targe
  * one-click Mushaf download + explicit local install workflow.
  * ═══════════════════════════════════════════════════════════════ */
 const V92_MUSHAF={
-  fullPdf:'https://pdf.quran.ws/pdfs/hafs/quran-hafs-mushaf.pdf',
   mirrorInfo:'https://pdf.quran.ws/hafs/',
   officialApp:'https://qurancomplex.gov.sa/en/apps-hafs/',
   officialInfo:'https://qurancomplex.gov.sa/en/techquran/dev/'
@@ -463,13 +462,13 @@ function renderV9Home(){
     </section>
 
     <section class="v1052-mushaf-launcher" aria-label="مصحف المحفظ">
-      <div class="v1052-mushaf-copy"><span class="v1052-mushaf-icon">${v9Icon('book')}</span><div><b>مصحف المحفظ</b><span>افتح مصحف المدينة بسرعة أثناء المراجعة من غير ما تسيب شاشة المتابعة.</span></div></div>
-      <div class="v1052-mushaf-actions"><button class="v1052-mushaf-open" onclick="openTeacherMushaf()">${v9Icon('book')} فتح المصحف</button><button class="v1052-mushaf-download" onclick="downloadMadinahMushafDirect()">${v9Icon('download')} تنزيل المصحف</button></div>
+      <div class="v1052-mushaf-copy"><span class="v1052-mushaf-icon">${v9Icon('book')}</span><div><b>مصحف المحفظ</b><span id="v1053HomeMushafStatus">صفحات مصحف المدينة من الإنترنت — بدون PDF.</span></div></div>
+      <div class="v1052-mushaf-actions"><button class="v1052-mushaf-open" onclick="openTeacherMushaf()">${v9Icon('book')} فتح المصحف</button><button id="v1053HomeMushafDownload" class="v1052-mushaf-download" onclick="downloadMadinahMushafDirect()">${v9Icon('download')} <span id="v1053HomeMushafDownloadText">تنزيل المصحف</span></button></div>
     </section>
 
     <section class="v92-today-card v1052-today-card ${todayOpen?'open':''}">
       <div class="v1052-today-head">
-        <button class="v1052-today-toggle" type="button" aria-expanded="${todayOpen}" onclick="toggleTodayStudents()"><span><b>${expected.length?'طلاب اليوم':'الطلاب'} <em>${todayList.length}</em></b><small>${todayOpen?'إخفاء القائمة لتوفير مساحة للمصحف':'اضغط لعرض الطلاب وبدء الحصص'}</small></span><i aria-hidden="true">⌄</i></button>
+        <button class="v1052-today-toggle" type="button" role="switch" aria-checked="${todayOpen}" aria-expanded="${todayOpen}" onclick="toggleTodayStudents()"><span><b>${expected.length?'طلاب اليوم':'الطلاب'} <em>${todayList.length}</em></b><small>${todayOpen?'القائمة مفتوحة — اضغط لإخفائها':'مغلق افتراضيًا — افتحه عند الحاجة'}</small></span><span class="v1053-switch" aria-hidden="true"><i></i></span></button>
         <button class="v1052-today-all" onclick="goPage('students')">عرض الكل</button>
       </div>
       <div class="v92-today-list" ${todayOpen?'':'hidden'}>${listHtml}</div>
@@ -479,10 +478,9 @@ function renderV9Home(){
 
 function v92TriggerMushafFile(){document.getElementById('v9MushafFile')?.click();}
 function downloadMadinahMushafDirect(){
-  const a=document.createElement('a');
-  a.href=V92_MUSHAF.fullPdf; a.target='_blank'; a.rel='noopener'; a.download='Madinah-Mushaf-Hafs-604.pdf';
-  document.body.appendChild(a); a.click(); a.remove();
-  v9Toast('بدأ فتح ملف المصحف الكامل. بعد اكتمال التنزيل اضغط «تثبيت الملف داخل البرنامج».','info');
+  const api=globalThis.ImamApp?.MushafOffline;
+  if(api?.downloadAll)return api.downloadAll();
+  goPage('mushaf');v9Toast('افتح إدارة المصحف لتنزيل صفحات مصحف المدينة للعمل دون إنترنت.','info');
 }
 function openOfficialMushafPortal(){window.open(V92_MUSHAF.officialApp,'_blank','noopener');}
 function openMushafMirrorInfo(){window.open(V92_MUSHAF.mirrorInfo,'_blank','noopener');}
@@ -495,28 +493,9 @@ function toggleTodayStudents(){
   if(typeof queueV10HomeEnhance==='function')queueV10HomeEnhance();
 }
 function openTeacherMushaf(){
-  const win=window.open('about:blank','_blank');
-  (async()=>{
-    try{
-      const blob=await mediaGet('mushaf:madinah:pdf').catch(()=>null);
-      if(blob){
-        if(V9.mushafObjectURL)try{URL.revokeObjectURL(V9.mushafObjectURL)}catch(_){}
-        V9.mushafObjectURL=URL.createObjectURL(blob);
-        if(win)win.location.href=V9.mushafObjectURL;else window.location.href=V9.mushafObjectURL;
-        return;
-      }
-      if(navigator.onLine){
-        if(win)win.location.href=V92_MUSHAF.fullPdf;else window.open(V92_MUSHAF.fullPdf,'_blank','noopener');
-        return;
-      }
-      if(win)win.close();
-      v9Toast('لا توجد نسخة مصحف مثبتة على هذا الجهاز والإنترنت غير متصل.','error');
-    }catch(e){
-      if(win)try{win.close()}catch(_){}
-      console.error('[teacher mushaf]',e);
-      v9Toast('تعذر فتح المصحف الآن. جرّب زر «إدارة المصحف».','error');
-    }
-  })();
+  const api=globalThis.ImamApp?.MushafOffline;
+  if(api?.openTeacherReader)return api.openTeacherReader();
+  goPage('mushaf');
 }
 
 async function renderV9Mushaf(){

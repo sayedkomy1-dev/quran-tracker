@@ -1,4 +1,4 @@
-# QA Report — v10.5.2
+# QA Report — v10.5.3
 
 ## Scope
 Stage 1 فقط: Home workspace + collapsible Today list + Teacher Mushaf launcher.
@@ -19,7 +19,7 @@ Stage 1 فقط: Home workspace + collapsible Today list + Teacher Mushaf launche
 ## Automated checks
 - `npm test`: PASS.
 - `node --check` لجميع ملفات JavaScript الأساسية وميزات v10: PASS.
-- Static regression guards الخاصة بـ v10.5.2: PASS.
+- Static regression guards الخاصة بـ v10.5.3: PASS.
 - Recitation carry-forward regression checks: PASS.
 
 ## Deferred by design
