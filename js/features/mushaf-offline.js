@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran — mobile-first Madani Mushaf offline pages v10.5.1
+/* We Live Quran — mobile-first Madani Mushaf offline pages v10.5.2
    Fixes Android's inability to render cached PDF pages inline by using the
    versioned quran.ws SVG CDN. Each SVG is optionally gzip-compressed before
    being persisted in IndexedDB, then inflated only when displayed. */
@@ -185,7 +185,7 @@
     root.classList.add('mushaf-mobile-reader-v1041');
     root.innerHTML=`
       <section class="mushaf-lite-card mushaf-lite-primary">
-        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 10.5.1</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>الصفحات تُعرض كصورة SVG واضحة داخل التطبيق بدل PDF، لذلك تعمل على Android بدون شاشة «فتح PDF».</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
+        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 10.5.2</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>الصفحات تُعرض كصورة SVG واضحة داخل التطبيق بدل PDF، لذلك تعمل على Android بدون شاشة «فتح PDF».</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
         <div class="mushaf-lite-actions"><button class="btn btn-g" onclick="downloadMushafLitePage(${last})">تنزيل الصفحة ${last}</button><button class="btn btn-out" onclick="downloadMushafRangePages()">تنزيل نطاق الحفظ</button><button class="btn btn-out" onclick="downloadMushafLiteAll()">تنزيل 604 صفحة</button>${state.running?'<button class="btn btn-red" onclick="cancelMushafLiteDownload()">إيقاف</button>':''}</div>
         <div id="mushafLiteProgress" class="v9-mushaf-progress">${state.running?'جارٍ التنزيل…':s.count?`✓ محفوظ ${s.count} صفحة (${fmt(s.bytes)})`:'لم يتم تنزيل صفحات بعد'}</div>
         <div class="mushaf-lite-reader"><div class="mushaf-lite-toolbar"><b>قارئ الصفحات</b><input id="mushafLitePageInput" type="number" min="1" max="604" value="${last}" onkeydown="if(event.key==='Enter')openMushafLitePage(this.value)"><button onclick="openMushafLitePage(Math.max(1,(Number(document.getElementById('mushafLitePageInput')?.value)||1)-1))">السابق</button><button onclick="openMushafLitePage(Math.min(604,(Number(document.getElementById('mushafLitePageInput')?.value)||1)+1))">التالي</button></div><div id="mushafLiteFrame" class="mushaf-lite-frame"><div class="v9-mushaf-empty"><div><b>صفحة ${last}</b><p>اضغط «فتح الصفحة» لعرضها.</p><button class="btn btn-g btn-sm" onclick="openMushafLitePage(${last})">فتح الصفحة</button></div></div></div></div>
@@ -210,7 +210,7 @@
   }
 
   async function wrappedRender(){await renderPrimaryUI();}
-  if(Legacy){Legacy.override('renderV9Mushaf',wrappedRender,'mushaf-offline-v10.5.1');Legacy.override('openCurrentMushafPage',currentMushafPage,'mushaf-offline-v10.5.1');}
+  if(Legacy){Legacy.override('renderV9Mushaf',wrappedRender,'mushaf-offline-v10.5.2');Legacy.override('openCurrentMushafPage',currentMushafPage,'mushaf-offline-v10.5.2');}
   else{g.renderV9Mushaf=wrappedRender;g.openCurrentMushafPage=currentMushafPage;}
 
   g.downloadMushafLitePage=downloadPage;

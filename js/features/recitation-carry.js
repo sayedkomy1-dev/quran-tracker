@@ -1,8 +1,8 @@
 'use strict';
-/* We Live Quran v10.5.1 — pure helpers for item-level recitation assessment + carry-forward. */
+/* We Live Quran v10.5.2 — pure helpers for item-level recitation assessment + carry-forward. */
 (function initRecitationCarry(g){
   const root=g.ImamApp||(g.ImamApp={});
-  const QUARTER_LABELS=['الأول','الثاني','الثالث','الرابع'];
+  const QUARTER_LABELS=['الأول','الثاني','الثالث','الرابع','الخامس','السادس','السابع','الثامن'];
   const PASSING=new Set(['ممتاز','جيد جداً','جيد جدًا','جيد']);
 
   function normalizeGrade(value){
@@ -22,12 +22,12 @@
   function parseJuzChip(raw,knownJuz=[]){
     const value=String(raw||'').trim().replace(/^جزء\s*:\s*/,'').trim();
     if(!value)return null;
-    const quarterMatch=value.match(/^(.*?)\s*[—-]\s*(?:ربع\s+الجزء\s+|الربع\s+)(الأول|الثاني|الثالث|الرابع|[1-4])(?:\s*\/\s*4)?$/);
+    const quarterMatch=value.match(/^(.*?)\s*[—-]\s*(?:ربع\s+الجزء\s+|الربع\s+)(الأول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|[1-8])(?:\s*\/\s*(?:4|8))?(?:\s*[—·].*)?$/);
     let base=value,quarter=null;
     if(quarterMatch){
       base=quarterMatch[1].trim();
       const token=quarterMatch[2];
-      quarter=/^[1-4]$/.test(token)?Number(token):QUARTER_LABELS.indexOf(token)+1;
+      quarter=/^[1-8]$/.test(token)?Number(token):QUARTER_LABELS.indexOf(token)+1;
     }
     const numeric=base.match(/^(?:الجزء|جزء)?\s*(\d{1,2})$/);
     if(numeric){const n=Number(numeric[1]);base=n>=1&&n<=knownJuz.length?knownJuz[n-1]:base;}
@@ -39,7 +39,7 @@
   }
   function quarterChip(juzName,quarter){
     const q=Number(quarter);
-    if(!(q>=1&&q<=4))return String(juzName||'').trim();
+    if(!(q>=1&&q<=8))return String(juzName||'').trim();
     return `${String(juzName||'').trim()} — الربع ${QUARTER_LABELS[q-1]}`;
   }
   function itemLabel(item){
