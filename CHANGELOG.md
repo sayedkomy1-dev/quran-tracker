@@ -1,3 +1,11 @@
+# v10.5.11 — Prominent Recitation Assessment
+
+- Five prominent assessment buttons across previous assignment and item-level review.
+- Explicit `إعادة` action copies the same assignment forward automatically.
+- `يحتاج متابعة` remains a non-passing assessment without automatic advancement.
+- Repeat is preserved by backup/import and no longer counts as verified new memorization.
+- No schema or SQL changes.
+
 # v10.5.10 — Exact Mushaf Position + Explicit Insight Buttons
 
 - `فتح الموضع في المصحف` now resolves the exact ayah page instead of only the Surah start page.

@@ -314,3 +314,31 @@ body.v1053-reader-open{overflow:hidden}
 .v10510-insight-button.is-open .v1059-count-badge{background:var(--gm);color:#fff}
 @media(max-width:520px){.v10510-insight-head{padding:12px 11px;align-items:flex-start}.v10510-insight-button{min-width:108px;padding:9px 10px;flex:none}.v1059-insight-title small{max-width:170px}}
 .v10510-mushaf-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.v10510-mushaf-links .v1059-mushaf-link{border:1px solid color-mix(in srgb,var(--gm) 28%,var(--line));background:var(--gp);color:var(--gm);border-radius:9px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}.v10510-mushaf-links .v1059-mushaf-link.next{background:var(--gm);color:#fff;border-color:var(--gm)}
+
+/* v10.5.11 — prominent, fast recitation assessment controls */
+.v10511-assessment-label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:12px;font-weight:900;color:var(--v9-text,var(--text))}
+.v10511-assessment-label small{font-size:10px;font-weight:600;color:var(--v9-muted,var(--muted))}
+.v10511-grade-grid{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px!important;margin-top:8px!important}
+.v10511-grade-choice{grid-column:span 2;min-width:0;min-height:68px!important;padding:8px 5px!important;border:1.5px solid var(--v9-border,var(--line))!important;border-radius:14px!important;background:var(--v9-surface,var(--card))!important;color:var(--v9-text,var(--text))!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px;position:relative;font-family:inherit;cursor:pointer;box-shadow:0 2px 8px rgba(18,43,33,.035);transition:transform .12s ease,border-color .12s ease,background .12s ease,box-shadow .12s ease}
+.v10511-grade-choice.followup,.v10511-grade-choice.repeat{grid-column:span 3}
+.v10511-grade-choice:active{transform:scale(.98)}
+.v10511-grade-icon{font-size:17px;line-height:1.15;letter-spacing:-1px;white-space:nowrap}
+.v10511-grade-label{font-size:12px;font-weight:900;line-height:1.25;white-space:nowrap}
+.v10511-grade-choice small{font-size:9px;font-weight:650;line-height:1.2;color:var(--v9-muted,var(--muted));white-space:nowrap}
+.v10511-grade-choice.excellent{border-color:#3c8a5b!important}.v10511-grade-choice.verygood{border-color:#4c7fa5!important}.v10511-grade-choice.good{border-color:#b89032!important}.v10511-grade-choice.followup{border-color:#c6813f!important}.v10511-grade-choice.repeat{border-color:#b75050!important}
+.v10511-grade-choice.sel,.v10511-grade-choice.on{box-shadow:0 0 0 2px color-mix(in srgb,currentColor 20%,transparent),0 5px 14px rgba(18,43,33,.09);transform:translateY(-1px)}
+.v10511-grade-choice.excellent.sel,.v10511-grade-choice.excellent.on{background:#e8f6ee!important;color:#165e39!important;border-color:#237247!important}
+.v10511-grade-choice.verygood.sel,.v10511-grade-choice.verygood.on{background:#edf6ff!important;color:#245d88!important;border-color:#39739e!important}
+.v10511-grade-choice.good.sel,.v10511-grade-choice.good.on{background:#fff7df!important;color:#7d5a0f!important;border-color:#b18422!important}
+.v10511-grade-choice.followup.sel,.v10511-grade-choice.followup.on{background:#fff2e7!important;color:#934b16!important;border-color:#bd6b2d!important}
+.v10511-grade-choice.repeat.sel,.v10511-grade-choice.repeat.on{background:#fff0ef!important;color:#9b3535!important;border-color:#b54747!important}
+.v10511-grade-choice.sel:after,.v10511-grade-choice.on:after{content:'✓';position:absolute;top:5px;inset-inline-end:7px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:currentColor;color:#fff;font-size:10px;font-weight:900}
+.v10511-grade-choice.sel:after,.v10511-grade-choice.on:after{color:#fff;background:#174f3b}
+.v10511-grade-feedback{margin-top:8px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.v10511-feedback{flex:1;min-width:180px;padding:8px 10px;border-radius:10px;font-size:11px;font-weight:750;line-height:1.5}
+.v10511-feedback.pass{background:#eaf6ef;color:#206440}.v10511-feedback.followup{background:#fff5e9;color:#8c541c}.v10511-feedback.repeat{background:#fff0ef;color:#9d3737}
+.v10511-grade-grid.compact .v10511-grade-choice{min-height:58px!important}
+.v10511-grade-grid.compact .v10511-grade-icon{font-size:15px}.v10511-grade-grid.compact .v10511-grade-label{font-size:11px}.v10511-grade-grid.compact .v10511-grade-choice small{font-size:8.5px}
+@media(max-width:520px){
+ .v10511-grade-grid{gap:6px!important}.v10511-grade-choice{min-height:64px!important;border-radius:12px!important;padding:7px 3px!important}.v10511-grade-icon{font-size:16px}.v10511-grade-label{font-size:11px}.v10511-grade-choice small{font-size:8.5px}
+}

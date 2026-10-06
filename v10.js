@@ -21,6 +21,23 @@ const V1051_GRADE_CHOICES=[
   {value:'ضعيف',label:'يحتاج متابعة 😕'},
   {value:'إعادة',label:'إعادة 🔄'}
 ];
+const V10511_GRADE_META={
+  'ممتاز':{icon:'⭐⭐⭐',label:'ممتاز',hint:'متقن',cls:'excellent'},
+  'جيد جداً':{icon:'⭐⭐',label:'جيد جدًا',hint:'مستقر',cls:'verygood'},
+  'جيد':{icon:'⭐',label:'جيد',hint:'ناجح',cls:'good'},
+  'ضعيف':{icon:'😕',label:'يحتاج متابعة',hint:'يحتاج تثبيت',cls:'followup'},
+  'إعادة':{icon:'🔄',label:'إعادة',hint:'نفس التكليف',cls:'repeat'}
+};
+function v10511GradeButton(value,attrs='',selected=false){
+  const m=V10511_GRADE_META[value]||{icon:'',label:value,hint:'',cls:''};
+  return `<button type="button" class="gb v10511-grade-choice ${m.cls}${selected?' on sel':''}" ${attrs}><span class="v10511-grade-icon">${m.icon}</span><span class="v10511-grade-label">${v10Esc(m.label)}</span><small>${v10Esc(m.hint)}</small></button>`;
+}
+function v10511GradeGrid(key){
+  return `<div class="gbs v10511-grade-grid" id="pgr-${v10Esc(key)}" role="group" aria-label="تقييم التسميع">${Object.keys(V10511_GRADE_META).map(g=>v10511GradeButton(g,`data-g="${v10Esc(g)}" aria-pressed="false" onclick="setPrevGr('${v10Esc(key)}','${v10Esc(g)}')"`)).join('')}</div>`;
+}
+function v10511ReviewGradeGrid(groupId,itemId,activeGrade='',repeat=false){
+  return `<div class="v10511-grade-grid compact" role="group" aria-label="تقييم عنصر المراجعة">${Object.keys(V10511_GRADE_META).map(g=>{const on=g==='إعادة'?repeat:g===activeGrade;return v10511GradeButton(g,`data-grade="${v10Esc(g)}" aria-pressed="${on}" onclick="setReviewItemGrade('${v10Esc(groupId)}','${v10Esc(itemId)}','${v10Esc(g)}')"`,on);}).join('')}</div>`;
+}
 const V1052_BASE_RENDER_SESSION_JOURNEY=globalThis.renderSessionJourney;
 const V1052_BASE_RENDER_REVIEW_SUGGESTIONS=globalThis.renderReviewSuggestions;
 const V1052_BASE_RENDER_JUZ_CHIPS=globalThis.renderJuzChips;
@@ -105,7 +122,7 @@ function setReviewItemGrade(groupId,itemId,grade){
   V10.reviewResults[groupId]=V10.reviewResults[groupId]||{};
   const normalized=V1051_CARRY.normalizeGrade(grade),status=normalized==='إعادة'?'repeat':V1051_CARRY.isPassingGrade(normalized)?'completed':normalized==='ضعيف'?'repeat':'not_heard';
   V10.reviewResults[groupId][itemId]={grade:normalized==='إعادة'?'':normalized,status,updatedAt:new Date().toISOString()};
-  document.querySelectorAll(`[data-review-group="${CSS.escape(groupId)}"][data-review-item="${CSS.escape(itemId)}"] button[data-grade]`).forEach(b=>b.classList.toggle('on',b.dataset.grade===grade));
+  document.querySelectorAll(`[data-review-group="${CSS.escape(groupId)}"][data-review-item="${CSS.escape(itemId)}"] button[data-grade]`).forEach(b=>{const on=b.dataset.grade===grade;b.classList.toggle('on',on);b.classList.toggle('sel',on);b.setAttribute('aria-pressed',String(on));});
   updateReviewSuggestion();scheduleDraftSave();
 }
 function setReviewItemStatus(groupId,itemId,status){if(status==='completed')return setReviewItemGrade(groupId,itemId,'جيد');if(status==='repeat'||status==='not_heard')return setReviewItemGrade(groupId,itemId,'إعادة');}
@@ -115,12 +132,28 @@ function v10ReviewGroupHTML(a){
   return `<div class="v10-review-group"><h4>${v10Esc(a.groupName)}</h4><div class="v10-review-note">قيّم كل عنصر سمعه الطالب. أي عنصر تتركه بلا تقييم سيُسجل «لم يُسمع» ويُرحّل تلقائيًا للحصة القادمة.</div>${(a.items||[]).map(it=>{
     const r=result[it.id]||{},grade=V1051_CARRY.normalizeGrade(r.grade||r.evaluation||''),repeat=!grade&&(r.status==='repeat'||r.status==='not_heard');
     const textBtn=it.type==='surah'?`<button class="v10-text-btn" onclick="openQuranRangeText({surah:'${v10Esc(it.surahName)}',from:1,to:${S[it.surahId-1]?.a||1}})">📖 النص</button>`:'';
-    return `<div class="v10-review-item" data-review-group="${v10Esc(a.id)}" data-review-item="${v10Esc(it.id)}"><div class="v10-review-name"><span>${v10Esc(v1051ItemDisplay(it))}</span>${textBtn}</div><div class="v1051-grade-grid">${V1051_GRADE_CHOICES.map(g=>{const on=g.value==='إعادة'?repeat:grade===g.value;return `<button type="button" data-grade="${v10Esc(g.value)}" class="${g.value==='إعادة'?'repeat ':''}${on?'on':''}" onclick="setReviewItemGrade('${v10Esc(a.id)}','${v10Esc(it.id)}','${v10Esc(g.value)}')">${v10Esc(g.label)}</button>`;}).join('')}</div></div>`;
+    return `<div class="v10-review-item" data-review-group="${v10Esc(a.id)}" data-review-item="${v10Esc(it.id)}"><div class="v10-review-name"><span>${v10Esc(v1051ItemDisplay(it))}</span>${textBtn}</div>${v10511ReviewGradeGrid(a.id,it.id,grade,repeat)}</div>`;
   }).join('')}</div>`;
 }
-function v10LoadPrevTask(excludeId=''){if(!curStId)return;const dateKey=document.getElementById('sesDate')?.value||localDateKey(),prev=getPreviousPresentSession(curStId,dateKey,excludeId),el=document.getElementById('prevContent');actualRecitation={new:null,rec:null,far:null};V10.reviewResults={};const current=editingSessionId?sessions.find(x=>x.id===editingSessionId):null;for(const a of current?.reviewResults||[]){V10.reviewResults[a.id]={};for(const it of a.items||[])V10.reviewResults[a.id][it.id]={status:it.status||'not_heard',grade:V1051_CARRY.normalizeGrade(it.grade||it.evaluation||(it.status==='completed'?'جيد':''))};}if(!prev){el.innerHTML='<div class="txt-mut" style="padding:8px;text-align:center">لا توجد حصة سابقة</div>';updateReviewSuggestion();return;}const d=new Date(prev.date).toLocaleDateString('ar-EG',{weekday:'long',month:'long',day:'numeric'});let html=`<div class="txt-mut mb8">التكليف من حصة: ${d}</div>`;for(const [key,label] of [['new','الحفظ الجديد'],['rec','المراجعة القريبة'],['far','المراجعة البعيدة']]){const x=prev[key];if(!x)continue;actualRecitation[key]={surahId:x.surahId||S.findIndex(q=>q.n===x.surah)+1,surah:x.surah,from:Number(x.from)||1,to:Number(x.to)||Number(x.from)||1,full:!!x.full};const desc=x.full?`سورة ${v10Esc(x.surah)} كاملة`:`سورة ${v10Esc(x.surah)} من الآية ${v10Esc(x.from)} إلى الآية ${v10Esc(x.to)}`;html+=`<div class="prev-task-card" id="prev-task-${key}"><div class="v10-prev-head"><b>${label}</b><div class="v10-prev-tools"><button class="v10-text-btn" onclick="openPrevQuranText('${key}')">📖 النص</button></div></div><div class="assigned-range">المطلوب: ${desc}</div>${actualBlockHTML(key,x)}<div class="assessment-label">تقييم التسميع</div><div class="gbs" id="pgr-${key}">${['ممتاز','جيد جداً','جيد','ضعيف'].map(g=>`<div class="gb" data-g="${g}" onclick="setPrevGr('${key}','${g}')">${g==='ممتاز'?'⭐ ':''}${g}</div>`).join('')}</div><div id="v10-repeat-${key}"></div></div>`;}
+function v10LoadPrevTask(excludeId=''){if(!curStId)return;const dateKey=document.getElementById('sesDate')?.value||localDateKey(),prev=getPreviousPresentSession(curStId,dateKey,excludeId),el=document.getElementById('prevContent');actualRecitation={new:null,rec:null,far:null};V10.reviewResults={};const current=editingSessionId?sessions.find(x=>x.id===editingSessionId):null;for(const a of current?.reviewResults||[]){V10.reviewResults[a.id]={};for(const it of a.items||[])V10.reviewResults[a.id][it.id]={status:it.status||'not_heard',grade:V1051_CARRY.normalizeGrade(it.grade||it.evaluation||(it.status==='completed'?'جيد':''))};}if(!prev){el.innerHTML='<div class="txt-mut" style="padding:8px;text-align:center">لا توجد حصة سابقة</div>';updateReviewSuggestion();return;}const d=new Date(prev.date).toLocaleDateString('ar-EG',{weekday:'long',month:'long',day:'numeric'});let html=`<div class="txt-mut mb8">التكليف من حصة: ${d}</div>`;for(const [key,label] of [['new','الحفظ الجديد'],['rec','المراجعة القريبة'],['far','المراجعة البعيدة']]){const x=prev[key];if(!x)continue;actualRecitation[key]={surahId:x.surahId||S.findIndex(q=>q.n===x.surah)+1,surah:x.surah,from:Number(x.from)||1,to:Number(x.to)||Number(x.from)||1,full:!!x.full};const desc=x.full?`سورة ${v10Esc(x.surah)} كاملة`:`سورة ${v10Esc(x.surah)} من الآية ${v10Esc(x.from)} إلى الآية ${v10Esc(x.to)}`;html+=`<div class="prev-task-card" id="prev-task-${key}"><div class="v10-prev-head"><b>${label}</b><div class="v10-prev-tools"><button class="v10-text-btn" onclick="openPrevQuranText('${key}')">📖 النص</button></div></div><div class="assigned-range">المطلوب: ${desc}</div>${actualBlockHTML(key,x)}<div class="assessment-label v10511-assessment-label">تقييم التسميع <small>اختر النتيجة فورًا</small></div>${v10511GradeGrid(key)}<div id="v10-repeat-${key}" class="v10511-grade-feedback"></div></div>`;}
  const ras=Array.isArray(prev.reviewAssignments)&&prev.reviewAssignments.length?prev.reviewAssignments:[...(prev.juz?.chips?.length?[v10Assignment('juz','مراجعة الأجزاء',prev.juz.chips)]:[]),...(prev.surahReview?.chips?.length?[v10Assignment('surah_group','مراجعة السور',prev.surahReview.chips)]:[])];if(ras.length)html+=ras.map(v10ReviewGroupHTML).join('');if(!prev.new&&!prev.rec&&!prev.far&&!ras.length)html+='<div class="txt-mut">لا يوجد تكليف للحصة السابقة</div>';el.innerHTML=html;['new','rec','far'].forEach(updateActualResult);paintPrevGrades();updateReviewSuggestion();}
-function v10SetPrevGr(key,g){g=v10NormalizeGrade(g);prevGrades[key]=g;document.querySelectorAll(`#pgr-${key} .gb`).forEach(b=>b.classList.toggle('sel',b.dataset.g===g));const spot=document.getElementById('v10-repeat-'+key);if(spot)spot.innerHTML=g==='ضعيف'?`<button type="button" class="v10-inline-action v10-repeat-same" onclick="repeatPrevAssignment('${key}')">↺ نفس التكليف للحصة القادمة</button>`:'';if(g!=='ضعيف')smartContinueFromAssessment(key,g);else{const hint=document.getElementById(key+'-auto-hint');if(hint)hint.textContent='التقييم ضعيف: لن يكرر النظام التكليف تلقائيًا.';}scheduleDraftSave();}
+function v10SetPrevGr(key,g){
+  g=v10NormalizeGrade(g);if(g==='يحتاج متابعة')g='ضعيف';
+  prevGrades[key]=g;
+  document.querySelectorAll(`#pgr-${key} .gb`).forEach(b=>{const on=b.dataset.g===g;b.classList.toggle('sel',on);b.setAttribute('aria-pressed',String(on));});
+  const spot=document.getElementById('v10-repeat-'+key),hint=document.getElementById(key+'-auto-hint');
+  if(g==='إعادة'){
+    if(spot)spot.innerHTML='<div class="v10511-feedback repeat">🔄 سيتم وضع نفس التكليف تلقائيًا في الحصة القادمة.</div>';
+    repeatPrevAssignment(key);if(hint)hint.textContent='إعادة: تم نسخ نفس التكليف للحصة القادمة ويمكنك تعديله.';
+  }else if(g==='ضعيف'){
+    if(spot)spot.innerHTML=`<div class="v10511-feedback followup">😕 يحتاج تثبيت قبل التقديم.</div><button type="button" class="v10-inline-action v10-repeat-same" onclick="repeatPrevAssignment('${key}')">🔄 كرر نفس التكليف</button>`;
+    if(hint)hint.textContent='يحتاج متابعة: لم يتم التقديم تلقائيًا؛ يمكنك تكرار نفس التكليف أو تعديله.';
+  }else{
+    if(spot)spot.innerHTML='<div class="v10511-feedback pass">✓ تم اعتماد التقييم واقتراح الاستكمال تلقائيًا.</div>';
+    smartContinueFromAssessment(key,g);
+  }
+  scheduleDraftSave();
+}
 function v1051PendingFromPrev(){const prev=v10Prev();return V1051_CARRY.pendingItems(prev?.reviewAssignments||[],V10.reviewResults);}
 function updateReviewSuggestion(){
   const body=document.getElementById('v10SuggestionBody');if(!body)return;
@@ -301,7 +334,7 @@ function v10BuildSesData(){
 function v10CaptureDraft(){const d=globalThis.__IMAM_BASE__.captureDraft();d.v10ReviewResults=JSON.parse(JSON.stringify(V10.reviewResults));d.v10Accordion={...V10.accordion};return d;}
 function v10ApplyDraft(d){
   globalThis.__IMAM_BASE__.applyDraft(d);const restoredResults=d?.v10ReviewResults||{};V10.reviewResults=restoredResults;V10.accordion={errors:false,suggestion:false,...(d?.v10Accordion||{})};
-  setTimeout(()=>{loadPrevTask(editingSessionId||'');V10.reviewResults=restoredResults;document.querySelectorAll('.v10-review-item').forEach(row=>{const g=row.dataset.reviewGroup,i=row.dataset.reviewItem,r=V10.reviewResults[g]?.[i]||{},grade=V1051_CARRY.normalizeGrade(r.grade||r.evaluation||''),repeat=!grade&&(r.status==='repeat'||r.status==='not_heard');row.querySelectorAll('button[data-grade]').forEach(b=>b.classList.toggle('on',b.dataset.grade==='إعادة'?repeat:b.dataset.grade===grade));});updateReviewSuggestion();for(const [id,k] of [['v10ErrorsAccordion','errors'],['v10SuggestionAccordion','suggestion']]){const e=document.getElementById(id);if(e){e.classList.toggle('open',!!V10.accordion[k]);e.querySelector(':scope > button')?.setAttribute('aria-expanded',String(!!V10.accordion[k]));}}},0);
+  setTimeout(()=>{loadPrevTask(editingSessionId||'');V10.reviewResults=restoredResults;document.querySelectorAll('.v10-review-item').forEach(row=>{const g=row.dataset.reviewGroup,i=row.dataset.reviewItem,r=V10.reviewResults[g]?.[i]||{},grade=V1051_CARRY.normalizeGrade(r.grade||r.evaluation||''),repeat=!grade&&(r.status==='repeat'||r.status==='not_heard');row.querySelectorAll('button[data-grade]').forEach(b=>{const on=b.dataset.grade==='إعادة'?repeat:b.dataset.grade===grade;b.classList.toggle('on',on);b.classList.toggle('sel',on);b.setAttribute('aria-pressed',String(on));});});updateReviewSuggestion();for(const [id,k] of [['v10ErrorsAccordion','errors'],['v10SuggestionAccordion','suggestion']]){const e=document.getElementById(id);if(e){e.classList.toggle('open',!!V10.accordion[k]);e.querySelector(':scope > button')?.setAttribute('aria-expanded',String(!!V10.accordion[k]));}}},0);
 }
 
 // ──────────────────────────────────────
@@ -399,7 +432,7 @@ function injectFacebookSetting(){const pg=document.getElementById('pg-settings')
 function renderV10ThemeSettings(){const host=document.getElementById('v10ThemeSettings');if(!host)return;host.innerHTML=`<div class="ch">🎨 نمط الألوان</div><div class="v10-theme-grid">${Object.entries(V10_THEMES).map(([k,t])=>`<button class="v10-theme-choice ${settings.themePalette===k?'on':''}" onclick="setV10Theme('${k}')"><div class="v10-theme-swatch" style="background:${t.p}"></div><b>${k} — ${t.name}</b></button>`).join('')}</div>`;}
 function injectThemeSettings(){const pg=document.getElementById('pg-settings');if(!pg||document.getElementById('v10ThemeSettings'))return;const el=document.createElement('div');el.className='card';el.id='v10ThemeSettings';pg.insertBefore(el,pg.children[1]||null);renderV10ThemeSettings();}
 function v10AcademyFooter(){let x=`${settings.circle||ACADEMY_NAME}\n${ACADEMY_TAGLINE}`;if(settings.facebookUrl)x+=`\n\nتابعونا على فيسبوك:\n${settings.facebookUrl}`;return x;}
-function v10WaGrade(g){const x=String(g||'').trim();if(x==='ممتاز')return 'ممتاز ⭐⭐⭐';if(x==='جيد جداً'||x==='جيد جدًا')return 'جيد جدًا ⭐⭐';if(x==='جيد')return 'جيد ⭐';if(x==='ضعيف')return 'يحتاج متابعة 😕';return x||'—';}
+function v10WaGrade(g){const x=String(g||'').trim();if(x==='ممتاز')return 'ممتاز ⭐⭐⭐';if(x==='جيد جداً'||x==='جيد جدًا')return 'جيد جدًا ⭐⭐';if(x==='جيد')return 'جيد ⭐';if(x==='ضعيف')return 'يحتاج متابعة 😕';if(x==='إعادة')return 'إعادة 🔄';return x||'—';}
 function v10WaSection(sec){if(!sec)return '';return sec.full?`سورة ${sec.surah} كاملة`:`سورة ${sec.surah} — الآيات ${sec.from}–${sec.to}`;}
 function v1051GetAssessmentGrades(ses){
   const base=Object.values(ses?.prevGrades||{}).filter(Boolean).map(V1051_CARRY.normalizeGrade);

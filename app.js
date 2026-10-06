@@ -56,11 +56,11 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.5.10';
+const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.5.11';
 const SCHEMA_VERSION=12;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
-const GRADE_MAP={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1};
+const GRADE_MAP={ممتاز:4,'جيد جداً':3,جيد:2,ضعيف:1,'إعادة':0.5};
 
 let students=[];
 let sessions=[];
@@ -1638,9 +1638,9 @@ function getVerifiedNewSections(studentId){
   const verified=[];
   ordered.forEach((ses,i)=>{
     // Legacy v5: the grade lived on the same section.
-    if(ses.new?.surah&&ses.new?.grade)verified.push(ses.new);
+    if(ses.new?.surah&&ses.new?.grade&&isPassingGrade(ses.new.grade))verified.push(ses.new);
     // v6: prevGrades.new evaluates the new assignment from the previous attended session.
-    if(ses.prevGrades?.new){
+    if(ses.prevGrades?.new&&isPassingGrade(ses.prevGrades.new)){
       for(let j=i-1;j>=0;j--){if(ordered[j].new?.surah){verified.push(ordered[j].new);break;}}
     }
   });
@@ -1683,10 +1683,10 @@ function renderWeakness(id){
     let used=false;
     ['new','rec','far'].forEach(k=>{
       const g=pg[k];
-      if(g&&(g==='جيد'||g==='ضعيف')&&prev?.[k]?.surah){const key=prev[k].surah;weak[key]=(weak[key]||0)+1;used=true;}
+      if(g&&(g==='جيد'||g==='ضعيف'||g==='إعادة')&&prev?.[k]?.surah){const key=prev[k].surah;weak[key]=(weak[key]||0)+1;used=true;}
     });
     if(!used){
-      ['new','rec','far'].forEach(k=>{const g=ses[k]?.grade;if((g==='جيد'||g==='ضعيف')&&ses[k]?.surah){const key=ses[k].surah;weak[key]=(weak[key]||0)+1;}});
+      ['new','rec','far'].forEach(k=>{const g=ses[k]?.grade;if((g==='جيد'||g==='ضعيف'||g==='إعادة')&&ses[k]?.surah){const key=ses[k].surah;weak[key]=(weak[key]||0)+1;}});
     }
   });
   const sorted=Object.entries(weak).sort((a,b)=>b[1]-a[1]).slice(0,6);
@@ -1849,7 +1849,7 @@ function buildWAMsg(s,ses){
   if(settings.circle) msg+=`\n${settings.circle}`;
   return msg;
 }
-function grIcon(g){ return g==='ممتاز'?'⭐⭐⭐':g==='جيد جداً'?'⭐⭐':g==='جيد'?'⭐':'😕'; }
+function grIcon(g){ return g==='ممتاز'?'⭐⭐⭐':g==='جيد جداً'?'⭐⭐':g==='جيد'?'⭐':g==='إعادة'?'🔄':'😕'; }
 
 // ══════════════════════════════════════
 // CUMULATIVE TRACKING
@@ -2630,8 +2630,8 @@ function buildSumHTML(ses){
 function getVerifiedNewSections(id){
   const ordered=sessions.filter(x=>x.studentId===id&&x.status==='حضر').sort((a,b)=>new Date(a.date)-new Date(b.date)),verified=[];
   ordered.forEach((ses,i)=>{
-    if(ses.new?.surah&&ses.new?.grade)verified.push(ses.new);
-    if(ses.prevGrades?.new){if(ses.actualRecitation?.new?.surah)verified.push(ses.actualRecitation.new);else{for(let j=i-1;j>=0;j--){if(ordered[j].new?.surah){verified.push(ordered[j].new);break;}}}}
+    if(ses.new?.surah&&ses.new?.grade&&isPassingGrade(ses.new.grade))verified.push(ses.new);
+    if(ses.prevGrades?.new&&isPassingGrade(ses.prevGrades.new)){if(ses.actualRecitation?.new?.surah)verified.push(ses.actualRecitation.new);else{for(let j=i-1;j>=0;j--){if(ordered[j].new?.surah){verified.push(ordered[j].new);break;}}}}
   });return verified;
 }
 function getMemorizationQualityPercent(id){

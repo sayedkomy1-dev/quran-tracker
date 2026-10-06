@@ -9,6 +9,8 @@ assert.strictEqual(carry.quarterChip('جزء عمّ',2),'جزء عمّ — ال�
 assert.strictEqual(carry.resultStatus({grade:'ممتاز'}),'completed');
 assert.strictEqual(carry.resultStatus({grade:'جيد جدًا'}),'completed');
 assert.strictEqual(carry.resultStatus({grade:'ضعيف'}),'repeat');
+assert.strictEqual(carry.resultStatus({grade:'إعادة'}),'repeat');
+assert.strictEqual(carry.normalizeGrade('يحتاج متابعة'),'ضعيف');
 assert.strictEqual(carry.resultStatus({}),'not_heard');
 const assignments=[{id:'a',type:'juz',items:[{id:'q1',type:'juz_quarter',juzName:'جزء عمّ',quarter:1},{id:'q2',type:'juz_quarter',juzName:'جزء عمّ',quarter:2},{id:'q3',type:'juz_quarter',juzName:'جزء عمّ',quarter:3}]}];
 const results={a:{q1:{grade:'ممتاز'},q2:{grade:'جيد جداً'}}};
@@ -16,4 +18,4 @@ const pending=carry.pendingItems(assignments,results);
 assert.strictEqual(pending.length,1);
 assert.strictEqual(pending[0].id,'q3');
 assert.strictEqual(pending[0]._status,'not_heard');
-console.log('Recitation carry-forward checks passed for v10.5.10');
+console.log('Recitation carry-forward checks passed for v10.5.11');
