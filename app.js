@@ -56,7 +56,7 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.5.4';
+const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.5.5';
 const SCHEMA_VERSION=12;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';

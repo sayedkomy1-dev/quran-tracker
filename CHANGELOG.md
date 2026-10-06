@@ -1,5 +1,14 @@
 # Changelog
 
+## 10.5.5 — Teacher Mushaf Page-First Navigation
+- Fixed unreadable night mode by keeping the Mushaf page on a dim parchment surface instead of inverting a transparent SVG.
+- Rebuilt the reader chrome around the page: current Surah, current Juz, quick page jump, and a compact bottom bar.
+- Added a searchable Surah drawer and a 30-Juz drawer with named Juz entries and standard Madani start pages.
+- Current Surah/Juz are updated as pages turn; active entries are highlighted in the navigation drawers.
+- Preserved RTL swipe behavior: swipe right for next page, left for previous page, with page-turn sound.
+- Reworked the frame to a green/pink Madani-inspired motif while maximizing usable page area.
+- Full-pack download action remains hidden after 604/604 pages are present.
+
 ## 10.5.4 — Premium Teacher Mushaf Reader
 - عكس إيماءة التقليب للمصحف العربي: السحب لليمين ينتقل إلى الصفحة التالية، واليسار إلى السابقة.
 - إضافة فهرس سور قابل للبحث والانتقال المباشر إلى بداية السورة، مع حفظ بيانات الفهرس محليًا للاستخدام Offline بعد تحميلها.

@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran — mobile-first Madani Mushaf offline pages v10.5.4
+/* We Live Quran — mobile-first Madani Mushaf offline pages v10.5.5
    Fixes Android's inability to render cached PDF pages inline by using the
    versioned quran.ws SVG CDN. Each SVG is optionally gzip-compressed before
    being persisted in IndexedDB, then inflated only when displayed. */
@@ -18,6 +18,7 @@
   const SOURCE_INFO='https://quran.ws/blocks/quran-svg/';
   const OFFICIAL_INFO='https://qurancomplex.gov.sa/en/apps-hafs/';
   const state={running:false,cancel:false,objectUrl:'',lastError:'',lastPage:1,teacherPage:1,readerBound:false,audioCtx:null,readerTheme:'day',surahIndex:null};
+  const JUZ_START_PAGES=Object.freeze([1,22,42,62,82,102,121,142,162,182,201,222,242,262,282,302,322,342,362,382,402,422,442,462,482,502,522,542,562,582]);
 
   function clampPage(n){return Math.max(1,Math.min(PAGE_COUNT,Number(n)||1));}
   function padPage(page){return String(clampPage(page)).padStart(3,'0');}
@@ -91,7 +92,7 @@
   async function cleanupLegacyStorageOnce(){
     const flag='mushaf:v1053:legacy-cleaned';
     if(await g.idbKvGet(flag).catch(()=>null))return;
-    // v10.5.4 no longer uses the 200+ MB PDF path at all.
+    // v10.5.5 no longer uses the 200+ MB PDF path at all.
     await g.mediaDelete('mushaf:madinah:pdf').catch(()=>{});
     await g.idbKvPut('mushaf:madinah:meta','{}').catch(()=>{});
     const old=await oldKeys().catch(()=>[]);
@@ -136,6 +137,35 @@
     }catch(_){ }
     state.surahIndex=fallback;return fallback;
   }
+  function juzForPage(page){
+    page=clampPage(page);let idx=0;
+    for(let i=0;i<JUZ_START_PAGES.length;i++){if(JUZ_START_PAGES[i]<=page)idx=i;else break;}
+    return {number:idx+1,page:JUZ_START_PAGES[idx],name:(typeof JZ!=='undefined'&&Array.isArray(JZ)&&JZ[idx])?JZ[idx]:`الجزء ${idx+1}`};
+  }
+  function juzRows(){return JUZ_START_PAGES.map((page,i)=>({number:i+1,page,name:(typeof JZ!=='undefined'&&Array.isArray(JZ)&&JZ[i])?JZ[i]:`الجزء ${i+1}`}));}
+  function renderJuzDrawer(query=''){
+    const list=document.getElementById('v1055JuzList');if(!list)return;
+    const q=String(query||'').trim();
+    const rows=juzRows().filter(r=>!q||String(r.number)===q||String(r.number).startsWith(q)||String(r.name).includes(q));
+    const active=juzForPage(state.teacherPage||1).number;
+    list.innerHTML=rows.map(r=>`<button type="button" class="v1055-nav-row${r.number===active?' active':''}" onclick="jumpTeacherMushafJuz(${r.number})"><span class="v1055-nav-no">${r.number}</span><span class="v1055-nav-name">${r.name}</span><span class="v1055-nav-page">ص ${r.page}</span></button>`).join('')||'<div class="v1054-surah-empty">لا يوجد جزء مطابق</div>';
+    requestAnimationFrame(()=>list.querySelector('.active')?.scrollIntoView({block:'center'}));
+  }
+  function openJuzDrawer(){
+    const mo=ensureTeacherReader(),drawer=mo.querySelector('#v1055JuzDrawer'),shade=mo.querySelector('#v1055NavShade');if(!drawer)return;
+    closeSurahDrawer();drawer.classList.add('open');drawer.setAttribute('aria-hidden','false');shade?.classList.add('open');
+    const input=drawer.querySelector('input');if(input){input.value='';setTimeout(()=>input.focus({preventScroll:true}),70);}renderJuzDrawer('');
+  }
+  function closeJuzDrawer(){const mo=document.getElementById('v1053TeacherMushaf'),drawer=mo?.querySelector('#v1055JuzDrawer'),shade=mo?.querySelector('#v1055NavShade');drawer?.classList.remove('open');drawer?.setAttribute('aria-hidden','true');if(!mo?.querySelector('#v1054SurahDrawer.open'))shade?.classList.remove('open');}
+  async function jumpJuz(number){number=Math.max(1,Math.min(30,Number(number)||1));closeJuzDrawer();await teacherPage(JUZ_START_PAGES[number-1],true);}
+  function closeAllNavDrawers(){closeSurahDrawer();closeJuzDrawer();closeQuickMenu();}
+  function openQuickMenu(){
+    const mo=ensureTeacherReader(),panel=mo.querySelector('#v1055QuickMenu'),shade=mo.querySelector('#v1055NavShade');if(!panel)return;
+    closeSurahDrawer();closeJuzDrawer();panel.classList.add('open');shade?.classList.add('open');
+    const input=panel.querySelector('#v1055QuickPageInput');if(input){input.value=state.teacherPage||1;setTimeout(()=>input.focus({preventScroll:true}),70);}
+  }
+  function closeQuickMenu(){const mo=document.getElementById('v1053TeacherMushaf'),panel=mo?.querySelector('#v1055QuickMenu'),shade=mo?.querySelector('#v1055NavShade');panel?.classList.remove('open');if(!mo?.querySelector('#v1054SurahDrawer.open,#v1055JuzDrawer.open'))shade?.classList.remove('open');}
+  async function quickGoPage(){const input=document.getElementById('v1055QuickPageInput');const page=clampPage(input?.value||state.teacherPage||1);closeQuickMenu();await teacherPage(page,true);}
   function currentSurahForPage(page){
     const rows=Array.isArray(state.surahIndex)?state.surahIndex:[];let found=null;
     for(const row of rows){if(Number(row.page)>0&&Number(row.page)<=page)found=row;else if(Number(row.page)>page)break;}
@@ -149,14 +179,16 @@
     const list=document.getElementById('v1054SurahList');if(!list)return;
     const rows=await loadSurahIndex(false),q=String(query||'').trim().replace(/^سورة\s+/,'');
     const filtered=rows.filter(r=>!q||String(r.name).includes(q)||String(r.id)===q||String(r.id).startsWith(q));
-    list.innerHTML=filtered.map(r=>`<button type="button" class="v1054-surah-row" onclick="jumpTeacherMushafSurah(${r.id})"><span class="v1054-surah-no">${r.id}</span><span class="v1054-surah-name">سورة ${r.name}</span><span class="v1054-surah-page">${r.page?`ص ${r.page}`:'—'}</span></button>`).join('')||'<div class="v1054-surah-empty">لا توجد سورة مطابقة</div>';
+    const active=currentSurahForPage(state.teacherPage||1)?.id;
+    list.innerHTML=filtered.map(r=>`<button type="button" class="v1054-surah-row${r.id===active?' active':''}" onclick="jumpTeacherMushafSurah(${r.id})"><span class="v1054-surah-no">${r.id}</span><span class="v1054-surah-name">سورة ${r.name}</span><span class="v1054-surah-page">${r.page?`ص ${r.page}`:'—'}</span></button>`).join('')||'<div class="v1054-surah-empty">لا توجد سورة مطابقة</div>';
+    requestAnimationFrame(()=>list.querySelector('.active')?.scrollIntoView({block:'center'}));
   }
   function openSurahDrawer(){
-    const mo=ensureTeacherReader(),drawer=mo.querySelector('#v1054SurahDrawer'),shade=mo.querySelector('#v1054SurahShade');if(!drawer)return;
-    drawer.classList.add('open');drawer.setAttribute('aria-hidden','false');shade?.classList.add('open');
-    const input=drawer.querySelector('input');if(input){input.value='';setTimeout(()=>input.focus({preventScroll:true}),80);}renderSurahDrawer('').catch(()=>{});
+    const mo=ensureTeacherReader(),drawer=mo.querySelector('#v1054SurahDrawer'),shade=mo.querySelector('#v1055NavShade');if(!drawer)return;
+    closeJuzDrawer();closeQuickMenu();drawer.classList.add('open');drawer.setAttribute('aria-hidden','false');shade?.classList.add('open');
+    const input=drawer.querySelector('input');if(input){input.value='';setTimeout(()=>input.focus({preventScroll:true}),70);}renderSurahDrawer('').catch(()=>{});
   }
-  function closeSurahDrawer(){const mo=document.getElementById('v1053TeacherMushaf'),drawer=mo?.querySelector('#v1054SurahDrawer'),shade=mo?.querySelector('#v1054SurahShade');drawer?.classList.remove('open');drawer?.setAttribute('aria-hidden','true');shade?.classList.remove('open');}
+  function closeSurahDrawer(){const mo=document.getElementById('v1053TeacherMushaf'),drawer=mo?.querySelector('#v1054SurahDrawer'),shade=mo?.querySelector('#v1055NavShade');drawer?.classList.remove('open');drawer?.setAttribute('aria-hidden','true');if(!mo?.querySelector('#v1055JuzDrawer.open,#v1055QuickMenu.open'))shade?.classList.remove('open');}
   async function jumpSurah(chapter){
     chapter=Math.max(1,Math.min(114,Number(chapter)||1));let rows=await loadSurahIndex(false),page=Number(rows[chapter-1]?.page||0);
     if(!page&&navigator.onLine){page=await getVersePage(chapter,1);if(page)await persistSurahPage(chapter,page);}
@@ -165,7 +197,7 @@
   }
   async function applyReaderTheme(theme){
     theme=theme==='night'?'night':'day';state.readerTheme=theme;const shell=document.querySelector('#v1053TeacherMushaf .v1053-reader-shell');if(shell)shell.dataset.theme=theme;
-    const btn=document.getElementById('v1054ThemeToggle');if(btn){btn.innerHTML=theme==='night'?'☀️<span>نهاري</span>':'🌙<span>ليلي</span>';btn.setAttribute('aria-label',theme==='night'?'الوضع النهاري':'الوضع الليلي');}
+    const btn=document.getElementById('v1055ThemeToggle');if(btn){btn.innerHTML=theme==='night'?'☀️<span>نهاري</span>':'🌙<span>ليلي</span>';btn.setAttribute('aria-label',theme==='night'?'الوضع النهاري':'الوضع الليلي');}
     await g.idbKvPut(READER_THEME_KEY,theme).catch(()=>{});
   }
   async function toggleReaderTheme(){await applyReaderTheme(state.readerTheme==='night'?'day':'night');}
@@ -173,30 +205,41 @@
   function ensureTeacherReader(){
     let mo=document.getElementById('v1053TeacherMushaf');if(mo)return mo;
     mo=document.createElement('div');mo.id='v1053TeacherMushaf';mo.className='v1053-reader-modal';mo.setAttribute('aria-hidden','true');
-    mo.innerHTML=`<div class="v1053-reader-shell" role="dialog" aria-modal="true" aria-label="مصحف المحفظ" data-theme="day">
-      <header class="v1053-reader-top v1054-reader-top">
-        <div class="v1054-top-side v1054-top-right"><button type="button" class="v1054-reader-tool" onclick="openTeacherSurahMenu()" aria-label="فهرس السور">☰<span>السور</span></button></div>
-        <div class="v1054-reader-title"><b>مصحف المدينة النبوية</b><span>حفص عن عاصم · قراءة هادئة داخل التطبيق</span></div>
-        <div class="v1054-top-side v1054-top-left"><button id="v1054ThemeToggle" type="button" class="v1054-reader-tool" onclick="toggleTeacherMushafTheme()" aria-label="الوضع الليلي">🌙<span>ليلي</span></button><button type="button" class="v1053-reader-close" onclick="closeTeacherMushafReader()" aria-label="إغلاق">✕</button></div>
+    mo.innerHTML=`<div class="v1053-reader-shell v1055-reader-shell" role="dialog" aria-modal="true" aria-label="مصحف المحفظ" data-theme="day">
+      <header class="v1055-mushaf-header">
+        <button type="button" class="v1055-header-nav v1055-header-surah" onclick="openTeacherSurahMenu()" aria-label="فهرس السور"><span class="v1055-menu-lines">☰</span><b id="v1055HeaderSurah">سورة الفاتحة</b></button>
+        <button type="button" class="v1055-header-more" onclick="openTeacherQuickMenu()" aria-label="انتقال سريع">•••</button>
+        <button type="button" class="v1055-header-nav v1055-header-juz" onclick="openTeacherJuzMenu()" aria-label="فهرس الأجزاء"><b id="v1055HeaderJuz">جزء ألم</b><span class="v1055-menu-lines">☰</span></button>
       </header>
-      <div class="v1053-reader-meta v1054-reader-meta"><button type="button" class="v1054-next" onclick="teacherMushafTurn(1)" aria-label="الصفحة التالية">التالي <b>›</b></button><label>صفحة <input id="v1053TeacherPageInput" type="number" min="1" max="604" value="1" onchange="openTeacherMushafPage(this.value,false)"></label><button type="button" class="v1054-prev" onclick="teacherMushafTurn(-1)" aria-label="الصفحة السابقة"><b>‹</b> السابق</button></div>
-      <div class="v1053-mushaf-ornament v1054-mushaf-ornament"><span class="v1053-corner c1">۞</span><span class="v1053-corner c2">۞</span><span class="v1053-corner c3">۞</span><span class="v1053-corner c4">۞</span><div class="v1054-frame-crown">﴿</div><div id="v1053TeacherMushafFrame" class="v1053-teacher-frame"><div class="v9-mushaf-empty"><div><b>جاري فتح المصحف…</b></div></div></div><div class="v1054-frame-crown bottom">﴾</div></div>
-      <footer class="v1053-reader-bottom v1054-reader-bottom"><span id="v1053TeacherPageState">صفحة 1</span><span id="v1054TeacherSurahState"></span><span id="v1053TeacherDownloadStatus"></span><small>اسحب لليمين للصفحة التالية، ولليسار للصفحة السابقة.</small></footer>
-      <button id="v1053TeacherDownload" type="button" class="v1053-reader-download v1054-floating-download" onclick="downloadTeacherMushafPages()">⇩ تنزيل المصحف للعمل دون إنترنت</button>
-      <div id="v1054SurahShade" class="v1054-surah-shade" onclick="closeTeacherSurahMenu()"></div>
-      <aside id="v1054SurahDrawer" class="v1054-surah-drawer" aria-hidden="true"><header><div><b>فهرس السور</b><span>انتقل مباشرة إلى بداية السورة</span></div><button type="button" onclick="closeTeacherSurahMenu()">✕</button></header><div class="v1054-surah-search"><input type="search" inputmode="search" placeholder="ابحث باسم السورة أو رقمها…" oninput="filterTeacherSurahMenu(this.value)"></div><div id="v1054SurahList" class="v1054-surah-list"></div></aside>
+      <main class="v1055-page-stage">
+        <button type="button" class="v1055-edge-turn v1055-edge-right" onclick="teacherMushafTurn(1)" aria-label="الصفحة التالية"></button>
+        <div class="v1055-mushaf-frame"><span class="v1055-rosette r1">✿</span><span class="v1055-rosette r2">✿</span><span class="v1055-rosette r3">✿</span><span class="v1055-rosette r4">✿</span><div id="v1053TeacherMushafFrame" class="v1053-teacher-frame"><div class="v9-mushaf-empty"><div><b>جاري فتح المصحف…</b></div></div></div></div>
+        <button type="button" class="v1055-edge-turn v1055-edge-left" onclick="teacherMushafTurn(-1)" aria-label="الصفحة السابقة"></button>
+      </main>
+      <footer class="v1055-reader-bar">
+        <button type="button" class="v1055-reader-icon" onclick="closeTeacherMushafReader()" aria-label="إغلاق المصحف">✕</button>
+        <button id="v1055ThemeToggle" type="button" class="v1055-reader-icon" onclick="toggleTeacherMushafTheme()" aria-label="الوضع الليلي">🌙<span>ليلي</span></button>
+        <button type="button" class="v1055-page-pill" onclick="openTeacherQuickMenu()"><b id="v1053TeacherPageState">1</b><span>من 604</span></button>
+        <button id="v1053TeacherDownload" type="button" class="v1055-reader-icon v1055-download-icon" onclick="downloadTeacherMushafPages()" aria-label="تنزيل المصحف">⇩<span>تنزيل</span></button>
+        <div class="v1055-reader-context"><b id="v1054TeacherSurahState">سورة الفاتحة</b><span id="v1055TeacherJuzState">جزء ألم</span><small id="v1053TeacherDownloadStatus"></small></div>
+      </footer>
+      <div id="v1055NavShade" class="v1054-surah-shade" onclick="closeTeacherMushafMenus()"></div>
+      <aside id="v1054SurahDrawer" class="v1054-surah-drawer v1055-nav-drawer v1055-surah-drawer" aria-hidden="true"><header><div><b>السور</b><span>اختر السورة للانتقال مباشرة إلى صفحتها</span></div><button type="button" onclick="closeTeacherSurahMenu()">✕</button></header><div class="v1054-surah-search"><input type="search" inputmode="search" placeholder="ابحث باسم السورة أو رقمها…" oninput="filterTeacherSurahMenu(this.value)"></div><div id="v1054SurahList" class="v1054-surah-list"></div></aside>
+      <aside id="v1055JuzDrawer" class="v1055-nav-drawer v1055-juz-drawer" aria-hidden="true"><header><div><b>الأجزاء</b><span>30 جزءًا بأسمائها وبداية كل جزء</span></div><button type="button" onclick="closeTeacherJuzMenu()">✕</button></header><div class="v1054-surah-search"><input type="search" inputmode="search" placeholder="ابحث باسم الجزء أو رقمه…" oninput="filterTeacherJuzMenu(this.value)"></div><div id="v1055JuzList" class="v1054-surah-list"></div></aside>
+      <section id="v1055QuickMenu" class="v1055-quick-menu" aria-hidden="true"><div class="v1055-quick-card"><header><div><b>انتقال سريع</b><span>اذهب إلى صفحة محددة أو استخدم الفهارس</span></div><button onclick="closeTeacherQuickMenu()">✕</button></header><label>رقم الصفحة <input id="v1055QuickPageInput" type="number" min="1" max="604" value="1" onkeydown="if(event.key==='Enter')teacherMushafQuickGo()"></label><button class="btn btn-g" onclick="teacherMushafQuickGo()">فتح الصفحة</button><div class="v1055-quick-links"><button onclick="closeTeacherQuickMenu();openTeacherSurahMenu()">فهرس السور</button><button onclick="closeTeacherQuickMenu();openTeacherJuzMenu()">فهرس الأجزاء</button></div></div></section>
     </div>`;
     document.body.appendChild(mo);
     const frame=mo.querySelector('#v1053TeacherMushafFrame');let x0=0,y0=0,t0=0;
     frame.addEventListener('touchstart',e=>{const t=e.changedTouches?.[0];if(!t)return;x0=t.clientX;y0=t.clientY;t0=Date.now();},{passive:true});
     frame.addEventListener('touchend',e=>{const t=e.changedTouches?.[0];if(!t)return;const dx=t.clientX-x0,dy=t.clientY-y0,dt=Date.now()-t0;if(dt<700&&Math.abs(dx)>52&&Math.abs(dx)>Math.abs(dy)*1.25){teacherTurn(dx>0?1:-1);}}, {passive:true});
     mo.addEventListener('click',e=>{if(e.target===mo)closeTeacherReader();});
+    document.addEventListener('keydown',e=>{if(!mo.classList.contains('open'))return;if(e.key==='ArrowRight')teacherTurn(1);else if(e.key==='ArrowLeft')teacherTurn(-1);else if(e.key==='Escape')closeAllNavDrawers();});
     return mo;
   }
 
   async function updateTeacherDownloadState(){
     const btn=document.getElementById('v1053TeacherDownload');const s=await stats();
-    if(btn){const complete=s.count>=PAGE_COUNT;btn.hidden=complete;btn.style.display=complete?'none':'';btn.textContent=complete?'':(s.count?`⇩ استكمال التنزيل ${s.count}/${PAGE_COUNT}`:'⇩ تنزيل المصحف للعمل دون إنترنت');}
+    if(btn){const complete=s.count>=PAGE_COUNT;btn.hidden=complete;btn.style.display=complete?'none':'';if(!complete){btn.innerHTML='⇩<span>تنزيل</span>';btn.setAttribute('aria-label',s.count?`استكمال تنزيل المصحف ${s.count} من ${PAGE_COUNT}`:'تنزيل المصحف للعمل دون إنترنت');}}
     const home=document.getElementById('v1053HomeMushafDownload');if(home){const complete=s.count>=PAGE_COUNT;home.hidden=complete;home.style.display=complete?'none':'';}
   }
 
@@ -205,9 +248,14 @@
     const target=document.getElementById('v1053TeacherMushafFrame');if(!target)return;
     await showLitePage(page,'v1053TeacherMushafFrame');
     target.querySelectorAll('.mushaf-lite-online-note').forEach(x=>x.remove());
-    const inp=document.getElementById('v1053TeacherPageInput');if(inp)inp.value=page;
-    const st=document.getElementById('v1053TeacherPageState');if(st)st.textContent=`صفحة ${page} من ${PAGE_COUNT}`;
-    const surahState=document.getElementById('v1054TeacherSurahState'),row=currentSurahForPage(page);if(surahState)surahState.textContent=row?`سورة ${row.name}`:'';
+    const st=document.getElementById('v1053TeacherPageState');if(st)st.textContent=String(page);
+    const row=currentSurahForPage(page),juz=juzForPage(page);
+    const surahText=row?`سورة ${row.name}`:'السور';
+    const surahState=document.getElementById('v1054TeacherSurahState');if(surahState)surahState.textContent=surahText;
+    const juzState=document.getElementById('v1055TeacherJuzState');if(juzState)juzState.textContent=juz.name;
+    const hSurah=document.getElementById('v1055HeaderSurah');if(hSurah)hSurah.textContent=surahText;
+    const hJuz=document.getElementById('v1055HeaderJuz');if(hJuz)hJuz.textContent=juz.name;
+    const quick=document.getElementById('v1055QuickPageInput');if(quick)quick.value=page;
     if(withSound)playPageFlipSound();
     updateTeacherDownloadState().catch(()=>{});
   }
@@ -218,7 +266,7 @@
     mo.classList.add('open');mo.setAttribute('aria-hidden','false');document.body.classList.add('v1053-reader-open');
     await loadSurahIndex(false).catch(()=>{});await applyReaderTheme(state.readerTheme);await teacherPage(last,false);await updateTeacherDownloadState();
   }
-  function closeTeacherReader(){const mo=document.getElementById('v1053TeacherMushaf');if(!mo)return;mo.classList.remove('open');mo.setAttribute('aria-hidden','true');document.body.classList.remove('v1053-reader-open');}
+  function closeTeacherReader(){const mo=document.getElementById('v1053TeacherMushaf');if(!mo)return;closeAllNavDrawers();mo.classList.remove('open');mo.setAttribute('aria-hidden','true');document.body.classList.remove('v1053-reader-open');}
   async function downloadTeacherPages(){await downloadRange(1,PAGE_COUNT);await refreshHomeState();}
 
   async function downloadRange(from=1,to=PAGE_COUNT){
@@ -325,7 +373,7 @@
     root.classList.add('mushaf-mobile-reader-v1041');
     root.innerHTML=`
       <section class="mushaf-lite-card mushaf-lite-primary">
-        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 10.5.4</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>الصفحات تُعرض كصورة SVG واضحة داخل التطبيق بدل PDF، لذلك تعمل على Android بدون شاشة «فتح PDF».</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
+        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 10.5.5 · فهارس السور والأجزاء</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>الصفحات تُعرض كصورة SVG واضحة داخل التطبيق بدل PDF، لذلك تعمل على Android بدون شاشة «فتح PDF».</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
         <div class="mushaf-lite-actions">${s.count<PAGE_COUNT?`<button class="btn btn-g" onclick="downloadMushafLiteAll()">${s.count?`استكمال تنزيل المصحف ${s.count}/${PAGE_COUNT}`:'تنزيل المصحف Offline'}</button>`:''}<button class="btn btn-out" onclick="downloadMushafRangePages()">تنزيل نطاق الحفظ</button>${state.running?'<button class="btn btn-red" onclick="cancelMushafLiteDownload()">إيقاف</button>':''}</div>
         <div id="mushafLiteProgress" class="v9-mushaf-progress">${state.running?'جارٍ التنزيل…':s.count?`✓ محفوظ ${s.count} صفحة (${fmt(s.bytes)})`:'لم يتم تنزيل صفحات بعد'}</div>
         <div class="mushaf-lite-reader"><div class="mushaf-lite-toolbar"><b>قارئ الصفحات</b><input id="mushafLitePageInput" type="number" min="1" max="604" value="${last}" onkeydown="if(event.key==='Enter')openMushafLitePage(this.value)"><button onclick="openMushafLitePage(Math.max(1,(Number(document.getElementById('mushafLitePageInput')?.value)||1)-1))">السابق</button><button onclick="openMushafLitePage(Math.min(604,(Number(document.getElementById('mushafLitePageInput')?.value)||1)+1))">التالي</button></div><div id="mushafLiteFrame" class="mushaf-lite-frame"><div class="v9-mushaf-empty"><div><b>صفحة ${last}</b><p>اضغط «فتح الصفحة» لعرضها.</p><button class="btn btn-g btn-sm" onclick="openMushafLitePage(${last})">فتح الصفحة</button></div></div></div></div>
@@ -349,7 +397,7 @@
   }
 
   async function wrappedRender(){await renderPrimaryUI();}
-  if(Legacy){Legacy.override('renderV9Mushaf',wrappedRender,'mushaf-offline-v10.5.4');Legacy.override('openCurrentMushafPage',currentMushafPage,'mushaf-offline-v10.5.4');}
+  if(Legacy){Legacy.override('renderV9Mushaf',wrappedRender,'mushaf-offline-v10.5.5');Legacy.override('openCurrentMushafPage',currentMushafPage,'mushaf-offline-v10.5.5');}
   else{g.renderV9Mushaf=wrappedRender;g.openCurrentMushafPage=currentMushafPage;}
 
   g.downloadMushafLitePage=downloadPage;
@@ -373,7 +421,15 @@
   g.filterTeacherSurahMenu=(q)=>renderSurahDrawer(q);
   g.jumpTeacherMushafSurah=jumpSurah;
   g.toggleTeacherMushafTheme=toggleReaderTheme;
-  APP.MushafOffline={pageUrl,stats,downloadRange,downloadAll:downloadTeacherPages,downloadPage,showPage:showLitePage,render:renderPrimaryUI,openCurrent:currentMushafPage,openTeacherReader,closeTeacherReader,loadSurahIndex,jumpSurah,pageCount:PAGE_COUNT,source:SOURCE_INFO,official:OFFICIAL_INFO,cdnVersion:CDN_VERSION};
-  // v10.5.4 removes the legacy PDF storage path. Only SVG pages downloaded from the web remain.
+  g.openTeacherJuzMenu=openJuzDrawer;
+  g.closeTeacherJuzMenu=closeJuzDrawer;
+  g.filterTeacherJuzMenu=(q)=>renderJuzDrawer(q);
+  g.jumpTeacherMushafJuz=jumpJuz;
+  g.openTeacherQuickMenu=openQuickMenu;
+  g.closeTeacherQuickMenu=closeQuickMenu;
+  g.teacherMushafQuickGo=quickGoPage;
+  g.closeTeacherMushafMenus=closeAllNavDrawers;
+  APP.MushafOffline={pageUrl,stats,downloadRange,downloadAll:downloadTeacherPages,downloadPage,showPage:showLitePage,render:renderPrimaryUI,openCurrent:currentMushafPage,openTeacherReader,closeTeacherReader,loadSurahIndex,jumpSurah,jumpJuz,juzForPage,pageCount:PAGE_COUNT,source:SOURCE_INFO,official:OFFICIAL_INFO,cdnVersion:CDN_VERSION};
+  // v10.5.5 removes the legacy PDF storage path. Only SVG pages downloaded from the web remain.
   setTimeout(()=>{cleanupLegacyStorageOnce().then(()=>refreshHomeState()).catch(()=>{});renderPrimaryUI().catch(err=>console.error('[mushaf-offline] initial render',err));},0);
 })(globalThis);
