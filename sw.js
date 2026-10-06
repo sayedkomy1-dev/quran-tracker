@@ -1,33 +1,35 @@
-/* أكاديمية الإمام — Service Worker v10.5.5 */
-const CACHE_NAME = 'quran-pwa-v10.5.5';
-const APP_VERSION = '10.5.5';
+/* أكاديمية الإمام — Service Worker v10.5.6 */
+const CACHE_NAME = 'quran-pwa-v10.5.6';
+const APP_VERSION = '10.5.6';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css?v=10.5.5',
-  './app.js?v=10.5.5',
-  './v8.js?v=10.5.5',
-  './v9.js?v=10.5.5',
-  './js/features/mushaf-offline.js?v=10.5.5',
-  './v9.css?v=10.5.5',
-  './v10.css?v=10.5.5',
-  './quran-engine.css?v=10.5.5',
-  './v10.js?v=10.5.5',
-  './js/features/quran-engine.js?v=10.5.5',
-  './js/core/runtime.js?v=10.5.5',
-  './js/features/v10-data.js?v=10.5.5',
-  './js/features/recitation-carry.js?v=10.5.5',
-  './auth.js?v=10.5.5',
-  './sync-core.js?v=10.5.5',
-  './auth.css?v=10.5.5',
+  './styles.css?v=10.5.6',
+  './app.js?v=10.5.6',
+  './v8.js?v=10.5.6',
+  './v9.js?v=10.5.6',
+  './js/features/mushaf-offline.js?v=10.5.6',
+  './v9.css?v=10.5.6',
+  './v10.css?v=10.5.6',
+  './quran-engine.css?v=10.5.6',
+  './v10.js?v=10.5.6',
+  './js/features/quran-engine.js?v=10.5.6',
+  './js/core/runtime.js?v=10.5.6',
+  './js/features/v10-data.js?v=10.5.6',
+  './js/features/recitation-carry.js?v=10.5.6',
+  './auth.js?v=10.5.6',
+  './sync-core.js?v=10.5.6',
+  './auth.css?v=10.5.6',
   './privacy.html',
   './terms.html',
-  './manifest.json?v=10.5.5',
+  './manifest.json?v=10.5.6',
   './favicon.png',
   './icon-96.png',
   './icon-192.png',
   './icon-512.png',
-  './icon-maskable.png'
+  './icon-maskable.png',
+  './assets/mushaf-corner.svg',
+  './assets/mushaf-title-ornament.svg'
 ];
 
 self.addEventListener('install', event => {

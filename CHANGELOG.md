@@ -1,5 +1,14 @@
 # Changelog
 
+## 10.5.6 — Madani Page Skin & Opening Pages
+- Added local scalable ornamental assets for the Mushaf frame and Surah title cartouche.
+- Added a decorative Surah title inside the page frame whenever the current page starts a Surah.
+- Added dedicated opening-page treatments for page 1 (Al-Fatiha) and page 2 (Al-Baqarah).
+- Refined day parchment, multi-line border, corner decoration, reader header/footer spacing, and mobile page area.
+- Refined night treatment without changing stored Quran page data.
+- New ornamental assets are precached by the service worker for offline reading.
+- Schema 12, sync model, and Supabase remain unchanged.
+
 ## 10.5.5 — Teacher Mushaf Page-First Navigation
 - Fixed unreadable night mode by keeping the Mushaf page on a dim parchment surface instead of inverting a transparent SVG.
 - Rebuilt the reader chrome around the page: current Surah, current Juz, quick page jump, and a compact bottom bar.

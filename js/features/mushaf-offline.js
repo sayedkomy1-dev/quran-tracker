@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran — mobile-first Madani Mushaf offline pages v10.5.5
+/* We Live Quran — mobile-first Madani Mushaf offline pages v10.5.6
    Fixes Android's inability to render cached PDF pages inline by using the
    versioned quran.ws SVG CDN. Each SVG is optionally gzip-compressed before
    being persisted in IndexedDB, then inflated only when displayed. */
@@ -92,7 +92,7 @@
   async function cleanupLegacyStorageOnce(){
     const flag='mushaf:v1053:legacy-cleaned';
     if(await g.idbKvGet(flag).catch(()=>null))return;
-    // v10.5.5 no longer uses the 200+ MB PDF path at all.
+    // v10.5.6 no longer uses the 200+ MB PDF path at all.
     await g.mediaDelete('mushaf:madinah:pdf').catch(()=>{});
     await g.idbKvPut('mushaf:madinah:meta','{}').catch(()=>{});
     const old=await oldKeys().catch(()=>[]);
@@ -213,7 +213,11 @@
       </header>
       <main class="v1055-page-stage">
         <button type="button" class="v1055-edge-turn v1055-edge-right" onclick="teacherMushafTurn(1)" aria-label="الصفحة التالية"></button>
-        <div class="v1055-mushaf-frame"><span class="v1055-rosette r1">✿</span><span class="v1055-rosette r2">✿</span><span class="v1055-rosette r3">✿</span><span class="v1055-rosette r4">✿</span><div id="v1053TeacherMushafFrame" class="v1053-teacher-frame"><div class="v9-mushaf-empty"><div><b>جاري فتح المصحف…</b></div></div></div></div>
+        <div id="v1056MushafFrame" class="v1055-mushaf-frame v1056-mushaf-frame" data-page-kind="normal">
+          <span class="v1056-corner-art ca1" aria-hidden="true"></span><span class="v1056-corner-art ca2" aria-hidden="true"></span><span class="v1056-corner-art ca3" aria-hidden="true"></span><span class="v1056-corner-art ca4" aria-hidden="true"></span>
+          <div id="v1056PageTitle" class="v1056-page-title" hidden><span class="v1056-title-wing" aria-hidden="true"></span><b id="v1056PageTitleText">سورة الفاتحة</b><span class="v1056-title-wing" aria-hidden="true"></span></div>
+          <div id="v1053TeacherMushafFrame" class="v1053-teacher-frame"><div class="v9-mushaf-empty"><div><b>جاري فتح المصحف…</b></div></div></div>
+        </div>
         <button type="button" class="v1055-edge-turn v1055-edge-left" onclick="teacherMushafTurn(-1)" aria-label="الصفحة السابقة"></button>
       </main>
       <footer class="v1055-reader-bar">
@@ -249,13 +253,25 @@
     await showLitePage(page,'v1053TeacherMushafFrame');
     target.querySelectorAll('.mushaf-lite-online-note').forEach(x=>x.remove());
     const st=document.getElementById('v1053TeacherPageState');if(st)st.textContent=String(page);
-    const row=currentSurahForPage(page),juz=juzForPage(page);
+    let row=currentSurahForPage(page);if(!row&&page===1)row={id:1,name:'الفاتحة',page:1};else if(!row&&page===2)row={id:2,name:'البقرة',page:2};
+    const juz=juzForPage(page);
     const surahText=row?`سورة ${row.name}`:'السور';
     const surahState=document.getElementById('v1054TeacherSurahState');if(surahState)surahState.textContent=surahText;
     const juzState=document.getElementById('v1055TeacherJuzState');if(juzState)juzState.textContent=juz.name;
     const hSurah=document.getElementById('v1055HeaderSurah');if(hSurah)hSurah.textContent=surahText;
     const hJuz=document.getElementById('v1055HeaderJuz');if(hJuz)hJuz.textContent=juz.name;
     const quick=document.getElementById('v1055QuickPageInput');if(quick)quick.value=page;
+    const frame=document.getElementById('v1056MushafFrame'),title=document.getElementById('v1056PageTitle'),titleText=document.getElementById('v1056PageTitleText');
+    let starts=(Array.isArray(state.surahIndex)?state.surahIndex:[]).filter(x=>Number(x?.page)===page);
+    if(!starts.length&&page===1)starts=[{id:1,name:'الفاتحة',page:1}];else if(!starts.length&&page===2)starts=[{id:2,name:'البقرة',page:2}];
+    if(frame){
+      const kind=page===1?'fatiha':page===2?'baqarah':starts.length?'surah-start':'normal';
+      frame.dataset.pageKind=kind;frame.classList.toggle('v1056-is-opening',page<=2);frame.classList.toggle('v1056-is-surah-start',starts.length>0);
+    }
+    if(title&&titleText){
+      if(starts.length){const names=starts.slice(0,3).map(x=>`سورة ${x.name}`);titleText.textContent=names.join(' · ');title.hidden=false;}
+      else{title.hidden=true;titleText.textContent=surahText;}
+    }
     if(withSound)playPageFlipSound();
     updateTeacherDownloadState().catch(()=>{});
   }
@@ -373,7 +389,7 @@
     root.classList.add('mushaf-mobile-reader-v1041');
     root.innerHTML=`
       <section class="mushaf-lite-card mushaf-lite-primary">
-        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 10.5.5 · فهارس السور والأجزاء</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>الصفحات تُعرض كصورة SVG واضحة داخل التطبيق بدل PDF، لذلك تعمل على Android بدون شاشة «فتح PDF».</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
+        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 10.5.6 · فهارس السور والأجزاء</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>الصفحات تُعرض كصورة SVG واضحة داخل التطبيق بدل PDF، لذلك تعمل على Android بدون شاشة «فتح PDF».</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
         <div class="mushaf-lite-actions">${s.count<PAGE_COUNT?`<button class="btn btn-g" onclick="downloadMushafLiteAll()">${s.count?`استكمال تنزيل المصحف ${s.count}/${PAGE_COUNT}`:'تنزيل المصحف Offline'}</button>`:''}<button class="btn btn-out" onclick="downloadMushafRangePages()">تنزيل نطاق الحفظ</button>${state.running?'<button class="btn btn-red" onclick="cancelMushafLiteDownload()">إيقاف</button>':''}</div>
         <div id="mushafLiteProgress" class="v9-mushaf-progress">${state.running?'جارٍ التنزيل…':s.count?`✓ محفوظ ${s.count} صفحة (${fmt(s.bytes)})`:'لم يتم تنزيل صفحات بعد'}</div>
         <div class="mushaf-lite-reader"><div class="mushaf-lite-toolbar"><b>قارئ الصفحات</b><input id="mushafLitePageInput" type="number" min="1" max="604" value="${last}" onkeydown="if(event.key==='Enter')openMushafLitePage(this.value)"><button onclick="openMushafLitePage(Math.max(1,(Number(document.getElementById('mushafLitePageInput')?.value)||1)-1))">السابق</button><button onclick="openMushafLitePage(Math.min(604,(Number(document.getElementById('mushafLitePageInput')?.value)||1)+1))">التالي</button></div><div id="mushafLiteFrame" class="mushaf-lite-frame"><div class="v9-mushaf-empty"><div><b>صفحة ${last}</b><p>اضغط «فتح الصفحة» لعرضها.</p><button class="btn btn-g btn-sm" onclick="openMushafLitePage(${last})">فتح الصفحة</button></div></div></div></div>
@@ -397,7 +413,7 @@
   }
 
   async function wrappedRender(){await renderPrimaryUI();}
-  if(Legacy){Legacy.override('renderV9Mushaf',wrappedRender,'mushaf-offline-v10.5.5');Legacy.override('openCurrentMushafPage',currentMushafPage,'mushaf-offline-v10.5.5');}
+  if(Legacy){Legacy.override('renderV9Mushaf',wrappedRender,'mushaf-offline-v10.5.6');Legacy.override('openCurrentMushafPage',currentMushafPage,'mushaf-offline-v10.5.6');}
   else{g.renderV9Mushaf=wrappedRender;g.openCurrentMushafPage=currentMushafPage;}
 
   g.downloadMushafLitePage=downloadPage;
@@ -430,6 +446,6 @@
   g.teacherMushafQuickGo=quickGoPage;
   g.closeTeacherMushafMenus=closeAllNavDrawers;
   APP.MushafOffline={pageUrl,stats,downloadRange,downloadAll:downloadTeacherPages,downloadPage,showPage:showLitePage,render:renderPrimaryUI,openCurrent:currentMushafPage,openTeacherReader,closeTeacherReader,loadSurahIndex,jumpSurah,jumpJuz,juzForPage,pageCount:PAGE_COUNT,source:SOURCE_INFO,official:OFFICIAL_INFO,cdnVersion:CDN_VERSION};
-  // v10.5.5 removes the legacy PDF storage path. Only SVG pages downloaded from the web remain.
+  // v10.5.6 removes the legacy PDF storage path. Only SVG pages downloaded from the web remain.
   setTimeout(()=>{cleanupLegacyStorageOnce().then(()=>refreshHomeState()).catch(()=>{});renderPrimaryUI().catch(err=>console.error('[mushaf-offline] initial render',err));},0);
 })(globalThis);
