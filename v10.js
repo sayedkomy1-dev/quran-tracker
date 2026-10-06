@@ -201,7 +201,7 @@ async function v1052RefreshMushafQuickStatus(){
       status.dataset.ready=count>=total?'1':'0';
     }
     if(download){
-      download.hidden=count>=total;
+      download.hidden=count>=total;download.style.display=count>=total?'none':'';
       if(downloadText)downloadText.textContent=count?`استكمال التنزيل ${count}/${total}`:'تنزيل المصحف Offline';
     }
   }catch(_){if(status)status.textContent='افتح المصحف أو نزّل صفحاته عند الحاجة';}
