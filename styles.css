@@ -779,3 +779,67 @@ button{touch-action:manipulation}
 @media print{
   body.printing-monthly > *{display:none!important}.print-monthly-report{display:block!important;direction:rtl;font-family:Arial,sans-serif;color:#111;padding:18mm}.print-monthly-report h1{text-align:center}.print-monthly-report table{width:100%;border-collapse:collapse}.print-monthly-report th,.print-monthly-report td{border:1px solid #bbb;padding:6px;font-size:11px}.print-monthly-report .print-brand{text-align:center;margin-bottom:18px}.print-monthly-report .print-brand img{width:70px}.print-monthly-report .print-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.print-monthly-report .print-summary div{border:1px solid #bbb;padding:8px;text-align:center}
 }
+
+/* v10.6.0 — Guardian Communication Center */
+.guardian-center{max-width:760px;max-height:94vh;overflow:auto;padding-bottom:18px}
+.guardian-center-title{align-items:flex-start}
+.guardian-center-title>div{display:flex;flex-direction:column;gap:3px}
+.guardian-center-title small{font-size:11px;color:var(--mut);font-weight:500;line-height:1.55}
+.guardian-step{border:1px solid var(--bdr);border-radius:16px;padding:13px;margin:10px 0;background:var(--wh)}
+.guardian-step-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.guardian-step-head>b{font-size:13px;color:var(--gd)}
+.guardian-step-head>span{font-size:10px;color:var(--mut);text-align:left}
+.guardian-mode-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.guardian-mode-grid button{border:1px solid var(--bdr);background:var(--bg);color:var(--tx);border-radius:13px;padding:11px 10px;display:grid;grid-template-columns:auto 1fr;grid-template-areas:"icon title" "icon sub";column-gap:8px;text-align:right;cursor:pointer;font:inherit;transition:.18s ease}
+.guardian-mode-grid button>b{grid-area:title;font-size:12px}
+.guardian-mode-grid button>small{grid-area:sub;color:var(--mut);font-size:9px;line-height:1.5}
+.guardian-mode-grid button:first-letter{grid-area:icon}
+.guardian-mode-grid button.on{border-color:var(--gm);background:var(--gp);box-shadow:0 0 0 2px rgba(41,120,77,.08) inset}
+.guardian-mode-grid button.on>b{color:var(--gd)}
+.guardian-scope-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.guardian-scope-grid button{border:1px solid var(--bdr);background:var(--bg);color:var(--tx);border-radius:10px;padding:8px 5px;font:inherit;font-size:10px;font-weight:700;cursor:pointer}
+.guardian-scope-grid button.on{background:var(--gd);color:#fff;border-color:var(--gd)}
+.guardian-group-row{display:grid;grid-template-columns:1fr auto;gap:7px;margin-bottom:8px}
+.guardian-group-row select{margin:0}
+.guardian-recipient-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+.guardian-recipient-stats>div{border:1px solid var(--bdr);border-radius:10px;padding:7px 10px;background:var(--bg);display:flex;justify-content:space-between;align-items:center}
+.guardian-recipient-stats b{font-size:16px;color:var(--gm)}
+.guardian-recipient-stats span{font-size:10px;color:var(--mut)}
+.guardian-recipient-stats .warn b{color:var(--red)}
+.guardian-phone-issues{border:1px solid rgba(196,72,72,.28);background:rgba(196,72,72,.08);border-radius:10px;padding:9px;margin-bottom:8px;font-size:10px;color:var(--red)}
+.guardian-phone-issues>div{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.guardian-phone-issues span{background:var(--wh);border:1px solid rgba(196,72,72,.2);padding:3px 6px;border-radius:999px;color:var(--tx)}
+.guardian-recipient-list{max-height:220px}
+.recipient-item{position:relative}
+.guardian-phone-state{margin-inline-start:auto;font-style:normal;font-size:9px;font-weight:800;border-radius:999px;padding:3px 7px;white-space:nowrap}
+.guardian-phone-state.ok{background:rgba(41,120,77,.12);color:var(--gm)}
+.guardian-phone-state.bad{background:rgba(196,72,72,.12);color:var(--red)}
+.recipient-item.phone-invalid{border-color:rgba(196,72,72,.25)}
+.guardian-custom-grid{display:grid;grid-template-columns:180px 1fr;gap:9px;align-items:start}
+.guardian-custom-grid .fld{margin:0}
+.guardian-message-field textarea{min-height:130px}
+.guardian-preview{max-height:280px;margin-top:8px;background:var(--gp)}
+.guardian-preview .preview-title{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid var(--bdr);padding-bottom:7px;margin-bottom:8px}
+.guardian-preview .preview-title span{font-weight:800;font-size:11px;color:var(--gd)}
+.guardian-preview .preview-title small{color:var(--mut);font-size:9px}
+.guardian-preview .preview-msg{font-size:11px;line-height:1.85;white-space:normal}
+.guardian-send-actions{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:7px}
+.guardian-send-actions .btn{margin:0}
+.guardian-privacy-note{font-size:9px;color:var(--mut);line-height:1.6;text-align:center;margin:9px 0 0}
+.guardian-queue-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.guardian-progress-track{height:7px;background:rgba(0,0,0,.08);border-radius:99px;overflow:hidden;margin-bottom:6px}
+.guardian-progress-track i{display:block;height:100%;background:var(--gm);border-radius:99px;transition:width .2s ease}
+.guardian-done{font-weight:700;color:var(--gd);line-height:1.7}
+[data-theme="dark"] .guardian-step{background:var(--wh)}
+[data-theme="dark"] .guardian-mode-grid button,[data-theme="dark"] .guardian-scope-grid button:not(.on),[data-theme="dark"] .guardian-recipient-stats>div{background:#0d1a11}
+[data-theme="dark"] .guardian-progress-track{background:rgba(255,255,255,.08)}
+@media(max-width:640px){
+  .guardian-center{max-width:none;width:100%;max-height:92vh;border-radius:22px 22px 0 0;margin-top:auto;padding:13px 11px 18px}
+  .guardian-mode-grid{grid-template-columns:1fr 1fr}
+  .guardian-mode-grid button{padding:10px 8px}
+  .guardian-scope-grid{grid-template-columns:1fr 1fr}
+  .guardian-custom-grid{grid-template-columns:1fr}
+  .guardian-send-actions{grid-template-columns:1fr 1fr}
+  .guardian-send-actions .btn-wa{grid-column:1/-1}
+  .guardian-step{padding:11px;border-radius:14px}
+}

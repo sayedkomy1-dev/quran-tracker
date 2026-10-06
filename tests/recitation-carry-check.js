@@ -18,4 +18,4 @@ const pending=carry.pendingItems(assignments,results);
 assert.strictEqual(pending.length,1);
 assert.strictEqual(pending[0].id,'q3');
 assert.strictEqual(pending[0]._status,'not_heard');
-console.log('Recitation carry-forward checks passed for v10.5.11');
+console.log('Recitation carry-forward checks passed for v10.6.0');

@@ -8,16 +8,16 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.5.11">
-<link rel="manifest" href="manifest.json?v=10.5.11">
+<meta name="application-version" content="10.6.0">
+<link rel="manifest" href="manifest.json?v=10.6.0">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<link rel="stylesheet" href="styles.css?v=10.5.11">
-<link rel="stylesheet" href="v9.css?v=10.5.11">
-<link rel="stylesheet" href="v10.css?v=10.5.11">
-<link rel="stylesheet" href="quran-engine.css?v=10.5.11">
-<link rel="stylesheet" href="auth.css?v=10.5.11">
+<link rel="stylesheet" href="styles.css?v=10.6.0">
+<link rel="stylesheet" href="v9.css?v=10.6.0">
+<link rel="stylesheet" href="v10.css?v=10.6.0">
+<link rel="stylesheet" href="quran-engine.css?v=10.6.0">
+<link rel="stylesheet" href="auth.css?v=10.6.0">
 </head>
 <body>
 
@@ -141,7 +141,7 @@
     </div>
     <div style="display:flex;gap:8px">
       <button class="btn btn-g mt8" style="flex:2" onclick="goToSession()">ابدأ الحصة 📖</button>
-      <button class="btn btn-out mt8" style="flex:1" onclick="openBroadcastComposer()">📣 رسالة جماعية</button>
+      <button class="btn btn-out mt8" style="flex:1" onclick="openBroadcastComposer()">💬 مركز التواصل</button>
     </div>
   </div>
 
@@ -190,7 +190,7 @@
       <option value="">كل المجموعات</option>
     </select>
   </div>
-  <button class="btn btn-wa mb8" onclick="openBroadcastComposer()">📣 رسالة جماعية لأولياء الأمور</button>
+  <button class="btn btn-wa mb8" onclick="openBroadcastComposer()">💬 مركز التواصل مع أولياء الأمور</button>
   <div id="stList"></div>
   <button class="fab" onclick="openAddSt()">+</button>
 </div>
@@ -818,50 +818,86 @@
   </div>
 </div>
 
-<!-- ════════════ BROADCAST MESSAGE MODAL ════════════ -->
+<!-- ════════════ GUARDIAN COMMUNICATION CENTER ════════════ -->
 <div class="mo" id="broadcastModal">
-  <div class="mo-box broadcast-box">
-    <div class="mo-title">
-      <span>📣 رسالة جماعية لأولياء الأمور</span>
+  <div class="mo-box broadcast-box guardian-center">
+    <div class="mo-title guardian-center-title">
+      <div><span>💬 مركز التواصل مع أولياء الأمور</span><small>جهّز الرسالة وراجعها ثم افتح WhatsApp — الإرسال النهائي يدوي.</small></div>
       <button class="mo-x" onclick="closeBroadcastComposer()">✕</button>
     </div>
-    <div class="fld">
-      <label>قالب سريع</label>
-      <select id="broadcastPreset" onchange="applyBroadcastPreset()">
-        <option value="general">رسالة عامة</option>
-        <option value="schedule">تغيير موعد حصة</option>
-        <option value="holiday">إجازة / تعليق الحصص</option>
-        <option value="greeting">تهنئة بمناسبة</option>
-        <option value="course">إعلان عن كورس أو برنامج</option>
-        <option value="reminder">تذكير مهم</option>
-      </select>
-    </div>
-    <div class="fld">
-      <div class="fb mb4"><label style="margin:0">المستلمون</label><span class="selected-count" id="broadcastCount">0 محدد</span></div>
-      <div class="multi-actions">
-        <button type="button" class="btn btn-out btn-xs" onclick="setBroadcastRecipients('all')">تحديد الكل</button>
-        <button type="button" class="btn btn-out btn-xs" onclick="setBroadcastRecipients('today')">طلاب اليوم</button>
-        <button type="button" class="btn btn-out btn-xs" onclick="setBroadcastRecipients('none')">إلغاء الكل</button>
-      </div>
-      <input type="search" id="broadcastSearch" placeholder="ابحث عن طالب..." oninput="renderBroadcastRecipients()">
-      <div id="broadcastRecipients" class="recipient-list"></div>
-    </div>
-    <div class="fld">
-      <label>نص الرسالة <span class="txt-mut">— قابل للتعديل</span></label>
-      <textarea id="broadcastText" rows="8" oninput="updateBroadcastPreview()"></textarea>
-      <div class="tmpl-vars mt8">
-        <button class="tmpl-var" onclick="insertBroadcastVar('{{اسم_الطالب}}')">{{اسم_الطالب}}</button>
-        <button class="tmpl-var" onclick="insertBroadcastVar('{{اسم_ولي_الأمر}}')">{{اسم_ولي_الأمر}}</button>
-        <button class="tmpl-var" onclick="insertBroadcastVar('{{مستوى_التسميع}}')">{{مستوى_التسميع}}</button>
-        <button class="tmpl-var" onclick="insertBroadcastVar('{{إجمالي_الآيات}}')">{{إجمالي_الآيات}}</button>
+
+    <div class="guardian-step">
+      <div class="guardian-step-head"><b>1. نوع الرسالة</b><span id="guardianModeHint"></span></div>
+      <div class="guardian-mode-grid">
+        <button type="button" data-guardian-mode="session" onclick="setGuardianMode('session')">📋<b>تقرير آخر حصة</b><small>التقييم + التكليف + ملاحظات المحفظ</small></button>
+        <button type="button" data-guardian-mode="absence" onclick="setGuardianMode('absence')">❌<b>إبلاغ بالغياب</b><small>غياب اليوم + المطلوب للمتابعة</small></button>
+        <button type="button" data-guardian-mode="assignment" onclick="setGuardianMode('assignment')">📌<b>تذكير بالتكليف</b><small>آخر تكليف مسجل للطالب</small></button>
+        <button type="button" data-guardian-mode="custom" onclick="setGuardianMode('custom')">✍️<b>رسالة مخصصة</b><small>قالب عام قابل للتعديل</small></button>
       </div>
     </div>
-    <div class="broadcast-preview" id="broadcastPreview"></div>
-    <div id="broadcastProgress" class="broadcast-progress" style="display:none"></div>
-    <button class="btn btn-wa mb8" onclick="startBroadcastQueue()">📲 بدء الإرسال عبر واتساب</button>
-    <button class="btn btn-out" onclick="copyBroadcastMessage()">📋 نسخ الرسالة</button>
+
+    <div class="guardian-step">
+      <div class="guardian-step-head"><b>2. المستلمون</b><span class="selected-count" id="broadcastCount">0 محدد</span></div>
+      <div class="guardian-scope-grid">
+        <button type="button" data-guardian-scope="today" onclick="setBroadcastRecipients('today')">طلاب اليوم</button>
+        <button type="button" data-guardian-scope="absent" onclick="setBroadcastRecipients('absent')">غائبو اليوم</button>
+        <button type="button" data-guardian-scope="all" onclick="setBroadcastRecipients('all')">كل الطلاب</button>
+        <button type="button" data-guardian-scope="none" onclick="setBroadcastRecipients('none')">إلغاء التحديد</button>
+      </div>
+      <div class="guardian-group-row">
+        <select id="guardianGroup" onchange="guardianGroupChanged()"><option value="">اختر مجموعة...</option></select>
+        <button type="button" class="btn btn-out btn-sm" onclick="setBroadcastRecipients('group')">اختيار المجموعة</button>
+      </div>
+      <div class="guardian-recipient-stats">
+        <div><b id="guardianValidCount">0</b><span>رقم صالح</span></div>
+        <div class="warn"><b id="guardianInvalidCount">0</b><span>يحتاج مراجعة</span></div>
+      </div>
+      <div id="guardianPhoneIssues" class="guardian-phone-issues" hidden></div>
+      <input type="search" id="broadcastSearch" placeholder="ابحث باسم الطالب أو ولي الأمر أو المجموعة..." oninput="renderBroadcastRecipients()">
+      <div id="broadcastRecipients" class="recipient-list guardian-recipient-list"></div>
+    </div>
+
+    <div class="guardian-step" id="guardianCustomPanel" hidden>
+      <div class="guardian-step-head"><b>3. نص الرسالة المخصصة</b><span>يمكن تخصيصها تلقائيًا لكل طالب</span></div>
+      <div class="guardian-custom-grid">
+        <div class="fld">
+          <label>قالب سريع</label>
+          <select id="broadcastPreset" onchange="applyBroadcastPreset()">
+            <option value="general">رسالة عامة</option>
+            <option value="schedule">تغيير موعد حصة</option>
+            <option value="holiday">إجازة / تعليق الحصص</option>
+            <option value="greeting">تهنئة بمناسبة</option>
+            <option value="reminder">تذكير مهم</option>
+          </select>
+        </div>
+        <div class="fld guardian-message-field">
+          <label>نص الرسالة</label>
+          <textarea id="broadcastText" rows="7" oninput="updateBroadcastPreview()"></textarea>
+        </div>
+      </div>
+      <div class="tmpl-vars">
+        <button type="button" class="tmpl-var" onclick="insertBroadcastVar('{{اسم_الطالب}}')">{{اسم_الطالب}}</button>
+        <button type="button" class="tmpl-var" onclick="insertBroadcastVar('{{اسم_ولي_الأمر}}')">{{اسم_ولي_الأمر}}</button>
+        <button type="button" class="tmpl-var" onclick="insertBroadcastVar('{{اسم_المحفظ}}')">{{اسم_المحفظ}}</button>
+        <button type="button" class="tmpl-var" onclick="insertBroadcastVar('{{اسم_الأكاديمية}}')">{{اسم_الأكاديمية}}</button>
+      </div>
+    </div>
+
+    <div class="guardian-step">
+      <div class="guardian-step-head"><b>3. المعاينة</b><span>راجع رسالة طالب قبل بدء القائمة</span></div>
+      <select id="guardianPreviewStudent" onchange="guardianSelectPreview()"></select>
+      <div class="broadcast-preview guardian-preview" id="broadcastPreview"></div>
+      <div id="broadcastProgress" class="broadcast-progress" style="display:none"></div>
+      <div class="guardian-send-actions">
+        <button class="btn btn-wa" onclick="startBroadcastQueue()">📲 بدء الإرسال عبر WhatsApp</button>
+        <button class="btn btn-out" onclick="copyBroadcastMessage()">📋 نسخ المعاينة</button>
+        <button class="btn btn-out guardian-review-phone" onclick="guardianOpenInvalidStudents()">☎️ مراجعة الأرقام</button>
+      </div>
+      <p class="guardian-privacy-note">لا يرسل التطبيق الرسائل في الخلفية؛ يفتح WhatsApp لكل ولي أمر على حدة وتؤكد الإرسال بنفسك.</p>
+    </div>
   </div>
 </div>
+
 
 <!-- ════════════ CERTIFICATE MODAL ════════════ -->
 <div class="mo" id="certModal">
@@ -879,17 +915,18 @@
 
 <!-- ════════════ SCRIPTS ════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="js/core/runtime.js?v=10.5.11" defer></script>
-<script src="js/features/v10-data.js?v=10.5.11" defer></script>
-<script src="auth.js?v=10.5.11" defer></script>
-<script src="sync-core.js?v=10.5.11" defer></script>
-<script src="app.js?v=10.5.11" defer></script>
-<script src="v8.js?v=10.5.11" defer></script>
-<script src="v9.js?v=10.5.11" defer></script>
-<script src="js/features/mushaf-offline.js?v=10.5.11" defer></script>
-<script src="js/features/quran-engine.js?v=10.5.11" defer></script>
-<script src="js/features/quran-structure.js?v=10.5.11" defer></script>
-<script src="js/features/recitation-carry.js?v=10.5.11" defer></script>
-<script src="v10.js?v=10.5.11" defer></script>
+<script src="js/core/runtime.js?v=10.6.0" defer></script>
+<script src="js/features/v10-data.js?v=10.6.0" defer></script>
+<script src="auth.js?v=10.6.0" defer></script>
+<script src="sync-core.js?v=10.6.0" defer></script>
+<script src="app.js?v=10.6.0" defer></script>
+<script src="v8.js?v=10.6.0" defer></script>
+<script src="v9.js?v=10.6.0" defer></script>
+<script src="js/features/mushaf-offline.js?v=10.6.0" defer></script>
+<script src="js/features/quran-engine.js?v=10.6.0" defer></script>
+<script src="js/features/quran-structure.js?v=10.6.0" defer></script>
+<script src="js/features/recitation-carry.js?v=10.6.0" defer></script>
+<script src="v10.js?v=10.6.0" defer></script>
+<script src="js/features/guardian-communication.js?v=10.6.0" defer></script>
 </body>
 </html>

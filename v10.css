@@ -315,7 +315,7 @@ body.v1053-reader-open{overflow:hidden}
 @media(max-width:520px){.v10510-insight-head{padding:12px 11px;align-items:flex-start}.v10510-insight-button{min-width:108px;padding:9px 10px;flex:none}.v1059-insight-title small{max-width:170px}}
 .v10510-mushaf-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.v10510-mushaf-links .v1059-mushaf-link{border:1px solid color-mix(in srgb,var(--gm) 28%,var(--line));background:var(--gp);color:var(--gm);border-radius:9px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}.v10510-mushaf-links .v1059-mushaf-link.next{background:var(--gm);color:#fff;border-color:var(--gm)}
 
-/* v10.5.11 — prominent, fast recitation assessment controls */
+/* v10.6.0 — prominent, fast recitation assessment controls */
 .v10511-assessment-label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:12px;font-weight:900;color:var(--v9-text,var(--text))}
 .v10511-assessment-label small{font-size:10px;font-weight:600;color:var(--v9-muted,var(--muted))}
 .v10511-grade-grid{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px!important;margin-top:8px!important}

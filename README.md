@@ -295,3 +295,6 @@ node --check v9.js
 ارفع **محتويات المجلد** إلى جذر المستودع، وليس ملف ZIP. `CNAME` ما زال مخصصًا لـ `welivequran.online`.
 
 راجع `DEPLOYMENT.md` قبل استبدال النسخة المنشورة.
+## v10.6.0 — Guardian Communication Center
+The guardian workflow now supports session reports, absence notices, assignment reminders, and custom messages with recipient scopes, phone validation, previews, and a manual WhatsApp queue. Final sending always remains inside WhatsApp.
+

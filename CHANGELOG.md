@@ -1,3 +1,13 @@
+# v10.6.0 — Guardian Communication Center
+
+- Replaced the old bulk-message composer with a focused guardian communication center.
+- Added report, absence, assignment reminder, and custom-message workflows.
+- Added recipient scopes for today, today absentees, all active students, groups, and manual selection.
+- Added WhatsApp number validation with explicit warnings and safe queue exclusion.
+- Added per-student personalized preview and a manual one-by-one WhatsApp send queue.
+- Reuses detailed session reports, carry-forward tasks, next assignments, and teacher notes.
+- No schema, SQL, or Supabase changes.
+
 # v10.5.11 — Prominent Recitation Assessment
 
 - Five prominent assessment buttons across previous assignment and item-level review.
