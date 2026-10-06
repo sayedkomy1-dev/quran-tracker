@@ -1,3 +1,11 @@
+# v10.5.10 — Exact Mushaf Position + Explicit Insight Buttons
+
+- `فتح الموضع في المصحف` now resolves the exact ayah page instead of only the Surah start page.
+- Bundled the KFGQPC 6,236-ayah → 604-page navigation map for exact Offline page lookup.
+- `أين توقفنا؟` now separates `آخر تسميع` from `التكليف القادم` so each opens its own correct Mushaf location.
+- `أين توقفنا؟` and `اقتراح المراجعة` now use clear visible open/close buttons instead of arrow-only disclosure controls.
+- Schema 12 unchanged; no SQL or Supabase migration.
+
 # v10.5.8 — Mushaf Final Polish
 
 - Full-pack download controls disappear after 604/604 pages are stored and the footer reflows without an empty slot.

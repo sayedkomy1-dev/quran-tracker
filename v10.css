@@ -304,3 +304,13 @@ body.v1053-reader-open{overflow:hidden}
 @media(max-width:520px){.v1059-journey-grid{grid-template-columns:1fr!important}.v1059-insight-toggle{padding:12px}.v1059-insight-body{padding:0 11px 12px}.v1059-insight-title small{max-width:190px}.v1059-review-main{gap:7px}.v1059-review-actions button{flex:1 1 auto}}
 [data-theme="dark"] .v1059-journey-item,[data-theme="dark"] .v1059-review-card,[data-theme="dark"] .v1059-review-actions button{background:var(--card,#151d19)}
 [data-theme="dark"] .v1059-review-card.urgent{background:#2a1918}[data-theme="dark"] .v1059-review-card.late{background:#292417}
+
+/* v10.5.10 — explicit session insight controls */
+.v10510-insight-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 14px}
+.v10510-insight-button{border:1px solid color-mix(in srgb,var(--gm) 72%,#0b4d39);background:var(--gm);color:#fff;border-radius:12px;padding:9px 12px;min-width:116px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.08);transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.v10510-insight-button:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(0,0,0,.11)}
+.v10510-insight-button.is-open{background:var(--card,#fff);color:var(--gm);border-color:color-mix(in srgb,var(--gm) 42%,var(--line));box-shadow:none}
+.v10510-insight-button .v1059-count-badge{background:#fff;color:var(--gm)}
+.v10510-insight-button.is-open .v1059-count-badge{background:var(--gm);color:#fff}
+@media(max-width:520px){.v10510-insight-head{padding:12px 11px;align-items:flex-start}.v10510-insight-button{min-width:108px;padding:9px 10px;flex:none}.v1059-insight-title small{max-width:170px}}
+.v10510-mushaf-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.v10510-mushaf-links .v1059-mushaf-link{border:1px solid color-mix(in srgb,var(--gm) 28%,var(--line));background:var(--gp);color:var(--gm);border-radius:9px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}.v10510-mushaf-links .v1059-mushaf-link.next{background:var(--gm);color:#fff;border-color:var(--gm)}

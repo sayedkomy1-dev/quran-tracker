@@ -179,30 +179,42 @@ function v1059Upcoming(studentId,dateKey){
 }
 function v1059SyncPanelState(key){
   settings.v10=settings.v10||{};settings.v10.sessionPanels={stop:false,review:false,...(settings.v10.sessionPanels||{})};
-  const open=!!settings.v10.sessionPanels[key],cap=key==='stop'?'Stop':'Review',body=document.getElementById(`v1059${cap}Body`),toggle=document.getElementById(`v1059${cap}Toggle`),action=document.getElementById(`v1059${cap}Action`),panel=document.getElementById(`v1059${cap}Panel`);
-  if(body)body.hidden=!open;if(toggle)toggle.setAttribute('aria-expanded',String(open));if(action)action.textContent=open?'إغلاق':'فتح';if(panel)panel.classList.toggle('open',open);
+  const open=!!settings.v10.sessionPanels[key],cap=key==='stop'?'Stop':'Review',body=document.getElementById(`v1059${cap}Body`),toggle=document.getElementById(`v1059${cap}Toggle`),action=document.getElementById(`v1059${cap}Action`),icon=document.getElementById(`v1059${cap}Icon`),panel=document.getElementById(`v1059${cap}Panel`);
+  if(body)body.hidden=!open;
+  if(toggle){toggle.setAttribute('aria-expanded',String(open));toggle.classList.toggle('is-open',open);}
+  if(action)action.textContent=open?'إغلاق':(key==='stop'?'عرض التفاصيل':'عرض الاقتراحات');
+  if(icon)icon.textContent=open?'−':'＋';
+  if(panel)panel.classList.toggle('open',open);
 }
 function toggleV1059SessionPanel(key){
   if(!['stop','review'].includes(key))return;settings.v10=settings.v10||{};settings.v10.sessionPanels={stop:false,review:false,...(settings.v10.sessionPanels||{})};settings.v10.sessionPanels[key]=!settings.v10.sessionPanels[key];
   v1059SyncPanelState(key);try{save();}catch(_){/* preference only */}
 }
-function v1059JourneyRef(key,last,next){
-  const sec=next||last;if(!sec)return null;
-  if(sec.surah)return{surah:sec.surah};
-  if(key==='surahReview'&&sec.chips?.length)return{surah:String(sec.chips[0]).replace(/^سورة\s+/,'')};
-  if(key==='juz'&&sec.chips?.length){const parsed=V1051_CARRY.parseJuzChip(sec.chips[0],JZ);if(parsed){const q=parsed.quarter||1,j=JZ.indexOf(parsed.juzName)+1,m=V1052_STRUCTURE.refFor(j,q);if(m)return{surah:S[m.surah-1]?.n||'',ayah:m.ayah};}}
+function v1059JourneyRef(key,last,next,point='last'){
+  const sec=point==='next'?(next||last):(last||next);if(!sec)return null;
+  if(sec.surah){const ayah=point==='last'?(Number(sec.to)||Number(sec.from)||1):(Number(sec.from)||1);return{surah:sec.surah,ayah:Math.max(1,ayah)};}
+  if(key==='surahReview'&&sec.chips?.length)return{surah:String(sec.chips[0]).replace(/^سورة\s+/,'').trim(),ayah:1};
+  if(key==='juz'&&sec.chips?.length){const parsed=V1051_CARRY.parseJuzChip(sec.chips[0],JZ);if(parsed){const q=parsed.quarter||1,j=JZ.indexOf(parsed.juzName)+1,m=V1052_STRUCTURE.refFor(j,q);if(m)return{surah:S[m.surah-1]?.n||'',ayah:m.ayah,juz:j,quarter:q};}}
   return null;
 }
-async function v1059OpenJourneyMushaf(key){
-  if(!curStId)return;const dateKey=document.getElementById('sesDate')?.value||localDateKey(),stops=v1059StopSnapshot(curStId,dateKey),up=v1059Upcoming(curStId,dateKey),ref=v1059JourneyRef(key,stops[key],up[key]);if(!ref?.surah)return toast('لا يوجد موضع مصحف محدد لهذا القسم','info');
-  try{const api=globalThis.ImamApp?.MushafOffline;if(!api?.openTeacherReader)return toast('قارئ المصحف غير متاح الآن','error');const idx=S.findIndex(x=>x.n===ref.surah),rows=await api.loadSurahIndex?.(),row=Array.isArray(rows)?rows.find(x=>Number(x.id)===idx+1):null;await api.openTeacherReader(Number(row?.page)||1);}catch(_){toast('تعذر فتح موضع المصحف الآن','error');}
+async function v10510ResolveMushafPage(ref){
+  if(!ref)return null;const api=globalThis.ImamApp?.MushafOffline;if(!api)return null;
+  if(ref.juz&&ref.quarter){try{const meta=await api.loadKfgMeta?.(),q=meta?.quarters?.find(x=>Number(x.juz)===Number(ref.juz)&&Number(x.quarterInJuz)===Number(ref.quarter));const p=Number(q?.page);if(p>=1&&p<=604)return p;}catch(_){}}
+  const idx=S.findIndex(x=>x.n===ref.surah);if(idx<0)return null;
+  try{const exact=await api.getVersePage?.(idx+1,Math.max(1,Number(ref.ayah)||1));if(Number(exact)>=1&&Number(exact)<=604)return Number(exact);}catch(_){ }
+  try{const rows=await api.loadSurahIndex?.(),row=Array.isArray(rows)?rows.find(x=>Number(x.id)===idx+1):null,p=Number(row?.page);if(p>=1&&p<=604)return p;}catch(_){ }
+  return null;
+}
+async function v1059OpenJourneyMushaf(key,point='last'){
+  if(!curStId)return;const dateKey=document.getElementById('sesDate')?.value||localDateKey(),stops=v1059StopSnapshot(curStId,dateKey),up=v1059Upcoming(curStId,dateKey),ref=v1059JourneyRef(key,point==='last'?stops[key]:null,point==='next'?up[key]:null,point);if(!ref?.surah)return toast('لا يوجد موضع مصحف محدد لهذا القسم','info');
+  try{const api=globalThis.ImamApp?.MushafOffline;if(!api?.openTeacherReader)return toast('قارئ المصحف غير متاح الآن','error');const page=await v10510ResolveMushafPage(ref);if(!page)return toast('تعذر تحديد صفحة هذا الموضع بدقة','error');await api.openTeacherReader(page);}catch(_){toast('تعذر فتح موضع المصحف الآن','error');}
 }
 function v1059RenderSessionJourney(){
   const card=document.getElementById('sessionJourneyCard'),strip=document.getElementById('sessionJourneyStrip');if(!card||!strip)return;
   if(!curStId){card.style.display='none';return;}card.style.display='block';
   const dateKey=document.getElementById('sesDate')?.value||localDateKey(),stops=v1059StopSnapshot(curStId,dateKey),up=v1059Upcoming(curStId,dateKey),latest=stops.latest;
   const rows=[['new','📖','الحفظ',stops.new,up.new],['rec','📚','قريب',stops.rec,up.rec],['far','📘','بعيد',stops.far,up.far],['juz','📜','الأجزاء',stops.juz,up.juz],['surahReview','🕌','السور',stops.surahReview,up.surahReview]];
-  let active=0;strip.innerHTML=rows.map(([key,icon,label,last,next])=>{if(last||next)active++;const lastTxt=v1059SecText(last),nextTxt=v1059SecText(next),grade=v1059GradeText(last?.grade),canOpen=!!v1059JourneyRef(key,last,next);return `<article class="v1059-journey-item${(!last&&!next)?' empty':''}"><div class="v1059-journey-head"><span><b>${icon} ${label}</b>${last?.date?`<small>${v10Esc(v1059DateLabel(last.date))}</small>`:''}</span>${grade?`<span class="v1059-grade ${v1059GradeClass(last.grade)}">${v10Esc(grade)}</span>`:''}</div><div class="v1059-journey-line"><small>آخر تسميع</small><strong title="${v10Esc(lastTxt)}">${v10Esc(v1059Short(lastTxt))}</strong></div><div class="v1059-journey-line next"><small>القادم</small><strong title="${v10Esc(nextTxt)}">${v10Esc(v1059Short(nextTxt))}</strong></div>${canOpen?`<button type="button" class="v1059-mushaf-link" onclick="v1059OpenJourneyMushaf('${key}')">📖 فتح الموضع في المصحف</button>`:''}</article>`;}).join('');
+  let active=0;strip.innerHTML=rows.map(([key,icon,label,last,next])=>{if(last||next)active++;const lastTxt=v1059SecText(last),nextTxt=v1059SecText(next),grade=v1059GradeText(last?.grade),lastRef=last?v1059JourneyRef(key,last,null,'last'):null,nextRef=next?v1059JourneyRef(key,null,next,'next'):null,mushafActions=(lastRef||nextRef)?`<div class="v10510-mushaf-links">${lastRef?`<button type="button" class="v1059-mushaf-link" onclick="v1059OpenJourneyMushaf('${key}','last')">📖 آخر تسميع</button>`:''}${nextRef?`<button type="button" class="v1059-mushaf-link next" onclick="v1059OpenJourneyMushaf('${key}','next')">📖 التكليف القادم</button>`:''}</div>`:'';return `<article class="v1059-journey-item${(!last&&!next)?' empty':''}"><div class="v1059-journey-head"><span><b>${icon} ${label}</b>${last?.date?`<small>${v10Esc(v1059DateLabel(last.date))}</small>`:''}</span>${grade?`<span class="v1059-grade ${v1059GradeClass(last.grade)}">${v10Esc(grade)}</span>`:''}</div><div class="v1059-journey-line"><small>آخر تسميع</small><strong title="${v10Esc(lastTxt)}">${v10Esc(v1059Short(lastTxt))}</strong></div><div class="v1059-journey-line next"><small>القادم</small><strong title="${v10Esc(nextTxt)}">${v10Esc(v1059Short(nextTxt))}</strong></div>${mushafActions}</article>`;}).join('');
   const carry=Array.isArray(latest?.carryForward?.items)?latest.carryForward.items:[],meta=document.getElementById('v1059JourneyMeta'),badge=document.getElementById('v1059StopBadge'),hint=document.getElementById('v1059StopHint');
   if(meta)meta.innerHTML=latest?`<span>آخر حصة <b>${v10Esc(v1059DateLabel(latest.date))}</b></span><span>أقسام نشطة <b>${active}</b></span>${carry.length?`<span class="warn">إعادة معلقة <b>${carry.length}</b></span>`:'<span class="ok">لا توجد إعادة محفوظة</span>'}`:'<span>لا توجد حصة سابقة لهذا الطالب</span>';
   if(badge){badge.hidden=!active;badge.textContent=active;}if(hint)hint.textContent=latest?`آخر حصة ${v1059DateLabel(latest.date)} · ${active} مسارات`:'لا توجد حصة سابقة';v1059SyncPanelState('stop');
@@ -230,8 +242,8 @@ function v1059SmartReviewItems(studentId){
   return [...by.values()].map(x=>{const overdue=v1059DaysBetween(x.due,today),repeat=x.status==='repeat'||x.status==='not_heard'||V1051_CARRY.normalizeGrade(x.grade)==='ضعيف',dueNow=x.due<=today;return{...x,overdue,dueNow,repeat,priority:repeat?0:dueNow&&overdue>=7?1:dueNow?2:3};}).sort((a,b)=>a.priority-b.priority||b.overdue-a.overdue||String(a.due).localeCompare(String(b.due)));
 }
 function v1059ReviewReason(x){if(x.repeat)return x.status==='not_heard'?'لم يُسمع — أولوية إعادة':'يحتاج تثبيت — أولوية عالية';if(x.dueNow)return x.overdue>0?`متأخر ${x.overdue} يوم`:'مستحق اليوم';const days=Math.max(1,-x.overdue);return `يستحق بعد ${days} يوم`;}
-function v1059SuggestionMushafRef(x){if(x.type==='surah'&&x.surah)return{surah:x.surah};if(x.type==='juz_quarter'){const j=JZ.indexOf(x.juzName)+1,m=V1052_STRUCTURE.refFor(j,x.quarter);if(m)return{surah:S[m.surah-1]?.n||'',ayah:m.ayah};}return null;}
-async function v1059OpenSuggestionMushaf(i){const x=V10.smartReviewItems?.[i],ref=v1059SuggestionMushafRef(x);if(!ref?.surah)return toast('لا يوجد موضع مصحف محدد','info');try{const api=globalThis.ImamApp?.MushafOffline,idx=S.findIndex(s=>s.n===ref.surah),rows=await api?.loadSurahIndex?.(),row=Array.isArray(rows)?rows.find(r=>Number(r.id)===idx+1):null;await api?.openTeacherReader?.(Number(row?.page)||1);}catch(_){toast('تعذر فتح المصحف الآن','error');}}
+function v1059SuggestionMushafRef(x){if(x.type==='surah'&&x.surah)return{surah:x.surah,ayah:Math.max(1,Number(x.from)||1)};if(x.type==='juz_quarter'){const j=JZ.indexOf(x.juzName)+1,m=V1052_STRUCTURE.refFor(j,x.quarter);if(m)return{surah:S[m.surah-1]?.n||'',ayah:m.ayah,juz:j,quarter:Number(x.quarter)||1};}return null;}
+async function v1059OpenSuggestionMushaf(i){const x=V10.smartReviewItems?.[i],ref=v1059SuggestionMushafRef(x);if(!ref?.surah)return toast('لا يوجد موضع مصحف محدد','info');try{const api=globalThis.ImamApp?.MushafOffline;if(!api?.openTeacherReader)return toast('قارئ المصحف غير متاح الآن','error');const page=await v10510ResolveMushafPage(ref);if(!page)return toast('تعذر تحديد صفحة هذا الموضع بدقة','error');await api.openTeacherReader(page);}catch(_){toast('تعذر فتح المصحف الآن','error');}}
 function applyV1059ReviewSuggestion(i,target='rec'){
   const x=V10.smartReviewItems?.[i];if(!x)return;
   if(x.type==='juz_quarter'){const chip=V1051_CARRY.quarterChip(x.juzName,x.quarter);if(!juzChips.includes(chip))juzChips.push(chip);secOn.juz=true;updateTogs();renderChips();toast('تمت إضافة الربع إلى مراجعة الأجزاء','success');}

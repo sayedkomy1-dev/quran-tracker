@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran — mobile-first Madani Mushaf offline pages v10.5.9
+/* We Live Quran — mobile-first Madani Mushaf offline pages v10.5.10
    Fixes Android's inability to render cached PDF pages inline by using the
    versioned quran.ws SVG CDN. Each SVG is optionally gzip-compressed before
    being persisted in IndexedDB, then inflated only when displayed. */
@@ -17,6 +17,7 @@
   const CDN_VERSION='v1.1.1';
   const CDN_ROOT=`https://cdn.quran.ws/svg/pages/${CDN_VERSION}/hafs-kfqc`;
   const KFG_META_URL='./assets/kfgqpc/mushaf-meta.json';
+  const AYAH_PAGE_MAP_URL='./assets/kfgqpc/ayah-page-map.json';
   const KFG_ASSET_ROOT='./assets/kfgqpc';
   const KFG_OPENING_ROOT=`${KFG_ASSET_ROOT}/mushaf604`;
   const KFG_SURA_ART_ROOT=`${KFG_ASSET_ROOT}/sura-names`;
@@ -25,7 +26,7 @@
   const BUNDLED_OPENING_PAGES=2;
   const SOURCE_INFO='https://quran.ws/blocks/quran-svg/';
   const OFFICIAL_INFO='https://qurancomplex.gov.sa/en/apps-hafs/';
-  const state={running:false,cancel:false,objectUrl:'',lastError:'',lastPage:1,teacherPage:1,readerBound:false,audioCtx:null,readerTheme:'day',surahIndex:null,kfgMeta:null};
+  const state={running:false,cancel:false,objectUrl:'',lastError:'',lastPage:1,teacherPage:1,readerBound:false,audioCtx:null,readerTheme:'day',surahIndex:null,kfgMeta:null,ayahPageMap:null};
   const JUZ_START_PAGES=Object.freeze([1,22,42,62,82,102,121,142,162,182,201,222,242,262,282,302,322,342,362,382,402,422,442,462,482,502,522,542,562,582]);
 
   function clampPage(n){return Math.max(1,Math.min(PAGE_COUNT,Number(n)||1));}
@@ -81,6 +82,17 @@
       state.kfgMeta=data;return data;
     }catch(err){return state.kfgMeta||null;}
   }
+  async function loadAyahPageMap(force=false){
+    if(state.ayahPageMap&&!force)return state.ayahPageMap;
+    try{
+      const res=await fetch(AYAH_PAGE_MAP_URL,{cache:force?'reload':'default'});if(!res.ok)throw new Error(`HTTP ${res.status}`);
+      const data=await res.json();if(!data||!Array.isArray(data.surahs)||data.surahs.length!==114)throw new Error('INVALID_AYAH_PAGE_MAP');
+      state.ayahPageMap=data;return data;
+    }catch(_){return state.ayahPageMap||null;}
+  }
+  function localVersePage(map,chapter,ayah){
+    const arr=map?.surahs?.[Number(chapter)-1],p=Number(arr?.[Number(ayah)-1]);return p>=1&&p<=PAGE_COUNT?p:null;
+  }
   function openingAsset(page,dark=false){return `${KFG_OPENING_ROOT}/page-${String(page).padStart(3,'0')}${dark?'-dark':''}.png`;}
 
   async function fetchPage(page){
@@ -114,7 +126,7 @@
   async function cleanupLegacyStorageOnce(){
     const flag='mushaf:v1057:kfgqpc-pack-cleaned';
     if(await g.idbKvGet(flag).catch(()=>null))return;
-    // v10.5.9 no longer uses the 200+ MB PDF path at all.
+    // v10.5.10 no longer uses the 200+ MB PDF path at all.
     await g.mediaDelete('mushaf:madinah:pdf').catch(()=>{});
     await g.idbKvPut('mushaf:madinah:meta','{}').catch(()=>{});
     const old=await oldKeys().catch(()=>[]);
@@ -374,13 +386,14 @@
   }
 
   async function getVersePage(chapter,ayah){
-    const key=`mushaf:page:${chapter}:${ayah}`,cached=await g.idbKvGet(key).catch(()=>null);
+    chapter=Number(chapter);ayah=Number(ayah);const key=`mushaf:page:${chapter}:${ayah}`,cached=await g.idbKvGet(key).catch(()=>null);
     if(cached){const p=Number(cached);if(p>=1&&p<=PAGE_COUNT)return p;}
+    try{const map=await loadAyahPageMap(),local=localVersePage(map,chapter,ayah);if(local){await g.idbKvPut(key,String(local)).catch(()=>{});if(ayah===1)await persistSurahPage(chapter,local);return local;}}catch(_){ }
     if(!navigator.onLine)return null;
     try{
       const res=await fetch(`https://api.quran.com/api/v4/verses/by_key/${chapter}:${ayah}?fields=page_number`,{headers:{Accept:'application/json'}});
       if(!res.ok)throw new Error();const d=await res.json(),p=Number(d.verse?.page_number||d.page_number);
-      if(p>=1&&p<=PAGE_COUNT){await g.idbKvPut(key,String(p));if(Number(ayah)===1)await persistSurahPage(chapter,p);return p;}
+      if(p>=1&&p<=PAGE_COUNT){await g.idbKvPut(key,String(p));if(ayah===1)await persistSurahPage(chapter,p);return p;}
     }catch(_){ }
     return null;
   }
@@ -430,7 +443,7 @@
     root.classList.add('mushaf-mobile-reader-v1041');
     root.innerHTML=`
       <section class="mushaf-lite-card mushaf-lite-primary">
-        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 10.5.9 · قالب المدينة + فهارس محلية</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>النسخة الجديدة تجمع صفحات النص الواضحة مع إطار وفهارس وافتتاحيتي الفاتحة والبقرة من موارد مصحف المدينة، وتعمل Offline بعد التنزيل.</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
+        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 10.5.10 · قالب المدينة + فهارس محلية</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>النسخة الجديدة تجمع صفحات النص الواضحة مع إطار وفهارس وافتتاحيتي الفاتحة والبقرة من موارد مصحف المدينة، وتعمل Offline بعد التنزيل.</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
         <div class="mushaf-lite-actions">${s.count<PAGE_COUNT?`<button class="btn btn-g" onclick="downloadMushafLiteAll()">${s.count?`استكمال تنزيل المصحف ${s.count}/${PAGE_COUNT}`:'تنزيل المصحف Offline'}</button><button class="btn btn-out" onclick="downloadMushafRangePages()">تنزيل نطاق الحفظ</button>`:''}${state.running?'<button class="btn btn-red" onclick="cancelMushafLiteDownload()">إيقاف</button>':''}</div>
         <div id="mushafLiteProgress" class="v9-mushaf-progress">${state.running?'جارٍ التنزيل…':s.count?`✓ محفوظ ${s.count} صفحة (${fmt(s.bytes)})`:'لم يتم تنزيل صفحات بعد'}</div>
         <div class="mushaf-lite-reader"><div class="mushaf-lite-toolbar"><b>قارئ الصفحات</b><input id="mushafLitePageInput" type="number" min="1" max="604" value="${last}" onkeydown="if(event.key==='Enter')openMushafLitePage(this.value)"><button onclick="openMushafLitePage(Math.max(1,(Number(document.getElementById('mushafLitePageInput')?.value)||1)-1))">السابق</button><button onclick="openMushafLitePage(Math.min(604,(Number(document.getElementById('mushafLitePageInput')?.value)||1)+1))">التالي</button></div><div id="mushafLiteFrame" class="mushaf-lite-frame"><div class="v9-mushaf-empty"><div><b>صفحة ${last}</b><p>اضغط «فتح الصفحة» لعرضها.</p><button class="btn btn-g btn-sm" onclick="openMushafLitePage(${last})">فتح الصفحة</button></div></div></div></div>
@@ -455,7 +468,7 @@
   }
 
   async function wrappedRender(){await renderPrimaryUI();}
-  if(Legacy){Legacy.override('renderV9Mushaf',wrappedRender,'mushaf-offline-v10.5.9');Legacy.override('openCurrentMushafPage',currentMushafPage,'mushaf-offline-v10.5.9');}
+  if(Legacy){Legacy.override('renderV9Mushaf',wrappedRender,'mushaf-offline-v10.5.10');Legacy.override('openCurrentMushafPage',currentMushafPage,'mushaf-offline-v10.5.10');}
   else{g.renderV9Mushaf=wrappedRender;g.openCurrentMushafPage=currentMushafPage;}
 
   g.downloadMushafLitePage=downloadPage;
@@ -487,7 +500,7 @@
   g.closeTeacherQuickMenu=closeQuickMenu;
   g.teacherMushafQuickGo=quickGoPage;
   g.closeTeacherMushafMenus=closeAllNavDrawers;
-  APP.MushafOffline={pageUrl,stats,downloadRange,downloadAll:downloadTeacherPages,downloadPage,showPage:showLitePage,render:renderPrimaryUI,openCurrent:currentMushafPage,openTeacherReader,closeTeacherReader,loadSurahIndex,loadKfgMeta,jumpSurah,jumpJuz,juzForPage,pageCount:PAGE_COUNT,source:SOURCE_INFO,official:OFFICIAL_INFO,cdnVersion:CDN_VERSION,pack:'kfgqpc-composite-v1.1'};
-  // v10.5.9 replaces the old cached page pack with the KFGQPC-styled composite 604-page pack.
+  APP.MushafOffline={pageUrl,stats,downloadRange,downloadAll:downloadTeacherPages,downloadPage,showPage:showLitePage,render:renderPrimaryUI,openCurrent:currentMushafPage,openTeacherReader,closeTeacherReader,loadSurahIndex,loadKfgMeta,loadAyahPageMap,getVersePage,jumpSurah,jumpJuz,juzForPage,pageCount:PAGE_COUNT,source:SOURCE_INFO,official:OFFICIAL_INFO,cdnVersion:CDN_VERSION,pack:'kfgqpc-composite-v1.1'};
+  // v10.5.10 replaces the old cached page pack with the KFGQPC-styled composite 604-page pack.
   setTimeout(()=>{cleanupLegacyStorageOnce().then(()=>refreshHomeState()).catch(()=>{});renderPrimaryUI().catch(err=>console.error('[mushaf-offline] initial render',err));},0);
 })(globalThis);

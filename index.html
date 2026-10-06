@@ -8,16 +8,16 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.5.9">
-<link rel="manifest" href="manifest.json?v=10.5.9">
+<meta name="application-version" content="10.5.10">
+<link rel="manifest" href="manifest.json?v=10.5.10">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<link rel="stylesheet" href="styles.css?v=10.5.9">
-<link rel="stylesheet" href="v9.css?v=10.5.9">
-<link rel="stylesheet" href="v10.css?v=10.5.9">
-<link rel="stylesheet" href="quran-engine.css?v=10.5.9">
-<link rel="stylesheet" href="auth.css?v=10.5.9">
+<link rel="stylesheet" href="styles.css?v=10.5.10">
+<link rel="stylesheet" href="v9.css?v=10.5.10">
+<link rel="stylesheet" href="v10.css?v=10.5.10">
+<link rel="stylesheet" href="quran-engine.css?v=10.5.10">
+<link rel="stylesheet" href="auth.css?v=10.5.10">
 </head>
 <body>
 
@@ -224,10 +224,10 @@
 
   <div class="card session-journey-card v1059-session-insights" id="sessionJourneyCard" style="display:none">
     <section class="v1059-insight" id="v1059StopPanel">
-      <button type="button" class="v1059-insight-toggle" id="v1059StopToggle" aria-expanded="false" onclick="toggleV1059SessionPanel('stop')">
+      <div class="v10510-insight-head">
         <span class="v1059-insight-title"><b>📍 أين توقفنا؟</b><small id="v1059StopHint">آخر مواضع الطالب والتكليف القادم</small></span>
-        <span class="v1059-insight-action"><span id="v1059StopBadge" class="v1059-count-badge" hidden></span><span id="v1059StopAction">فتح</span><span class="v1059-chevron">⌄</span></span>
-      </button>
+        <button type="button" class="v10510-insight-button" id="v1059StopToggle" aria-expanded="false" onclick="toggleV1059SessionPanel('stop')"><span id="v1059StopBadge" class="v1059-count-badge" hidden></span><span id="v1059StopAction">عرض التفاصيل</span><span id="v1059StopIcon" aria-hidden="true">＋</span></button>
+      </div>
       <div class="v1059-insight-body" id="v1059StopBody" hidden>
         <div id="v1059JourneyMeta" class="v1059-journey-meta"></div>
         <div id="sessionJourneyStrip" class="journey-strip v1059-journey-grid"></div>
@@ -235,10 +235,10 @@
       </div>
     </section>
     <section class="v1059-insight" id="v1059ReviewPanel">
-      <button type="button" class="v1059-insight-toggle" id="v1059ReviewToggle" aria-expanded="false" onclick="toggleV1059SessionPanel('review')">
+      <div class="v10510-insight-head">
         <span class="v1059-insight-title"><b>🧠 اقتراح المراجعة</b><small id="v1059ReviewHint">الأولوية حسب الاستحقاق والأداء</small></span>
-        <span class="v1059-insight-action"><span id="v1059ReviewBadge" class="v1059-count-badge" hidden></span><span id="v1059ReviewAction">فتح</span><span class="v1059-chevron">⌄</span></span>
-      </button>
+        <button type="button" class="v10510-insight-button" id="v1059ReviewToggle" aria-expanded="false" onclick="toggleV1059SessionPanel('review')"><span id="v1059ReviewBadge" class="v1059-count-badge" hidden></span><span id="v1059ReviewAction">عرض الاقتراحات</span><span id="v1059ReviewIcon" aria-hidden="true">＋</span></button>
+      </div>
       <div class="v1059-insight-body" id="v1059ReviewBody" hidden>
         <div id="smartReviewSuggestions" class="review-suggestions v1059-review-suggestions"></div>
       </div>
@@ -879,17 +879,17 @@
 
 <!-- ════════════ SCRIPTS ════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="js/core/runtime.js?v=10.5.9" defer></script>
-<script src="js/features/v10-data.js?v=10.5.9" defer></script>
-<script src="auth.js?v=10.5.9" defer></script>
-<script src="sync-core.js?v=10.5.9" defer></script>
-<script src="app.js?v=10.5.9" defer></script>
-<script src="v8.js?v=10.5.9" defer></script>
-<script src="v9.js?v=10.5.9" defer></script>
-<script src="js/features/mushaf-offline.js?v=10.5.9" defer></script>
-<script src="js/features/quran-engine.js?v=10.5.9" defer></script>
-<script src="js/features/quran-structure.js?v=10.5.9" defer></script>
-<script src="js/features/recitation-carry.js?v=10.5.9" defer></script>
-<script src="v10.js?v=10.5.9" defer></script>
+<script src="js/core/runtime.js?v=10.5.10" defer></script>
+<script src="js/features/v10-data.js?v=10.5.10" defer></script>
+<script src="auth.js?v=10.5.10" defer></script>
+<script src="sync-core.js?v=10.5.10" defer></script>
+<script src="app.js?v=10.5.10" defer></script>
+<script src="v8.js?v=10.5.10" defer></script>
+<script src="v9.js?v=10.5.10" defer></script>
+<script src="js/features/mushaf-offline.js?v=10.5.10" defer></script>
+<script src="js/features/quran-engine.js?v=10.5.10" defer></script>
+<script src="js/features/quran-structure.js?v=10.5.10" defer></script>
+<script src="js/features/recitation-carry.js?v=10.5.10" defer></script>
+<script src="v10.js?v=10.5.10" defer></script>
 </body>
 </html>
