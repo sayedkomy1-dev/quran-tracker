@@ -300,3 +300,9 @@ The guardian workflow now supports session reports, absence notices, assignment 
 ## v10.6.1 — Sectioned Guardian Report + Teacher Scores
 Teacher-entered 0–100 mastery percentages are now stored with each recitation section and each individual Surah/quarter review item. Guardian WhatsApp reports are split into clear sections and render a visual 10-block progress bar plus the exact score under every scored assessment.
 
+
+
+## v10.6.2 — Compact Guardian Report Polish
+- Smaller text-square progress bars in guardian WhatsApp reports.
+- Tighter section spacing to reduce report length on mobile.
+- Teacher-entered scores and persistence remain unchanged.

@@ -1,10 +1,10 @@
 'use strict';
-/* We Live Quran — architecture runtime v10.6.1
+/* We Live Quran — architecture runtime v10.6.2
    Explicit namespace + legacy override registry. This replaces accidental
    "last function declaration wins" behavior for newly-refactored layers. */
 (function initImamRuntime(g){
   const root=g.ImamApp||(g.ImamApp={});
-  root.meta=Object.freeze({version:'10.6.1',schema:12});
+  root.meta=Object.freeze({version:'10.6.2',schema:12});
   const registry=new Map();
   const history=[];
   root.Legacy={

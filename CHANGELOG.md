@@ -1,3 +1,10 @@
+# v10.6.2 — Compact Guardian Report Polish
+
+- Replaced large WhatsApp emoji progress blocks with compact text squares while preserving the exact teacher-entered `/100` score.
+- Tightened vertical spacing between main assessment sections and item-level Surah / quarter-hizb rows.
+- Kept section hierarchy, next assignment, automatic repeats, teacher notes, footer, and saved percentages unchanged.
+- No schema, SQL, or Supabase changes.
+
 # v10.6.1 — Sectioned Guardian Report + Teacher Scores
 
 - Split the detailed guardian WhatsApp report into clear recitation, item-review, next-assignment, notes, and footer sections.

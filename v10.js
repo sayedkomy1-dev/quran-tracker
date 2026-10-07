@@ -45,7 +45,8 @@ function v1061ScoreValue(value){
 function v1061ScoreBar(value,whatsApp=false){
   const n=v1061ScoreValue(value);if(n===null)return '';
   const filled=Math.max(0,Math.min(10,Math.round(n/10))),score=`${n}/100`;
-  return `${'🟩'.repeat(filled)}${'⬜'.repeat(10-filled)} ${whatsApp?'*'+score+'*':score}`;
+  // Compact text squares stay visibly smaller than emoji blocks in WhatsApp.
+  return `${'■'.repeat(filled)}${'□'.repeat(10-filled)} ${whatsApp?'*'+score+'*':score}`;
 }
 function v1061ScoreInput(key,value=''){
   const n=v1061ScoreValue(value),shown=n===null?'':String(n);
@@ -503,7 +504,7 @@ function v1051ReviewResultLines(ses){
     for(const it of a.items||[]){
       const label=v1051ItemDisplay(it),grade=V1051_CARRY.normalizeGrade(it.grade||it.evaluation||''),status=it.status||V1051_CARRY.resultStatus(it),score=v1061ScoreValue(it.score);
       const gradeText=status==='completed'?v10WaGrade(grade||'جيد'):grade==='ضعيف'?v10WaGrade(grade):'إعادة 🔄';
-      blocks.push(`🔹 *${label}*\nالتقدير: ${gradeText}${v1061ScoreLine(score)}`);
+      blocks.push(`🔹 *${label}* — ${gradeText}${v1061ScoreLine(score)}`);
     }
   }
   return blocks;
@@ -514,27 +515,27 @@ function v10BuildWAMsg(st,ses){
   const assessed=[['new','📖 الحفظ'],['rec','📚 المراجعة القريبة'],['far','📘 المراجعة البعيدة']].filter(([k])=>pg[k]||v1061ScoreValue(scores[k])!==null);
   const reviewBlocks=v1051ReviewResultLines(ses);
   if(assessed.length||reviewBlocks.length||pg.juz||pg.surahReview){
-    msg+=`\n\n━━━━━━━━━━━━━━━━━━\n🎧 *نتيجة التسميع*`;
+    msg+=`\n\n━━━━━━━━━━\n🎧 *نتيجة التسميع*`;
     for(const [k,label] of assessed){
       const range=ses?.actualRecitation?.[k]||ses?.[k],score=v1061ScoreValue(scores[k]);
-      msg+=`\n\n──────────\n${label}`;
+      msg+=`\n──────\n${label}`;
       if(range)msg+=`\n${v10WaSection(range)}`;
       if(pg[k])msg+=`\nالتقدير: ${v10WaGrade(pg[k])}`;
       if(score!==null)msg+=v1061ScoreLine(score);
     }
     if(pg.juz||v1061ScoreValue(scores.juz)!==null){
-      msg+=`\n\n──────────\n📜 *مراجعة الأجزاء*`;
+      msg+=`\n──────\n📜 *مراجعة الأجزاء*`;
       if(pg.juz)msg+=`\nالتقدير: ${v10WaGrade(pg.juz)}`;
       if(v1061ScoreValue(scores.juz)!==null)msg+=v1061ScoreLine(scores.juz);
     }
     if(pg.surahReview||v1061ScoreValue(scores.surahReview)!==null){
-      msg+=`\n\n──────────\n🕌 *مراجعة السور*`;
+      msg+=`\n──────\n🕌 *مراجعة السور*`;
       if(pg.surahReview)msg+=`\nالتقدير: ${v10WaGrade(pg.surahReview)}`;
       if(v1061ScoreValue(scores.surahReview)!==null)msg+=v1061ScoreLine(scores.surahReview);
     }
-    if(reviewBlocks.length)msg+=`\n\n━━━━━━━━━━━━━━━━━━\n🧩 *تفصيل مراجعة السور والأرباع*\n\n${reviewBlocks.join('\n\n──────────\n')}`;
+    if(reviewBlocks.length)msg+=`\n\n━━━━━━━━━━\n🧩 *تفصيل مراجعة السور والأرباع*\n${reviewBlocks.join('\n────\n')}`;
   }
-  msg+=`\n\n━━━━━━━━━━━━━━━━━━\n📖 *التكليف للحصة القادمة*`;
+  msg+=`\n\n━━━━━━━━━━\n📖 *التكليف للحصة القادمة*`;
   let hasNext=false;
   if(ses?.new){hasNext=true;msg+=`\n• *الحفظ:* ${v10WaSection(ses.new)}`;}
   if(ses?.rec){hasNext=true;msg+=`\n• *المراجعة القريبة:* ${v10WaSection(ses.rec)}`;}
@@ -546,9 +547,9 @@ function v10BuildWAMsg(st,ses){
   const carryItems=ses?.carryForward?.items||[];
   if(carryItems.length){hasNext=true;msg+=`\n• *إعادة تلقائية 🔄:* ${carryItems.map(x=>x.label||x.surahName).filter(Boolean).join('، ')}`;}
   if(!hasNext)msg+=`\nلا يوجد تكليف مسجل`;
-  if(ses?.notes?.trim())msg+=`\n\n━━━━━━━━━━━━━━━━━━\n📝 *ملاحظات المحفظ*\n${ses.notes.trim()}`;
-  msg+=`\n\n━━━━━━━━━━━━━━━━━━\nبارك الله في هذا الجهد، ونسأل الله مزيدًا من التوفيق والثبات 🌿`;
-  msg+=`\n\n──────────\n${v10AcademyFooter()}`;
+  if(ses?.notes?.trim())msg+=`\n\n━━━━━━━━━━\n📝 *ملاحظات المحفظ*\n${ses.notes.trim()}`;
+  msg+=`\n\n━━━━━━━━━━\nبارك الله في هذا الجهد، ونسأل الله مزيدًا من التوفيق والثبات 🌿`;
+  msg+=`\n──────\n${v10AcademyFooter()}`;
   return msg;
 }
 
