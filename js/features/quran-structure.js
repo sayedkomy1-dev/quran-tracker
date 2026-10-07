@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v10.9.0 — Quran structure metadata.
+/* We Live Quran v10.10.0 — Quran structure metadata.
    30 juz = 60 hizb = 240 rub' al-hizb. Boundary references follow the
    standard Hafs/Madinah structural division; labels are enriched locally
    from the QPC Hafs text cache when available. */

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#145A3A">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<title>بوابة ولي الأمر — أكاديمية الإمام</title>
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="stylesheet" href="guardian-portal.css?v=10.10.0">
+</head>
+<body>
+<main class="portal-shell">
+  <header class="portal-header">
+    <div class="portal-brand"><img src="icon-192.png" alt=""><div><b id="portalAcademy">أكاديمية الإمام لتحفيظ القرآن الكريم</b><span>بوابة ولي الأمر / الطالب</span></div></div>
+    <div class="portal-actions"><button type="button" onclick="portalShare()">📤 مشاركة</button><button type="button" onclick="portalPrint()">🖨️ طباعة / PDF</button></div>
+  </header>
+
+  <section id="portalError" class="portal-error" hidden>
+    <div>🔒</div><h1>الرابط غير صالح أو غير مكتمل</h1><p>اطلب من المحفظ إنشاء رابط جديد من ملف الطالب داخل التطبيق.</p>
+  </section>
+
+  <div id="portalContent" hidden>
+    <section class="portal-note"><span>🔐</span><div><b>نسخة قراءة فقط</b><p>هذه لقطة ثابتة من بيانات الطالب وقت إنشاء الرابط. لا يمكن تعديل بيانات الأكاديمية من هذه الصفحة، وأي شخص يملك الرابط يستطيع الاطلاع على اللقطة.</p></div></section>
+
+    <section class="portal-hero">
+      <div><span class="portal-kicker" id="portalPeriod">آخر 30 يومًا</span><h1 id="portalStudent">—</h1><p id="portalMeta">—</p></div>
+      <div class="portal-updated"><small>آخر تحديث للرابط</small><b id="portalUpdated">—</b></div>
+    </section>
+
+    <section class="portal-kpis" aria-label="مؤشرات التقدم">
+      <article><small>متوسط الإتقان</small><strong id="portalMastery">—</strong><span id="portalTrend">—</span></article>
+      <article><small>نسبة الحضور</small><strong id="portalAttendance">—</strong><span>خلال الفترة المختارة</span></article>
+      <article><small>الحفظ الجديد</small><strong id="portalNewAyat">0</strong><span>آية</span></article>
+      <article><small>الإعادات</small><strong id="portalRepeats">0</strong><span>تحتاج تثبيت</span></article>
+    </section>
+
+    <section class="portal-card" id="portalQuranCard" hidden>
+      <div class="portal-card-head"><div><b>📖 التقدم في القرآن</b><small>الإنجاز الموثق داخل التطبيق</small></div><strong id="portalQuranProgress">—</strong></div>
+      <div class="portal-progress"><i id="portalQuranBar"></i></div>
+    </section>
+
+    <section class="portal-card">
+      <div class="portal-card-head"><div><b>📝 التكليف الحالي</b><small id="portalAssignmentDate">آخر حصة حضور</small></div></div>
+      <div id="portalAssignment" class="portal-assignment"></div>
+    </section>
+
+    <section class="portal-card">
+      <div class="portal-card-head"><div><b>🎯 مواضع تحتاج تثبيت</b><small>أحدث إشارات المتابعة المسجلة</small></div></div>
+      <div id="portalAttention" class="portal-attention"></div>
+    </section>
+
+    <section class="portal-card">
+      <div class="portal-card-head"><div><b>📅 آخر الحصص</b><small>عرض مختصر للمتابعة</small></div></div>
+      <div id="portalRecent" class="portal-recent"></div>
+    </section>
+
+    <footer class="portal-footer"><b id="portalTeacher"></b><span id="portalFooterAcademy"></span><small>بالقرآن نحيا</small></footer>
+  </div>
+</main>
+<script src="js/features/guardian-portal-view.js?v=10.10.0"></script>
+</body>
+</html>

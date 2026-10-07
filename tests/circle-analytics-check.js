@@ -6,10 +6,10 @@ function assert(cond,msg){if(!cond)throw new Error(msg);}
 
 const feature=read('js/features/circle-analytics.js'),html=read('index.html'),sw=read('sw.js'),css=read('v10.css'),pkg=JSON.parse(read('package.json'));
 new vm.Script(feature,{filename:'circle-analytics.js'});
-assert(pkg.version==='10.9.0','package version must be 10.9.0');
+assert(pkg.version==='10.10.0','package version must be 10.10.0');
 assert(html.includes('id="pg-analytics"')&&html.includes('تحليلات وتقارير الحلقة'),'analytics page missing');
-assert(html.includes('circle-analytics.js?v=10.9.0'),'analytics script missing from HTML');
-assert(sw.includes("'./js/features/circle-analytics.js?v=10.9.0'"),'analytics feature missing from offline shell');
+assert(html.includes('circle-analytics.js?v=10.10.0'),'analytics script missing from HTML');
+assert(sw.includes("'./js/features/circle-analytics.js?v=10.10.0'"),'analytics feature missing from offline shell');
 assert(feature.includes('function v109Analyze')&&feature.includes('function v109WeakItems'),'analytics core helpers missing');
 assert(feature.includes('v109ExportCSV')&&feature.includes('v109Print')&&feature.includes('v109CopySummary')&&feature.includes('v109ShareSummary'),'report actions missing');
 assert(css.includes('.v109-kpis')&&css.includes('.v109-table')&&css.includes('.v109-weak-list'),'analytics styles missing');
@@ -52,4 +52,4 @@ assert(a.trendCounts.up===1&&a.trendCounts.down===1,'trend distribution is wrong
 assert(a.improving[0]?.st.id==='s1'&&a.declining[0]?.st.id==='s2','improvement/decline ranking failed');
 assert(a.weakItems.some(x=>x.label.includes('آل عمران'))&&a.weakItems.some(x=>x.label.includes('الربع الأول')&&x.repeats===1),'weak Quran items must include explicit repeat status even when its numeric score is >=65');
 assert(!a.rows.some(x=>x.studentId==='s4'),'paused student sessions must not enter circle analytics');
-console.log('Circle analytics & reports checks passed for v10.9.0');
+console.log('Circle analytics & reports checks passed for v10.10.0');

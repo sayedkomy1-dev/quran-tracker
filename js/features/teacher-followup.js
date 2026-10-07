@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v10.9.0 — Teacher Follow-up Center.
+/* We Live Quran v10.10.0 — Teacher Follow-up Center.
    Cross-student read-only prioritization over existing Schema 12 data. */
 
 const V108_FOLLOWUP={filter:'all',query:'',group:'',baseGoPage:globalThis.goPage||null,baseGoBack:globalThis.goBack||null,baseRenderHome:globalThis.renderV9Home||null,baseInjectNav:globalThis.injectV9Navigation||null};

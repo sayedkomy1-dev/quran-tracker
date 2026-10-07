@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v10.9.0 — Circle Analytics & Reports Center.
+/* We Live Quran v10.10.0 — Circle Analytics & Reports Center.
    Read-only cross-student analytics over the existing Schema 12 data. */
 
 const V109_ANALYTICS={range:'30',group:'',baseGoPage:globalThis.goPage||null,baseGoBack:globalThis.goBack||null,baseInjectNav:globalThis.injectV9Navigation||null};

@@ -1,33 +1,37 @@
-/* أكاديمية الإمام — Service Worker v10.9.0 */
-const CACHE_NAME = 'quran-pwa-v10.9.0';
-const APP_VERSION = '10.9.0';
+/* أكاديمية الإمام — Service Worker v10.10.0 */
+const CACHE_NAME = 'quran-pwa-v10.10.0';
+const APP_VERSION = '10.10.0';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css?v=10.9.0',
-  './app.js?v=10.9.0',
-  './v8.js?v=10.9.0',
-  './v9.js?v=10.9.0',
-  './js/features/mushaf-offline.js?v=10.9.0',
-  './v9.css?v=10.9.0',
-  './v10.css?v=10.9.0',
-  './quran-engine.css?v=10.9.0',
-  './v10.js?v=10.9.0',
-  './js/features/guardian-communication.js?v=10.9.0',
-  './js/features/student-progress.js?v=10.9.0',
-  './js/features/teacher-followup.js?v=10.9.0',
-  './js/features/circle-analytics.js?v=10.9.0',
-  './js/features/quran-engine.js?v=10.9.0',
-  './js/features/quran-structure.js?v=10.9.0',
-  './js/core/runtime.js?v=10.9.0',
-  './js/features/v10-data.js?v=10.9.0',
-  './js/features/recitation-carry.js?v=10.9.0',
-  './auth.js?v=10.9.0',
-  './sync-core.js?v=10.9.0',
-  './auth.css?v=10.9.0',
+  './styles.css?v=10.10.0',
+  './app.js?v=10.10.0',
+  './v8.js?v=10.10.0',
+  './v9.js?v=10.10.0',
+  './js/features/mushaf-offline.js?v=10.10.0',
+  './v9.css?v=10.10.0',
+  './v10.css?v=10.10.0',
+  './quran-engine.css?v=10.10.0',
+  './v10.js?v=10.10.0',
+  './js/features/guardian-communication.js?v=10.10.0',
+  './js/features/student-progress.js?v=10.10.0',
+  './js/features/teacher-followup.js?v=10.10.0',
+  './js/features/circle-analytics.js?v=10.10.0',
+  './js/features/guardian-portal-share.js?v=10.10.0',
+  './guardian-portal.html',
+  './guardian-portal.css?v=10.10.0',
+  './js/features/guardian-portal-view.js?v=10.10.0',
+  './js/features/quran-engine.js?v=10.10.0',
+  './js/features/quran-structure.js?v=10.10.0',
+  './js/core/runtime.js?v=10.10.0',
+  './js/features/v10-data.js?v=10.10.0',
+  './js/features/recitation-carry.js?v=10.10.0',
+  './auth.js?v=10.10.0',
+  './sync-core.js?v=10.10.0',
+  './auth.css?v=10.10.0',
   './privacy.html',
   './terms.html',
-  './manifest.json?v=10.9.0',
+  './manifest.json?v=10.10.0',
   './favicon.png',
   './icon-96.png',
   './icon-192.png',
@@ -79,13 +83,15 @@ self.addEventListener('fetch', event => {
 
   if(req.mode==='navigate'){
     event.respondWith((async()=>{
+      const portalNav=url.pathname.endsWith('/guardian-portal.html');
+      const fallback=portalNav?'./guardian-portal.html':'./index.html';
       try{
         const preload=await event.preloadResponse;
         const res=preload||await fetch(req);
-        if(res&&res.ok){const cache=await caches.open(CACHE_NAME);cache.put('./index.html',res.clone()).catch(()=>{});}
+        if(res&&res.ok){const cache=await caches.open(CACHE_NAME);cache.put(fallback,res.clone()).catch(()=>{});}
         return res;
       }catch(_){
-        return (await caches.match('./index.html'))||(await caches.match('./'))||new Response('Offline',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
+        return (await caches.match(fallback))||(await caches.match('./index.html'))||(await caches.match('./'))||new Response('Offline',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
       }
     })());
     return;

@@ -8,16 +8,16 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.9.0">
-<link rel="manifest" href="manifest.json?v=10.9.0">
+<meta name="application-version" content="10.10.0">
+<link rel="manifest" href="manifest.json?v=10.10.0">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<link rel="stylesheet" href="styles.css?v=10.9.0">
-<link rel="stylesheet" href="v9.css?v=10.9.0">
-<link rel="stylesheet" href="v10.css?v=10.9.0">
-<link rel="stylesheet" href="quran-engine.css?v=10.9.0">
-<link rel="stylesheet" href="auth.css?v=10.9.0">
+<link rel="stylesheet" href="styles.css?v=10.10.0">
+<link rel="stylesheet" href="v9.css?v=10.10.0">
+<link rel="stylesheet" href="v10.css?v=10.10.0">
+<link rel="stylesheet" href="quran-engine.css?v=10.10.0">
+<link rel="stylesheet" href="auth.css?v=10.10.0">
 </head>
 <body>
 
@@ -748,7 +748,7 @@
     <div id="profWeakContent"></div>
   </div>
   <div class="card" id="profHist"></div>
-  <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+  <div id="profileActions" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
     <button class="btn btn-g btn-sm" onclick="openTaskModal(curStId)">☑️ إضافة مهمة</button>
     <button class="btn btn-out btn-sm" onclick="editSt()">✏️ تعديل</button>
     <button class="btn btn-out btn-sm" onclick="openCert()">🎓 شهادة</button>
@@ -980,21 +980,22 @@
 
 <!-- ════════════ SCRIPTS ════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="js/core/runtime.js?v=10.9.0" defer></script>
-<script src="js/features/v10-data.js?v=10.9.0" defer></script>
-<script src="auth.js?v=10.9.0" defer></script>
-<script src="sync-core.js?v=10.9.0" defer></script>
-<script src="app.js?v=10.9.0" defer></script>
-<script src="v8.js?v=10.9.0" defer></script>
-<script src="v9.js?v=10.9.0" defer></script>
-<script src="js/features/mushaf-offline.js?v=10.9.0" defer></script>
-<script src="js/features/quran-engine.js?v=10.9.0" defer></script>
-<script src="js/features/quran-structure.js?v=10.9.0" defer></script>
-<script src="js/features/recitation-carry.js?v=10.9.0" defer></script>
-<script src="v10.js?v=10.9.0" defer></script>
-<script src="js/features/guardian-communication.js?v=10.9.0" defer></script>
-<script src="js/features/student-progress.js?v=10.9.0" defer></script>
-<script src="js/features/teacher-followup.js?v=10.9.0" defer></script>
-<script src="js/features/circle-analytics.js?v=10.9.0" defer></script>
+<script src="js/core/runtime.js?v=10.10.0" defer></script>
+<script src="js/features/v10-data.js?v=10.10.0" defer></script>
+<script src="auth.js?v=10.10.0" defer></script>
+<script src="sync-core.js?v=10.10.0" defer></script>
+<script src="app.js?v=10.10.0" defer></script>
+<script src="v8.js?v=10.10.0" defer></script>
+<script src="v9.js?v=10.10.0" defer></script>
+<script src="js/features/mushaf-offline.js?v=10.10.0" defer></script>
+<script src="js/features/quran-engine.js?v=10.10.0" defer></script>
+<script src="js/features/quran-structure.js?v=10.10.0" defer></script>
+<script src="js/features/recitation-carry.js?v=10.10.0" defer></script>
+<script src="v10.js?v=10.10.0" defer></script>
+<script src="js/features/guardian-communication.js?v=10.10.0" defer></script>
+<script src="js/features/student-progress.js?v=10.10.0" defer></script>
+<script src="js/features/teacher-followup.js?v=10.10.0" defer></script>
+<script src="js/features/circle-analytics.js?v=10.10.0" defer></script>
+<script src="js/features/guardian-portal-share.js?v=10.10.0" defer></script>
 </body>
 </html>

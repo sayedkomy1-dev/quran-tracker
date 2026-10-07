@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v10.9.0 — Student Progress Dashboard.
+/* We Live Quran v10.10.0 — Student Progress Dashboard.
    Read-only analytics over the existing Schema 12 session history. */
 
 const V107_PROGRESS={baseOpenProf:globalThis.openProf||null,range:'90'};

@@ -5,10 +5,10 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 function assert(cond,msg){if(!cond)throw new Error(msg);}
 
 const html=read('index.html'),sw=read('sw.js'),feature=read('js/features/teacher-followup.js'),css=read('v10.css'),pkg=JSON.parse(read('package.json'));
-assert(pkg.version==='10.9.0','package version must be 10.9.0');
+assert(pkg.version==='10.10.0','package version must be 10.10.0');
 assert(html.includes('id="pg-followup"')&&html.includes('مركز متابعة الطلاب'),'follow-up page missing');
-assert(html.includes('teacher-followup.js?v=10.9.0'),'follow-up feature missing from HTML');
-assert(sw.includes("'./js/features/teacher-followup.js?v=10.9.0'"),'follow-up feature missing from offline shell');
+assert(html.includes('teacher-followup.js?v=10.10.0'),'follow-up feature missing from HTML');
+assert(sw.includes("'./js/features/teacher-followup.js?v=10.10.0'"),'follow-up feature missing from offline shell');
 assert(html.includes('data-v108-filter="urgent"')&&html.includes('data-v108-filter="mastery"')&&html.includes('data-v108-filter="attendance"'),'follow-up filters missing');
 assert(feature.includes("!st.studentStatus||st.studentStatus==='active'"),'follow-up must only rank active students');
 assert(feature.includes('StudentProgress?.calculate')&&feature.includes('(studentId,30)'),'follow-up must reuse 30-day student analytics');
@@ -45,4 +45,4 @@ const urgent=rows.find(x=>x.st.id==='u1'),stable=rows.find(x=>x.st.id==='s1');
 assert(urgent&&urgent.priority==='urgent'&&urgent.score>=6,'urgent priority calculation failed');
 assert(stable&&stable.priority==='stable','stable priority calculation failed');
 assert(urgent.reasons.some(x=>String(x).includes('إتقان 55%')),'priority reasons must explain low mastery');
-console.log('Teacher follow-up center checks passed for v10.9.0');
+console.log('Teacher follow-up center checks passed for v10.10.0');

@@ -1,3 +1,10 @@
+## 10.10.0 — Guardian & Student Portal (Stage 1)
+- Added a standalone read-only guardian/student portal snapshot.
+- Added portal entry points from student profile, More, and Guardian Communication Center.
+- Added progress, attendance, current assignment, stabilization items, recent sessions, share, and print/PDF.
+- Snapshot links exclude phone numbers and internal IDs and keep payload in the URL fragment.
+- Schema remains 12 with no SQL or Supabase changes.
+
 ## 10.9.0 — Circle Analytics & Reports Center
 - إضافة تحليلات على مستوى الحلقة مع فترات 7/30/90 يومًا أو كل الفترة.
 - متوسط إتقان متوازن على مستوى الطالب، حضور، إعادات، وحجم الحفظ الجديد.
