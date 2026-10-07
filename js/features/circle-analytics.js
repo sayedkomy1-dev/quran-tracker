@@ -28,7 +28,7 @@ function v109RangeDays(value=V109_ANALYTICS.range){return value==='7'?7:value===
 function v109RangeLabel(value=V109_ANALYTICS.range){return value==='7'?'آخر 7 أيام':value==='30'?'آخر 30 يومًا':value==='90'?'آخر 90 يومًا':'كل الفترة';}
 function v109ActiveStudents(){return (Array.isArray(students)?students:[]).filter(st=>!st.studentStatus||st.studentStatus==='active');}
 function v109Groups(){return [...new Set(v109ActiveStudents().map(x=>String(x.group||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ar'));}
-function v109Students(group=V109_ANALYTICS.group){const g=String(group||'');return v109ActiveStudents().filter(st=>!g||String(st.group||'')===g);}
+function v109Students(group=V109_ANALYTICS.group){const g=String(group||'').trim();return v109ActiveStudents().filter(st=>!g||String(st.group||'').trim()===g);}
 function v109Sessions(studentIds,days=v109RangeDays()){
   const ids=new Set(studentIds||[]),all=Array.isArray(sessions)?sessions:[];
   const cutoff=Number.isFinite(days)?Date.now()-(Math.max(1,days)-1)*86400000:-Infinity;
@@ -50,7 +50,7 @@ function v109ReviewLabel(item){
 }
 function v109AddWeak(map,studentId,label,score,grade,status){
   if(!label)return;
-  const weak=score!==null?score<65:(grade==='ضعيف'||grade==='إعادة'||status==='repeat'||status==='not_heard');
+  const weak=(score!==null&&score<65)||grade==='ضعيف'||grade==='إعادة'||status==='repeat'||status==='not_heard';
   if(!weak)return;
   const key=label.replace(/\s+/g,' ').trim();
   const row=map.get(key)||{label:key,count:0,students:new Set(),scores:[],repeats:0};
@@ -164,6 +164,13 @@ async function v109CopySummary(){
   try{if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(txt);else throw new Error('no clipboard');if(typeof toast==='function')toast('تم نسخ ملخص الحلقة','success');}
   catch(_){const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand?.('copy');ta.remove();if(typeof toast==='function')toast('تم نسخ ملخص الحلقة','success');}
 }
+async function v109ShareSummary(){
+  const txt=v109SummaryText(),nav=globalThis.navigator;
+  if(nav?.share){
+    try{await nav.share({title:'تحليلات وتقارير الحلقة',text:txt});return;}catch(err){if(err?.name==='AbortError')return;}
+  }
+  return v109CopySummary();
+}
 function v109Print(){
   document.body.classList.add('v109-print');
   const cleanup=()=>document.body.classList.remove('v109-print');window.addEventListener('afterprint',cleanup,{once:true});setTimeout(()=>window.print(),80);
@@ -194,6 +201,7 @@ globalThis.v109SetRange=v109SetRange;
 globalThis.v109SetGroup=v109SetGroup;
 globalThis.v109ExportCSV=v109ExportCSV;
 globalThis.v109CopySummary=v109CopySummary;
+globalThis.v109ShareSummary=v109ShareSummary;
 globalThis.v109Print=v109Print;
 globalThis.renderV109Analytics=renderV109Analytics;
 globalThis.ImamApp=globalThis.ImamApp||{};
