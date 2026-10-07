@@ -780,7 +780,7 @@ button{touch-action:manipulation}
   body.printing-monthly > *{display:none!important}.print-monthly-report{display:block!important;direction:rtl;font-family:Arial,sans-serif;color:#111;padding:18mm}.print-monthly-report h1{text-align:center}.print-monthly-report table{width:100%;border-collapse:collapse}.print-monthly-report th,.print-monthly-report td{border:1px solid #bbb;padding:6px;font-size:11px}.print-monthly-report .print-brand{text-align:center;margin-bottom:18px}.print-monthly-report .print-brand img{width:70px}.print-monthly-report .print-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.print-monthly-report .print-summary div{border:1px solid #bbb;padding:8px;text-align:center}
 }
 
-/* v10.6.0 — Guardian Communication Center */
+/* v10.6.1 — Guardian Communication Center */
 .guardian-center{max-width:760px;max-height:94vh;overflow:auto;padding-bottom:18px}
 .guardian-center-title{align-items:flex-start}
 .guardian-center-title>div{display:flex;flex-direction:column;gap:3px}

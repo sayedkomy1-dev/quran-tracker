@@ -297,4 +297,6 @@ node --check v9.js
 راجع `DEPLOYMENT.md` قبل استبدال النسخة المنشورة.
 ## v10.6.0 — Guardian Communication Center
 The guardian workflow now supports session reports, absence notices, assignment reminders, and custom messages with recipient scopes, phone validation, previews, and a manual WhatsApp queue. Final sending always remains inside WhatsApp.
+## v10.6.1 — Sectioned Guardian Report + Teacher Scores
+Teacher-entered 0–100 mastery percentages are now stored with each recitation section and each individual Surah/quarter review item. Guardian WhatsApp reports are split into clear sections and render a visual 10-block progress bar plus the exact score under every scored assessment.
 

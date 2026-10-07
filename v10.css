@@ -315,7 +315,7 @@ body.v1053-reader-open{overflow:hidden}
 @media(max-width:520px){.v10510-insight-head{padding:12px 11px;align-items:flex-start}.v10510-insight-button{min-width:108px;padding:9px 10px;flex:none}.v1059-insight-title small{max-width:170px}}
 .v10510-mushaf-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.v10510-mushaf-links .v1059-mushaf-link{border:1px solid color-mix(in srgb,var(--gm) 28%,var(--line));background:var(--gp);color:var(--gm);border-radius:9px;padding:7px 9px;font-size:10px;font-weight:800;cursor:pointer}.v10510-mushaf-links .v1059-mushaf-link.next{background:var(--gm);color:#fff;border-color:var(--gm)}
 
-/* v10.6.0 — prominent, fast recitation assessment controls */
+/* v10.6.1 — prominent, fast recitation assessment controls */
 .v10511-assessment-label{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-top:12px;font-weight:900;color:var(--v9-text,var(--text))}
 .v10511-assessment-label small{font-size:10px;font-weight:600;color:var(--v9-muted,var(--muted))}
 .v10511-grade-grid{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px!important;margin-top:8px!important}
@@ -342,3 +342,12 @@ body.v1053-reader-open{overflow:hidden}
 @media(max-width:520px){
  .v10511-grade-grid{gap:6px!important}.v10511-grade-choice{min-height:64px!important;border-radius:12px!important;padding:7px 3px!important}.v10511-grade-icon{font-size:16px}.v10511-grade-label{font-size:11px}.v10511-grade-choice small{font-size:8.5px}
 }
+
+/* v10.6.1 — teacher-entered mastery percentage + WhatsApp score bars */
+.v1061-score-box{margin-top:9px;padding:10px 11px;border:1px solid color-mix(in srgb,var(--gm) 24%,var(--v9-border,var(--line)));border-radius:12px;background:color-mix(in srgb,var(--gp) 55%,var(--v9-surface,var(--card)))}
+.v1061-score-box.compact{padding:9px 10px;margin-top:8px}
+.v1061-score-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:7px}.v1061-score-head b{font-size:11px;font-weight:900;color:var(--v9-text,var(--text))}.v1061-score-head small{font-size:9.5px;color:var(--v9-muted,var(--muted));font-weight:650}
+.v1061-score-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.v1061-score-row label{display:flex;align-items:center;gap:5px;direction:ltr;background:var(--v9-surface,var(--card));border:1px solid var(--v9-border,var(--line));border-radius:10px;padding:5px 8px;min-width:116px}.v1061-score-row input{width:64px;border:0!important;background:transparent!important;box-shadow:none!important;outline:0;text-align:center;font-size:17px;font-weight:900;color:var(--gm);padding:3px 0!important}.v1061-score-row label span{font-size:11px;font-weight:800;color:var(--v9-muted,var(--muted));white-space:nowrap}
+.v1061-score-preview{flex:1;min-width:210px;direction:ltr;text-align:center;font-size:12px;line-height:1.8;font-weight:800;letter-spacing:.1px;color:var(--gm);background:var(--v9-surface,var(--card));border:1px dashed color-mix(in srgb,var(--gm) 26%,var(--v9-border,var(--line)));border-radius:9px;padding:6px 8px;overflow-wrap:anywhere}
+[data-theme="dark"] .v1061-score-box{background:color-mix(in srgb,var(--gm) 12%,var(--card,#151d19))}
+@media(max-width:520px){.v1061-score-row{align-items:stretch}.v1061-score-row label{min-width:108px;justify-content:center}.v1061-score-preview{min-width:0;flex:1 1 100%;font-size:11px}.v1061-score-head{align-items:baseline}}

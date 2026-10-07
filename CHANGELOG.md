@@ -1,3 +1,13 @@
+# v10.6.1 — Sectioned Guardian Report + Teacher Scores
+
+- Split the detailed guardian WhatsApp report into clear recitation, item-review, next-assignment, notes, and footer sections.
+- Added teacher-entered 0–100 mastery percentage below each main recitation assessment.
+- Added independent 0–100 percentage for every reviewed Surah / quarter-hizb item.
+- Added a 10-block WhatsApp progress bar with the exact `/100` score under each scored assessment.
+- Scores persist through drafts, saved-session edits, sync snapshots, and portable backup/import.
+- Existing sessions remain compatible and never receive fabricated percentages.
+- No schema, SQL, or Supabase changes.
+
 # v10.6.0 — Guardian Communication Center
 
 - Replaced the old bulk-message composer with a focused guardian communication center.
