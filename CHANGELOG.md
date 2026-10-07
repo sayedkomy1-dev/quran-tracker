@@ -1,3 +1,14 @@
+# v10.8.0 — Teacher Follow-up Center
+
+- Added a cross-student follow-up center that ranks active students using transparent 30-day signals.
+- Added priority explanations for low mastery, repeats, low attendance, stabilization needs, declining trend, and delayed attendance.
+- Added filters for high priority, low mastery, repeats, attendance, overdue follow-up, and missing numeric scores.
+- Added group/search filters plus direct actions to open the student profile, start a session, or prepare a manual WhatsApp follow-up.
+- Added a home follow-up card, header priority badge, and More-menu entry.
+- Analytics are read-only over existing Schema 12 data; no SQL or Supabase migration required.
+
+---
+
 # v10.7.0 — Student Progress Dashboard
 
 - Added a dedicated student progress tab with 30/90/all-time filters.

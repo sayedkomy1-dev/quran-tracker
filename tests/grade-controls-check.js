@@ -11,4 +11,4 @@ assert(v10.includes("if(g==='ضعيف')")&&v10.includes('يحتاج تثبيت �
 assert(app.includes("'إعادة':0.5"), 'repeat grade must survive backup/import and reporting');
 assert(app.includes('isPassingGrade(ses.prevGrades.new)'), 'repeat/follow-up must not be counted as verified new memorization');
 assert(css.includes('.v10511-grade-grid')&&css.includes('.v10511-grade-choice.repeat'), 'prominent assessment styles missing');
-console.log('Assessment controls checks passed for v10.7.0');
+console.log('Assessment controls checks passed for v10.8.0');

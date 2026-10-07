@@ -8,16 +8,16 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.7.0">
-<link rel="manifest" href="manifest.json?v=10.7.0">
+<meta name="application-version" content="10.8.0">
+<link rel="manifest" href="manifest.json?v=10.8.0">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<link rel="stylesheet" href="styles.css?v=10.7.0">
-<link rel="stylesheet" href="v9.css?v=10.7.0">
-<link rel="stylesheet" href="v10.css?v=10.7.0">
-<link rel="stylesheet" href="quran-engine.css?v=10.7.0">
-<link rel="stylesheet" href="auth.css?v=10.7.0">
+<link rel="stylesheet" href="styles.css?v=10.8.0">
+<link rel="stylesheet" href="v9.css?v=10.8.0">
+<link rel="stylesheet" href="v10.css?v=10.8.0">
+<link rel="stylesheet" href="quran-engine.css?v=10.8.0">
+<link rel="stylesheet" href="auth.css?v=10.8.0">
 </head>
 <body>
 
@@ -58,6 +58,7 @@
     </div>
     <div class="hdr-actions">
       <button class="hdr-btn hdr-search" onclick="openQuickSearch()" title="بحث سريع — Ctrl+K" aria-label="بحث سريع">🔎</button>
+      <button class="hdr-btn v108-followup-head" onclick="goPage('followup')" title="مركز متابعة الطلاب" aria-label="مركز متابعة الطلاب">🎯<span class="hdr-badge" id="followupBadge" hidden>0</span></button>
       <button class="hdr-btn hdr-task" onclick="goPage('tasks')" title="المهام والمتابعة" aria-label="المهام والمتابعة">☑️<span class="hdr-badge" id="taskBadge" hidden>0</span></button>
       <button class="hdr-btn" onclick="toggleTheme()" id="themeBtn" title="تبديل المظهر" aria-label="تبديل المظهر">🌙</button>
       <button class="back-btn" id="backBtn" onclick="goBack()">→ رجوع</button>
@@ -667,6 +668,38 @@
   </div>
 </div>
 
+<!-- ══════════════ TEACHER FOLLOW-UP CENTER v10.8 ══════════════ -->
+<div class="pg" id="pg-followup">
+  <section class="v108-hero">
+    <div><span class="v108-kicker">متابعة ذكية قابلة للتفسير</span><h2>🎯 مركز متابعة الطلاب</h2><p>يرتب الطلاب حسب إشارات واضحة من آخر 30 يومًا: الإتقان، الإعادات، الحضور، التثبيت، واتجاه الأداء.</p></div>
+    <div class="v108-hero-note">لا يغيّر أي بيانات — تحليل فقط</div>
+  </section>
+  <section class="v108-summary">
+    <button onclick="v108SetFilter('urgent')"><b id="v108UrgentCount">0</b><span>أولوية عالية</span></button>
+    <button onclick="v108SetFilter('all')"><b id="v108FollowCount">0</b><span>يحتاجون متابعة</span></button>
+    <button onclick="v108SetFilter('attendance')"><b id="v108AttendanceCount">0</b><span>حضور منخفض</span></button>
+    <button onclick="v108SetFilter('overdue')"><b id="v108OverdueCount">0</b><span>متابعة متأخرة</span></button>
+  </section>
+  <section class="card v108-controls">
+    <div class="v108-filter-row" role="group" aria-label="فلترة مركز المتابعة">
+      <button class="on" data-v108-filter="all" onclick="v108SetFilter('all')">الكل</button>
+      <button data-v108-filter="urgent" onclick="v108SetFilter('urgent')">أولوية عالية</button>
+      <button data-v108-filter="mastery" onclick="v108SetFilter('mastery')">إتقان منخفض</button>
+      <button data-v108-filter="repeats" onclick="v108SetFilter('repeats')">إعادات</button>
+      <button data-v108-filter="attendance" onclick="v108SetFilter('attendance')">حضور</button>
+      <button data-v108-filter="overdue" onclick="v108SetFilter('overdue')">متأخر</button>
+      <button data-v108-filter="unscored" onclick="v108SetFilter('unscored')">بدون نسب</button>
+    </div>
+    <div class="v108-search-row">
+      <input type="search" id="v108Search" placeholder="ابحث باسم الطالب أو ولي الأمر..." oninput="v108SetQuery(this.value)">
+      <select id="v108Group" onchange="v108SetGroup(this.value)" aria-label="فلترة حسب الحلقة"><option value="">كل الحلقات</option></select>
+    </div>
+    <div class="v108-result-note">النتائج الظاهرة: <b id="v108VisibleCount">0</b></div>
+  </section>
+  <section id="v108List" class="v108-list"></section>
+  <section class="v108-method card"><b>كيف تُحسب الأولوية؟</b><p>تنخفض الأولوية تلقائيًا عندما تتحسن أحدث البيانات. الإتقان تحت 70%، الإعادات، الحضور الأقل من 75% بعد 3 سجلات على الأقل، التراجع، وتأخر الحصة كلها إشارات مرئية داخل بطاقة الطالب.</p></section>
+</div>
+
 <!-- ══════════════ PROFILE ══════════════ -->
 <div class="pg" id="pg-profile">
   <div class="card" id="profHdr"></div>
@@ -926,19 +959,20 @@
 
 <!-- ════════════ SCRIPTS ════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="js/core/runtime.js?v=10.7.0" defer></script>
-<script src="js/features/v10-data.js?v=10.7.0" defer></script>
-<script src="auth.js?v=10.7.0" defer></script>
-<script src="sync-core.js?v=10.7.0" defer></script>
-<script src="app.js?v=10.7.0" defer></script>
-<script src="v8.js?v=10.7.0" defer></script>
-<script src="v9.js?v=10.7.0" defer></script>
-<script src="js/features/mushaf-offline.js?v=10.7.0" defer></script>
-<script src="js/features/quran-engine.js?v=10.7.0" defer></script>
-<script src="js/features/quran-structure.js?v=10.7.0" defer></script>
-<script src="js/features/recitation-carry.js?v=10.7.0" defer></script>
-<script src="v10.js?v=10.7.0" defer></script>
-<script src="js/features/guardian-communication.js?v=10.7.0" defer></script>
-<script src="js/features/student-progress.js?v=10.7.0" defer></script>
+<script src="js/core/runtime.js?v=10.8.0" defer></script>
+<script src="js/features/v10-data.js?v=10.8.0" defer></script>
+<script src="auth.js?v=10.8.0" defer></script>
+<script src="sync-core.js?v=10.8.0" defer></script>
+<script src="app.js?v=10.8.0" defer></script>
+<script src="v8.js?v=10.8.0" defer></script>
+<script src="v9.js?v=10.8.0" defer></script>
+<script src="js/features/mushaf-offline.js?v=10.8.0" defer></script>
+<script src="js/features/quran-engine.js?v=10.8.0" defer></script>
+<script src="js/features/quran-structure.js?v=10.8.0" defer></script>
+<script src="js/features/recitation-carry.js?v=10.8.0" defer></script>
+<script src="v10.js?v=10.8.0" defer></script>
+<script src="js/features/guardian-communication.js?v=10.8.0" defer></script>
+<script src="js/features/student-progress.js?v=10.8.0" defer></script>
+<script src="js/features/teacher-followup.js?v=10.8.0" defer></script>
 </body>
 </html>
