@@ -8,16 +8,16 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.6.2">
-<link rel="manifest" href="manifest.json?v=10.6.2">
+<meta name="application-version" content="10.7.0">
+<link rel="manifest" href="manifest.json?v=10.7.0">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<link rel="stylesheet" href="styles.css?v=10.6.2">
-<link rel="stylesheet" href="v9.css?v=10.6.2">
-<link rel="stylesheet" href="v10.css?v=10.6.2">
-<link rel="stylesheet" href="quran-engine.css?v=10.6.2">
-<link rel="stylesheet" href="auth.css?v=10.6.2">
+<link rel="stylesheet" href="styles.css?v=10.7.0">
+<link rel="stylesheet" href="v9.css?v=10.7.0">
+<link rel="stylesheet" href="v10.css?v=10.7.0">
+<link rel="stylesheet" href="quran-engine.css?v=10.7.0">
+<link rel="stylesheet" href="auth.css?v=10.7.0">
 </head>
 <body>
 
@@ -670,6 +670,17 @@
 <!-- ══════════════ PROFILE ══════════════ -->
 <div class="pg" id="pg-profile">
   <div class="card" id="profHdr"></div>
+  <div class="card v107-progress-card" id="profProgress" style="display:none">
+    <div class="v107-dashboard-head">
+      <div><div class="ch" style="margin:0">📊 لوحة تقدم الطالب</div><small>الإتقان والحضور والإعادات ونقاط التثبيت</small></div>
+      <select id="v107Range" onchange="renderV107Progress(curStId)" aria-label="فترة لوحة التقدم">
+        <option value="30">آخر 30 يومًا</option>
+        <option value="90" selected>آخر 90 يومًا</option>
+        <option value="all">كل الفترة</option>
+      </select>
+    </div>
+    <div id="profProgressContent"></div>
+  </div>
   <div class="card" id="profStop"><div class="ch">📍 أين توقفنا؟</div><div id="profStopContent"></div></div>
   <div class="card" id="profMap"><div class="ch">🗺️ خريطة التقدم في المصحف</div><div id="profMapContent"></div></div>
   <div class="card" id="profErrors"><div class="ch">🧭 سجل الأخطاء المتكررة</div><div id="profErrorsContent"></div></div>
@@ -915,18 +926,19 @@
 
 <!-- ════════════ SCRIPTS ════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="js/core/runtime.js?v=10.6.2" defer></script>
-<script src="js/features/v10-data.js?v=10.6.2" defer></script>
-<script src="auth.js?v=10.6.2" defer></script>
-<script src="sync-core.js?v=10.6.2" defer></script>
-<script src="app.js?v=10.6.2" defer></script>
-<script src="v8.js?v=10.6.2" defer></script>
-<script src="v9.js?v=10.6.2" defer></script>
-<script src="js/features/mushaf-offline.js?v=10.6.2" defer></script>
-<script src="js/features/quran-engine.js?v=10.6.2" defer></script>
-<script src="js/features/quran-structure.js?v=10.6.2" defer></script>
-<script src="js/features/recitation-carry.js?v=10.6.2" defer></script>
-<script src="v10.js?v=10.6.2" defer></script>
-<script src="js/features/guardian-communication.js?v=10.6.2" defer></script>
+<script src="js/core/runtime.js?v=10.7.0" defer></script>
+<script src="js/features/v10-data.js?v=10.7.0" defer></script>
+<script src="auth.js?v=10.7.0" defer></script>
+<script src="sync-core.js?v=10.7.0" defer></script>
+<script src="app.js?v=10.7.0" defer></script>
+<script src="v8.js?v=10.7.0" defer></script>
+<script src="v9.js?v=10.7.0" defer></script>
+<script src="js/features/mushaf-offline.js?v=10.7.0" defer></script>
+<script src="js/features/quran-engine.js?v=10.7.0" defer></script>
+<script src="js/features/quran-structure.js?v=10.7.0" defer></script>
+<script src="js/features/recitation-carry.js?v=10.7.0" defer></script>
+<script src="v10.js?v=10.7.0" defer></script>
+<script src="js/features/guardian-communication.js?v=10.7.0" defer></script>
+<script src="js/features/student-progress.js?v=10.7.0" defer></script>
 </body>
 </html>

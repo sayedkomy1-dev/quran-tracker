@@ -1,3 +1,15 @@
+# v10.7.0 — Student Progress Dashboard
+
+- Added a dedicated student progress tab with 30/90/all-time filters.
+- Added teacher-entered mastery averages, attendance, repetitions and new-memorization KPIs.
+- Added per-section mastery for new memorization, near review, far review and Surah/quarter review.
+- Added a score trend chart and improvement/stability/decline indicator.
+- Added current stabilization insights based on the latest result for each recent item.
+- Added grade distribution and a manual WhatsApp progress-summary action.
+- Analytics are read-only over existing Schema 12 data; no SQL migration required.
+
+---
+
 # v10.6.2 — Compact Guardian Report Polish
 
 - Replaced large WhatsApp emoji progress blocks with compact text squares while preserving the exact teacher-entered `/100` score.

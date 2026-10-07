@@ -306,3 +306,8 @@ Teacher-entered 0–100 mastery percentages are now stored with each recitation 
 - Smaller text-square progress bars in guardian WhatsApp reports.
 - Tighter section spacing to reduce report length on mobile.
 - Teacher-entered scores and persistence remain unchanged.
+
+
+## v10.7.0 — Student Progress Dashboard
+
+ملف الطالب يحتوي الآن على تبويب **التقدم** الذي يفتح افتراضيًا ويعرض متوسط الإتقان من النسب التي يكتبها المحفظ، نسبة الحضور، الإعادات، الحفظ الجديد، مستوى كل نوع مراجعة، اتجاه الأداء، والمواضع التي تحتاج تثبيت. يمكن تغيير الفترة بين 30 يومًا و90 يومًا وكل الفترة، كما يمكن فتح WhatsApp بملخص تقدم جاهز للمراجعة قبل الإرسال. لا توجد أي ترقية Schema أو SQL في هذا الإصدار.

@@ -15,4 +15,4 @@ assert(v10.includes('v1061ScoreBar(n,true)'),'WhatsApp score bar must include th
 assert(v10.includes('━━━━━━━━━━')&&v10.includes('📖 *التكليف للحصة القادمة*'),'sectioned guardian report missing');
 assert(v8.includes('raw.assessmentScores')&&v8.includes("['new','rec','far','juz','surahReview']"),'portable import must preserve teacher-entered percentages');
 assert(css.includes('.v1061-score-box')&&css.includes('.v1061-score-preview'),'score entry UI styling missing');
-console.log('guardian score/report checks passed for v10.6.2');
+console.log('guardian score/report checks passed for v10.7.0');
