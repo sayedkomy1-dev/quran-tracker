@@ -1,3 +1,11 @@
+## 10.10.0 — Guardian & Student Portal (Stage 2)
+- Added stable per-student live guardian links that can be refreshed without changing the URL.
+- Added explicit revoke; republishing after revoke rotates the token so the old link remains dead.
+- Added portal link status, refresh-only action, and Stage 1 snapshot fallback.
+- Live links expose only a random capability token in the URL fragment; phone and internal IDs remain excluded.
+- Added an isolated `guardian_portal_shares` backend and tightly scoped RPCs; direct table access is revoked.
+- Local Schema remains 12; students, sessions, and account sync are unchanged.
+
 ## 10.10.0 — Guardian & Student Portal (Stage 1)
 - Added a standalone read-only guardian/student portal snapshot.
 - Added portal entry points from student profile, More, and Guardian Communication Center.
