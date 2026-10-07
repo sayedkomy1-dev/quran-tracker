@@ -1,4 +1,4 @@
-/* We Live Quran v10.8.0 — Guardian Communication Center
+/* We Live Quran v10.9.0 — Guardian Communication Center
  * Manual WhatsApp handoff only: the app prepares messages and opens WhatsApp.
  * Final send remains an explicit user action in WhatsApp.
  */

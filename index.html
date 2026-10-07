@@ -8,16 +8,16 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.8.0">
-<link rel="manifest" href="manifest.json?v=10.8.0">
+<meta name="application-version" content="10.9.0">
+<link rel="manifest" href="manifest.json?v=10.9.0">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<link rel="stylesheet" href="styles.css?v=10.8.0">
-<link rel="stylesheet" href="v9.css?v=10.8.0">
-<link rel="stylesheet" href="v10.css?v=10.8.0">
-<link rel="stylesheet" href="quran-engine.css?v=10.8.0">
-<link rel="stylesheet" href="auth.css?v=10.8.0">
+<link rel="stylesheet" href="styles.css?v=10.9.0">
+<link rel="stylesheet" href="v9.css?v=10.9.0">
+<link rel="stylesheet" href="v10.css?v=10.9.0">
+<link rel="stylesheet" href="quran-engine.css?v=10.9.0">
+<link rel="stylesheet" href="auth.css?v=10.9.0">
 </head>
 <body>
 
@@ -482,8 +482,12 @@
 
 <!-- ══════════════ REPORTS ══════════════ -->
 <div class="pg" id="pg-reports">
+  <section class="card v109-entry-card">
+    <div class="v109-entry-copy"><span class="v109-entry-icon">📊</span><div><b>تحليلات وتقارير الحلقة</b><small>متوسط الإتقان، الحضور، اتجاهات الطلاب، نقاط التثبيت، وترتيب الأداء حسب الفترة.</small></div></div>
+    <button class="btn btn-g" onclick="goPage('analytics')">فتح تحليلات الحلقة</button>
+  </section>
   <div class="card">
-    <div class="ch">📊 التقارير الشهرية</div>
+    <div class="ch">📊 التقرير الشهري للطالب</div>
     <div class="fld">
       <label>اختر الطالب</label>
       <select id="repSt" onchange="renderReport()">
@@ -698,6 +702,23 @@
   </section>
   <section id="v108List" class="v108-list"></section>
   <section class="v108-method card"><b>كيف تُحسب الأولوية؟</b><p>تنخفض الأولوية تلقائيًا عندما تتحسن أحدث البيانات. الإتقان تحت 70%، الإعادات، الحضور الأقل من 75% بعد 3 سجلات على الأقل، التراجع، وتأخر الحصة كلها إشارات مرئية داخل بطاقة الطالب.</p></section>
+</div>
+
+<!-- ══════════════ CIRCLE ANALYTICS & REPORTS v10.9 ══════════════ -->
+<div class="pg" id="pg-analytics">
+  <section class="v109-hero">
+    <div><span class="v109-kicker">صورة شاملة للحلقة</span><h2>📊 تحليلات وتقارير الحلقة</h2><p>اقرأ أداء الحلقة ككل من بيانات الحصص الحالية، بدون تعديل أي بيانات أو اختراع نسب للحصص القديمة.</p></div>
+    <div class="v109-hero-note">Schema 12 · تحليل فقط</div>
+  </section>
+  <section class="card v109-controls">
+    <div class="v109-control-grid">
+      <div class="fld"><label for="v109Range">الفترة</label><select id="v109Range" onchange="v109SetRange(this.value)"><option value="7">آخر 7 أيام</option><option value="30" selected>آخر 30 يومًا</option><option value="90">آخر 90 يومًا</option><option value="all">كل الفترة</option></select></div>
+      <div class="fld"><label for="v109Group">الحلقة / المجموعة</label><select id="v109Group" onchange="v109SetGroup(this.value)"><option value="">كل الحلقات</option></select></div>
+    </div>
+    <div class="v109-actions"><button class="btn btn-out btn-sm" onclick="v109ExportCSV()">📥 CSV</button><button class="btn btn-out btn-sm" onclick="v109CopySummary()">📋 نسخ الملخص</button><button class="btn btn-g btn-sm" onclick="v109Print()">🖨️ طباعة / PDF</button></div>
+  </section>
+  <div id="v109Content"></div>
+  <section class="card v109-method"><b>طريقة الحساب</b><p>الإتقان يعتمد فقط على النسب التي أدخلها المحفظ. نسبة الحضور تستبعد الإجازة من المقام. الاتجاه يقارن أحدث النتائج بما قبلها، والمواضع الضعيفة تُستخرج من النسب الأقل من 65% أو «يحتاج متابعة / إعادة» خلال الفترة المختارة.</p></section>
 </div>
 
 <!-- ══════════════ PROFILE ══════════════ -->
@@ -959,20 +980,21 @@
 
 <!-- ════════════ SCRIPTS ════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="js/core/runtime.js?v=10.8.0" defer></script>
-<script src="js/features/v10-data.js?v=10.8.0" defer></script>
-<script src="auth.js?v=10.8.0" defer></script>
-<script src="sync-core.js?v=10.8.0" defer></script>
-<script src="app.js?v=10.8.0" defer></script>
-<script src="v8.js?v=10.8.0" defer></script>
-<script src="v9.js?v=10.8.0" defer></script>
-<script src="js/features/mushaf-offline.js?v=10.8.0" defer></script>
-<script src="js/features/quran-engine.js?v=10.8.0" defer></script>
-<script src="js/features/quran-structure.js?v=10.8.0" defer></script>
-<script src="js/features/recitation-carry.js?v=10.8.0" defer></script>
-<script src="v10.js?v=10.8.0" defer></script>
-<script src="js/features/guardian-communication.js?v=10.8.0" defer></script>
-<script src="js/features/student-progress.js?v=10.8.0" defer></script>
-<script src="js/features/teacher-followup.js?v=10.8.0" defer></script>
+<script src="js/core/runtime.js?v=10.9.0" defer></script>
+<script src="js/features/v10-data.js?v=10.9.0" defer></script>
+<script src="auth.js?v=10.9.0" defer></script>
+<script src="sync-core.js?v=10.9.0" defer></script>
+<script src="app.js?v=10.9.0" defer></script>
+<script src="v8.js?v=10.9.0" defer></script>
+<script src="v9.js?v=10.9.0" defer></script>
+<script src="js/features/mushaf-offline.js?v=10.9.0" defer></script>
+<script src="js/features/quran-engine.js?v=10.9.0" defer></script>
+<script src="js/features/quran-structure.js?v=10.9.0" defer></script>
+<script src="js/features/recitation-carry.js?v=10.9.0" defer></script>
+<script src="v10.js?v=10.9.0" defer></script>
+<script src="js/features/guardian-communication.js?v=10.9.0" defer></script>
+<script src="js/features/student-progress.js?v=10.9.0" defer></script>
+<script src="js/features/teacher-followup.js?v=10.9.0" defer></script>
+<script src="js/features/circle-analytics.js?v=10.9.0" defer></script>
 </body>
 </html>

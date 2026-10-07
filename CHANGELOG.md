@@ -1,3 +1,11 @@
+## 10.9.0 — Circle Analytics & Reports Center
+- إضافة تحليلات على مستوى الحلقة مع فترات 7/30/90 يومًا أو كل الفترة.
+- متوسط إتقان متوازن على مستوى الطالب، حضور، إعادات، وحجم الحفظ الجديد.
+- اتجاهات تحسن/استقرار/تراجع وتوزيع التقييمات.
+- تجميع أكثر المواضع احتياجًا للتثبيت حسب الفترة وعدد الطلاب المتأثرين.
+- ترتيب الطلاب، فلترة حسب الحلقة، CSV، نسخ ملخص، وطباعة/PDF.
+- Schema 12 دون SQL أو تغييرات Supabase.
+
 # v10.8.0 — Teacher Follow-up Center
 
 - Added a cross-student follow-up center that ranks active students using transparent 30-day signals.
