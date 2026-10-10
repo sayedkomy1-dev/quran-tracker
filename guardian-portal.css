@@ -6,6 +6,7 @@
 .portal-switcher{margin:0 0 12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 12px;box-shadow:var(--shadow);display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center}.portal-switcher label{font-size:10px;font-weight:800;color:var(--green)}.portal-switcher select{min-width:0;border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px 10px;font:700 11px Tahoma,Arial,sans-serif;color:var(--ink)}.portal-switcher small{grid-column:1/-1;color:var(--mut);font-size:9px}.portal-login-again{display:inline-block;margin-top:12px;border-radius:10px;background:var(--green);color:#fff;text-decoration:none;padding:8px 12px;font-size:10px;font-weight:800}@media(max-width:650px){.portal-switcher{grid-template-columns:1fr}.portal-switcher small{grid-column:auto}}@media print{.portal-switcher,#portalLogoutBtn{display:none!important}}
 /* Stage 3.4 — reliable multi-student switcher (native select replaced by direct buttons) */
 .portal-switcher{display:block;padding:12px 14px}
+.portal-switcher[hidden]{display:none!important}
 .portal-switcher-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:9px}
 .portal-switcher-head b{font-size:11px;color:var(--green)}
 .portal-switcher-head small{font-size:9px;color:var(--mut);text-align:left}

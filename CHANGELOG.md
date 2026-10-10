@@ -585,3 +585,10 @@
 - Replaced the unreliable multi-student native dropdown in the guardian portal with direct student buttons/cards.
 - Switching students now uses explicit click handlers and immediately re-renders the selected student's read-only snapshot.
 - Added regression coverage for the multi-student switcher and bumped the PWA cache generation.
+
+## v10.10.0 — Stage 3.5 Guardian Family Linking Hotfix
+- Automatically links all active students sharing the same normalized Egyptian guardian phone to one guardian account/PIN.
+- Accepts equivalent phone storage forms (01…, +20…, 0020…).
+- Fixes the empty student-switcher shell being visible when only one student is authorized.
+- No SQL changes; local Schema remains 12.
+- Added deep audit notes for Android Back navigation and Offline reliability.

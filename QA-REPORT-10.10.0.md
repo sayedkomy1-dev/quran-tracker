@@ -84,3 +84,11 @@ PASS
 - Multi-student guardian switcher: direct buttons replace native select.
 - Explicit click binding verified by `tests/guardian-student-switcher-check.js`.
 - No SQL changes; local Schema remains 12.
+
+
+## Stage 3.5 QA
+- Existing full test suite: PASS.
+- New automatic family-linking regression test: PASS.
+- JavaScript syntax check: PASS.
+- SQL directory compared with Stage 3.4 source: unchanged.
+- Guardian single-student switcher hidden-state regression covered.

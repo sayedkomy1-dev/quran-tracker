@@ -110,3 +110,10 @@ The public landing gate now shows a dedicated Guardian / Student Login button th
 
 #### Stage 3.4 hotfix — Guardian multi-student switcher
 The guardian portal no longer relies on a native select control for sibling/student switching. When one guardian phone is linked to multiple students, each student appears as a direct selectable button, with the active student clearly highlighted. No SQL or schema change is required.
+
+
+### Stage 3.5 — Automatic Family Linking Hotfix
+- Enabling Guardian phone access for one student now links every active sibling with the same registered guardian phone.
+- One guardian PIN/account is shared across those linked students.
+- The Guardian portal student switcher now stays fully hidden for a single authorized student.
+- No database migration is required for Stage 3.5.
