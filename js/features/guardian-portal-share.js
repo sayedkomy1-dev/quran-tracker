@@ -1,11 +1,13 @@
 'use strict';
-/* We Live Quran v10.10.0 — Guardian & Student Portal, Stage 2.
-   Stage 1 snapshot links remain available.
-   Stage 2 adds a stable, revocable cloud-published read-only link.
-   The local data schema remains 12; only the dedicated portal-share backend is new. */
+/* We Live Quran v10.10.0 — Guardian & Student Portal, Stage 3.
+   Stage 1 snapshot links and Stage 2 stable live links remain available.
+   Stage 3 adds guardian login by the student's registered phone + secure 6-digit PIN.
+   Local data Schema remains 12; credentials/sessions live only in dedicated backend tables. */
 (function guardianPortalShareFeature(g){
   const VERSION=1;
   const LIVE_RPC={publish:'guardian_portal_publish',status:'guardian_portal_status',revoke:'guardian_portal_revoke'};
+  const ACCESS_RPC={status:'guardian_portal_access_status',enable:'guardian_portal_access_enable',reset:'guardian_portal_access_reset_pin',unlink:'guardian_portal_access_unlink',refresh:'guardian_portal_access_refresh'};
+  let lastGuardianSecret=null;
 
   function appState(){return g.ImamApp?.State||{};}
   function stateStudents(){const v=appState().students??g.students;return Array.isArray(v)?v:[];}
@@ -120,6 +122,23 @@
     url.hash='p='+String(token||'').trim();
     return url.toString();
   }
+  function guardianLoginUrl(){
+    return new URL('guardian-login.html',g.location?.href||'http://localhost/index.html').toString();
+  }
+  function studentById(studentId){return stateStudents().find(x=>x.id===studentId)||null;}
+  function studentPhone(studentId){return String(studentById(studentId)?.phone||'').replace(/\D/g,'');}
+  function phoneDisplay(value){
+    const p=String(value||'').replace(/\D/g,'');
+    if(/^20(10|11|12|15)\d{8}$/.test(p))return '0'+p.slice(2);
+    return p;
+  }
+  function validEgyptPhone(value){return /^20(10|11|12|15)\d{8}$/.test(String(value||'').replace(/\D/g,''));}
+  function generatePin(){
+    if(!g.crypto?.getRandomValues)throw new Error('CRYPTO_UNAVAILABLE');
+    const max=Math.floor(0x100000000/1000000)*1000000,buf=new Uint32Array(1);let n;
+    do{g.crypto.getRandomValues(buf);n=buf[0];}while(n>=max);
+    return String(n%1000000).padStart(6,'0');
+  }
   function toastSafe(msg,type='info'){try{if(typeof g.toast==='function')g.toast(msg,type);}catch(_){} }
   function activeStudents(){return stateStudents().filter(st=>!st.studentStatus||st.studentStatus==='active');}
   function liveClient(){return g.WeLiveQuranAuth?.getClient?.()||null;}
@@ -165,6 +184,68 @@
     if(!liveAvailable())throw new Error('LIVE_OFFLINE');
     const ref=await studentRef(studentId);const data=await rpc(LIVE_RPC.revoke,{p_student_ref:ref});
     const x=Array.isArray(data)?data[0]:data;return !!(x===true||x?.ok||x?.revoked);
+  }
+  async function accessStatus(studentId){
+    if(!studentId||!liveAvailable())return {available:false,linked:false};
+    try{
+      const ref=await studentRef(studentId),data=await rpc(ACCESS_RPC.status,{p_student_ref:ref}),x=Array.isArray(data)?data[0]:data;
+      if(!x||x.linked===false)return {available:true,linked:false};
+      return {available:true,linked:true,active:x.active!==false,phoneLast4:String(x.phone_last4||''),studentCount:Math.max(0,Number(x.student_count)||0),updatedAt:x.updated_at||''};
+    }catch(err){return {available:false,linked:false,error:err};}
+  }
+  function rememberGuardianSecret(studentId,phone,pin){lastGuardianSecret={studentId:String(studentId),phone:phoneDisplay(phone),pin:String(pin),loginUrl:guardianLoginUrl()};renderGuardianSecret();}
+  function clearGuardianSecret(){lastGuardianSecret=null;renderGuardianSecret();}
+  function guardianCredentialsMessage(secret=lastGuardianSecret){
+    const st=secret?studentById(secret.studentId):null;if(!secret||!st)return '';
+    const academy=stateSettings().circle||'أكاديمية الإمام لتحفيظ القرآن الكريم';
+    return `السلام عليكم ورحمة الله وبركاته 🌿\n\nبيانات دخول بوابة متابعة الطالب: ${st.name||''}\n🏫 ${academy}\n🌐 رابط الدخول: ${secret.loginUrl}\n📱 رقم الهاتف: ${secret.phone}\n🔐 رمز الدخول PIN: ${secret.pin}\n\nالرجاء الاحتفاظ بالرمز وعدم مشاركته إلا مع ولي الأمر المخوّل بمتابعة الطالب.`;
+  }
+  async function enablePhoneAccess(studentId,{resetPin=false}={}){
+    if(!studentId){toastSafe('اختر الطالب أولًا','error');return false;}
+    if(!liveAvailable()){toastSafe('تفعيل دخول ولي الأمر يحتاج اتصالًا بالإنترنت وحسابًا نشطًا','error');return false;}
+    const phone=studentPhone(studentId);
+    if(!validEgyptPhone(phone)){toastSafe('رقم واتساب الطالب غير صالح. عدّله في ملف الطالب أولًا.','error');return false;}
+    const pin=generatePin();
+    try{
+      setPickerBusy(true,resetPin?'جارٍ إعادة تعيين رمز الدخول…':'جارٍ تفعيل دخول ولي الأمر…');
+      const ref=await studentRef(studentId),snapshot=buildSnapshot(studentId);
+      const data=await rpc(ACCESS_RPC.enable,{p_student_ref:ref,p_phone:phone,p_pin:pin,p_snapshot:snapshot,p_reset_pin:!!resetPin});
+      const x=Array.isArray(data)?data[0]:data;if(!x?.ok)throw new Error('ACCESS_ENABLE_FAILED');
+      if(x.pin_changed)rememberGuardianSecret(studentId,phone,pin);else clearGuardianSecret();
+      toastSafe(x.pin_changed?(x.account_created?'تم تفعيل دخول ولي الأمر وإنشاء PIN':'تم ربط الطالب وتحديث PIN'):'تم ربط الطالب بحساب ولي الأمر الحالي — PIN لم يتغير','success');
+      await Promise.all([refreshPhoneAccessStatus(studentId),refreshPickerStatus(studentId)]);return x;
+    }catch(err){console.error('[guardian access enable]',err);toastSafe(isBackendMissing(err)?'شغّل sql/guardian-portal-login.sql في Supabase أولًا':'تعذر تفعيل دخول ولي الأمر','error');return false;}
+    finally{setPickerBusy(false);}
+  }
+  async function resetPhonePin(studentId){
+    if(!studentId){toastSafe('اختر الطالب أولًا','error');return false;}
+    if(!liveAvailable()){toastSafe('إعادة تعيين PIN تحتاج اتصالًا بالإنترنت','error');return false;}
+    const pin=generatePin(),phone=studentPhone(studentId);
+    try{
+      setPickerBusy(true,'جارٍ إنشاء PIN جديد…');const ref=await studentRef(studentId);
+      const data=await rpc(ACCESS_RPC.reset,{p_student_ref:ref,p_pin:pin}),x=Array.isArray(data)?data[0]:data;if(!x?.ok)throw new Error('PIN_RESET_FAILED');
+      rememberGuardianSecret(studentId,phone,pin);toastSafe('تم إنشاء PIN جديد وإلغاء جلسات الدخول القديمة','success');await refreshPhoneAccessStatus(studentId);return x;
+    }catch(err){console.error('[guardian pin reset]',err);toastSafe(isBackendMissing(err)?'شغّل sql/guardian-portal-login.sql في Supabase أولًا':'تعذر إعادة تعيين PIN — فعّل الدخول للطالب أولًا','error');return false;}
+    finally{setPickerBusy(false);}
+  }
+  async function unlinkPhoneAccess(studentId){
+    if(!studentId){toastSafe('اختر الطالب أولًا','error');return false;}
+    const st=studentById(studentId);if(typeof g.confirm==='function'&&!g.confirm(`سيتم إيقاف الدخول برقم الهاتف لهذا الطالب (${st?.name||'الطالب'}).\nلن تُحذف أي بيانات أو حصص. هل تريد المتابعة؟`))return false;
+    try{
+      setPickerBusy(true,'جارٍ إيقاف دخول الهاتف…');const ref=await studentRef(studentId),data=await rpc(ACCESS_RPC.unlink,{p_student_ref:ref}),x=Array.isArray(data)?data[0]:data;
+      clearGuardianSecret();toastSafe(x?.unlinked?'تم إيقاف دخول الهاتف لهذا الطالب':'دخول الهاتف غير مفعّل لهذا الطالب',x?.unlinked?'success':'info');await refreshPhoneAccessStatus(studentId);return !!x?.unlinked;
+    }catch(err){console.error('[guardian access unlink]',err);toastSafe(isBackendMissing(err)?'شغّل sql/guardian-portal-login.sql في Supabase أولًا':'تعذر إيقاف دخول الهاتف','error');return false;}
+    finally{setPickerBusy(false);}
+  }
+  async function refreshPhoneSnapshot(studentId){
+    if(!studentId||!liveAvailable())return false;
+    try{
+      const ref=await studentRef(studentId),snapshot=buildSnapshot(studentId),data=await rpc(ACCESS_RPC.refresh,{p_student_ref:ref,p_snapshot:snapshot});
+      const x=Array.isArray(data)?data[0]:data;return !!x?.refreshed;
+    }catch(err){
+      if(!isBackendMissing(err))console.warn('[guardian access auto refresh]',err);
+      return false;
+    }
   }
   async function copyText(text){
     if(g.navigator?.clipboard?.writeText){await g.navigator.clipboard.writeText(text);return;}
@@ -238,7 +319,32 @@
   function ensurePicker(){
     if(!g.document?.body||g.document.getElementById('v1010PortalModal'))return;
     const box=g.document.createElement('div');box.className='mo';box.id='v1010PortalModal';
-    box.innerHTML=`<div class="mo-box v1010-portal-modal"><div class="mo-title"><div><span>👨‍👩‍👧 بوابة ولي الأمر / الطالب</span><small>قراءة فقط — رابط حي قابل للتحديث والإيقاف</small></div><button class="mo-x" onclick="v1010ClosePortalPicker()">✕</button></div><div class="v1010-portal-info"><b>Stage 2 — رابط ثابت وآمن</b><p>الرابط الحي يحتفظ بنفس العنوان عند التحديث، ولا يضع رقم الهاتف أو معرّفات الطلاب/الحصص في الرابط. أي شخص يملك الرابط يستطيع القراءة فقط. يمكنك إيقافه في أي وقت.</p></div><div class="fld"><label for="v1010PortalStudent">الطالب</label><select id="v1010PortalStudent" onchange="v1010PortalStudentChanged()"></select></div><div id="v1010PortalStatus" class="v1010-portal-status">اختر طالبًا لعرض حالة الرابط.</div><div id="v1010PortalBusy" class="v1010-portal-busy" hidden>جارٍ التنفيذ…</div><div class="v1010-portal-actions"><button class="btn btn-g" onclick="v1010OpenPickedPortal()">🌐 تحديث وفتح</button><button class="btn btn-out" onclick="v1010CopyPickedPortal()">🔗 تحديث ونسخ الرابط</button><button class="btn btn-out" onclick="v1010RefreshPickedPortal()">🔄 تحديث فقط</button><button class="btn btn-out v1010-danger" onclick="v1010RevokePickedPortal()">⛔ إيقاف الرابط</button></div><div class="v1010-portal-snapshot"><button class="btn btn-out btn-sm" onclick="v1010CopyPickedSnapshot()">📸 نسخ لقطة ثابتة بدون Cloud</button><small>الخيار الاحتياطي من Stage 1 يظل متاحًا حتى بدون إعداد SQL.</small></div></div>`;
+    box.innerHTML=`<div class="mo-box v1010-portal-modal">
+      <div class="mo-title"><div><span>👨‍👩‍👧 بوابة ولي الأمر / الطالب</span><small>Stage 3 — الدخول الأساسي برقم الهاتف + PIN</small></div><button class="mo-x" onclick="v1010ClosePortalPicker()">✕</button></div>
+      <div class="fld"><label for="v1010PortalStudent">الطالب</label><select id="v1010PortalStudent" onchange="v1010PortalStudentChanged()"></select></div>
+
+      <div class="v1010-portal-section v1010-access-section">
+        <div class="v1010-portal-info"><b>📱 دخول ولي الأمر برقم الهاتف</b><p>ولي الأمر يفتح صفحة الدخول العامة ويكتب رقم الهاتف المسجل للطالب + PIN من 6 أرقام. بعد التحقق يرى طلابه المرتبطين بهذا الرقم فقط. الوصول قراءة فقط.</p></div>
+        <div id="v1010PhoneStatus" class="v1010-portal-status">اختر طالبًا لعرض حالة دخول الهاتف.</div>
+        <div id="v1010GuardianSecret" class="v1010-guardian-secret" hidden></div>
+        <div class="v1010-portal-actions v1010-access-actions">
+          <button class="btn btn-g" onclick="v1010EnablePhoneAccess()">📱 تفعيل / ربط</button>
+          <button class="btn btn-out" onclick="v1010ResetPhonePin()">🔐 PIN جديد</button>
+          <button class="btn btn-out" onclick="v1010OpenGuardianLogin()">🌐 فتح صفحة الدخول</button>
+          <button class="btn btn-out" onclick="v1010CopyGuardianLogin()">🔗 نسخ رابط الدخول</button>
+          <button class="btn btn-out v1010-danger" onclick="v1010UnlinkPhoneAccess()">⛔ إيقاف دخول الهاتف</button>
+        </div>
+      </div>
+
+      <details class="v1010-link-details">
+        <summary>🔗 الرابط المباشر (اختياري — Stage 2)</summary>
+        <div class="v1010-portal-info"><b>رابط حي مباشر</b><p>يبقى متاحًا كطريقة مشاركة سريعة. أي شخص يملك الرابط يستطيع القراءة، لذلك الدخول برقم الهاتف + PIN هو الخيار الأساسي الآن.</p></div>
+        <div id="v1010PortalStatus" class="v1010-portal-status">اختر طالبًا لعرض حالة الرابط.</div>
+        <div class="v1010-portal-actions"><button class="btn btn-g" onclick="v1010OpenPickedPortal()">🌐 تحديث وفتح</button><button class="btn btn-out" onclick="v1010CopyPickedPortal()">🔗 تحديث ونسخ الرابط</button><button class="btn btn-out" onclick="v1010RefreshPickedPortal()">🔄 تحديث فقط</button><button class="btn btn-out v1010-danger" onclick="v1010RevokePickedPortal()">⛔ إيقاف الرابط</button></div>
+        <div class="v1010-portal-snapshot"><button class="btn btn-out btn-sm" onclick="v1010CopyPickedSnapshot()">📸 نسخ لقطة ثابتة بدون Cloud</button><small>الخيار الاحتياطي من Stage 1 يظل متاحًا.</small></div>
+      </details>
+      <div id="v1010PortalBusy" class="v1010-portal-busy" hidden>جارٍ التنفيذ…</div>
+    </div>`
     g.document.body.appendChild(box);
   }
   function fillPicker(selected=''){
@@ -255,6 +361,36 @@
     if(!value)return '';const d=new Date(value);if(Number.isNaN(d.getTime()))return '';
     return d.toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'});
   }
+  function renderGuardianSecret(){
+    const el=g.document?.getElementById?.('v1010GuardianSecret');if(!el)return;
+    const id=pickedId();const x=lastGuardianSecret;
+    if(!x||x.studentId!==id){el.hidden=true;el.innerHTML='';return;}
+    el.hidden=false;el.innerHTML=`<div><small>رمز جديد — يظهر الآن فقط</small><strong dir="ltr">${esc(x.pin)}</strong><span>الهاتف: <b dir="ltr">${esc(x.phone)}</b></span></div><div class="v1010-secret-actions"><button class="btn btn-g btn-sm" onclick="v1010CopyGuardianCredentials()">📋 نسخ بيانات الدخول</button><button class="btn btn-wa btn-sm" onclick="v1010SendGuardianCredentials()">📲 إرسال عبر WhatsApp</button></div>`;
+  }
+  async function refreshPhoneAccessStatus(studentId=pickedId()){
+    const el=g.document?.getElementById?.('v1010PhoneStatus');if(!el)return;
+    if(!studentId){el.className='v1010-portal-status';el.textContent='لا يوجد طالب محدد.';return;}
+    const phone=studentPhone(studentId),display=phoneDisplay(phone);
+    if(!validEgyptPhone(phone)){el.className='v1010-portal-status warn';el.innerHTML='<b>⚠️ رقم ولي الأمر يحتاج مراجعة</b><span>عدّل رقم واتساب الطالب أولًا إلى رقم مصري صحيح مثل 01xxxxxxxxx.</span>';return;}
+    if(g.navigator?.onLine===false){el.className='v1010-portal-status offline';el.innerHTML=`<b>Offline</b><span>رقم الطالب المسجل: ${esc(display)} — فحص الدخول يحتاج اتصالًا بالإنترنت.</span>`;return;}
+    el.className='v1010-portal-status loading';el.textContent='جارٍ فحص دخول ولي الأمر…';
+    const s=await accessStatus(studentId);
+    if(!s.available){el.className='v1010-portal-status warn';el.innerHTML=isBackendMissing(s.error)?'<b>Stage 3 غير مفعّل في Supabase</b><span>شغّل sql/guardian-portal-login.sql مرة واحدة. الرابط الحي من Stage 2 يظل يعمل.</span>':'<b>تعذر فحص دخول الهاتف</b><span>تحقق من الاتصال ثم أعد المحاولة.</span>';return;}
+    if(!s.linked){el.className='v1010-portal-status new';el.innerHTML=`<b>غير مفعّل لهذا الطالب</b><span>الهاتف المسجل: ${esc(display)} — اضغط «تفعيل / ربط» لإنشاء أو ربط حساب ولي الأمر.</span>`;return;}
+    if(s.phoneLast4&&s.phoneLast4!==phone.slice(-4)){el.className='v1010-portal-status warn';el.innerHTML=`<b>⚠️ رقم الهاتف تغير بعد التفعيل</b><span>الحساب الحالي ينتهي بـ ${esc(s.phoneLast4)} بينما ملف الطالب ينتهي بـ ${esc(phone.slice(-4))}. اضغط «تفعيل / ربط» لنقل الطالب إلى الرقم الجديد.</span>`;return;}
+    el.className='v1010-portal-status active';el.innerHTML=`<b>✅ دخول الهاتف مفعّل</b><span>الهاتف المنتهي بـ ${esc(s.phoneLast4||phone.slice(-4))}${s.studentCount>1?` · مرتبط بـ ${s.studentCount} طلاب`:''}. ${s.updatedAt?`آخر تحديث: ${esc(statusTime(s.updatedAt))}`:''}</span>`;
+  }
+  async function copyGuardianLogin(){try{await copyText(guardianLoginUrl());toastSafe('تم نسخ رابط صفحة دخول ولي الأمر','success');return true;}catch(_){toastSafe('تعذر نسخ رابط الدخول','error');return false;}}
+  function openGuardianLogin(){return navigatePopup(openPlaceholder(),guardianLoginUrl());}
+  async function copyGuardianCredentials(){
+    const id=pickedId();if(!lastGuardianSecret||lastGuardianSecret.studentId!==id){toastSafe('لا يوجد PIN ظاهر الآن. أنشئ PIN جديدًا أولًا.','info');return false;}
+    try{await copyText(guardianCredentialsMessage());toastSafe('تم نسخ بيانات الدخول','success');return true;}catch(_){toastSafe('تعذر نسخ بيانات الدخول','error');return false;}
+  }
+  function sendGuardianCredentials(){
+    const id=pickedId();if(!lastGuardianSecret||lastGuardianSecret.studentId!==id){toastSafe('أنشئ PIN جديدًا أولًا ثم أرسل البيانات','info');return false;}
+    const st=studentById(id),msg=guardianCredentialsMessage();if(typeof g.openWhatsApp==='function')return g.openWhatsApp(st,msg);
+    if(!st?.phone)return false;g.open?.(`https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}`,'_blank','noopener');return true;
+  }
   async function refreshPickerStatus(studentId=pickedId()){
     const el=g.document?.getElementById?.('v1010PortalStatus');if(!el)return;
     if(!studentId){el.className='v1010-portal-status';el.textContent='لا يوجد طالب محدد.';return;}
@@ -268,18 +404,21 @@
       return;
     }
     if(!s.exists){el.className='v1010-portal-status new';el.innerHTML='<b>لا يوجد رابط حي لهذا الطالب بعد</b><span>اضغط «تحديث ونسخ الرابط» لإنشائه لأول مرة.</span>';return;}
-    if(!s.active){el.className='v1010-portal-status stopped';el.innerHTML='<b>الرابط السابق متوقف</b><span>أي نشر جديد سينشئ رابطًا مختلفًا ولن يعيد تشغيل الرابط القديم.</span>';return;}
+    if(!s.active){el.className='v1010-portal-status stopped';el.innerHTML='<b>الرابط المباشر غير نشط</b><span>يمكن تفعيله لاحقًا من أزرار الرابط المباشر بدون التأثير على دخول الهاتف.</span>';return;}
     el.className='v1010-portal-status active';el.innerHTML=`<b>✅ الرابط الحي نشط</b><span>آخر نشر: ${esc(statusTime(s.updatedAt)||'—')}</span>`;
   }
-  function openPicker(selected='') {const id=fillPicker(selected);g.document.getElementById('v1010PortalModal')?.classList.add('open');refreshPickerStatus(id);}
-  function closePicker(){g.document.getElementById('v1010PortalModal')?.classList.remove('open');}
+  function openPicker(selected='') {const id=fillPicker(selected);clearGuardianSecret();g.document.getElementById('v1010PortalModal')?.classList.add('open');Promise.all([refreshPhoneAccessStatus(id),refreshPickerStatus(id)]);}
+  function closePicker(){clearGuardianSecret();g.document.getElementById('v1010PortalModal')?.classList.remove('open');}
   function pickedId(){return g.document.getElementById('v1010PortalStudent')?.value||'';}
-  function studentChanged(){refreshPickerStatus(pickedId());}
+  function studentChanged(){clearGuardianSecret();const id=pickedId();Promise.all([refreshPhoneAccessStatus(id),refreshPickerStatus(id)]);}
   function openPicked(){const id=pickedId();if(id)return openPortal(id);toastSafe('لا يوجد طالب محدد','error');return null;}
   function copyPicked(){const id=pickedId();if(id)return copyPortalLink(id);toastSafe('لا يوجد طالب محدد','error');return false;}
   function refreshPicked(){const id=pickedId();if(id)return refreshLivePortal(id);toastSafe('لا يوجد طالب محدد','error');return false;}
   function revokePicked(){const id=pickedId();if(id)return revokePortal(id);toastSafe('لا يوجد طالب محدد','error');return false;}
   function copyPickedSnapshot(){const id=pickedId();if(id)return copySnapshotLink(id);toastSafe('لا يوجد طالب محدد','error');return false;}
+  function enablePickedPhone(){const id=pickedId();if(id)return enablePhoneAccess(id,{resetPin:false});toastSafe('لا يوجد طالب محدد','error');return false;}
+  function resetPickedPhone(){const id=pickedId();if(id)return resetPhonePin(id);toastSafe('لا يوجد طالب محدد','error');return false;}
+  function unlinkPickedPhone(){const id=pickedId();if(id)return unlinkPhoneAccess(id);toastSafe('لا يوجد طالب محدد','error');return false;}
   function openSelectedGuardian(){const id=g.document.getElementById('guardianPreviewStudent')?.value||'';if(id)openPicker(id);else openPicker();}
   // Named wrappers keep permanent HTML entry points statically verifiable while
   // the public API below still exposes the same implementation functions.
@@ -297,7 +436,7 @@
   function ensureMoreItem(){
     const grid=g.document?.getElementById?.('v9MoreGrid');if(!grid||grid.querySelector('[data-v1010-portal-more]'))return;
     const btn=g.document.createElement('button');btn.className='v9-more-item';btn.dataset.v1010PortalMore='1';btn.setAttribute('onclick','closeV9More();v1010OpenPortalPicker()');
-    const icon=typeof g.v9Icon==='function'?g.v9Icon('users'):'👨‍👩‍👧';btn.innerHTML=`${icon}<b>بوابة ولي الأمر</b><small>رابط قراءة فقط قابل للتحديث والإيقاف</small>`;grid.appendChild(btn);
+    const icon=typeof g.v9Icon==='function'?g.v9Icon('users'):'👨‍👩‍👧';btn.innerHTML=`${icon}<b>بوابة ولي الأمر</b><small>دخول برقم الهاتف + PIN وتقارير قراءة فقط</small>`;grid.appendChild(btn);
   }
   function patchHooks(){
     const currentInject=g.injectV9Navigation;
@@ -310,6 +449,11 @@
       const wrapped=function(id){const r=currentOpenProf.apply(this,arguments);setTimeout(ensureProfileButton,0);return r;};
       wrapped.__v1010PortalPatched=true;g.openProf=wrapped;
     }
+    const currentSaveSession=g.saveSession;
+    if(typeof currentSaveSession==='function'&&!currentSaveSession.__v1010GuardianRefreshPatched){
+      const wrapped=function(){const r=currentSaveSession.apply(this,arguments);if(r?.studentId)setTimeout(()=>refreshPhoneSnapshot(r.studentId),0);return r;};
+      wrapped.__v1010GuardianRefreshPatched=true;g.saveSession=wrapped;
+    }
   }
   function init(){ensurePicker();patchHooks();ensureMoreItem();ensureProfileButton();ensureGuardianButton();}
 
@@ -319,9 +463,11 @@
     v1010OpenPortal:openPortal,v1010CopyPortalLink:copyPortalLink,v1010CopySnapshotLink:copySnapshotLink,
     v1010OpenPortalPicker:openPicker,v1010ClosePortalPicker:closePicker,v1010OpenPickedPortal:openPicked,
     v1010CopyPickedPortal:copyPicked,v1010RefreshPickedPortal:refreshPicked,v1010RevokePickedPortal:revokePicked,
-    v1010CopyPickedSnapshot:copyPickedSnapshot,v1010PortalStudentChanged:studentChanged,v1010OpenSelectedGuardianPortal:openSelectedGuardian
+    v1010CopyPickedSnapshot:copyPickedSnapshot,v1010PortalStudentChanged:studentChanged,v1010OpenSelectedGuardianPortal:openSelectedGuardian,
+    v1010EnablePhoneAccess:enablePickedPhone,v1010ResetPhonePin:resetPickedPhone,v1010UnlinkPhoneAccess:unlinkPickedPhone,
+    v1010OpenGuardianLogin:openGuardianLogin,v1010CopyGuardianLogin:copyGuardianLogin,v1010CopyGuardianCredentials:copyGuardianCredentials,v1010SendGuardianCredentials:sendGuardianCredentials
   });
   g.ImamApp=g.ImamApp||{};
-  g.ImamApp.GuardianPortal=Object.freeze({buildSnapshot,portalUrl,liveUrl,publish:publishLive,status:liveStatus,revoke:revokePortal,open:openPortal,copyLink:copyPortalLink,copySnapshot:copySnapshotLink});
+  g.ImamApp.GuardianPortal=Object.freeze({buildSnapshot,portalUrl,liveUrl,loginUrl:guardianLoginUrl,publish:publishLive,status:liveStatus,revoke:revokePortal,open:openPortal,copyLink:copyPortalLink,copySnapshot:copySnapshotLink,accessStatus,enablePhoneAccess,resetPhonePin,unlinkPhoneAccess,refreshPhoneSnapshot});
   if(g.document?.readyState==='loading')g.document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0),{once:true});else setTimeout(init,0);
 })(globalThis);

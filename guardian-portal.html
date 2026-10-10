@@ -14,14 +14,15 @@
 <main class="portal-shell">
   <header class="portal-header">
     <div class="portal-brand"><img src="icon-192.png" alt=""><div><b id="portalAcademy">أكاديمية الإمام لتحفيظ القرآن الكريم</b><span>بوابة ولي الأمر / الطالب</span></div></div>
-    <div class="portal-actions"><button type="button" id="portalRefreshBtn" onclick="portalRefresh()" hidden>🔄 تحديث</button><button type="button" onclick="portalShare()">📤 مشاركة</button><button type="button" onclick="portalPrint()">🖨️ طباعة / PDF</button></div>
+    <div class="portal-actions"><button type="button" id="portalRefreshBtn" onclick="portalRefresh()" hidden>🔄 تحديث</button><button type="button" id="portalShareBtn" onclick="portalShare()">📤 مشاركة</button><button type="button" onclick="portalPrint()">🖨️ طباعة / PDF</button><button type="button" id="portalLogoutBtn" onclick="portalLogout()" hidden>🚪 خروج</button></div>
   </header>
 
   <section id="portalError" class="portal-error" hidden>
-    <div>🔒</div><h1 id="portalErrorTitle">الرابط غير صالح أو غير مكتمل</h1><p id="portalErrorText">اطلب من المحفظ إنشاء رابط جديد من ملف الطالب داخل التطبيق.</p>
+    <div>🔒</div><h1 id="portalErrorTitle">الرابط غير صالح أو غير مكتمل</h1><p id="portalErrorText">اطلب من المحفظ إنشاء رابط جديد من ملف الطالب داخل التطبيق.</p><a id="portalLoginAgain" class="portal-login-again" href="guardian-login.html" hidden>العودة إلى تسجيل دخول ولي الأمر</a>
   </section>
 
   <div id="portalContent" hidden>
+    <section id="portalStudentSwitcher" class="portal-switcher" hidden><label for="portalStudentSelect">الطالب</label><select id="portalStudentSelect" onchange="portalSelectStudent(this.value)"></select><small>هذا الرقم مرتبط بأكثر من طالب؛ اختر من تريد متابعته.</small></section>
     <section class="portal-note"><span>🔐</span><div><b id="portalNoteTitle">نسخة قراءة فقط</b><p id="portalNoteText">هذه لقطة ثابتة من بيانات الطالب وقت إنشاء الرابط. لا يمكن تعديل بيانات الأكاديمية من هذه الصفحة، وأي شخص يملك الرابط يستطيع الاطلاع على اللقطة.</p><div id="portalLiveState" class="portal-live-state" hidden></div></div></section>
 
     <section class="portal-hero">

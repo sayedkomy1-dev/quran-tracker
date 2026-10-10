@@ -1,3 +1,16 @@
+## v10.10.0 — Stage 3 Guardian Phone Login + Secure PIN
+
+- Added a public Guardian Login page using the phone number already registered on the student + a 6-digit PIN.
+- Phone/PIN access is read-only and opens only students linked to that guardian account; siblings on the same guardian account can be selected from one session.
+- Added teacher controls to activate/link phone access, reset the PIN, copy/open the public login page, send credentials through WhatsApp, and disable phone access per student.
+- PINs are bcrypt-hashed in Supabase and never returned by SQL; Stage 3 stores only a deterministic phone lookup hash plus the final 4 digits, not the full phone number.
+- Added failed-login throttling (8 failed attempts within 15 minutes → 15-minute lock) and opaque 12-hour guardian sessions.
+- Guardian session tokens are captured from the URL fragment, moved into sessionStorage, then removed from the address bar; session URLs are not shareable from the portal UI.
+- Phone/PIN snapshots refresh automatically after a saved session when the teacher is online; the optional Stage 2 direct-link active/revoked state is kept independent.
+- Stage 1 snapshot links and Stage 2 live links remain available as optional sharing methods.
+- Local application Schema remains 12; student/session/account-sync data structures are unchanged.
+- New additive migration: `sql/guardian-portal-login.sql`.
+
 ## v10.10.0 — Stage 2.1 UI integration hotfix
 
 - Made Guardian / Student Portal entry points permanent in the student profile, Guardian Communication Center, and More sheet.

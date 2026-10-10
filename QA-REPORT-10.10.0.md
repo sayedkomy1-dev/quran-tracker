@@ -1,3 +1,26 @@
+# QA Addendum — v10.10.0 Guardian Phone Login Stage 3
+
+## النتيجة
+PASS
+
+## ما تم فحصه
+- صفحة دخول عامة مستقلة لا تحمل Teacher Auth أو Cloud Sync.
+- رقم الهاتف + PIN فقط هما مدخلات التحقق، ورسالة الخطأ لا تكشف وجود الرقم.
+- PIN يتم توليده من `crypto.getRandomValues` ويكون 6 أرقام.
+- الـSnapshot المنشور لا يحتوي رقم الهاتف أو IDs داخلية.
+- Teacher RPCs تتطلب حساب محفظ Active.
+- PIN bcrypt-hashed، والجداول الجديدة محمية بـRLS وDirect grants مسحوبة.
+- Failed login lockout موجود: 8 محاولات / 15 دقيقة / قفل 15 دقيقة.
+- Guardian Session Token صالح 12 ساعة، ويزال من شريط العنوان بعد التقاطه.
+- Session portal يدعم أكثر من طالب للحساب الواحد.
+- Logout وPIN reset / unlink تلغي الجلسات ذات الصلة.
+- الحصة المحفوظة تحدّث Snapshot دخول الهاتف تلقائيًا عند توفر الإنترنت، بدون إعادة تفعيل الرابط المباشر الموقوف.
+- Stage 1 وStage 2 regression tests ما زالت PASS.
+- PWA cache generation = `quran-pwa-v10.10.0-s3`.
+- Local Schema = 12 ولم تتغير بنية بيانات الطلاب أو الحصص.
+
+---
+
 # QA Report — v10.10.0 Guardian & Student Portal Stage 2
 
 ## النتيجة

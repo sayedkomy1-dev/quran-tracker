@@ -4,6 +4,6 @@
   "private": true,
   "description": "أكاديمية الإمام لتحفيظ القرآن الكريم — PWA",
   "scripts": {
-    "test": "node tests/static-check.js && node tests/recitation-carry-check.js && node tests/quran-structure-check.js && node tests/ayah-page-map-check.js && node tests/grade-controls-check.js && node tests/guardian-communication-check.js && node tests/guardian-score-check.js && node tests/guardian-report-polish-check.js && node tests/student-progress-check.js && node tests/followup-center-check.js && node tests/circle-analytics-check.js && node tests/guardian-portal-check.js && node tests/guardian-portal-live-check.js"
+    "test": "node tests/static-check.js && node tests/recitation-carry-check.js && node tests/quran-structure-check.js && node tests/ayah-page-map-check.js && node tests/grade-controls-check.js && node tests/guardian-communication-check.js && node tests/guardian-score-check.js && node tests/guardian-report-polish-check.js && node tests/student-progress-check.js && node tests/followup-center-check.js && node tests/circle-analytics-check.js && node tests/guardian-portal-check.js && node tests/guardian-portal-live-check.js && node tests/guardian-phone-login-check.js"
   }
 }

@@ -1,5 +1,5 @@
-/* أكاديمية الإمام — Service Worker v10.10.0 Stage 2.1 Hotfix */
-const CACHE_NAME = 'quran-pwa-v10.10.0-s2h1';
+/* أكاديمية الإمام — Service Worker v10.10.0 Stage 3 */
+const CACHE_NAME = 'quran-pwa-v10.10.0-s3';
 const APP_VERSION = '10.10.0';
 const APP_SHELL = [
   './',
@@ -21,6 +21,9 @@ const APP_SHELL = [
   './guardian-portal.html',
   './guardian-portal.css?v=10.10.0',
   './js/features/guardian-portal-view.js?v=10.10.0',
+  './guardian-login.html',
+  './guardian-login.css?v=10.10.0',
+  './guardian-login.js?v=10.10.0',
   './js/features/quran-engine.js?v=10.10.0',
   './js/features/quran-structure.js?v=10.10.0',
   './js/core/runtime.js?v=10.10.0',
@@ -84,7 +87,8 @@ self.addEventListener('fetch', event => {
   if(req.mode==='navigate'){
     event.respondWith((async()=>{
       const portalNav=url.pathname.endsWith('/guardian-portal.html');
-      const fallback=portalNav?'./guardian-portal.html':'./index.html';
+      const guardianLoginNav=url.pathname.endsWith('/guardian-login.html');
+      const fallback=portalNav?'./guardian-portal.html':guardianLoginNav?'./guardian-login.html':'./index.html';
       try{
         const preload=await event.preloadResponse;
         const res=preload||await fetch(req);
