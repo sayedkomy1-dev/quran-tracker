@@ -10,6 +10,8 @@ const html=read('index.html');
 const portal=read('guardian-portal.html');
 const css=read('guardian-portal.css');
 const sw=read('sw.js');
+const app=read('app.js');
+const v9=read('v9.js');
 const pkg=JSON.parse(read('package.json'));
 new vm.Script(feature,{filename:'guardian-portal-share.js'});
 new vm.Script(view,{filename:'guardian-portal-view.js'});
@@ -22,6 +24,11 @@ assert(!portal.includes('auth.js')&&!portal.includes('supabase'),'read-only snap
 assert(portal.includes('نسخة قراءة فقط')&&portal.includes('آخر الحصص')&&portal.includes('التكليف الحالي'),'guardian portal core UI sections missing');
 assert(css.includes('.portal-kpis')&&css.includes('@media print'),'guardian portal responsive/print styling missing');
 assert(feature.includes('function buildSnapshot')&&feature.includes('function portalUrl')&&feature.includes('function ensureMoreItem'),'portal snapshot/share integration helpers missing');
+assert(app.includes('globalThis.ImamApp.State')&&app.includes('students:{enumerable:true,get:()=>students}'),'app state bridge for feature modules missing');
+assert(feature.includes('function stateStudents()')&&feature.includes('appState().students'),'guardian portal must read current state through ImamApp.State');
+assert(html.includes('data-v1010-portal-profile="1"')&&html.includes('data-v1010-portal-guardian="1"'),'permanent guardian portal entry points missing');
+assert(v9.includes('data-v1010-portal-more="1"'),'permanent More-sheet portal entry missing');
+assert(sw.includes("quran-pwa-v10.10.0-s2h1"),'Stage 2.1 cache bump missing');
 
 const now=Date.now();
 const context={
@@ -57,4 +64,26 @@ const encoded=new URL(shareUrl).hash.slice('#data='.length).replace(/-/g,'+').re
 const padded=encoded+'='.repeat((4-encoded.length%4)%4);
 const decoded=JSON.parse(Buffer.from(padded,'base64').toString('utf8'));
 assert(decoded.student.name==='أحمد'&&!JSON.stringify(decoded).includes('201001234567'),'portal URL payload roundtrip failed or leaked phone data');
+
+
+// Regression: production app state lives in top-level `let` bindings and is exposed
+// through ImamApp.State, not as globalThis.students/sessions/settings/curStId.
+const bridgeContext={
+  console,Date,Math,Number,String,Object,Array,Set,Map,JSON,TextEncoder,TextDecoder,URL,
+  btoa:s=>Buffer.from(s,'binary').toString('base64'),setTimeout:()=>0,clearTimeout:()=>{},
+  document:{readyState:'loading',addEventListener:()=>{},getElementById:()=>null,querySelector:()=>null,createElement:()=>({}),body:{}},
+  location:{href:'https://example.test/quran/index.html'},navigator:{},open:()=>null,
+  getQuranProgressPercent:()=>23,
+  ImamApp:{State:{
+    students:[{id:'bridge-student',name:'مريم',parent:'ولي مريم',group:'حلقة الاختبار',studentStatus:'active'}],
+    sessions:[{studentId:'bridge-student',status:'حضر',date:new Date(now).toISOString(),assessmentScores:{new:95},new:{surah:'الناس',from:1,to:6}}],
+    settings:{circle:'أكاديمية الجسر',name:'المحفظ'},curStId:'bridge-student'
+  },Utils:{escapeHtml:v=>String(v)},StudentProgress:{calculate:()=>({mastery:95,attendance:100,repeats:0,newAyat:6,attention:[],trend:{label:'تحسن'}})}},
+  globalThis:null
+};
+bridgeContext.globalThis=bridgeContext;
+vm.createContext(bridgeContext);vm.runInContext(feature,bridgeContext,{filename:'guardian-portal-share.js'});
+const bridgeSnap=bridgeContext.v1010BuildPortalSnapshot('bridge-student');
+assert(bridgeSnap.student.name==='مريم'&&bridgeSnap.academy.name==='أكاديمية الجسر','guardian portal failed to read production state bridge');
+
 console.log('Guardian & Student Portal Stage 1 checks passed for v10.10.0');

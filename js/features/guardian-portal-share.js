@@ -7,6 +7,12 @@
   const VERSION=1;
   const LIVE_RPC={publish:'guardian_portal_publish',status:'guardian_portal_status',revoke:'guardian_portal_revoke'};
 
+  function appState(){return g.ImamApp?.State||{};}
+  function stateStudents(){const v=appState().students??g.students;return Array.isArray(v)?v:[];}
+  function stateSessions(){const v=appState().sessions??g.sessions;return Array.isArray(v)?v:[];}
+  function stateSettings(){const v=appState().settings??g.settings;return v&&typeof v==='object'?v:{};}
+  function currentStudentId(){return String(appState().curStId??g.curStId??'').trim();}
+
   function esc(v){
     if(g.ImamApp?.Utils?.escapeHtml)return g.ImamApp.Utils.escapeHtml(v??'');
     return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -61,7 +67,7 @@
     return out.slice(0,8);
   }
   function recentSessions(studentId,limit=8){
-    return (Array.isArray(g.sessions)?g.sessions:[]).filter(x=>x.studentId===studentId).slice().sort((a,b)=>dateValue(b)-dateValue(a)).slice(0,limit).map(ses=>({
+    return stateSessions().filter(x=>x.studentId===studentId).slice().sort((a,b)=>dateValue(b)-dateValue(a)).slice(0,limit).map(ses=>({
       date:dateLabel(ses),
       status:String(ses.status||'—'),
       score:ses.status==='حضر'?sessionAverage(ses):null,
@@ -70,7 +76,7 @@
   }
   function fallbackProgress(studentId){
     const cutoff=Date.now()-29*86400000;
-    const rows=(Array.isArray(g.sessions)?g.sessions:[]).filter(x=>x.studentId===studentId&&dateValue(x)>=cutoff);
+    const rows=stateSessions().filter(x=>x.studentId===studentId&&dateValue(x)>=cutoff);
     const present=rows.filter(x=>x.status==='حضر'),absent=rows.filter(x=>x.status==='غاب');
     const vals=present.map(sessionAverage).filter(Number.isFinite);
     const mastery=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):null;
@@ -78,8 +84,8 @@
     return {mastery,attendance:eligible?Math.round(present.length/eligible*100):null,repeats:0,newAyat:0,attention:[],trend:{label:'—'}};
   }
   function buildSnapshot(studentId){
-    const st=(Array.isArray(g.students)?g.students:[]).find(x=>x.id===studentId);if(!st)throw new Error('STUDENT_NOT_FOUND');
-    const rows=(Array.isArray(g.sessions)?g.sessions:[]).filter(x=>x.studentId===studentId&&x.status==='حضر').slice().sort((a,b)=>dateValue(b)-dateValue(a));
+    const st=stateStudents().find(x=>x.id===studentId);if(!st)throw new Error('STUDENT_NOT_FOUND');
+    const rows=stateSessions().filter(x=>x.studentId===studentId&&x.status==='حضر').slice().sort((a,b)=>dateValue(b)-dateValue(a));
     const latest=rows.find(s=>assignmentItems(s).length)||rows[0]||null;
     let progress=null;
     try{progress=g.ImamApp?.StudentProgress?.calculate?.(studentId,30)||null;}catch(_){progress=null;}
@@ -90,7 +96,7 @@
     return {
       v:VERSION,
       generatedAt:new Date().toISOString(),
-      academy:{name:String(g.settings?.circle||'أكاديمية الإمام لتحفيظ القرآن الكريم'),teacher:String(g.settings?.name||'')},
+      academy:{name:String(stateSettings().circle||'أكاديمية الإمام لتحفيظ القرآن الكريم'),teacher:String(stateSettings().name||'')},
       student:{name:String(st.name||'طالب'),guardian:String(st.parent||''),group:String(st.group||''),level:String(st.level||'')},
       period:'آخر 30 يومًا',
       metrics:{mastery:score(progress.mastery),attendance:score(progress.attendance),repeats:Math.max(0,Number(progress.repeats)||0),newAyat:Math.max(0,Number(progress.newAyat)||0),quranProgress,trend:String(progress.trend?.label||'—')},
@@ -115,7 +121,7 @@
     return url.toString();
   }
   function toastSafe(msg,type='info'){try{if(typeof g.toast==='function')g.toast(msg,type);}catch(_){} }
-  function activeStudents(){return (Array.isArray(g.students)?g.students:[]).filter(st=>!st.studentStatus||st.studentStatus==='active');}
+  function activeStudents(){return stateStudents().filter(st=>!st.studentStatus||st.studentStatus==='active');}
   function liveClient(){return g.WeLiveQuranAuth?.getClient?.()||null;}
   function currentOwnerId(){return String(g.WeLiveQuranAuth?.getAccess?.()?.user_id||'').trim();}
   function liveAvailable(){return !!(g.navigator?.onLine!==false&&g.WeLiveQuranAuth?.isActive?.()&&liveClient()&&currentOwnerId());}
@@ -183,7 +189,7 @@
       return {url:portalUrl(studentId),mode:'snapshot',error:err};
     }
   }
-  async function openPortal(studentId=g.curStId){
+  async function openPortal(studentId=currentStudentId()){
     if(!studentId){toastSafe('اختر الطالب أولًا','error');return null;}
     const popup=openPlaceholder();
     try{
@@ -195,7 +201,7 @@
     }catch(err){console.error('[guardian portal]',err);try{popup?.close?.();}catch(_){}toastSafe('تعذر إنشاء بوابة الطالب','error');return null;}
     finally{setPickerBusy(false);}
   }
-  async function copyPortalLink(studentId=g.curStId){
+  async function copyPortalLink(studentId=currentStudentId()){
     if(!studentId){toastSafe('اختر الطالب أولًا','error');return false;}
     try{
       setPickerBusy(true,'جارٍ تحديث رابط البوابة…');
@@ -204,11 +210,11 @@
     }catch(err){console.error('[guardian portal copy]',err);toastSafe('تعذر نسخ الرابط','error');return false;}
     finally{setPickerBusy(false);}
   }
-  async function copySnapshotLink(studentId=g.curStId){
+  async function copySnapshotLink(studentId=currentStudentId()){
     if(!studentId){toastSafe('اختر الطالب أولًا','error');return false;}
     try{await copyText(portalUrl(studentId));toastSafe('تم نسخ رابط لقطة ثابتة لا يحتاج قاعدة البيانات','success');return true;}catch(err){console.error(err);toastSafe('تعذر نسخ اللقطة','error');return false;}
   }
-  async function refreshLivePortal(studentId=g.curStId){
+  async function refreshLivePortal(studentId=currentStudentId()){
     if(!studentId){toastSafe('اختر الطالب أولًا','error');return false;}
     try{
       setPickerBusy(true,'جارٍ نشر أحدث بيانات الطالب…');const out=await publishLive(studentId);
@@ -218,9 +224,9 @@
       toastSafe(isBackendMissing(err)?'شغّل sql/guardian-portal-live.sql في Supabase أولًا':'تعذر تحديث الرابط الحي','error');return false;
     }finally{setPickerBusy(false);}
   }
-  async function revokePortal(studentId=g.curStId){
+  async function revokePortal(studentId=currentStudentId()){
     if(!studentId){toastSafe('اختر الطالب أولًا','error');return false;}
-    const st=(Array.isArray(g.students)?g.students:[]).find(x=>x.id===studentId);
+    const st=stateStudents().find(x=>x.id===studentId);
     if(typeof g.confirm==='function'&&!g.confirm(`سيتم إيقاف رابط بوابة ${st?.name||'الطالب'} الحالي.\nلن يعمل الرابط القديم بعد ذلك. هل تريد المتابعة؟`))return false;
     try{
       setPickerBusy(true,'جارٍ إيقاف الرابط…');const ok=await revokeLive(studentId);
@@ -237,7 +243,7 @@
   }
   function fillPicker(selected=''){
     ensurePicker();const sel=g.document.getElementById('v1010PortalStudent');if(!sel)return '';
-    const list=activeStudents();const id=selected||g.curStId||list[0]?.id||'';
+    const list=activeStudents();const id=selected||currentStudentId()||list[0]?.id||'';
     sel.innerHTML=list.length?list.map(st=>`<option value="${esc(st.id)}" ${st.id===id?'selected':''}>${esc(st.name)}${st.group?` — ${esc(st.group)}`:''}</option>`).join(''):'<option value="">لا يوجد طلاب نشطون</option>';
     return id;
   }
@@ -275,6 +281,10 @@
   function revokePicked(){const id=pickedId();if(id)return revokePortal(id);toastSafe('لا يوجد طالب محدد','error');return false;}
   function copyPickedSnapshot(){const id=pickedId();if(id)return copySnapshotLink(id);toastSafe('لا يوجد طالب محدد','error');return false;}
   function openSelectedGuardian(){const id=g.document.getElementById('guardianPreviewStudent')?.value||'';if(id)openPicker(id);else openPicker();}
+  // Named wrappers keep permanent HTML entry points statically verifiable while
+  // the public API below still exposes the same implementation functions.
+  function v1010OpenPortalPicker(selected=''){return openPicker(selected);}
+  function v1010OpenSelectedGuardianPortal(){return openSelectedGuardian();}
 
   function ensureProfileButton(){
     const host=g.document?.getElementById?.('profileActions');if(!host||host.querySelector('[data-v1010-portal-profile]'))return;

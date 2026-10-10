@@ -749,6 +749,7 @@
   </div>
   <div class="card" id="profHist"></div>
   <div id="profileActions" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+    <button class="btn btn-wa btn-sm" data-v1010-portal-profile="1" onclick="v1010OpenPortalPicker(curStId)">👨‍👩‍👧 بوابة ولي الأمر</button>
     <button class="btn btn-g btn-sm" onclick="openTaskModal(curStId)">☑️ إضافة مهمة</button>
     <button class="btn btn-out btn-sm" onclick="editSt()">✏️ تعديل</button>
     <button class="btn btn-out btn-sm" onclick="openCert()">🎓 شهادة</button>
@@ -957,6 +958,7 @@
         <button class="btn btn-wa" onclick="startBroadcastQueue()">📲 بدء الإرسال عبر WhatsApp</button>
         <button class="btn btn-out" onclick="copyBroadcastMessage()">📋 نسخ المعاينة</button>
         <button class="btn btn-out guardian-review-phone" onclick="guardianOpenInvalidStudents()">☎️ مراجعة الأرقام</button>
+        <button class="btn btn-out" data-v1010-portal-guardian="1" onclick="v1010OpenSelectedGuardianPortal()">🌐 بوابة الطالب</button>
       </div>
       <p class="guardian-privacy-note">لا يرسل التطبيق الرسائل في الخلفية؛ يفتح WhatsApp لكل ولي أمر على حدة وتؤكد الإرسال بنفسك.</p>
     </div>

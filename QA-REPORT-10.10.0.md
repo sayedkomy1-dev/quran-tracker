@@ -25,3 +25,12 @@ PASS
 - لا تعديل على `account_sync`.
 - SQL جديد محدود ومستقل: `sql/guardian-portal-live.sql`.
 - `guardian_portal_shares` لا يملك Direct browser access.
+
+
+## Stage 2.1 hotfix verification
+
+- Permanent portal entry points: PASS.
+- Feature state bridge (`ImamApp.State`): PASS.
+- Guardian Portal reads current state instead of `globalThis.students/sessions/settings/curStId`: PASS.
+- PWA cache generation bumped to `quran-pwa-v10.10.0-s2h1`: PASS.
+- Stage 2 SQL unchanged: PASS.

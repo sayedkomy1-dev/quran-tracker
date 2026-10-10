@@ -20,6 +20,7 @@ const guardianCommunication=read('js/features/guardian-communication.js');
 const studentProgress=read('js/features/student-progress.js');
 const teacherFollowup=read('js/features/teacher-followup.js');
 const circleAnalytics=read('js/features/circle-analytics.js');
+const guardianPortalShare=read('js/features/guardian-portal-share.js');
 const auth=read('auth.js');
 const syncCore=read('sync-core.js');
 const authCss=read('auth.css');
@@ -38,6 +39,7 @@ new vm.Script(v9,{filename:'v9.js'});
 new vm.Script(v10,{filename:'v10.js'});
 new vm.Script(quranEngine,{filename:'js/features/quran-engine.js'});
 new vm.Script(mushafOffline,{filename:'js/features/mushaf-offline.js'});
+new vm.Script(guardianPortalShare,{filename:'js/features/guardian-portal-share.js'});
 new vm.Script(runtime,{filename:'js/core/runtime.js'});
 new vm.Script(v10Data,{filename:'js/features/v10-data.js'});
 new vm.Script(quranStructure,{filename:'js/features/quran-structure.js'});
@@ -110,7 +112,7 @@ assert(v9.includes("setAttribute('aria-current','step')"),'guided session steppe
 assert(fs.statSync(file('branding/academy-badge-source.png')).size>1000000,'branding source asset appears incomplete');
 
 // All inline handlers must resolve to an application function or browser builtin.
-const js=runtime+'\n'+v10Data+'\n'+quranStructure+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+mushafOffline+'\n'+quranEngine+'\n'+v10+'\n'+guardianCommunication+'\n'+studentProgress+'\n'+teacherFollowup+'\n'+circleAnalytics;
+const js=runtime+'\n'+v10Data+'\n'+quranStructure+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+mushafOffline+'\n'+quranEngine+'\n'+v10+'\n'+guardianCommunication+'\n'+studentProgress+'\n'+teacherFollowup+'\n'+circleAnalytics+'\n'+guardianPortalShare;
 const defs=new Set([...js.matchAll(/\b(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]));
 for(const m of v10.matchAll(/\b([A-Za-z_$][\w$]*)\s*:\s*v10[A-Za-z_$][\w$]*/g))defs.add(m[1]);
 const builtins=new Set(['if','for','while','switch','confirm','prompt','alert','setTimeout','setInterval','clearTimeout','clearInterval','parseInt','parseFloat','Number','String','Boolean','Date','Math','JSON','encodeURIComponent','decodeURIComponent']);

@@ -112,9 +112,12 @@ function injectV9Navigation(){
   nav.innerHTML=[
     ['home','home','الرئيسية',`goPage('home')`],['students','users','الطلاب',`goPage('students')`],['session','book','الحصة',`goPage('session')`],['reports','chart','التقارير',`goPage('reports')`],['more','more','المزيد','openV9More()']
   ].map(([p,i,l,a])=>`<button class="v9-nav-btn ${p==='session'?'session-primary':''}" data-page="${p}" onclick="${a}" aria-label="${l}">${v9Icon(i)}<span class="v9-nav-label">${l}</span></button>`).join('');
-  const g=document.getElementById('v9MoreGrid');if(g)g.innerHTML=[
-    ['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة وحزمة العمل دون إنترنت',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
-  ].map(([i,t,s,a])=>`<button class="v9-more-item" onclick="${a}">${v9Icon(i)}<b>${t}</b><small>${s}</small></button>`).join('');
+  const g=document.getElementById('v9MoreGrid');if(g){
+    g.innerHTML=[
+      ['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة وحزمة العمل دون إنترنت',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
+    ].map(([i,t,s,a])=>`<button class="v9-more-item" onclick="${a}">${v9Icon(i)}<b>${t}</b><small>${s}</small></button>`).join('');
+    g.insertAdjacentHTML('beforeend',`<button class="v9-more-item" data-v1010-portal-more="1" onclick="closeV9More();v1010OpenPortalPicker()">${v9Icon('group')}<b>بوابة ولي الأمر</b><small>رابط قراءة فقط قابل للتحديث والإيقاف</small></button>`);
+  }
   document.body.classList.add('v9-shell-ready');
 }
 function openV9More(){const m=document.getElementById('v9MoreSheet');if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}}

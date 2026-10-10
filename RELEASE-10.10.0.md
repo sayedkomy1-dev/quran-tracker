@@ -41,3 +41,8 @@
 
 ## Stage 1 — Snapshot Link
 Stage 1 ما زالت موجودة بالكامل كخيار fallback: صفحة مستقلة Read-only تحمل Snapshot داخل URL fragment، بدون SQL أو Supabase، ولا تتضمن أرقام الهاتف أو المعرّفات الداخلية.
+
+
+## Stage 2.1 — UI integration hotfix
+
+Stage 2.1 fixes portal discoverability and state access without changing the database. Portal entry buttons are now part of the stable app UI instead of relying only on runtime injection. The portal feature reads current app state through `ImamApp.State`, which safely exposes getters for the existing top-level state without changing Schema 12. The Stage 2 SQL is unchanged.

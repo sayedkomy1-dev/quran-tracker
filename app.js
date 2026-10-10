@@ -83,6 +83,21 @@ let draftTimer=null;
 let draftSuspend=false;
 let waitingSW=null;
 
+// v10.10.0 Stage 2.1 — stable read-only bridge for feature modules.
+// Top-level `let` bindings are not properties on globalThis, so feature files
+// must read current app state through getters instead of globalThis.students/... .
+globalThis.ImamApp=globalThis.ImamApp||{};
+const __imamState=globalThis.ImamApp.State=globalThis.ImamApp.State||{};
+for(const key of ['students','sessions','settings','curStId']){
+  try{delete __imamState[key];}catch(_){}
+}
+Object.defineProperties(__imamState,{
+  students:{enumerable:true,get:()=>students},
+  sessions:{enumerable:true,get:()=>sessions},
+  settings:{enumerable:true,get:()=>settings},
+  curStId:{enumerable:true,get:()=>curStId}
+});
+
 function makeId(prefix){
   if(globalThis.crypto&&crypto.randomUUID) return `${prefix}-${crypto.randomUUID()}`;
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;

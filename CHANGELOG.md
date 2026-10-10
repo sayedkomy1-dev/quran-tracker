@@ -1,3 +1,11 @@
+## v10.10.0 — Stage 2.1 UI integration hotfix
+
+- Made Guardian / Student Portal entry points permanent in the student profile, Guardian Communication Center, and More sheet.
+- Added a read-only `ImamApp.State` bridge because top-level `let` state is not available through `globalThis`.
+- Updated Guardian Portal to consume live students/sessions/settings/current student from that bridge.
+- Bumped the PWA cache generation so the hotfix replaces the Stage 2 shell cleanly.
+- No database/schema changes; the Stage 2 SQL remains unchanged.
+
 ## 10.10.0 — Guardian & Student Portal (Stage 2)
 - Added stable per-student live guardian links that can be refreshed without changing the URL.
 - Added explicit revoke; republishing after revoke rotates the token so the old link remains dead.
