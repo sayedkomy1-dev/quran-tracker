@@ -7,5 +7,5 @@ must(auth.includes('id="wlqGuardianLogin"'),'guardian entry link missing from au
 must(auth.includes('href="guardian-login.html"'),'guardian entry does not point to guardian-login.html');
 must(auth.includes('guardian:true'),'guardian entry is not enabled for logged-out gate');
 must(css.includes('.wlq-guardian-btn'),'guardian login button styles missing');
-must(sw.includes("quran-pwa-v10.10.0-s3.1"),'service-worker cache was not bumped for hotfix');
+must(sw.includes("quran-pwa-v10.10.0-s3.2"),'service-worker cache was not bumped for hotfix');
 console.log('guardian-login-entry-check PASS');

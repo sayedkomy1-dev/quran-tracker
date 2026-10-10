@@ -4,7 +4,7 @@ e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./.nojekyll
 f829f71c3199616b76406d01cd20f2e27dbc8f6df508d37b7588f3c7620386a0  ./ARCHITECTURE-10.2.md
 af0311e82c8a616bdb2e9fbc2832cbb3a24973c00ce9027819038146d5c7f9a5  ./AUDIT-V10.md
 d5c9a717fbd5f7289df44d5df613963b1023cbd50ffe3bec8cbb1b0ffd2952e7  ./CHANGELOG-v9.2.md
-83898aa2e538199ccb98a642a197f6d1abbc38094acb0f32ce9daf6a654571a9  ./CHANGELOG.md
+3fa38bdafd0a6c5f55dee64765d17f973cc4826cbf409fe10a96e1c9386ade42  ./CHANGELOG.md
 d6dec4981f02f1927c152da17fd04826ceb7c204d3ccb01a96d8452fec448a49  ./CNAME
 7d1d4b68b70f7a3b261759e6045da72caebe4537875b0b0447994f2b6d9f579a  ./DEPLOYMENT.md
 82d038f6af7c5d18cad6e091248c22cb62fdd4aa22190a74422fea924e1dd286  ./HOTFIX-v9.2.1.md
@@ -14,7 +14,7 @@ d6dec4981f02f1927c152da17fd04826ceb7c204d3ccb01a96d8452fec448a49  ./CNAME
 3164deb8ecfc1900e0efba6e09ed3e2b7d0c9e67275812c9f038dc73d6543934  ./QA-REPORT-10.1.2.md
 a55d520d2ec020ecc5e8b646a33bba00a643d552f8c796823712e25e861b7522  ./QA-REPORT-10.1.3.md
 889e20754fe1c6a7599a2c8a1652deaaab2b6d4807da305091501e72fbfe20e0  ./QA-REPORT-10.1.4.md
-fc56ce8bb01c6e8c5ac82d021bffea26d58335e14f64c1f2e8d277c1f3e9e548  ./QA-REPORT-10.10.0.md
+1edc959b3726d3f4315b8449f22bd63f2b87df4fc5f9d497dedb7dd3adf184ef  ./QA-REPORT-10.10.0.md
 bcf6cbf8b895882b8d11289446c3315368735db0883832c6032e6e1b7226cf8d  ./QA-REPORT-10.2.0.md
 45e60bb437a2563c987640bede85d0aaebdd41da3ec2d971297ea9d4680c812d  ./QA-REPORT-10.3.0.md
 5d97d5a69695ff74880301e5a198ffb132f6713ada22967af931129f8f5765cb  ./QA-REPORT-10.3.1.md
@@ -243,7 +243,7 @@ b5c8b6ff5faf7d4b7b175011a311ee178f46347140fed65a0f61a254f637a8f2  ./auth.css
 3bce66e25ffd74c365cbbbfd68ce2a133edde8f61936f9894445054cad24b5a9  ./favicon.png
 1800ce2c1d44e3e385925c55eb6401bace49aa208094fe7ce6ada29426b7d1bf  ./guardian-login.css
 3140efd97bd339cbb8e0c83a51b4c6ebd7a458309323b9fb856287e553b00ffd  ./guardian-login.html
-5787db2a890af0dd38379d27ea3820f7377f7fa6500385b1e4d178f75e39cae1  ./guardian-login.js
+5fbd7b46eb7ad1a78952adf9af993e6e535165e5afa6fa0615c111f27fb216a2  ./guardian-login.js
 a43b2658265fece3c0d3d353debc1e9a947d46b38d455357b132710baafe617c  ./guardian-portal.css
 9412cb3a7c88a3696bf92733a896c77d9f6b1721ab9dd8b5f82a2fa19940055c  ./guardian-portal.html
 29a1c2cec9c1ab70bbc12584bf83aff2dba29948907736b766054ef65b37a6ad  ./icon-192.png
@@ -254,7 +254,7 @@ fb33a490e1994e77f124e587283aafd42a3f5bcc6f2810abc1a1446c98a28e4d  ./index.html
 24015726a79fadaec3eb5dbacfb0d2623e5221a70ff35750a238378b0873dc95  ./js/core/runtime.js
 7a675b47980285900fa70aa4113409d4b242e776edd35e005c085dff2693d032  ./js/features/circle-analytics.js
 e56146ca1a53f2459405b80c20f44416b418d894a21e6ab49448f8f92adce6f1  ./js/features/guardian-communication.js
-c23814b25c83b053e3a5a4c143a2178d883fed96ef65bfa7f640bfa7ad41a7f4  ./js/features/guardian-portal-share.js
+ccb352e1ce21a763ff132c0175d96e608bbddb1e536205af2a1732e613e89550  ./js/features/guardian-portal-share.js
 f3d8a7514fac0f0cd8f9b2d880161146c36e465439cdbf5da0bc4527c4de5c09  ./js/features/guardian-portal-view.js
 eaf3216aeeba4af45dea19edf4527a15f702ef8b1be5e2e63d801f2110e2b298  ./js/features/mushaf-offline.js
 fd764a7cdeeafd1f062c21c3e580f912ee4e31ea73642580b7b94734302f0608  ./js/features/quran-engine.js
@@ -282,15 +282,16 @@ e2ee210099231f20d2005138bf3de83dcb0abb8c6344254d276981622fa025c7  ./sql/guardian
 daca35d065d1d13e2589ec6eadac315a0644a427db219e055c55fad8a94a41b2  ./sql/supabase-setup.sql
 5f4c5de555bf095e4c26978464bcffdfae6e31b00c6feb04adde596e5b55bbdc  ./sql/supabase-sync.sql
 ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
-1da038ba398d6aeeca3848558f2ed16b672c1be62911fa3fefb50aaa742a0378  ./sw.js
+300e15ba799ade59b715cf45d907784870412a23ce0326d685881c8c0d5af437  ./sw.js
 ea20f4f217006cce39302d24e30306e779831e4556126eb41c5ef7a9869c219e  ./sync-core.js
 2c46679379ddeacb58fc54b2608472c67fca55fab4e01acaa60acb75525eb3e3  ./terms.html
 a0ab0760c2cc0e56d5e484db3f1f37ddf8cc13d5ddcc8ee0e1bde6adf483e586  ./tests/ayah-page-map-check.js
 f6f1f942788db6eb6574e340b144302d725a29d63920173e7ed2fac37edd3633  ./tests/circle-analytics-check.js
 a254ec95dafd6cb486acfed8760bf417d4a62af851cc77074f06daf6b56601b2  ./tests/followup-center-check.js
 2d3ed71dc45d36ac86d4c80ef13eb41ffb54b61edc6e29b1221c03a17cead9af  ./tests/grade-controls-check.js
+e34fb893a2fc5c0fdc5c0b0c6079a5f42f8bb70e857ce91975216c4c1fd6aa2a  ./tests/guardian-arabic-digits-check.js
 f0a87421658db4be3100810b26fb4d6e1a8c281eab3e30cc5ff4bcb5ab6409e6  ./tests/guardian-communication-check.js
-f5c6568af6bb4ba1531449b3c3c50e317a788751a3d44f31b6fdbfff2075ec37  ./tests/guardian-login-entry-check.js
+69a7b03f7a7187531ab64d7cb0970bb74bfeeb639506a817904bc9031a981f35  ./tests/guardian-login-entry-check.js
 ca0a7174dd88771bc28281070a63de1d640b356d43a10b593ec73402c77bfc42  ./tests/guardian-phone-login-check.js
 9de696270eb5b6408fc89467694d1a92d39adb2acb41b1f50a30779801c3dc14  ./tests/guardian-portal-check.js
 5b7548f33a82fae51ddb0c1f53d69a4866ed6edcc697ef66f168f516cbb23611  ./tests/guardian-portal-live-check.js

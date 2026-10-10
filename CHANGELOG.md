@@ -1,3 +1,10 @@
+## v10.10.0 — Stage 3.2 Arabic Digit Login Hotfix
+- قبول الأرقام العربية ٠١٢٣٤٥٦٧٨٩ والفارسية ۰۱۲۳۴۵۶۷۸۹ في رقم الهاتف وPIN وتحويلها تلقائيًا إلى 0-9 قبل التحقق.
+- إصلاح رسالة "رمز الدخول يجب أن يتكوّن من 6 أرقام" عند إدخال PIN صحيح مكوّن من 6 أرقام عربية.
+- دعم أرقام ولي الأمر المكتوبة بالأرقام العربية في بيانات الطالب.
+- تدوير PWA cache إلى `quran-pwa-v10.10.0-s3.2`.
+- لا يوجد SQL جديد ولا تغيير في Schema أو بيانات الطلاب والحصص.
+
 ## v10.10.0 — Stage 3 Guardian Phone Login + Secure PIN
 
 - Added a public Guardian Login page using the phone number already registered on the student + a 6-digit PIN.

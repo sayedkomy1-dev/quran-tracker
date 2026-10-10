@@ -125,14 +125,15 @@
   function guardianLoginUrl(){
     return new URL('guardian-login.html',g.location?.href||'http://localhost/index.html').toString();
   }
+  function asciiDigits(value){return String(value||'').replace(/[٠-٩]/g,ch=>String(ch.charCodeAt(0)-0x0660)).replace(/[۰-۹]/g,ch=>String(ch.charCodeAt(0)-0x06F0));}
   function studentById(studentId){return stateStudents().find(x=>x.id===studentId)||null;}
-  function studentPhone(studentId){return String(studentById(studentId)?.phone||'').replace(/\D/g,'');}
+  function studentPhone(studentId){return asciiDigits(studentById(studentId)?.phone||'').replace(/[^0-9]/g,'');}
   function phoneDisplay(value){
-    const p=String(value||'').replace(/\D/g,'');
+    const p=asciiDigits(value).replace(/[^0-9]/g,'');
     if(/^20(10|11|12|15)\d{8}$/.test(p))return '0'+p.slice(2);
     return p;
   }
-  function validEgyptPhone(value){return /^20(10|11|12|15)\d{8}$/.test(String(value||'').replace(/\D/g,''));}
+  function validEgyptPhone(value){return /^20(10|11|12|15)[0-9]{8}$/.test(asciiDigits(value).replace(/[^0-9]/g,''));}
   function generatePin(){
     if(!g.crypto?.getRandomValues)throw new Error('CRYPTO_UNAVAILABLE');
     const max=Math.floor(0x100000000/1000000)*1000000,buf=new Uint32Array(1);let n;

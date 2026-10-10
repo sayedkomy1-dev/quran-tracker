@@ -1,3 +1,10 @@
+# QA Addendum — v10.10.0 Stage 3.2 Arabic Digit Login Hotfix
+- Guardian login accepts ASCII, Arabic-Indic, and Eastern Arabic/Persian digits: PASS.
+- PIN is normalized to six ASCII digits before RPC: PASS.
+- Guardian phone stored in Arabic digits can be normalized for access enable: PASS.
+- PWA cache generation = `quran-pwa-v10.10.0-s3.2`: PASS.
+- No SQL/schema changes in this hotfix: PASS.
+
 # QA Addendum — v10.10.0 Guardian Phone Login Stage 3
 
 ## النتيجة
