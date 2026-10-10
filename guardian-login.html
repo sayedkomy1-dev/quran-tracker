@@ -39,7 +39,11 @@
       <p>يمكنك الاطلاع على التقدم والتكليف والحضور فقط. لا يمكن تعديل بيانات الطالب من هذه البوابة.</p>
     </div>
 
-    <p class="guardian-login-help">نسيت رمز الدخول؟ تواصل مع المحفظ ليعيد تعيينه.</p>
+    <div class="guardian-login-help">
+      <button id="guardianForgotBtn" type="button">نسيت رمز الدخول؟</button>
+      <small>أرسل طلبًا للمحفظ ليُنشئ لك رمزًا جديدًا. لن يظهر لك الرمز القديم لأنه غير محفوظ كنص.</small>
+      <div id="guardianForgotState" class="guardian-forgot-state" role="status" aria-live="polite"></div>
+    </div>
   </section>
   <footer>بالقرآن نحيا 🌿</footer>
 </main>

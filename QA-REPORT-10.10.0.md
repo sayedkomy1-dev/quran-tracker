@@ -1,3 +1,13 @@
+# QA Addendum — v10.10.0 Stage 3.3 Guardian Access Polish
+- Forgot-PIN button calls a generic public reset-request RPC: PASS.
+- Teacher can list pending requests only for auth.uid(): PASS.
+- Resolve request rotates bcrypt PIN and revokes guardian sessions: PASS.
+- Public reset response does not reveal phone existence: PASS.
+- Reset-request rate limit = 3 accepted requests / 24 hours per phone hash: PASS.
+- Teacher UI exposes create PIN / WhatsApp / reset-request actions with correct linked/unlinked state: PASS.
+- Local Schema remains 12; student/session data unchanged: PASS.
+- PWA cache generation = `quran-pwa-v10.10.0-s3.3`: PASS.
+
 # QA Addendum — v10.10.0 Stage 3.2 Arabic Digit Login Hotfix
 - Guardian login accepts ASCII, Arabic-Indic, and Eastern Arabic/Persian digits: PASS.
 - PIN is normalized to six ASCII digits before RPC: PASS.

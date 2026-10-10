@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v10.10.0 — Guardian Phone + PIN Login (Stage 3.2 Arabic-digit hotfix).
+/* We Live Quran v10.10.0 — Guardian Phone + PIN Login (Stage 3.3 access polish).
    Public page: no teacher auth bootstrap and no direct table access. */
 (function guardianPhoneLogin(){
   const SUPABASE_URL='https://svtcntalwfmexthcnvqe.supabase.co';
@@ -9,8 +9,11 @@
   const pin=document.getElementById('guardianPin');
   const submit=document.getElementById('guardianLoginSubmit');
   const state=document.getElementById('guardianLoginState');
+  const forgotBtn=document.getElementById('guardianForgotBtn');
+  const forgotState=document.getElementById('guardianForgotState');
 
   function setState(kind,text){state.className=`guardian-login-state ${kind||''}`;state.textContent=text||'';}
+  function setForgotState(kind,text){if(!forgotState)return;forgotState.className=`guardian-forgot-state ${kind||''}`;forgotState.textContent=text||'';}
   function asciiDigits(value){
     return String(value||'')
       .replace(/[٠-٩]/g,ch=>String(ch.charCodeAt(0)-0x0660))
@@ -32,6 +35,21 @@
     if(!res.ok){let msg='';try{msg=(await res.json())?.message||'';}catch(_){}throw new Error(msg||`HTTP_${res.status}`);}
     return res.json();
   }
+
+  async function requestPinReset(){
+    const phoneValue=normalizeForDisplay(phone.value);phone.value=phoneValue;
+    if(!validPhone(phoneValue)){setForgotState('error','اكتب رقم الهاتف المصري المسجل أولًا.');phone.focus();return;}
+    if(!forgotBtn)return;
+    forgotBtn.disabled=true;setForgotState('loading','جارٍ إرسال طلب إعادة تعيين الرمز…');
+    try{
+      await rpc('guardian_portal_request_pin_reset',{p_phone:phoneValue});
+      setForgotState('success','تم تسجيل الطلب. سيظهر للمحفظ داخل بوابة أولياء الأمور ليُنشئ لك PIN جديدًا.');
+    }catch(err){
+      console.warn('[guardian forgot pin]',err);
+      setForgotState('error',navigator.onLine===false?'لا يوجد اتصال بالإنترنت. حاول عند توفر الاتصال.':'تعذر إرسال الطلب الآن. حاول مرة أخرى بعد قليل.');
+    }finally{forgotBtn.disabled=false;}
+  }
+
   async function login(e){
     e.preventDefault();
     const phoneValue=normalizeForDisplay(phone.value),pinValue=normalizePin(pin.value);
@@ -59,4 +77,5 @@
   phone.addEventListener('blur',()=>{phone.value=normalizeForDisplay(phone.value);});
   pin.addEventListener('input',()=>{pin.value=normalizePin(pin.value);});
   form.addEventListener('submit',login);
+  forgotBtn?.addEventListener('click',requestPinReset);
 })();
