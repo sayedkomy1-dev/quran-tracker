@@ -79,3 +79,8 @@ PASS
 - Verified the logged-out auth gate exposes `guardian-login.html` directly.
 - Added `tests/guardian-login-entry-check.js`.
 - No SQL or data-schema change in this hotfix.
+
+### Stage 3.4 regression
+- Multi-student guardian switcher: direct buttons replace native select.
+- Explicit click binding verified by `tests/guardian-student-switcher-check.js`.
+- No SQL changes; local Schema remains 12.

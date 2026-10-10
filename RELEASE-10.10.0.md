@@ -107,3 +107,6 @@ Stage 2.1 fixes portal discoverability and state access without changing the dat
 
 ## Stage 3.1 Hotfix
 The public landing gate now shows a dedicated Guardian / Student Login button that opens the phone + PIN portal. No SQL change is required beyond the already-installed Stage 3 migration.
+
+#### Stage 3.4 hotfix — Guardian multi-student switcher
+The guardian portal no longer relies on a native select control for sibling/student switching. When one guardian phone is linked to multiple students, each student appears as a direct selectable button, with the active student clearly highlighted. No SQL or schema change is required.

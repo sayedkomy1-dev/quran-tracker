@@ -9,5 +9,5 @@ ok(login.includes('/[٠-٩]/g')&&login.includes('/[۰-۹]/g'),'guardian login Ar
 ok(login.includes('normalizePin(pin.value)'),'PIN input normalization missing');
 ok(login.includes("p_pin:pinValue"),'normalized PIN not sent to RPC');
 ok(share.includes('/[٠-٩]/g')&&share.includes('/[۰-۹]/g'),'teacher phone Arabic digit normalization missing');
-ok(sw.includes('quran-pwa-v10.10.0-s3.2'),'cache generation not bumped');
+ok(/quran-pwa-v10\.10\.0-s3\.[2-9]/.test(sw),'cache generation not bumped');
 console.log('guardian-arabic-digits-check: PASS');

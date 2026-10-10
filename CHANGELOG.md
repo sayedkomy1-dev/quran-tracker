@@ -580,3 +580,8 @@
 - Added a visible **Guardian / Student Login** entry on the logged-out landing screen.
 - Teacher Google login remains unchanged.
 - Bumped the PWA cache generation so deployed clients receive the corrected auth screen.
+
+### v10.10.0 Stage 3.4 hotfix
+- Replaced the unreliable multi-student native dropdown in the guardian portal with direct student buttons/cards.
+- Switching students now uses explicit click handlers and immediately re-renders the selected student's read-only snapshot.
+- Added regression coverage for the multi-student switcher and bumped the PWA cache generation.

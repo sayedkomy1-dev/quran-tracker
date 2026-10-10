@@ -22,7 +22,7 @@
   </section>
 
   <div id="portalContent" hidden>
-    <section id="portalStudentSwitcher" class="portal-switcher" hidden><label for="portalStudentSelect">الطالب</label><select id="portalStudentSelect" onchange="portalSelectStudent(this.value)"></select><small>هذا الرقم مرتبط بأكثر من طالب؛ اختر من تريد متابعته.</small></section>
+    <section id="portalStudentSwitcher" class="portal-switcher" hidden><div class="portal-switcher-head"><b>الطالب</b><small>هذا الرقم مرتبط بأكثر من طالب؛ اختر من تريد متابعته.</small></div><div id="portalStudentChoices" class="portal-student-choices" role="list" aria-label="اختيار الطالب"></div></section>
     <section class="portal-note"><span>🔐</span><div><b id="portalNoteTitle">نسخة قراءة فقط</b><p id="portalNoteText">هذه لقطة ثابتة من بيانات الطالب وقت إنشاء الرابط. لا يمكن تعديل بيانات الأكاديمية من هذه الصفحة، وأي شخص يملك الرابط يستطيع الاطلاع على اللقطة.</p><div id="portalLiveState" class="portal-live-state" hidden></div></div></section>
 
     <section class="portal-hero">

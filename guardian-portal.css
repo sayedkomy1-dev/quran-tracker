@@ -4,3 +4,16 @@
 @media print{body{background:#fff}.portal-shell{width:100%;padding:0}.portal-actions,.portal-note{display:none!important}.portal-hero,.portal-card,.portal-kpis article{box-shadow:none;break-inside:avoid}.portal-card{margin:8px 0}.portal-footer{padding-top:12px}}
 .portal-live-state{margin-top:7px;padding:5px 8px;border-radius:8px;font-size:9px;font-weight:700;background:#eef3ef;color:var(--mut)}.portal-live-state.online{background:var(--greenp);color:var(--green)}.portal-live-state.offline{background:#fff5dc;color:#88600a}.portal-live-state.loading{background:#eef1f4;color:#58636c}
 .portal-switcher{margin:0 0 12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 12px;box-shadow:var(--shadow);display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center}.portal-switcher label{font-size:10px;font-weight:800;color:var(--green)}.portal-switcher select{min-width:0;border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px 10px;font:700 11px Tahoma,Arial,sans-serif;color:var(--ink)}.portal-switcher small{grid-column:1/-1;color:var(--mut);font-size:9px}.portal-login-again{display:inline-block;margin-top:12px;border-radius:10px;background:var(--green);color:#fff;text-decoration:none;padding:8px 12px;font-size:10px;font-weight:800}@media(max-width:650px){.portal-switcher{grid-template-columns:1fr}.portal-switcher small{grid-column:auto}}@media print{.portal-switcher,#portalLogoutBtn{display:none!important}}
+/* Stage 3.4 — reliable multi-student switcher (native select replaced by direct buttons) */
+.portal-switcher{display:block;padding:12px 14px}
+.portal-switcher-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:9px}
+.portal-switcher-head b{font-size:11px;color:var(--green)}
+.portal-switcher-head small{font-size:9px;color:var(--mut);text-align:left}
+.portal-student-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.portal-student-choice{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:11px;padding:10px 12px;min-height:46px;font:800 11px Tahoma,Arial,sans-serif;cursor:pointer;text-align:right;display:flex;flex-direction:column;justify-content:center;gap:2px;transition:.15s ease}
+.portal-student-choice:hover{border-color:#9bc2ad;background:#f8fbf9}
+.portal-student-choice:focus-visible{outline:3px solid rgba(20,90,58,.18);outline-offset:2px}
+.portal-student-choice.active{border-color:var(--green);background:var(--greenp);color:var(--green);box-shadow:inset 0 0 0 1px rgba(20,90,58,.12)}
+.portal-student-choice small{font-size:8px;color:var(--mut);font-weight:600}
+@media(max-width:650px){.portal-switcher-head{display:block}.portal-switcher-head small{display:block;text-align:right;margin-top:2px}.portal-student-choices{grid-template-columns:1fr 1fr}}
+@media(max-width:380px){.portal-student-choices{grid-template-columns:1fr}}

@@ -81,10 +81,18 @@
     }catch(err){console.warn('[guardian live portal]',err);showError('تعذر تحميل الرابط الحي الآن','هذا النوع من الروابط يحتاج اتصالًا بالإنترنت. اطلب من المحفظ رابط لقطة ثابتة إذا احتجت نسخة تعمل Offline.');return false;}
   }
   function setStudentSwitcher(rows,selected=0){
-    const wrap=$('portalStudentSwitcher'),sel=$('portalStudentSelect');if(!wrap||!sel)return;
+    const wrap=$('portalStudentSwitcher'),choices=$('portalStudentChoices');if(!wrap||!choices)return;
     const valid=Array.isArray(rows)?rows.filter(x=>validSnapshot(x?.snapshot)):[];
-    if(valid.length<=1){wrap.hidden=true;sel.innerHTML='';return;}
-    wrap.hidden=false;sel.innerHTML=valid.map((row,i)=>`<option value="${i}" ${i===selected?'selected':''}>${esc(row.snapshot.student?.name||`طالب ${i+1}`)}${row.snapshot.academy?.name?` — ${esc(row.snapshot.academy.name)}`:''}</option>`).join('');
+    if(valid.length<=1){wrap.hidden=true;choices.innerHTML='';return;}
+    wrap.hidden=false;
+    choices.innerHTML=valid.map((row,i)=>{
+      const name=esc(row.snapshot.student?.name||`طالب ${i+1}`);
+      const academy=row.snapshot.academy?.name?`<small>${esc(row.snapshot.academy.name)}</small>`:'';
+      return `<button type="button" class="portal-student-choice ${i===selected?'active':''}" data-student-index="${i}" aria-pressed="${i===selected?'true':'false'}"><span>${name}</span>${academy}</button>`;
+    }).join('');
+    choices.querySelectorAll('[data-student-index]').forEach(btn=>{
+      btn.addEventListener('click',()=>selectSessionStudent(btn.dataset.studentIndex));
+    });
   }
   function selectSessionStudent(value){
     const i=Math.max(0,Math.min(sessionRows.length-1,Number(value)||0)),row=sessionRows[i];if(!row||!validSnapshot(row.snapshot))return;

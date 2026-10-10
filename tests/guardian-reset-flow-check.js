@@ -23,7 +23,7 @@ assert(loginCss.includes('.guardian-forgot-state')&&loginCss.includes('.guardian
 assert(feature.includes('guardian_portal_reset_requests_list')&&feature.includes('guardian_portal_reset_request_resolve')&&feature.includes('guardian_portal_reset_request_dismiss'),'teacher reset-request RPC integration missing');
 assert(feature.includes('🔐 إنشاء رمز دخول لولي الأمر')&&feature.includes('📲 إرسال رابط الدخول'),'teacher access-polish controls missing');
 assert(feature.includes('v1010ResetRequestsList')&&feature.includes('طلبات استعادة الرمز'),'teacher reset request center missing');
-assert(sw.includes("quran-pwa-v10.10.0-s3.3"),'PWA cache generation not bumped to Stage 3.3');
+assert(/quran-pwa-v10\.10\.0-s3\.[3-9]/.test(sw),'PWA cache generation is older than Stage 3.3');
 
 assert(sql.includes('create table if not exists public.guardian_portal_reset_requests'),'reset request table missing');
 assert(sql.includes('create table if not exists public.guardian_portal_reset_guard'),'reset request rate-limit table missing');
