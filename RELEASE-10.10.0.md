@@ -81,3 +81,6 @@ Stage 1 ما زالت موجودة بالكامل كخيار fallback: صفحة 
 ## Stage 2.1 — UI integration hotfix
 
 Stage 2.1 fixes portal discoverability and state access without changing the database. Portal entry buttons are now part of the stable app UI instead of relying only on runtime injection. The portal feature reads current app state through `ImamApp.State`, which safely exposes getters for the existing top-level state without changing Schema 12. The Stage 2 SQL is unchanged.
+
+## Stage 3.1 Hotfix
+The public landing gate now shows a dedicated Guardian / Student Login button that opens the phone + PIN portal. No SQL change is required beyond the already-installed Stage 3 migration.

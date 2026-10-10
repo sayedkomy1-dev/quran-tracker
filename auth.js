@@ -66,6 +66,7 @@
         <p class="wlq-auth-tag">بالقرآن نحيا</p>
         <div id="wlqAuthState" class="wlq-auth-state">جارٍ التحقق من الحساب…</div>
         <button type="button" class="wlq-google-btn" id="wlqGoogleLogin" hidden>متابعة باستخدام Google</button>
+        <a class="wlq-guardian-btn" id="wlqGuardianLogin" href="guardian-login.html" hidden>👨‍👩‍👧 دخول ولي الأمر / الطالب</a>
         <button type="button" class="wlq-auth-secondary" id="wlqAuthRetry" hidden>إعادة المحاولة</button>
         <button type="button" class="wlq-auth-secondary" id="wlqAuthSignOut" hidden>تسجيل الخروج</button>
         <div class="wlq-auth-note" id="wlqAuthNote"></div>
@@ -76,14 +77,14 @@
     gateEl.querySelector('#wlqAuthSignOut')?.addEventListener('click',signOut);
     return gateEl;
   }
-  function setGate({state='',note='',login=false,retry=false,signout=false,kind=''}){
+  function setGate({state='',note='',login=false,guardian=false,retry=false,signout=false,kind=''}){
     const gate=ensureGate();
     gate.dataset.kind=kind||'';
     const stateEl=gate.querySelector('#wlqAuthState'),noteEl=gate.querySelector('#wlqAuthNote');
     if(stateEl)stateEl.textContent=state;
     if(noteEl)noteEl.textContent=note;
-    const bLogin=gate.querySelector('#wlqGoogleLogin'),bRetry=gate.querySelector('#wlqAuthRetry'),bOut=gate.querySelector('#wlqAuthSignOut');
-    if(bLogin)bLogin.hidden=!login;if(bRetry)bRetry.hidden=!retry;if(bOut)bOut.hidden=!signout;
+    const bLogin=gate.querySelector('#wlqGoogleLogin'),bGuardian=gate.querySelector('#wlqGuardianLogin'),bRetry=gate.querySelector('#wlqAuthRetry'),bOut=gate.querySelector('#wlqAuthSignOut');
+    if(bLogin)bLogin.hidden=!login;if(bGuardian)bGuardian.hidden=!guardian;if(bRetry)bRetry.hidden=!retry;if(bOut)bOut.hidden=!signout;
     gate.classList.remove('wlq-auth-hidden');
     document.documentElement.classList.add('wlq-auth-locked');
     document.getElementById('splash')?.classList.add('hide');
@@ -144,7 +145,7 @@
       const session=data?.session;
       if(!session?.user){
         trustedClear();
-        setGate({state:'سجّل الدخول للوصول إلى التطبيق',note:'الدخول متاح فقط للحسابات المعتمدة من إدارة We Live Quran.',login:true,kind:'login'});
+        setGate({state:'سجّل الدخول للوصول إلى التطبيق',note:'للمحفظ: استخدم Google. لولي الأمر أو الطالب: استخدم بوابة المتابعة.',login:true,guardian:true,kind:'login'});
         return false;
       }
       let profile;

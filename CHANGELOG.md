@@ -558,3 +558,8 @@
 - Fixed Android PDF placeholder problem by switching the page reader to SVG.
 - Made the lightweight page reader the primary Mushaf experience.
 - Added gzip-compressed local SVG page storage and legacy PDF cleanup controls.
+
+### v10.10.0 Stage 3.1 Hotfix
+- Added a visible **Guardian / Student Login** entry on the logged-out landing screen.
+- Teacher Google login remains unchanged.
+- Bumped the PWA cache generation so deployed clients receive the corrected auth screen.

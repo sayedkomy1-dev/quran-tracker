@@ -57,3 +57,8 @@ PASS
 - Guardian Portal reads current state instead of `globalThis.students/sessions/settings/curStId`: PASS.
 - PWA cache generation bumped to `quran-pwa-v10.10.0-s2h1`: PASS.
 - Stage 2 SQL unchanged: PASS.
+
+## Stage 3.1 regression hotfix
+- Verified the logged-out auth gate exposes `guardian-login.html` directly.
+- Added `tests/guardian-login-entry-check.js`.
+- No SQL or data-schema change in this hotfix.
