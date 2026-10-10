@@ -1,5 +1,5 @@
-/* أكاديمية الإمام — Service Worker v10.10.0 Stage 3.5 */
-const CACHE_NAME = 'quran-pwa-v10.10.0-s3.5';
+/* أكاديمية الإمام — Service Worker v10.10.0 Stage 4 */
+const CACHE_NAME = 'quran-pwa-v10.10.0-s4';
 const APP_VERSION = '10.10.0';
 const APP_SHELL = [
   './',
@@ -27,6 +27,7 @@ const APP_SHELL = [
   './js/features/quran-engine.js?v=10.10.0',
   './js/features/quran-structure.js?v=10.10.0',
   './js/core/runtime.js?v=10.10.0',
+  './js/core/mobile-navigation.js?v=10.10.0',
   './js/features/v10-data.js?v=10.10.0',
   './js/features/recitation-carry.js?v=10.10.0',
   './auth.js?v=10.10.0',

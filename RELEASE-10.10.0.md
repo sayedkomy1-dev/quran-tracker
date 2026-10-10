@@ -117,3 +117,6 @@ The guardian portal no longer relies on a native select control for sibling/stud
 - One guardian PIN/account is shared across those linked students.
 - The Guardian portal student switcher now stays fully hidden for a single authorized student.
 - No database migration is required for Stage 3.5.
+
+## Stage 4 — Mobile Navigation & Back
+Hardware/browser Back is now routed through app history. Modals and Mushaf overlays are dismissed first, then prior app screens are restored, with a double-Back exit guard on Home. No database change.

@@ -592,3 +592,9 @@
 - Fixes the empty student-switcher shell being visible when only one student is authorized.
 - No SQL changes; local Schema remains 12.
 - Added deep audit notes for Android Back navigation and Offline reliability.
+
+### v10.10.0 — Stage 4 Mobile Navigation & Back
+- Android/PWA Back now follows in-app page history instead of leaving the app immediately.
+- Back dismisses the top modal/sheet, Quran range dropdown, Mushaf drawer, or Mushaf reader before changing pages.
+- Page Back returns to the actual previous app screen; Home is protected by a double-Back exit guard.
+- No SQL, Schema, student, session, or guardian-data changes.

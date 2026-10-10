@@ -28,7 +28,7 @@ assert(app.includes('globalThis.ImamApp.State')&&app.includes('students:{enumera
 assert(feature.includes('function stateStudents()')&&feature.includes('appState().students'),'guardian portal must read current state through ImamApp.State');
 assert(html.includes('data-v1010-portal-profile="1"')&&html.includes('data-v1010-portal-guardian="1"'),'permanent guardian portal entry points missing');
 assert(v9.includes('data-v1010-portal-more="1"'),'permanent More-sheet portal entry missing');
-assert(sw.includes("quran-pwa-v10.10.0-s3"),'Stage 3 cache bump missing');
+assert(/quran-pwa-v10\.10\.0-s(?:3(?:\.\d+)?|4)/.test(sw),'guardian portal cache generation missing');
 
 const now=Date.now();
 const context={

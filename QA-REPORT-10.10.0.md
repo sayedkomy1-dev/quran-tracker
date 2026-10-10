@@ -92,3 +92,8 @@ PASS
 - JavaScript syntax check: PASS.
 - SQL directory compared with Stage 3.4 source: unchanged.
 - Guardian single-student switcher hidden-state regression covered.
+
+## Stage 4 — Mobile Navigation & Back
+- Added `tests/mobile-navigation-check.js`.
+- Verifies load order, `popstate` routing, page history, modal/Mushaf dismissal coverage, double-Back Home guard, and Service Worker precache inclusion.
+- No SQL migration in this stage.
