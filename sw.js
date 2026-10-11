@@ -1,5 +1,5 @@
 /* أكاديمية الإمام — Service Worker v10.10.0 Stage 5.4 (Instant Offline Shell + Trusted Boot) */
-const CACHE_NAME = 'quran-pwa-v10.10.0-s5.4';
+const CACHE_NAME = 'quran-pwa-v10.10.0-s5.5';
 const APP_VERSION = '10.10.0';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
@@ -282,5 +282,5 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.4'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5'});
 });

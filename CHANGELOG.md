@@ -1,3 +1,8 @@
+## v10.10.0 — Stage 5.5 Offline WhatsApp Composer
+- Fixed real-device Android offline WhatsApp handoff: the prepared message now opens through WhatsApp's documented custom composer scheme even with no connection.
+- Online click-to-chat still opens the registered guardian number with the prepared message.
+- No SQL/schema or student/session data changes.
+
 ## Stage 5.4 — Instant Offline Shell
 - Cache-first PWA navigation/JS/CSS with background refresh and network timeouts.
 - Startup no longer waits for window.load.

@@ -1405,38 +1405,36 @@ function openWhatsApp(student,msg){
   const phone=normalizeWhatsAppPhone(student.phone);
   if(!/^20\d{10}$/.test(phone)){toast('رقم واتساب غير صحيح','error');return false;}
   const text=encodeURIComponent(String(msg||''));
-  const nativeUrl=`whatsapp://send?phone=${phone}&text=${text}`;
-  const intentUrl=`intent://send?phone=${phone}&text=${text}#Intent;scheme=whatsapp;action=android.intent.action.VIEW;end`;
   const webUrl=`https://wa.me/${phone}?text=${text}`;
-  const android=/Android/i.test(navigator.userAgent||'');
+  const offlineComposer=`whatsapp://send?text=${text}`;
 
-  // Stage 5.3: a hidden anchor is unreliable from installed Android PWAs.
-  // Navigate directly to the custom scheme so Android hands the payload to the
-  // installed WhatsApp app without needing wa.me or any internet connection.
-  // If Chrome/PWA does not resolve that scheme, try an Android intent URI while
-  // this document is still visible. Delivery itself remains WhatsApp's job.
-  if(android||navigator.onLine===false){
+  // Stage 5.5 — reliable offline WhatsApp handoff.
+  // WhatsApp officially documents the custom scheme with a prefilled `text`
+  // parameter. Targeting an unsaved phone number is officially provided by the
+  // wa.me click-to-chat URL, which requires connectivity. Some Android builds
+  // accept phone= on whatsapp:// while offline, but others open WhatsApp and
+  // silently drop the recipient/message. Therefore offline mode deliberately
+  // prioritises preserving the prepared message: WhatsApp opens its composer
+  // with the text filled, and the teacher chooses the guardian conversation.
+  if(navigator.onLine===false){
     try{
-      let handedOff=false;
-      const onVis=()=>{if(document.visibilityState==='hidden')handedOff=true;};
-      document.addEventListener('visibilitychange',onVis,{once:true});
-      window.location.href=nativeUrl;
-      if(android){
-        setTimeout(()=>{
-          if(!handedOff&&document.visibilityState!=='hidden'){
-            try{window.location.href=intentUrl;}catch(_){ }
-          }
-        },700);
-      }
-      setTimeout(()=>document.removeEventListener('visibilitychange',onVis),1800);
-      if(navigator.onLine===false)toast('تم تجهيز الرسالة في واتساب — سيتم الإرسال عند توفر الإنترنت','success');
+      window.location.href=offlineComposer;
+      toast('تم فتح واتساب والرسالة جاهزة — اختر ولي الأمر، وسيتم الإرسال عند توفر الإنترنت','success');
       return true;
-    }catch(err){console.warn('[whatsapp] native handoff failed',err);}
+    }catch(err){console.warn('[whatsapp] offline composer handoff failed',err);}
   }
 
-  const w=window.open(webUrl,'_blank','noopener');
-  if(!w)toast('تعذر فتح واتساب — اسمح بالنوافذ المنبثقة لهذا الموقع','error');
-  return !!w;
+  // Online: use WhatsApp's official click-to-chat URL so both the guardian
+  // number and the prepared message are carried into the conversation.
+  try{
+    window.location.href=webUrl;
+    return true;
+  }catch(err){
+    console.warn('[whatsapp] click-to-chat failed',err);
+    try{window.location.href=offlineComposer;return true;}catch(_){ }
+  }
+  toast('تعذر فتح واتساب','error');
+  return false;
 }
 function sendWA(){
   const sid=document.getElementById('sesSt').value;if(!sid){toast('اختر الطالب أولاً','error');return;}
