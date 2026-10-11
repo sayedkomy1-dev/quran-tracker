@@ -1385,9 +1385,40 @@ function saveSession(opts={}){
   renderHome();
   return core;
 }
+function normalizeWhatsAppPhone(value){
+  let p=String(value||'').replace(/\D/g,'');
+  if(p.startsWith('0020'))p=p.slice(2);
+  if(/^01[0125]\d{8}$/.test(p))p='20'+p.slice(1);
+  return p;
+}
 function openWhatsApp(student,msg){
   if(!student?.phone){toast('لا يوجد رقم واتساب مسجل','error');return false;}
-  const w=window.open(`https://wa.me/${student.phone}?text=${encodeURIComponent(msg)}`,'_blank','noopener');
+  const phone=normalizeWhatsAppPhone(student.phone);
+  if(!/^20\d{10}$/.test(phone)){toast('رقم واتساب غير صحيح','error');return false;}
+  const text=encodeURIComponent(String(msg||''));
+  const nativeUrl=`whatsapp://send?phone=${phone}&text=${text}`;
+  const webUrl=`https://wa.me/${phone}?text=${text}`;
+  const android=/Android/i.test(navigator.userAgent||'');
+
+  // Stage 5.2: on Android use WhatsApp's native URI directly. This handoff does
+  // not need the web to be reachable, so WhatsApp can open with the message
+  // already prepared while the phone is offline; actual delivery waits for
+  // WhatsApp to regain connectivity.
+  if(android||navigator.onLine===false){
+    try{
+      const a=document.createElement('a');
+      a.href=nativeUrl;
+      a.style.display='none';
+      a.setAttribute('aria-hidden','true');
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>a.remove(),1200);
+      if(navigator.onLine===false)toast('تم تجهيز الرسالة في واتساب — سيتم الإرسال عند توفر الإنترنت','success');
+      return true;
+    }catch(err){console.warn('[whatsapp] native handoff failed',err);}
+  }
+
+  const w=window.open(webUrl,'_blank','noopener');
   if(!w)toast('تعذر فتح واتساب — اسمح بالنوافذ المنبثقة لهذا الموقع','error');
   return !!w;
 }

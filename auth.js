@@ -1,4 +1,4 @@
-/* We Live Quran — Authentication & Access Control v10.10.0 Stage 5
+/* We Live Quran — Authentication & Access Control v10.10.0 Stage 5.2
  * Google OAuth via Supabase, server-enforced app access, trusted-device offline fallback.
  */
 'use strict';
@@ -10,6 +10,10 @@
     siteUrl:'https://welivequran.online/',
     ownerEmail:'info.welivequran@gmail.com'
   });
+  const SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  const SUPABASE_LOAD_TIMEOUT=2200;
+  const PROFILE_VERIFY_TIMEOUT=3500;
+  let supabaseLoadPromise=null;
   const TRUST_KEY='wlq.auth.trusted.v1';
   const PROJECT_REF='svtcntalwfmexthcnvqe';
   let client=null;
@@ -34,6 +38,37 @@
   }
   function trustedClear(){localStorage.removeItem(TRUST_KEY);}
   function getSupabaseGlobal(){return globalThis.supabase&&typeof globalThis.supabase.createClient==='function'?globalThis.supabase:null;}
+  function withTimeout(promise,ms,code='TIMEOUT'){
+    let timer;
+    const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(code)),ms);});
+    return Promise.race([Promise.resolve(promise).finally(()=>clearTimeout(timer)),timeout]);
+  }
+  async function ensureSupabaseLibrary(){
+    if(getSupabaseGlobal())return true;
+    if(navigator.onLine===false)return false;
+    if(supabaseLoadPromise)return supabaseLoadPromise;
+    supabaseLoadPromise=new Promise(resolve=>{
+      let done=false;
+      const finish=value=>{if(done)return;done=true;clearTimeout(timer);resolve(Boolean(value));};
+      const existing=document.querySelector?.('script[data-wlq-supabase]');
+      if(existing){
+        if(getSupabaseGlobal())return finish(true);
+        existing.addEventListener?.('load',()=>finish(Boolean(getSupabaseGlobal())),{once:true});
+        existing.addEventListener?.('error',()=>finish(false),{once:true});
+      }else{
+        const script=document.createElement('script');
+        script.src=SUPABASE_CDN;
+        script.async=true;
+        script.dataset.wlqSupabase='1';
+        script.setAttribute('data-wlq-supabase','1');
+        script.onload=()=>finish(Boolean(getSupabaseGlobal()));
+        script.onerror=()=>finish(false);
+        (document.head||document.documentElement||document.body)?.appendChild(script);
+      }
+      var timer=setTimeout(()=>finish(Boolean(getSupabaseGlobal())),SUPABASE_LOAD_TIMEOUT);
+    }).finally(()=>{if(!getSupabaseGlobal())supabaseLoadPromise=null;});
+    return supabaseLoadPromise;
+  }
   function getClient(){
     if(client)return client;
     const lib=getSupabaseGlobal();
@@ -95,6 +130,7 @@
     clearOAuthUrl();
   }
   async function signInGoogle(){
+    if(!(await ensureSupabaseLibrary())){setGate({state:'تعذر تحميل خدمة تسجيل الدخول.',note:'تحقق من اتصال الإنترنت ثم أعد المحاولة.',retry:true,kind:'error'});return;}
     const sb=getClient();
     if(!sb){setGate({state:'تعذر تحميل خدمة تسجيل الدخول.',note:'تحقق من اتصال الإنترنت ثم أعد المحاولة.',retry:true,kind:'error'});return;}
     setGate({state:'جارٍ فتح تسجيل الدخول باستخدام Google…',kind:'loading'});
@@ -133,10 +169,26 @@
   async function beforeAppInit(){
     ensureGate();
     setGate({state:'جارٍ التحقق من الحساب…',kind:'loading'});
+
+    // Stage 5.2 fast path: when the device is genuinely offline, never wait on
+    // the Supabase CDN or a network timeout. A previously approved device goes
+    // straight into the local-first app. First use still requires online auth.
+    if(navigator.onLine===false){
+      if(await useTrustedFallback('offline fast path'))return true;
+      setGate({state:'يلزم الاتصال بالإنترنت لتسجيل الدخول أول مرة.',note:'بعد اعتماد هذا الجهاز يمكن فتح التطبيق بدون إنترنت.',retry:true,kind:'offline'});
+      return false;
+    }
+
+    const libReady=await ensureSupabaseLibrary();
+    if(!libReady){
+      if(await useTrustedFallback('Supabase library timeout'))return true;
+      setGate({state:'تعذر تحميل خدمة تسجيل الدخول.',note:'تحقق من اتصال الإنترنت ثم أعد المحاولة.',retry:true,kind:'error'});
+      return false;
+    }
     const sb=getClient();
     if(!sb){
       if(await useTrustedFallback('Supabase client unavailable'))return true;
-      setGate({state:'يلزم الاتصال بالإنترنت لتسجيل الدخول أول مرة.',note:'بعد اعتماد هذا الجهاز يمكن فتح التطبيق بدون إنترنت.',retry:true,kind:'offline'});
+      setGate({state:'تعذر تحميل خدمة تسجيل الدخول.',note:'تحقق من اتصال الإنترنت ثم أعد المحاولة.',retry:true,kind:'error'});
       return false;
     }
     try{
@@ -155,9 +207,9 @@
         return false;
       }
       let profile;
-      try{profile=await fetchProfile(session.user);}catch(err){
+      try{profile=await withTimeout(fetchProfile(session.user),PROFILE_VERIFY_TIMEOUT,'AUTH_VERIFY_TIMEOUT');}catch(err){
         if(!navigator.onLine&&await useTrustedFallback(err.message))return true;
-        const transient=/fetch|network|Failed to fetch/i.test(String(err?.message||err));
+        const transient=/fetch|network|Failed to fetch|AUTH_VERIFY_TIMEOUT/i.test(String(err?.message||err));
         if(transient&&await useTrustedFallback(err.message))return true;
         throw err;
       }
@@ -220,5 +272,5 @@
   function isActive(){return access?.status==='active';}
   function isOwner(){return isActive()&&access?.role==='owner';}
 
-  globalThis.WeLiveQuranAuth={config:CONFIG,beforeAppInit,afterAppInit,signInGoogle,signOut,getAccessToken,getClient,getAccess:()=>access,isActive,isOwner,loadAdminUsers};
+  globalThis.WeLiveQuranAuth={config:CONFIG,beforeAppInit,afterAppInit,signInGoogle,signOut,getAccessToken,getClient,ensureSupabaseLibrary,getAccess:()=>access,isActive,isOwner,loadAdminUsers};
 })();

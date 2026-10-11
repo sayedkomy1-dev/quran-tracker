@@ -7,11 +7,12 @@ const html=read('index.html'),auth=read('auth.js'),sw=read('sw.js'),app=read('ap
 const gl=read('guardian-login.html'),gp=read('guardian-portal.html');
 const bootstrap=read('js/core/offline-bootstrap.js');
 ok(html.includes('js/core/offline-bootstrap.js?v=10.10.0'),'teacher shell must register SW from head');
-ok(html.indexOf('offline-bootstrap.js')<html.indexOf('cdn.jsdelivr.net/npm/@supabase/supabase-js@2'),'offline bootstrap must run before Supabase CDN');
+ok(!html.includes('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"'),'teacher shell must not block document load on the Supabase CDN');
+ok(auth.includes("SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'"),'auth layer must own the conditional Supabase loader');
 ok(gl.includes('offline-bootstrap.js')&&gp.includes('offline-bootstrap.js'),'guardian shells must also install the PWA worker');
 ok(bootstrap.includes("navigator.serviceWorker.register('./sw.js')"),'offline bootstrap registration missing');
 ok(app.includes('WLQOfflineBootstrap?.ready'),'late app bootstrap must reuse early SW registration');
-ok(sw.includes("quran-pwa-v10.10.0-s5"),'Stage 5 cache name missing');
+ok(sw.includes("quran-pwa-v10.10.0-s5.2"),'Stage 5.2 cache name missing');
 ok(sw.includes("SUPABASE_CDN")&&sw.includes("response.type==='opaque'"),'Supabase CDN must be cacheable as an opaque cross-origin response');
 ok(sw.includes('CORE_SHELL')&&sw.includes('caches.match(request)'),'new worker must recover shell assets from previous cache');
 ok(sw.includes("'./js/core/offline-bootstrap.js?v=10.10.0'"),'offline bootstrap itself must be precached');

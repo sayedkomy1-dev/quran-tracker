@@ -10,8 +10,9 @@ const children={};
 const gate={id:'wlqAuthGate',className:'',dataset:{},classList:classList(),setAttribute(){},addEventListener(){},querySelector(sel){return children[sel]||(children[sel]=fakeChild());}};
 const body={contains:x=>x===gate,appendChild(){}};
 const document={body,documentElement:{dataset:{},classList:classList()},createElement:()=>gate,getElementById:()=>null,querySelector:()=>null,addEventListener(){}};
-const client={auth:{getSession:async()=>({data:{session:null},error:null}),signOut:async()=>({})}};
-const ctx={console,document,localStorage,navigator:{onLine:false},location:{hash:'',pathname:'/',search:'',replace(){}},history:{replaceState(){}},alert(){},globalThis:null,supabase:{createClient:()=>client}};
+let createClientCalls=0,getSessionCalls=0;
+const client={auth:{getSession:async()=>{getSessionCalls++;return {data:{session:null},error:null};},signOut:async()=>({})}};
+const ctx={console,document,localStorage,navigator:{onLine:false},location:{hash:'',pathname:'/',search:'',replace(){}},history:{replaceState(){}},alert(){},setTimeout,clearTimeout,globalThis:null,supabase:{createClient:()=>{createClientCalls++;return client;}}};
 ctx.globalThis=ctx;vm.createContext(ctx);vm.runInContext(fs.readFileSync('auth.js','utf8'),ctx);
 (async()=>{
   const allowed=await ctx.WeLiveQuranAuth.beforeAppInit();
@@ -19,5 +20,6 @@ ctx.globalThis=ctx;vm.createContext(ctx);vm.runInContext(fs.readFileSync('auth.j
   const access=ctx.WeLiveQuranAuth.getAccess();
   ok(access&&access.offline===true&&access.user_id==='11111111-1111-4111-8111-111111111111','offline trusted profile was not restored');
   ok(storage.has('wlq.auth.trusted.v1'),'trusted marker must not be cleared during offline startup');
+  ok(createClientCalls===0&&getSessionCalls===0,'offline fast path must not touch Supabase or wait on its local session');
   console.log('offline-auth-runtime-check: PASS');
 })().catch(e=>{console.error(e);process.exit(1);});

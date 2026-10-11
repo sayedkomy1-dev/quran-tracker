@@ -431,7 +431,7 @@
   function sendGuardianCredentials(){
     const id=pickedId();if(!lastGuardianSecret||lastGuardianSecret.studentId!==id){toastSafe('أنشئ PIN جديدًا أولًا ثم أرسل البيانات','info');return false;}
     const st=studentById(id),msg=guardianCredentialsMessage();if(typeof g.openWhatsApp==='function')return g.openWhatsApp(st,msg);
-    if(!st?.phone)return false;g.open?.(`https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}`,'_blank','noopener');return true;
+    if(!st?.phone)return false;const u=(g.navigator?.onLine===false?'whatsapp://send?phone=':'https://wa.me/')+st.phone+'?text='+encodeURIComponent(msg);if(g.navigator?.onLine===false){g.location.href=u;}else{g.open?.(u,'_blank','noopener');}return true;
   }
   function guardianLoginOnlyMessage(studentId=pickedId()){
     const st=studentById(studentId);if(!st)return '';
@@ -441,7 +441,7 @@
   function sendGuardianLoginLink(){
     const id=pickedId(),st=studentById(id);if(!st){toastSafe('اختر الطالب أولًا','error');return false;}
     const msg=guardianLoginOnlyMessage(id);if(typeof g.openWhatsApp==='function')return g.openWhatsApp(st,msg);
-    if(!st.phone)return false;g.open?.(`https://wa.me/${st.phone}?text=${encodeURIComponent(msg)}`,'_blank','noopener');return true;
+    if(!st.phone)return false;const u=(g.navigator?.onLine===false?'whatsapp://send?phone=':'https://wa.me/')+st.phone+'?text='+encodeURIComponent(msg);if(g.navigator?.onLine===false){g.location.href=u;}else{g.open?.(u,'_blank','noopener');}return true;
   }
   function updateResetBadge(count){
     const btn=g.document?.querySelector?.('[data-v1010-portal-more]');if(!btn)return;

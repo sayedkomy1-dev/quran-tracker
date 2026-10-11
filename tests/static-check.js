@@ -200,7 +200,7 @@ assert(sw.includes("quran-pwa-v10.10.0"),'service worker cache must match v10.10
 
 
 // v10.1.2 Google Auth and access-control regression guards.
-assert(html.includes('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2')&&html.includes('src="auth.js?v=10.10.0"'),'Supabase auth bootstrap scripts missing');
+assert(html.includes('src="auth.js?v=10.10.0"')&&auth.includes("SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'"),'Supabase auth bootstrap missing');
 assert(html.includes('href="auth.css?v=10.10.0"'),'auth stylesheet missing');
 assert(auth.includes("supabaseUrl:'https://svtcntalwfmexthcnvqe.supabase.co'"),'Supabase project URL mismatch');
 assert(auth.includes("publishableKey:'sb_publishable_qYw8VdT1IXQ5WsdB2rhtEA_F6dSAN-j'"),'Supabase publishable key mismatch');

@@ -611,3 +611,9 @@
 - إصلاح Trusted Offline fallback عندما تكون جلسة Supabase المحلية غير موجودة والجهاز غير متصل.
 - لا تغيير في Schema 12 أو SQL أو بنية بيانات الطلاب والحصص.
 
+
+## v10.10.0 — Stage 5.2 Offline Fast Boot & Native WhatsApp
+- Offline trusted-device startup no longer waits for the Supabase CDN or Supabase session bootstrap.
+- Removed the blocking Supabase CDN script from the teacher shell; online auth loads it conditionally with a timeout.
+- Added bounded online profile verification fallback for broken connections.
+- Android/offline WhatsApp opens via the native `whatsapp://` URI with the message prefilled; actual delivery waits for connectivity.
