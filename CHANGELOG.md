@@ -1,3 +1,9 @@
+## v11.2.0 — Stage 1.3 Direct WhatsApp Restore
+- Restored direct guardian WhatsApp opening for Save & Send.
+- Error-image sharing is now explicit/separate and no longer interrupts the main WhatsApp flow.
+- Short/detailed message modes also open WhatsApp directly.
+- No SQL or schema changes.
+
 ## v11.2.0 Stage 1.2
 - Fixed annotated error-image generation/share student lookup.
 - Fixed Save & Send to Guardian WhatsApp handoff.

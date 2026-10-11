@@ -1,7 +1,7 @@
 'use strict';
-/* Imam Academy v11.2.0 — Interactive Quran Error Marking, Stage 1.2 hotfix.
-   Fixes Guardian/WhatsApp handoff by reading lexical app state through ImamApp.State,
-   keeps annotated PNG sharing fail-safe, and never leaves Save & Send as a dead button. */
+/* Imam Academy v11.2.0 — Interactive Quran Error Marking, Stage 1.3 hotfix.
+   Restores the original direct WhatsApp handoff for Save & Send, while keeping
+   annotated PNG generation/sharing as an explicit separate teacher action. */
 (function teacherErrorMarking(g){
   const ERROR_TYPES=[
     ['تشكيل','pronunciation'],['نطق حرف','pronunciation'],['حذف حرف','pronunciation'],['زيادة حرف','pronunciation'],['كلمة خاطئة','pronunciation'],
@@ -137,31 +137,29 @@
   }
   function installWhatsAppBridge(){
     const legacy=g.ImamApp?.Legacy;if(!legacy)return;
-    legacy.override('saveAndSendWA',async function(){
+    // Stage 1.3: restore the original message-first UX.
+    // Save & Send must open the guardian chat directly (wa.me/openWhatsApp path)
+    // exactly as before Error Marking was introduced. Image sharing stays available
+    // only from the explicit “مشاركة صورة الأخطاء” button, so it never intercepts
+    // the normal WhatsApp workflow with the Android share sheet.
+    legacy.override('saveAndSendWA',function(){
       let ses=null;
       try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}catch(e){console.error('[qmark] save before WhatsApp failed',e);}
       if(!ses){try{toast('تعذر حفظ الحصة قبل الإرسال','error');}catch(_){}return;}
       const st=findStudent(ses.studentId);
       if(!st){try{toast('تعذر العثور على بيانات الطالب بعد الحفظ','error');}catch(_){}return;}
       const msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';
-      if(rowsForImage(ses).length){
-        const shared=await shareErrorSnapshot(st,ses,msg);
-        if(!shared)safeOpenWhatsApp(st,msg);
-        try{toast(shared?'تم إنشاء الصورة — اختر واتساب ثم ولي الأمر من نافذة المشاركة':'تم حفظ الحصة وفتح واتساب لولي الأمر','success');}catch(_){}
-        return;
-      }
       safeOpenWhatsApp(st,msg);
       try{toast('تم حفظ الحصة وفتح رسالة ولي الأمر','success');}catch(_){}
-    },'v11.2.0-error1.2');
-    if(typeof g.saveAndSendWAMode==='function')legacy.override('saveAndSendWAMode',async function(mode){
+    },'v11.2.0-error1.3');
+    if(typeof g.saveAndSendWAMode==='function')legacy.override('saveAndSendWAMode',function(mode){
       let ses=null;
       try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}catch(e){console.error('[qmark] save mode before WhatsApp failed',e);}
       if(!ses)return;
       const st=findStudent(ses.studentId);if(!st)return;
       const msg=typeof g.buildWAMsgMode==='function'?g.buildWAMsgMode(st,ses,mode):(typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'');
-      if(rowsForImage(ses).length){const shared=await shareErrorSnapshot(st,ses,msg);if(!shared)safeOpenWhatsApp(st,msg);return;}
       safeOpenWhatsApp(st,msg);
-    },'v11.2.0-error1.2');
+    },'v11.2.0-error1.3');
   }
   function init(){if(state.installed)return;state.installed=true;readPrefs();installPersistenceBridges();installPanel();ensureSheet();observe();hookOpeners();installWhatsAppBridge();refreshPanel();document.addEventListener('visibilitychange',()=>{if(document.hidden){savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}}});g.addEventListener?.('pagehide',()=>{savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}},{capture:true});}
   g.ImamTeacherErrorMarking={init,toggle,setContext,decorate,paintAllWords,closeSheet,shareErrorSnapshot,shareCurrentDraftImage};
