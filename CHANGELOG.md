@@ -1,3 +1,10 @@
+## v11.1.0 — Tahfeez Center Stage 2
+- Added Listening / Talaqqin / Stabilization / Self-test presets.
+- Added active ayah focus card and hide/reveal self-test mode.
+- Added talaqqin countdown and practice progress indicator.
+- Added per-student local continuation from the last practiced ayah.
+- No SQL and no local schema change.
+
 # v11.0.0 — Premium UI Foundation — Stage 1
 
 - Introduced the v11 premium visual system and teacher shell.

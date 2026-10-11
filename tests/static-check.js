@@ -196,7 +196,7 @@ assert(!/for select to anon using\s*\(true\)/i.test(syncSql),'broad anon SELECT 
 assert(!/for update to anon using\s*\(true\)/i.test(syncSql),'broad anon UPDATE policy must not return');
 assert(!/for insert to anon with check\s*\(true\)/i.test(syncSql),'broad anon INSERT policy must not return');
 assert(v8.includes('localSync=settings.sync')&&v8.includes('accountOwner:owner'),'backup/cloud restore must preserve current account ownership and device secrets');
-assert(sw.includes("quran-pwa-v11.1.0-tahfeez1"),'service worker cache must match v11.1.0 Tahfeez Stage 1');
+assert(sw.includes("quran-pwa-v11.1.0-tahfeez2"),'service worker cache must match v11.1.0 Tahfeez Stage 2');
 
 
 // v10.1.2 Google Auth and access-control regression guards.

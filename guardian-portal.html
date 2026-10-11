@@ -10,7 +10,7 @@
 <script src="js/core/offline-bootstrap.js?v=11.0.0"></script>
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="stylesheet" href="guardian-portal.css?v=11.1.0">
-<link rel="stylesheet" href="guardian-tahfeez.css?v=11.1.0">
+<link rel="stylesheet" href="guardian-tahfeez.css?v=11.1.0-s2">
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
 </style>
@@ -87,7 +87,15 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 
     <div class="tahfeez-layout">
       <aside id="tahfeezSettings" class="tahfeez-settings">
-        <div class="tahfeez-section-head"><div><b>إعداد جلسة التحفيظ</b><small>اختر النطاق وطريقة التكرار</small></div><button id="tahfeezUseAssignment" type="button" class="tahfeez-link-btn" onclick="tahfeezLoadAssignment()" hidden>استخدام التكليف الحالي</button></div>
+        <div class="tahfeez-section-head"><div><b>إعداد جلسة التحفيظ</b><small>اختر النطاق وطريقة التكرار</small></div><div class="tahfeez-head-actions"><button id="tahfeezResume" type="button" class="tahfeez-link-btn secondary" onclick="tahfeezResumeLast()" hidden>متابعة آخر موضع</button><button id="tahfeezUseAssignment" type="button" class="tahfeez-link-btn" onclick="tahfeezLoadAssignment()" hidden>استخدام التكليف الحالي</button></div></div>
+
+        <div class="tahfeez-practice-modes" id="tahfeezPracticeModes" aria-label="طريقة التدريب">
+          <button type="button" data-practice="listen" class="active"><b>استماع</b><small>استمع للنطاق بهدوء</small></button>
+          <button type="button" data-practice="tutor"><b>تلقين</b><small>استمع ثم ردد خلف الشيخ</small></button>
+          <button type="button" data-practice="stabilize"><b>تثبيت</b><small>تكرار مركز للآيات</small></button>
+          <button type="button" data-practice="test"><b>اختبار ذاتي</b><small>أخفِ النص ثم راجع نفسك</small></button>
+        </div>
+
         <div class="tahfeez-grid">
           <label class="tahfeez-field tahfeez-wide"><span>السورة</span><select id="tahfeezSurah"></select></label>
           <label class="tahfeez-field"><span>من الآية</span><select id="tahfeezFrom"></select></label>
@@ -127,7 +135,13 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       </aside>
 
       <main class="tahfeez-reader">
-        <div class="tahfeez-reader-head"><div><span id="tahfeezSurahLabel">سورة الفاتحة</span><small id="tahfeezRangeLabel">الآيات 1–7</small></div><div class="tahfeez-reader-actions"><button type="button" onclick="tahfeezLoadText(true)">↻ تحديث النص</button></div></div>
+        <div class="tahfeez-reader-head"><div><span id="tahfeezSurahLabel">سورة الفاتحة</span><small id="tahfeezRangeLabel">الآيات 1–7</small></div><div class="tahfeez-reader-actions"><button id="tahfeezRevealBtn" type="button" onclick="tahfeezToggleReveal()">إخفاء النص</button><button type="button" onclick="tahfeezLoadText(true)">↻ تحديث النص</button></div></div>
+        <section class="tahfeez-focus-card" aria-live="polite">
+          <div class="tahfeez-focus-head"><span id="tahfeezModeLabel">وضع الاستماع</span><span id="tahfeezFocusMeta">الآية 1</span></div>
+          <div id="tahfeezFocusText" class="tahfeez-focus-text">سيظهر هنا موضع التدريب الحالي.</div>
+          <div class="tahfeez-focus-foot"><span id="tahfeezRepeatBadge">جاهز</span><strong id="tahfeezCountdown" hidden></strong></div>
+        </section>
+        <div class="tahfeez-session-progress"><div><span id="tahfeezProgressText">جاهز لبدء الجلسة</span><span id="tahfeezProgressPct">0%</span></div><div class="tahfeez-progress-track"><i id="tahfeezProgressBar"></i></div></div>
         <div id="tahfeezText" class="tahfeez-text"><div class="tahfeez-empty">اختر السورة والنطاق لعرض النص.</div></div>
       </main>
     </div>
@@ -149,7 +163,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
   </div>
 </section>
 
-<script src="js/features/guardian-tahfeez.js?v=11.1.0"></script>
+<script src="js/features/guardian-tahfeez.js?v=11.1.0-s2"></script>
 <script src="js/features/guardian-portal-view.js?v=11.1.0"></script>
 </body>
 </html>

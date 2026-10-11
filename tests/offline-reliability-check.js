@@ -12,7 +12,7 @@ ok(auth.includes("SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-
 ok(gl.includes('offline-bootstrap.js')&&gp.includes('offline-bootstrap.js'),'guardian shells must also install the PWA worker');
 ok(bootstrap.includes("navigator.serviceWorker.register('./sw.js')"),'offline bootstrap registration missing');
 ok(app.includes('WLQOfflineBootstrap?.ready'),'late app bootstrap must reuse early SW registration');
-ok(sw.includes("quran-pwa-v11.1.0-tahfeez1"),'Stage 5.5 cache name missing');
+ok(sw.includes("quran-pwa-v11.1.0-tahfeez2"),'Stage 5.5 cache name missing');
 ok(sw.includes("SUPABASE_CDN")&&sw.includes("response.type==='opaque'"),'Supabase CDN must be cacheable as an opaque cross-origin response');
 ok(sw.includes('CORE_SHELL')&&sw.includes('caches.match(request)'),'new worker must recover shell assets from previous cache');
 ok(sw.includes("'./js/core/offline-bootstrap.js?v=11.0.0'"),'offline bootstrap itself must be precached');

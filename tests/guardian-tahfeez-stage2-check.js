@@ -1,0 +1,13 @@
+const fs=require('fs'),path=require('path'),vm=require('vm');
+const root=path.join(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f),'utf8'),ok=(x,m)=>{if(!x)throw new Error(m)};
+const html=read('guardian-portal.html'),js=read('js/features/guardian-tahfeez.js'),css=read('guardian-tahfeez.css'),sw=read('sw.js');new vm.Script(js,{filename:'guardian-tahfeez.js'});
+['tahfeezPracticeModes','tahfeezResume','tahfeezFocusText','tahfeezCountdown','tahfeezProgressBar','tahfeezRevealBtn'].forEach(id=>ok(html.includes(`id="${id}"`),`missing ${id}`));
+['استماع','تلقين','تثبيت','اختبار ذاتي','متابعة آخر موضع'].forEach(t=>ok(html.includes(t),`missing Stage2 UI ${t}`));
+ok(js.includes("practiceMode:'listen'")&&js.includes('setPracticeMode')&&js.includes("state.practiceMode==='test'"),'practice preset logic missing');
+ok(js.includes('scheduleNext')&&js.includes('clearCountdown')&&js.includes('ردد الآن'),'talaqqin countdown missing');
+ok(js.includes('updateSessionProgress')&&js.includes('tahfeezProgressBar'),'session progress logic missing');
+ok(js.includes('LAST_PREFIX')&&js.includes('resumeLast')&&js.includes('saveLast'),'per-student resume state missing');
+ok(js.includes('toggleReveal')&&js.includes('applyTextVisibility'),'self-test reveal logic missing');
+ok(css.includes('.tahfeez-practice-modes')&&css.includes('.tahfeez-focus-card')&&css.includes('.tahfeez-text.concealed'),'Stage2 visual states missing');
+ok(sw.includes("quran-pwa-v11.1.0-tahfeez2")&&sw.includes("uiStage:'11.1-tahfeez-2'"),'Stage2 service worker version missing');
+console.log('Guardian Tahfeez Center Stage 2 checks passed');
