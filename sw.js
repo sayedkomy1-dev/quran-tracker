@@ -1,6 +1,6 @@
-/* أكاديمية الإمام — Service Worker v11.0.0 Premium UI Stage 2 + Stable Offline Shell */
-const CACHE_NAME = 'quran-pwa-v11.0.0-ui2';
-const APP_VERSION = '11.0.0';
+/* أكاديمية الإمام — Service Worker v11.1.0 Tahfeez Center Stage 1 + Stable Offline Shell */
+const CACHE_NAME = 'quran-pwa-v11.1.0-tahfeez1';
+const APP_VERSION = '11.1.0';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
 const APP_SHELL = [
@@ -20,17 +20,19 @@ const APP_SHELL = [
   './js/features/student-progress.js?v=11.0.0',
   './js/features/teacher-followup.js?v=11.0.0',
   './js/features/circle-analytics.js?v=11.0.0',
-  './js/features/guardian-portal-share.js?v=11.0.0',
+  './js/features/guardian-portal-share.js?v=11.1.0',
   './js/features/v11-ui.js?v=11.0.0-s2',
   './guardian-portal.html',
-  './guardian-portal.css?v=11.0.0',
-  './js/features/guardian-portal-view.js?v=11.0.0',
+  './guardian-portal.css?v=11.1.0',
+  './guardian-tahfeez.css?v=11.1.0',
+  './js/features/guardian-tahfeez.js?v=11.1.0',
+  './js/features/guardian-portal-view.js?v=11.1.0',
   './guardian-login.html',
   './guardian-login.css?v=11.0.0',
   './guardian-login.js?v=11.0.0',
   './js/features/quran-engine.js?v=11.0.0',
   './js/features/quran-structure.js?v=11.0.0',
-  './js/core/runtime.js?v=11.0.0',
+  './js/core/runtime.js?v=11.1.0',
   './js/core/offline-bootstrap.js?v=11.0.0',
   './js/core/mobile-navigation.js?v=11.0.0',
   './js/features/v10-data.js?v=11.0.0',
@@ -66,7 +68,7 @@ const CORE_SHELL = [
   './js/features/v11-ui.js?v=11.0.0-s2',
   './app.js?v=11.0.0',
   './auth.js?v=11.0.0',
-  './js/core/runtime.js?v=11.0.0',
+  './js/core/runtime.js?v=11.1.0',
   './js/core/offline-bootstrap.js?v=11.0.0'
 ];
 
@@ -286,5 +288,5 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5',uiStage:'11.0-premium-2'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5',uiStage:'11.1-tahfeez-1'});
 });

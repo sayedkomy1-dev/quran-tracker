@@ -15,9 +15,9 @@ const v9=read('v9.js');
 const pkg=JSON.parse(read('package.json'));
 new vm.Script(feature,{filename:'guardian-portal-share.js'});
 new vm.Script(view,{filename:'guardian-portal-view.js'});
-assert(pkg.version==='11.0.0','package version must be 10.10.0');
-assert(html.includes('guardian-portal-share.js?v=11.0.0'),'guardian portal share feature missing from main app');
-assert(sw.includes("'./guardian-portal.html'")&&sw.includes("'./guardian-portal.css?v=11.0.0'")&&sw.includes("'./js/features/guardian-portal-view.js?v=11.0.0'"),'guardian portal assets missing from offline shell');
+assert(pkg.version==='11.1.0','package version must be 10.10.0');
+assert(html.includes('guardian-portal-share.js?v=11.1.0'),'guardian portal share feature missing from main app');
+assert(sw.includes("'./guardian-portal.html'")&&sw.includes("'./guardian-portal.css?v=11.1.0'")&&sw.includes("'./js/features/guardian-portal-view.js?v=11.1.0'"),'guardian portal assets missing from offline shell');
 assert(sw.includes("portalNav=url.pathname.endsWith('/guardian-portal.html')"),'guardian portal navigation fallback missing');
 assert(portal.includes('name="robots" content="noindex,nofollow,noarchive"'),'guardian portal must be noindex');
 assert(!portal.includes('auth.js')&&!portal.includes('supabase'),'read-only snapshot portal must not bootstrap teacher authentication or Supabase');
@@ -28,7 +28,7 @@ assert(app.includes('globalThis.ImamApp.State')&&app.includes('students:{enumera
 assert(feature.includes('function stateStudents()')&&feature.includes('appState().students'),'guardian portal must read current state through ImamApp.State');
 assert(html.includes('data-v1010-portal-profile="1"')&&html.includes('data-v1010-portal-guardian="1"'),'permanent guardian portal entry points missing');
 assert(v9.includes('data-v1010-portal-more="1"'),'permanent More-sheet portal entry missing');
-assert(sw.includes('quran-pwa-v11.0.0-ui2'),'guardian portal cache generation missing');
+assert(sw.includes('quran-pwa-v11.1.0-tahfeez1'),'guardian portal cache generation missing');
 
 const now=Date.now();
 const context={

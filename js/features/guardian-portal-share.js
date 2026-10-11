@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v10.10.0 — Guardian & Student Portal, Stage 3.
+/* We Live Quran v11.1.0 — Guardian & Student Portal + structured Tahfeez assignment.
    Stage 1 snapshot links and Stage 2 stable live links remain available.
    Stage 3 adds guardian login by the student's registered phone + secure 6-digit PIN.
    Stage 3.3 adds teacher-visible forgot-PIN requests and clearer credential actions.
@@ -106,6 +106,10 @@
       period:'آخر 30 يومًا',
       metrics:{mastery:score(progress.mastery),attendance:score(progress.attendance),repeats:Math.max(0,Number(progress.repeats)||0),newAyat:Math.max(0,Number(progress.newAyat)||0),quranProgress,trend:String(progress.trend?.label||'—')},
       assignment:{date:latest?dateLabel(latest):'—',items:assignmentItems(latest)},
+      learning:{
+        newAssignment:latest?.new?.surah?{surah:String(latest.new.surah),from:Math.max(1,Number(latest.new.from)||1),to:Math.max(1,Number(latest.new.to)||Number(latest.new.from)||1),full:!!latest.new.full}:null,
+        assignmentDate:latest?dateLabel(latest):'—'
+      },
       attention,
       recent:recentSessions(studentId,8)
     };

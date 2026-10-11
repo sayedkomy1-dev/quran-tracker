@@ -3,7 +3,7 @@
 ## v11.0 — Premium UI/UX & Design System
 Professional visual system, simplified teacher command center, responsive navigation, unified cards/forms/modals, offline/sync state visibility, dark mode and progressive cleanup of crowded screens.
 
-## v11.1 — Quran Learning & Home Tahfeez Center
+## v11.1 — Quran Learning & Home Tahfeez Center — IN PROGRESS (Stage 1 delivered)
 Guardian/student Tahfeez button; select surah, reciter and ayah range; full player controls; previous/next ayah; play/pause/stop; repeat full range, one ayah or sub-range; configurable repeat counts; speed; tutor/talqeen mode; offline download; assignments open directly in the player.
 
 ## v11.2 — Interactive Recitation & Error Marking

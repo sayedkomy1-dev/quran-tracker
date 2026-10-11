@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v10.10.0 — guardian/student portal renderer, Stage 3.
+/* We Live Quran v11.1.0 — guardian/student portal renderer + Tahfeez Center context.
    Supports: Stage 1 #data= snapshot, Stage 2 #p= live link,
    and Stage 3 #s= phone/PIN authenticated short-lived session. */
 (function guardianPortalView(g){
@@ -64,6 +64,7 @@
     const attention=Array.isArray(data.attention)?data.attention:[];$('portalAttention').innerHTML=attention.length?attention.map(x=>`<div class="portal-attention-item"><b>${esc(x.label)}</b><span>${x.score!==null&&x.score!==undefined?`${esc(x.score)}%`:esc(x.grade||'يحتاج متابعة')}</span></div>`).join(''):'<div class="portal-good">✅ لا توجد إشارات حديثة تستدعي التثبيت.</div>';
     const recent=Array.isArray(data.recent)?data.recent:[];$('portalRecent').innerHTML=recent.length?recent.map(x=>`<article class="portal-session ${statusClass(x.status)}"><div class="portal-session-head"><b>${esc(x.status||'—')} · ${esc(x.date||'—')}</b><span class="portal-session-score">${x.score===null||x.score===undefined?'':`${esc(x.score)}%`}</span></div>${Array.isArray(x.recitation)&&x.recitation.length?`<ul>${x.recitation.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}</article>`).join(''):'<div class="portal-empty">لا توجد حصص مسجلة بعد.</div>';
     setNote(meta.session?'session':meta.live?'live':'snapshot');
+    try{g.ImamGuardianTahfeez?.setContext?.(data);}catch(err){console.warn('[guardian tahfeez context]',err);}
     $('portalContent').hidden=false;$('portalError').hidden=true;
   }
   async function publicRpc(name,args){

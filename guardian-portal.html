@@ -9,7 +9,8 @@
 <title>بوابة ولي الأمر — أكاديمية الإمام</title>
 <script src="js/core/offline-bootstrap.js?v=11.0.0"></script>
 <link rel="icon" href="favicon.png" type="image/png">
-<link rel="stylesheet" href="guardian-portal.css?v=11.0.0">
+<link rel="stylesheet" href="guardian-portal.css?v=11.1.0">
+<link rel="stylesheet" href="guardian-tahfeez.css?v=11.1.0">
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
 </style>
@@ -41,6 +42,15 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <article><small>الإعادات</small><strong id="portalRepeats">0</strong><span>تحتاج تثبيت</span></article>
     </section>
 
+
+    <section class="portal-learning-entry" aria-label="مركز التحفيظ">
+      <button type="button" class="portal-tahfeez-entry" onclick="openGuardianTahfeez()">
+        <span class="portal-tahfeez-mark" aria-hidden="true">◈</span>
+        <span class="portal-tahfeez-copy"><b>التحفيظ</b><small>استماع · تكرار · تلقين · تحكم كامل بالآيات</small></span>
+        <span class="portal-tahfeez-start">ابدأ الآن <span aria-hidden="true">←</span></span>
+      </button>
+    </section>
+
     <section class="portal-card" id="portalQuranCard" hidden>
       <div class="portal-card-head"><div><b>📖 التقدم في القرآن</b><small>الإنجاز الموثق داخل التطبيق</small></div><strong id="portalQuranProgress">—</strong></div>
       <div class="portal-progress"><i id="portalQuranBar"></i></div>
@@ -64,6 +74,82 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
     <footer class="portal-footer"><b id="portalTeacher"></b><span id="portalFooterAcademy"></span><small>بالقرآن نحيا</small></footer>
   </div>
 </main>
-<script src="js/features/guardian-portal-view.js?v=11.0.0"></script>
+
+<section id="guardianTahfeez" class="tahfeez-shell" hidden aria-hidden="true">
+  <div class="tahfeez-app">
+    <header class="tahfeez-topbar">
+      <div class="tahfeez-brand">
+        <button type="button" class="tahfeez-icon-btn" onclick="closeGuardianTahfeez()" aria-label="رجوع">←</button>
+        <div><span>مركز التحفيظ</span><b id="tahfeezStudentName">الطالب</b></div>
+      </div>
+      <div class="tahfeez-top-actions"><span id="tahfeezNetState" class="tahfeez-net">متصل</span><button type="button" class="tahfeez-icon-btn" onclick="tahfeezToggleSettings()" aria-label="إعدادات">⚙</button></div>
+    </header>
+
+    <div class="tahfeez-layout">
+      <aside id="tahfeezSettings" class="tahfeez-settings">
+        <div class="tahfeez-section-head"><div><b>إعداد جلسة التحفيظ</b><small>اختر النطاق وطريقة التكرار</small></div><button id="tahfeezUseAssignment" type="button" class="tahfeez-link-btn" onclick="tahfeezLoadAssignment()" hidden>استخدام التكليف الحالي</button></div>
+        <div class="tahfeez-grid">
+          <label class="tahfeez-field tahfeez-wide"><span>السورة</span><select id="tahfeezSurah"></select></label>
+          <label class="tahfeez-field"><span>من الآية</span><select id="tahfeezFrom"></select></label>
+          <label class="tahfeez-field"><span>إلى الآية</span><select id="tahfeezTo"></select></label>
+          <label class="tahfeez-field tahfeez-wide"><span>القارئ</span><select id="tahfeezReciter"></select></label>
+          <label class="tahfeez-field"><span>السرعة</span><select id="tahfeezSpeed"><option value="0.75">0.75×</option><option value="0.85">0.85×</option><option value="1" selected>1×</option><option value="1.15">1.15×</option><option value="1.25">1.25×</option></select></label>
+          <label class="tahfeez-field"><span>مرات التكرار</span><input id="tahfeezRepeat" type="number" min="1" max="30" value="1" inputmode="numeric"></label>
+        </div>
+
+        <div class="tahfeez-repeat-card">
+          <b>ما الذي تريد تكراره؟</b>
+          <div class="tahfeez-segment" id="tahfeezRepeatMode">
+            <button type="button" data-mode="range" class="active">النص كاملًا</button>
+            <button type="button" data-mode="single">آية واحدة</button>
+            <button type="button" data-mode="group">عدة آيات</button>
+          </div>
+          <div id="tahfeezTargetControls" class="tahfeez-target-controls" hidden>
+            <label id="tahfeezSingleWrap" class="tahfeez-field"><span>الآية</span><select id="tahfeezSingle"></select></label>
+            <label id="tahfeezGroupFromWrap" class="tahfeez-field" hidden><span>من</span><select id="tahfeezGroupFrom"></select></label>
+            <label id="tahfeezGroupToWrap" class="tahfeez-field" hidden><span>إلى</span><select id="tahfeezGroupTo"></select></label>
+          </div>
+        </div>
+
+        <div class="tahfeez-tutor-card">
+          <label class="tahfeez-switch-row"><span><b>وضع التلقين</b><small>تكرار كل آية ثم ترك مهلة للطالب ليردد</small></span><input id="tahfeezTutor" type="checkbox"></label>
+          <div id="tahfeezTutorOptions" class="tahfeez-grid tahfeez-tutor-options" hidden>
+            <label class="tahfeez-field"><span>تكرار كل آية</span><input id="tahfeezTutorRepeat" type="number" min="1" max="20" value="3" inputmode="numeric"></label>
+            <label class="tahfeez-field"><span>مهلة الترديد</span><select id="tahfeezTutorPause"><option value="1">1 ثانية</option><option value="2" selected>2 ثانية</option><option value="3">3 ثوانٍ</option><option value="5">5 ثوانٍ</option><option value="7">7 ثوانٍ</option><option value="10">10 ثوانٍ</option></select></label>
+          </div>
+        </div>
+
+        <details class="tahfeez-offline">
+          <summary><span><b>الاستماع دون إنترنت</b><small id="tahfeezOfflineStatus">يمكن تنزيل التكليف على هذا الجهاز</small></span><span>⌄</span></summary>
+          <div class="tahfeez-offline-actions"><button type="button" onclick="tahfeezDownloadRange()">↓ تنزيل النطاق</button><button type="button" onclick="tahfeezDownloadSurah()">↓ تنزيل السورة</button><button type="button" class="danger" onclick="tahfeezClearDownloads()">حذف صوت السورة</button></div>
+          <div class="tahfeez-download-progress"><i id="tahfeezDownloadBar"></i></div>
+        </details>
+      </aside>
+
+      <main class="tahfeez-reader">
+        <div class="tahfeez-reader-head"><div><span id="tahfeezSurahLabel">سورة الفاتحة</span><small id="tahfeezRangeLabel">الآيات 1–7</small></div><div class="tahfeez-reader-actions"><button type="button" onclick="tahfeezLoadText(true)">↻ تحديث النص</button></div></div>
+        <div id="tahfeezText" class="tahfeez-text"><div class="tahfeez-empty">اختر السورة والنطاق لعرض النص.</div></div>
+      </main>
+    </div>
+
+    <footer class="tahfeez-player">
+      <div class="tahfeez-now"><div><span id="tahfeezNowSurah">سورة الفاتحة</span><b id="tahfeezNowAyah">الآية 1</b></div><span id="tahfeezPlaybackState">جاهز</span></div>
+      <div class="tahfeez-seek-row"><span id="tahfeezCurrentTime">0:00</span><input id="tahfeezSeek" type="range" min="0" max="1000" value="0" aria-label="موضع التشغيل"><span id="tahfeezDuration">0:00</span></div>
+      <div class="tahfeez-main-controls">
+        <button type="button" class="tahfeez-control small" onclick="tahfeezSeekBy(-10)" aria-label="رجوع 10 ثوان">−10</button>
+        <button type="button" class="tahfeez-control" onclick="tahfeezPreviousAyah()" aria-label="الآية السابقة">|◀</button>
+        <button id="tahfeezPlayBtn" type="button" class="tahfeez-control play" onclick="tahfeezPlayPause()" aria-label="تشغيل">▶</button>
+        <button type="button" class="tahfeez-control" onclick="tahfeezNextAyah()" aria-label="الآية التالية">▶|</button>
+        <button type="button" class="tahfeez-control small" onclick="tahfeezSeekBy(10)" aria-label="تقديم 10 ثوان">+10</button>
+        <button type="button" class="tahfeez-control stop" onclick="tahfeezStop()" aria-label="إيقاف">■</button>
+      </div>
+      <div class="tahfeez-secondary-controls"><label><span>الصوت</span><input id="tahfeezVolume" type="range" min="0" max="1" step="0.05" value="1"></label><button type="button" id="tahfeezMuteBtn" onclick="tahfeezToggleMute()">🔊</button><span id="tahfeezLoopState">تشغيل مرة واحدة</span></div>
+      <audio id="tahfeezAudio" preload="metadata"></audio>
+    </footer>
+  </div>
+</section>
+
+<script src="js/features/guardian-tahfeez.js?v=11.1.0"></script>
+<script src="js/features/guardian-portal-view.js?v=11.1.0"></script>
 </body>
 </html>

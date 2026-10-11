@@ -649,3 +649,15 @@
 - Added profile action dock and clearer settings category accents without changing application behavior.
 - Bumped the PWA UI cache generation to `quran-pwa-v11.0.0-ui2`.
 - No SQL or local schema changes; Schema remains 12.
+## v11.1.0 — Quran Learning & Home Tahfeez Center · Stage 1
+- Added a dedicated Guardian/Student **Tahfeez** workspace.
+- Surah + ayah-range selection with six reciters.
+- Repeat full range, a single ayah, or a sub-range with configurable cycles.
+- Added Talaqqin mode with per-ayah repetition and learner response pause.
+- Added full playback transport: play/pause/stop, previous/next ayah, ±10s seek, progress, speed, volume and mute.
+- Added QPC Hafs text rendering with bounded local text cache.
+- Added optional offline audio download for the target range or full surah.
+- Added additive structured `learning.newAssignment` to guardian snapshots so the home player can load the teacher's current new-memorization assignment directly.
+- Bumped app/service-worker runtime to v11.1.0 / `quran-pwa-v11.1.0-tahfeez1`.
+- No SQL changes; local Schema remains 12.
+
