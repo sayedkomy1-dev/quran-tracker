@@ -56,7 +56,7 @@ const DAY_NAMES=['الأحد','الإثنين','الثلاثاء','الأربع�
 // ══════════════════════════════════════
 // STATE + VERSIONING
 // ══════════════════════════════════════
-const APP_VERSION=globalThis.ImamApp?.meta?.version||'10.10.0';
+const APP_VERSION=globalThis.ImamApp?.meta?.version||'11.0.0';
 const SCHEMA_VERSION=12;
 const ACADEMY_NAME='أكاديمية الإمام لتحفيظ القرآن الكريم';
 const ACADEMY_TAGLINE='بالقرآن نحيا';
@@ -83,7 +83,7 @@ let draftTimer=null;
 let draftSuspend=false;
 let waitingSW=null;
 
-// v10.10.0 Stage 2.1 — stable read-only bridge for feature modules.
+// v11.0.0 Stage 2.1 — stable read-only bridge for feature modules.
 // Top-level `let` bindings are not properties on globalThis, so feature files
 // must read current app state through getters instead of globalThis.students/... .
 globalThis.ImamApp=globalThis.ImamApp||{};

@@ -1,3 +1,11 @@
+# v11.0.0 — Premium UI Foundation — Stage 1
+
+- Introduced the v11 premium visual system and teacher shell.
+- Added branded header, connectivity state, refined home command center, navigation, cards, forms and modals.
+- Added `v11.css` and `js/features/v11-ui.js` to the core offline shell.
+- Preserved Schema 12 and all Stage 5 offline/WhatsApp behavior.
+- No SQL changes.
+
 ## v10.10.0 — Stage 5.5 Offline WhatsApp Composer
 - Fixed real-device Android offline WhatsApp handoff: the prepared message now opens through WhatsApp's documented custom composer scheme even with no connection.
 - Online click-to-chat still opens the registered guardian number with the prepared message.

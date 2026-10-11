@@ -2,7 +2,7 @@
 const fs=require('fs');
 function ok(v,m){if(!v)throw new Error(m);}
 const sw=fs.readFileSync('sw.js','utf8'),app=fs.readFileSync('app.js','utf8');
-ok(sw.includes("quran-pwa-v10.10.0-s5.5"),'Stage 5.5 cache generation missing');
+ok(sw.includes("quran-pwa-v11.0.0-ui1"),'Stage 5.5 cache generation missing');
 ok(sw.includes('async function fetchWithTimeout'),'service-worker network timeout missing');
 ok(sw.includes('if(cached){event.waitUntil(refreshSameOrigin(cache,req));return cached;}'),'code assets must be cache-first');
 ok(sw.includes("if(req.mode==='navigate')")&&sw.includes('if(cached){'),'navigation must prefer cached shell');

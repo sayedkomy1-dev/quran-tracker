@@ -1,44 +1,46 @@
-/* أكاديمية الإمام — Service Worker v10.10.0 Stage 5.4 (Instant Offline Shell + Trusted Boot) */
-const CACHE_NAME = 'quran-pwa-v10.10.0-s5.5';
-const APP_VERSION = '10.10.0';
+/* أكاديمية الإمام — Service Worker v11.0.0 Premium UI Stage 1 + Stable Offline Shell */
+const CACHE_NAME = 'quran-pwa-v11.0.0-ui1';
+const APP_VERSION = '11.0.0';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css?v=10.10.0',
-  './app.js?v=10.10.0',
-  './v8.js?v=10.10.0',
-  './v9.js?v=10.10.0',
-  './js/features/mushaf-offline.js?v=10.10.0',
-  './v9.css?v=10.10.0',
-  './v10.css?v=10.10.0',
-  './quran-engine.css?v=10.10.0',
-  './v10.js?v=10.10.0',
-  './js/features/guardian-communication.js?v=10.10.0',
-  './js/features/student-progress.js?v=10.10.0',
-  './js/features/teacher-followup.js?v=10.10.0',
-  './js/features/circle-analytics.js?v=10.10.0',
-  './js/features/guardian-portal-share.js?v=10.10.0',
+  './styles.css?v=11.0.0',
+  './v11.css?v=11.0.0',
+  './app.js?v=11.0.0',
+  './v8.js?v=11.0.0',
+  './v9.js?v=11.0.0',
+  './js/features/mushaf-offline.js?v=11.0.0',
+  './v9.css?v=11.0.0',
+  './v10.css?v=11.0.0',
+  './quran-engine.css?v=11.0.0',
+  './v10.js?v=11.0.0',
+  './js/features/guardian-communication.js?v=11.0.0',
+  './js/features/student-progress.js?v=11.0.0',
+  './js/features/teacher-followup.js?v=11.0.0',
+  './js/features/circle-analytics.js?v=11.0.0',
+  './js/features/guardian-portal-share.js?v=11.0.0',
+  './js/features/v11-ui.js?v=11.0.0',
   './guardian-portal.html',
-  './guardian-portal.css?v=10.10.0',
-  './js/features/guardian-portal-view.js?v=10.10.0',
+  './guardian-portal.css?v=11.0.0',
+  './js/features/guardian-portal-view.js?v=11.0.0',
   './guardian-login.html',
-  './guardian-login.css?v=10.10.0',
-  './guardian-login.js?v=10.10.0',
-  './js/features/quran-engine.js?v=10.10.0',
-  './js/features/quran-structure.js?v=10.10.0',
-  './js/core/runtime.js?v=10.10.0',
-  './js/core/offline-bootstrap.js?v=10.10.0',
-  './js/core/mobile-navigation.js?v=10.10.0',
-  './js/features/v10-data.js?v=10.10.0',
-  './js/features/recitation-carry.js?v=10.10.0',
-  './auth.js?v=10.10.0',
-  './sync-core.js?v=10.10.0',
-  './auth.css?v=10.10.0',
+  './guardian-login.css?v=11.0.0',
+  './guardian-login.js?v=11.0.0',
+  './js/features/quran-engine.js?v=11.0.0',
+  './js/features/quran-structure.js?v=11.0.0',
+  './js/core/runtime.js?v=11.0.0',
+  './js/core/offline-bootstrap.js?v=11.0.0',
+  './js/core/mobile-navigation.js?v=11.0.0',
+  './js/features/v10-data.js?v=11.0.0',
+  './js/features/recitation-carry.js?v=11.0.0',
+  './auth.js?v=11.0.0',
+  './sync-core.js?v=11.0.0',
+  './auth.css?v=11.0.0',
   './privacy.html',
   './terms.html',
-  './manifest.json?v=10.10.0',
+  './manifest.json?v=11.0.0',
   './favicon.png',
   './icon-96.png',
   './icon-192.png',
@@ -59,11 +61,13 @@ const APP_SHELL = [
 // installed PWA unusable offline. Keep the previous worker active instead.
 const CORE_SHELL = [
   './index.html',
-  './styles.css?v=10.10.0',
-  './app.js?v=10.10.0',
-  './auth.js?v=10.10.0',
-  './js/core/runtime.js?v=10.10.0',
-  './js/core/offline-bootstrap.js?v=10.10.0'
+  './styles.css?v=11.0.0',
+  './v11.css?v=11.0.0',
+  './js/features/v11-ui.js?v=11.0.0',
+  './app.js?v=11.0.0',
+  './auth.js?v=11.0.0',
+  './js/core/runtime.js?v=11.0.0',
+  './js/core/offline-bootstrap.js?v=11.0.0'
 ];
 
 function absolute(url){return new URL(url,self.location.href).href;}
@@ -282,5 +286,5 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5',uiStage:'11.0-premium-1'});
 });

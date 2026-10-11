@@ -8,17 +8,18 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="10.10.0">
-<link rel="manifest" href="manifest.json?v=10.10.0">
+<meta name="application-version" content="11.0.0">
+<link rel="manifest" href="manifest.json?v=11.0.0">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<script src="js/core/offline-bootstrap.js?v=10.10.0"></script>
-<link rel="stylesheet" href="styles.css?v=10.10.0">
-<link rel="stylesheet" href="v9.css?v=10.10.0">
-<link rel="stylesheet" href="v10.css?v=10.10.0">
-<link rel="stylesheet" href="quran-engine.css?v=10.10.0">
-<link rel="stylesheet" href="auth.css?v=10.10.0">
+<script src="js/core/offline-bootstrap.js?v=11.0.0"></script>
+<link rel="stylesheet" href="styles.css?v=11.0.0">
+<link rel="stylesheet" href="v9.css?v=11.0.0">
+<link rel="stylesheet" href="v10.css?v=11.0.0">
+<link rel="stylesheet" href="v11.css?v=11.0.0">
+<link rel="stylesheet" href="quran-engine.css?v=11.0.0">
+<link rel="stylesheet" href="auth.css?v=11.0.0">
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
 </style>
@@ -56,14 +57,17 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <!-- ════════════ HEADER ════════════ -->
 <div class="hdr">
   <div class="hdr-top">
-    <div>
-      <div class="hdr-title" id="hdrTitle">أكاديمية الإمام</div>
-      <div class="hdr-sub" id="hdrSub">بالقرآن نحيا</div>
+    <div class="v11-brand">
+      <img src="icon-96.png" alt="" class="v11-brand-logo" aria-hidden="true">
+      <div class="v11-brand-copy">
+        <div class="hdr-title" id="hdrTitle">أكاديمية الإمام</div>
+        <div class="hdr-sub" id="hdrSub">بالقرآن نحيا</div>
+      </div>
     </div>
     <div class="hdr-actions">
-      <button class="hdr-btn hdr-search" onclick="openQuickSearch()" title="بحث سريع — Ctrl+K" aria-label="بحث سريع">🔎</button>
-      <button class="hdr-btn v108-followup-head" onclick="goPage('followup')" title="مركز متابعة الطلاب" aria-label="مركز متابعة الطلاب">🎯<span class="hdr-badge" id="followupBadge" hidden>0</span></button>
-      <button class="hdr-btn hdr-task" onclick="goPage('tasks')" title="المهام والمتابعة" aria-label="المهام والمتابعة">☑️<span class="hdr-badge" id="taskBadge" hidden>0</span></button>
+      <button class="hdr-btn hdr-search" onclick="openQuickSearch()" title="بحث سريع — Ctrl+K" aria-label="بحث سريع"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.4-3.4"></path></svg></button>
+      <button class="hdr-btn v108-followup-head" onclick="goPage('followup')" title="مركز متابعة الطلاب" aria-label="مركز متابعة الطلاب"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg><span class="hdr-badge" id="followupBadge" hidden>0</span></button>
+      <button class="hdr-btn hdr-task" onclick="goPage('tasks')" title="المهام والمتابعة" aria-label="المهام والمتابعة"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="m8 12 2.3 2.3L16 9"></path></svg><span class="hdr-badge" id="taskBadge" hidden>0</span></button>
       <button class="hdr-btn" onclick="toggleTheme()" id="themeBtn" title="تبديل المظهر" aria-label="تبديل المظهر">🌙</button>
       <button class="back-btn" id="backBtn" onclick="goBack()">→ رجوع</button>
     </div>
@@ -985,23 +989,24 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 
 
 <!-- ════════════ SCRIPTS ════════════ -->
-<script src="js/core/runtime.js?v=10.10.0" defer></script>
-<script src="js/features/v10-data.js?v=10.10.0" defer></script>
-<script src="auth.js?v=10.10.0" defer></script>
-<script src="sync-core.js?v=10.10.0" defer></script>
-<script src="app.js?v=10.10.0" defer></script>
-<script src="v8.js?v=10.10.0" defer></script>
-<script src="v9.js?v=10.10.0" defer></script>
-<script src="js/features/mushaf-offline.js?v=10.10.0" defer></script>
-<script src="js/features/quran-engine.js?v=10.10.0" defer></script>
-<script src="js/features/quran-structure.js?v=10.10.0" defer></script>
-<script src="js/features/recitation-carry.js?v=10.10.0" defer></script>
-<script src="v10.js?v=10.10.0" defer></script>
-<script src="js/features/guardian-communication.js?v=10.10.0" defer></script>
-<script src="js/features/student-progress.js?v=10.10.0" defer></script>
-<script src="js/features/teacher-followup.js?v=10.10.0" defer></script>
-<script src="js/features/circle-analytics.js?v=10.10.0" defer></script>
-<script src="js/features/guardian-portal-share.js?v=10.10.0" defer></script>
-<script src="js/core/mobile-navigation.js?v=10.10.0" defer></script>
+<script src="js/core/runtime.js?v=11.0.0" defer></script>
+<script src="js/features/v10-data.js?v=11.0.0" defer></script>
+<script src="auth.js?v=11.0.0" defer></script>
+<script src="sync-core.js?v=11.0.0" defer></script>
+<script src="app.js?v=11.0.0" defer></script>
+<script src="v8.js?v=11.0.0" defer></script>
+<script src="v9.js?v=11.0.0" defer></script>
+<script src="js/features/mushaf-offline.js?v=11.0.0" defer></script>
+<script src="js/features/quran-engine.js?v=11.0.0" defer></script>
+<script src="js/features/quran-structure.js?v=11.0.0" defer></script>
+<script src="js/features/recitation-carry.js?v=11.0.0" defer></script>
+<script src="v10.js?v=11.0.0" defer></script>
+<script src="js/features/guardian-communication.js?v=11.0.0" defer></script>
+<script src="js/features/student-progress.js?v=11.0.0" defer></script>
+<script src="js/features/teacher-followup.js?v=11.0.0" defer></script>
+<script src="js/features/circle-analytics.js?v=11.0.0" defer></script>
+<script src="js/features/guardian-portal-share.js?v=11.0.0" defer></script>
+<script src="js/features/v11-ui.js?v=11.0.0" defer></script>
+<script src="js/core/mobile-navigation.js?v=11.0.0" defer></script>
 </body>
 </html>
