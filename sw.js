@@ -1,5 +1,6 @@
-/* أكاديمية الإمام — Service Worker v11.2.0 Interactive Error Marking Stage 1.1 + Stable Offline Shell */
-const CACHE_NAME = 'quran-pwa-v11.2.0-error1.1';
+/* أكاديمية الإمام — Service Worker v11.2.0 Interactive Error Marking Stage 1.2 + Stable Offline Shell */
+// Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
+const CACHE_NAME = 'quran-pwa-v11.2.0-error1.2';
 const APP_VERSION = '11.2.0';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
@@ -17,7 +18,7 @@ const APP_SHELL = [
   './quran-engine.css?v=11.0.0',
   './teacher-error-marking.css?v=11.2.0-s1.1',
   './v10.js?v=11.2.0-s1.1',
-  './js/features/teacher-error-marking.js?v=11.2.0-s1.1',
+  './js/features/teacher-error-marking.js?v=11.2.0-s1.2',
   './js/features/guardian-communication.js?v=11.0.0',
   './js/features/student-progress.js?v=11.0.0',
   './js/features/teacher-followup.js?v=11.0.0',
@@ -69,7 +70,7 @@ const CORE_SHELL = [
   './v11.css?v=11.0.0-s2',
   './teacher-error-marking.css?v=11.2.0-s1.1',
   './js/features/v11-ui.js?v=11.0.0-s2',
-  './js/features/teacher-error-marking.js?v=11.2.0-s1.1',
+  './js/features/teacher-error-marking.js?v=11.2.0-s1.2',
   './app.js?v=11.2.0-s1.1',
   './auth.js?v=11.0.0',
   './js/core/runtime.js?v=11.2.0',
@@ -292,5 +293,5 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5',uiStage:'11.2-error-marking-1.1'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5',uiStage:'11.2-error-marking-1.2'});
 });

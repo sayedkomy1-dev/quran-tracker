@@ -1,3 +1,9 @@
+## v11.2.0 Stage 1.2
+- Fixed annotated error-image generation/share student lookup.
+- Fixed Save & Send to Guardian WhatsApp handoff.
+- Added fail-safe WhatsApp path and Stage 1.2 cache refresh.
+- No SQL or schema change.
+
 # v11.2.0 — Interactive Error Marking Stage 1.1 Hotfix
 
 - Fixed Quran word-error persistence after the v10 compatibility layer by installing final draft/session payload bridges after v10 overrides.

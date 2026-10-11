@@ -1,0 +1,15 @@
+const fs=require('fs'),vm=require('vm');
+const read=f=>fs.readFileSync(f,'utf8');
+const ok=(v,m)=>{if(!v)throw new Error(m)};
+const teacher=read('js/features/teacher-error-marking.js');
+const index=read('index.html');
+const sw=read('sw.js');
+new vm.Script(teacher,{filename:'teacher-error-marking.js'});
+ok(teacher.includes("const appState=()=>g.ImamApp?.State||{}")&&teacher.includes('function stateStudents()')&&teacher.includes('appState().students'),'teacher feature must read students through ImamApp.State');
+ok(!teacher.includes("(g.students||[]).find"),'teacher feature still incorrectly reads lexical students from globalThis');
+ok(teacher.includes('function findStudent(id)')&&teacher.includes('const st=findStudent(ses.studentId)'),'guardian lookup bridge missing');
+ok(teacher.includes('function safeOpenWhatsApp')&&teacher.includes("toast('تم حفظ الحصة وفتح رسالة ولي الأمر'"),'fail-safe WhatsApp handoff missing');
+ok(teacher.includes('buildSnapshotCanvas')&&teacher.includes('canvasFile')&&teacher.includes('navigator.share')&&teacher.includes('downloadFile(file)'),'PNG create/share/download pipeline missing');
+ok(index.includes('js/features/teacher-error-marking.js?v=11.2.0-s1.2'),'teacher hotfix cache-buster missing');
+ok(sw.includes("quran-pwa-v11.2.0-error1.2")&&sw.includes("uiStage:'11.2-error-marking-1.2'")&&sw.includes('teacher-error-marking.js?v=11.2.0-s1.2'),'service-worker Stage 1.2 cache version missing');
+console.log('Interactive error marking Stage 1.2 share/WhatsApp hotfix checks passed');

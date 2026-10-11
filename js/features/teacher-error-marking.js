@@ -1,7 +1,7 @@
 'use strict';
-/* Imam Academy v11.2.0 — Interactive Quran Error Marking, Stage 1.1.
-   Fixes persistence across the v10 compatibility layer, remembers correction mode,
-   supports custom teacher error labels and creates a shareable annotated PNG. */
+/* Imam Academy v11.2.0 — Interactive Quran Error Marking, Stage 1.2 hotfix.
+   Fixes Guardian/WhatsApp handoff by reading lexical app state through ImamApp.State,
+   keeps annotated PNG sharing fail-safe, and never leaves Save & Send as a dead button. */
 (function teacherErrorMarking(g){
   const ERROR_TYPES=[
     ['تشكيل','pronunciation'],['نطق حرف','pronunciation'],['حذف حرف','pronunciation'],['زيادة حرف','pronunciation'],['كلمة خاطئة','pronunciation'],
@@ -13,6 +13,10 @@
   const state={enabled:true,context:'recitation',target:null,observer:null,installed:false,customTypes:[]};
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const appState=()=>g.ImamApp?.State||{};
+  function stateStudents(){const v=appState().students;return Array.isArray(v)?v:[];}
+  function stateSettings(){const v=appState().settings;return v&&typeof v==='object'?v:{};}
+  function findStudent(id){return stateStudents().find(x=>x?.id===id)||null;}
   function now(){return new Date().toISOString();}
   function errorId(){try{return makeId('qe');}catch(_){return `qe-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;}}
   function currentErrors(){try{return Array.isArray(V8.sessionErrors)?V8.sessionErrors:[];}catch(_){return[];}}
@@ -87,9 +91,9 @@
   function installPersistenceBridges(){
     const legacy=g.ImamApp?.Legacy;if(!legacy)return;
     const baseCapture=g.captureDraft,baseApply=g.applyDraft,baseBuild=g.buildSesData;
-    if(typeof baseCapture==='function')legacy.override('captureDraft',function(...args){const d=baseCapture.apply(this,args)||{};d.recitationErrors=currentErrors().map(x=>({...x}));return d;},'v11.2.0-error1.1');
-    if(typeof baseApply==='function')legacy.override('applyDraft',function(d,...args){const out=baseApply.call(this,d,...args);try{V8.sessionErrors=Array.isArray(d?.recitationErrors)?d.recitationErrors.map(x=>({...x})):[];renderSessionErrors();setTimeout(paintAllWords,0);}catch(_){}return out;},'v11.2.0-error1.1');
-    if(typeof baseBuild==='function')legacy.override('buildSesData',function(...args){const d=baseBuild.apply(this,args)||{};d.recitationErrors=currentErrors().map(x=>({...x}));return d;},'v11.2.0-error1.1');
+    if(typeof baseCapture==='function')legacy.override('captureDraft',function(...args){const d=baseCapture.apply(this,args)||{};d.recitationErrors=currentErrors().map(x=>({...x}));return d;},'v11.2.0-error1.2');
+    if(typeof baseApply==='function')legacy.override('applyDraft',function(d,...args){const out=baseApply.call(this,d,...args);try{V8.sessionErrors=Array.isArray(d?.recitationErrors)?d.recitationErrors.map(x=>({...x})):[];renderSessionErrors();setTimeout(paintAllWords,0);}catch(_){}return out;},'v11.2.0-error1.2');
+    if(typeof baseBuild==='function')legacy.override('buildSesData',function(...args){const d=baseBuild.apply(this,args)||{};d.recitationErrors=currentErrors().map(x=>({...x}));return d;},'v11.2.0-error1.2');
   }
   function rowsForImage(ses){return quranErrors(ses?.recitationErrors||[]).filter(x=>x.surah&&x.ayah).slice(0,120);}
   function groupRows(rows){const m=new Map();for(const e of rows){const k=`${e.surahId||0}:${e.ayah}`;if(!m.has(k))m.set(k,{surah:e.surah,surahId:e.surahId,ayah:e.ayah,text:e.ayahText||'',errors:[]});const g=m.get(k);if(!g.text&&e.ayahText)g.text=e.ayahText;g.errors.push(e);}return [...m.values()].sort((a,b)=>(a.surahId-b.surahId)||(a.ayah-b.ayah));}
@@ -105,7 +109,7 @@
       c.font='700 21px Arial';for(const [idx,errs] of [...byIndex.entries()].sort((a,b)=>a[0]-b[0])){const word=words[idx]||errs[0]?.word||'الموضع',types=[...new Set(errs.map(e=>`${e.type}${e.resolved?' ✓':''}`))].join('، ');c.fillStyle='#526158';c.fillText(`• ${word}: ${types}`,W-76,y);y+=34;}y+=34;
     }
     if(groups.length>maxGroups){c.fillStyle='#8A5B22';c.font='700 22px Arial';c.fillText(`+ ${groups.length-maxGroups} آيات أخرى محفوظة في سجل الحصة`,W-60,y);y+=45;}
-    c.fillStyle='#78827A';c.font='20px Arial';c.fillText(settings?.circle||'أكاديمية الإمام لتحفيظ القرآن الكريم',W-60,y+30);const H=Math.min(temp.height,Math.max(520,y+80)),out=document.createElement('canvas');out.width=W;out.height=H;out.getContext('2d').drawImage(temp,0,0,W,H,0,0,W,H);return out;
+    c.fillStyle='#78827A';c.font='20px Arial';c.fillText(stateSettings().circle||'أكاديمية الإمام لتحفيظ القرآن الكريم',W-60,y+30);const H=Math.min(temp.height,Math.max(520,y+80)),out=document.createElement('canvas');out.width=W;out.height=H;out.getContext('2d').drawImage(temp,0,0,W,H,0,0,W,H);return out;
   }
   function canvasFile(canvas,st){const data=canvas.toDataURL('image/png'),bin=atob(data.split(',')[1]),u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);const name=`quran-errors-${String(st?.name||'student').replace(/[^\p{L}\p{N}-]+/gu,'-').slice(0,40)}.png`;return new File([u8],name,{type:'image/png'});}
   function downloadFile(file){const u=URL.createObjectURL(file),a=document.createElement('a');a.href=u;a.download=file.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);}
@@ -114,13 +118,50 @@
     try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({files:[file],title:`مواضع التصحيح — ${st?.name||''}`,text:String(msg||'')});return true;}}catch(e){if(e?.name==='AbortError')return true;console.warn('[qmark] native file share failed',e);}
     downloadFile(file);try{toast('تم تنزيل صورة الأخطاء. سيتم فتح رسالة ولي الأمر أيضًا.','info');}catch(_){}return false;
   }
+  function safeOpenWhatsApp(st,msg){
+    try{
+      if(typeof g.openWhatsApp==='function')return g.openWhatsApp(st,msg);
+      if(typeof openWhatsApp==='function')return openWhatsApp(st,msg);
+    }catch(e){console.warn('[qmark] WhatsApp handoff failed',e);}
+    try{toast('تعذر فتح واتساب — جرّب مرة أخرى','error');}catch(_){}
+    return false;
+  }
   async function shareCurrentDraftImage(){
-    const sid=$('sesSt')?.value,st=(g.students||[]).find?.(x=>x.id===sid);if(!st){try{toast('اختر الطالب أولًا','error');}catch(_){}return;}const data=typeof g.buildSesData==='function'?g.buildSesData():{},dateKey=$('sesDate')?.value||new Date().toISOString().slice(0,10),ses={studentId:sid,date:dateKey,status:typeof sesStatus!=='undefined'?sesStatus:'حضر',...data};if(!rowsForImage(ses).length){try{toast('لا توجد علامات أخطاء على النص لإنشاء صورة','info');}catch(_){}return;}const msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';const shared=await shareErrorSnapshot(st,ses,msg);if(!shared&&typeof g.openWhatsApp==='function')g.openWhatsApp(st,msg);
+    const sid=$('sesSt')?.value,st=findStudent(sid);
+    if(!sid||!st){try{toast('اختر الطالب أولًا','error');}catch(_){}return;}
+    const data=typeof g.buildSesData==='function'?g.buildSesData():{},dateKey=$('sesDate')?.value||new Date().toISOString().slice(0,10),ses={studentId:sid,date:dateKey,status:typeof sesStatus!=='undefined'?sesStatus:'حضر',...data};
+    if(!rowsForImage(ses).length){try{toast('لا توجد علامات أخطاء على النص لإنشاء صورة','info');}catch(_){}return;}
+    const msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';
+    const shared=await shareErrorSnapshot(st,ses,msg);
+    if(!shared)safeOpenWhatsApp(st,msg);
   }
   function installWhatsAppBridge(){
     const legacy=g.ImamApp?.Legacy;if(!legacy)return;
-    legacy.override('saveAndSendWA',async function(){const ses=g.saveSession?.({silent:true,noCelebrate:true});if(!ses)return;const st=(g.students||[]).find?.(x=>x.id===ses.studentId);if(!st)return;const msg=g.buildWAMsg?.(st,ses)||'';if(rowsForImage(ses).length){const shared=await shareErrorSnapshot(st,ses,msg);if(!shared)g.openWhatsApp?.(st,msg);try{toast(shared?'اختر واتساب من نافذة المشاركة لإرسال صورة الأخطاء':'تم فتح رسالة ولي الأمر','success');}catch(_){}return;}g.openWhatsApp?.(st,msg);},'v11.2.0-error1.1');
-    if(typeof g.saveAndSendWAMode==='function')legacy.override('saveAndSendWAMode',async function(mode){const ses=g.saveSession?.({silent:true,noCelebrate:true});if(!ses)return;const st=(g.students||[]).find?.(x=>x.id===ses.studentId);if(!st)return;const msg=typeof g.buildWAMsgMode==='function'?g.buildWAMsgMode(st,ses,mode):g.buildWAMsg?.(st,ses)||'';if(rowsForImage(ses).length){const shared=await shareErrorSnapshot(st,ses,msg);if(!shared)g.openWhatsApp?.(st,msg);return;}g.openWhatsApp?.(st,msg);},'v11.2.0-error1.1');
+    legacy.override('saveAndSendWA',async function(){
+      let ses=null;
+      try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}catch(e){console.error('[qmark] save before WhatsApp failed',e);}
+      if(!ses){try{toast('تعذر حفظ الحصة قبل الإرسال','error');}catch(_){}return;}
+      const st=findStudent(ses.studentId);
+      if(!st){try{toast('تعذر العثور على بيانات الطالب بعد الحفظ','error');}catch(_){}return;}
+      const msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';
+      if(rowsForImage(ses).length){
+        const shared=await shareErrorSnapshot(st,ses,msg);
+        if(!shared)safeOpenWhatsApp(st,msg);
+        try{toast(shared?'تم إنشاء الصورة — اختر واتساب ثم ولي الأمر من نافذة المشاركة':'تم حفظ الحصة وفتح واتساب لولي الأمر','success');}catch(_){}
+        return;
+      }
+      safeOpenWhatsApp(st,msg);
+      try{toast('تم حفظ الحصة وفتح رسالة ولي الأمر','success');}catch(_){}
+    },'v11.2.0-error1.2');
+    if(typeof g.saveAndSendWAMode==='function')legacy.override('saveAndSendWAMode',async function(mode){
+      let ses=null;
+      try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}catch(e){console.error('[qmark] save mode before WhatsApp failed',e);}
+      if(!ses)return;
+      const st=findStudent(ses.studentId);if(!st)return;
+      const msg=typeof g.buildWAMsgMode==='function'?g.buildWAMsgMode(st,ses,mode):(typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'');
+      if(rowsForImage(ses).length){const shared=await shareErrorSnapshot(st,ses,msg);if(!shared)safeOpenWhatsApp(st,msg);return;}
+      safeOpenWhatsApp(st,msg);
+    },'v11.2.0-error1.2');
   }
   function init(){if(state.installed)return;state.installed=true;readPrefs();installPersistenceBridges();installPanel();ensureSheet();observe();hookOpeners();installWhatsAppBridge();refreshPanel();document.addEventListener('visibilitychange',()=>{if(document.hidden){savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}}});g.addEventListener?.('pagehide',()=>{savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}},{capture:true});}
   g.ImamTeacherErrorMarking={init,toggle,setContext,decorate,paintAllWords,closeSheet,shareErrorSnapshot,shareCurrentDraftImage};
