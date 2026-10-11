@@ -641,3 +641,11 @@
 - Trusted-first offline startup removes the Android false-online auth wait.
 - IndexedDB startup has a bounded fallback to the mirrored local account snapshot.
 - Android WhatsApp opens through the native scheme/intent with the message prefilled even when the device has no internet route.
+
+## v11.0.0 — Premium UI Stage 2
+- Extended the premium design system to Students, Attendance, Session, Reports, Settings and Student Profile.
+- Added a sticky session section navigator and read-only selected-student context strip.
+- Improved student search/filter ergonomics, card layout and visible-result feedback.
+- Added profile action dock and clearer settings category accents without changing application behavior.
+- Bumped the PWA UI cache generation to `quran-pwa-v11.0.0-ui2`.
+- No SQL or local schema changes; Schema remains 12.

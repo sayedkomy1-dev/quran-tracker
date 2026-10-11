@@ -1,0 +1,24 @@
+const fs=require('fs');
+const path=require('path');
+const vm=require('vm');
+const root=path.join(__dirname,'..');
+const read=f=>fs.readFileSync(path.join(root,f),'utf8');
+function ok(v,m){if(!v)throw new Error(m)}
+const html=read('index.html');
+const css=read('v11.css');
+const js=read('js/features/v11-ui.js');
+const sw=read('sw.js');
+const runtime=read('js/core/runtime.js');
+new vm.Script(js,{filename:'js/features/v11-ui.js'});
+ok(runtime.includes("version:'11.0.0',schema:12"),'runtime version/schema mismatch');
+ok(html.includes('v11.css?v=11.0.0-s2'),'stage2 stylesheet URL missing');
+ok(html.includes('js/features/v11-ui.js?v=11.0.0-s2'),'stage2 controller URL missing');
+ok(sw.includes("quran-pwa-v11.0.0-ui2"),'stage2 cache generation missing');
+ok(sw.includes("'./v11.css?v=11.0.0-s2'")&&sw.includes("'./js/features/v11-ui.js?v=11.0.0-s2'"),'stage2 assets must be offline cached');
+ok(sw.includes("uiStage:'11.0-premium-2'"),'stage2 service-worker status missing');
+ok(js.includes("const STAGE='premium-2'"),'stage2 marker missing');
+ok(js.includes('ensureSessionNavigator')&&js.includes('updateSessionContext'),'session workspace polish missing');
+ok(js.includes("state=()=>g.ImamApp?.State||{}"),'UI must use read-only app state bridge');
+ok(css.includes('.v11-page-hero')&&css.includes('.v11-session-nav')&&css.includes('.v11-session-context')&&css.includes('.v11-profile-actions'),'stage2 visual surfaces incomplete');
+ok(!/state\(\)\.students\s*=|state\(\)\.sessions\s*=/.test(js),'stage2 UI must not assign student/session collections');
+console.log('v11-premium-ui-stage2-check: PASS');

@@ -29,7 +29,7 @@ assert(view.includes("guardian_portal_session_read")&&view.includes("guardian_po
 assert(view.includes("sessionStorage.setItem")&&view.includes("history.replaceState"),'session token must be removed from the address bar after capture');
 assert(portalHtml.includes('portalStudentSwitcher')&&portalHtml.includes('portalLogoutBtn'),'sibling selector/logout UI missing');
 assert(loginCss.includes('.guardian-login-card'),'guardian login styling missing');
-assert(sw.includes('quran-pwa-v11.0.0-ui1')&&sw.includes("'./guardian-login.html'")&&sw.includes("guardianLoginNav"),'Guardian login PWA shell/navigation update missing');
+assert(sw.includes('quran-pwa-v11.0.0-ui2')&&sw.includes("'./guardian-login.html'")&&sw.includes("guardianLoginNav"),'Guardian login PWA shell/navigation update missing');
 
 assert(sql.includes('create table if not exists public.guardian_portal_accounts'),'guardian account table missing');
 assert(sql.includes('create table if not exists public.guardian_portal_login_guard'),'login throttling table missing');
