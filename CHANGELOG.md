@@ -1,3 +1,8 @@
+## Stage 5.4 — Instant Offline Shell
+- Cache-first PWA navigation/JS/CSS with background refresh and network timeouts.
+- Startup no longer waits for window.load.
+- Fixes Android offline splash hangs confirmed in device recordings.
+
 ## v10.10.0 Stage 5.1 — Offline Shell Hotfix
 - Hardened service-worker CSS/JS cache lookup with query-insensitive and canonical URL aliases.
 - Added a same-account last-good offline safety snapshot so a transient offline boot cannot open as an empty account.

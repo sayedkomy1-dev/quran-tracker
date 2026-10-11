@@ -1,5 +1,5 @@
-/* أكاديمية الإمام — Service Worker v10.10.0 Stage 5.3 (Trusted-first Boot + Android WhatsApp Intent) */
-const CACHE_NAME = 'quran-pwa-v10.10.0-s5.3';
+/* أكاديمية الإمام — Service Worker v10.10.0 Stage 5.4 (Instant Offline Shell + Trusted Boot) */
+const CACHE_NAME = 'quran-pwa-v10.10.0-s5.4';
 const APP_VERSION = '10.10.0';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
@@ -72,6 +72,13 @@ function canonicalRequest(input){
   u.search='';u.hash='';
   return new Request(u.href,{credentials:'same-origin'});
 }
+
+async function fetchWithTimeout(request,ms=1400,options={}){
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),ms);
+  try{return await fetch(request,{...options,signal:ctrl.signal});}
+  finally{clearTimeout(timer);}
+}
 async function oldCached(request){
   try{
     return (await caches.match(request))||(await caches.match(request,{ignoreSearch:true}))||null;
@@ -91,7 +98,7 @@ async function matchLocalAsset(cache,request){
 async function cacheSameOrigin(cache,url){
   const request=new Request(absolute(url),{cache:'reload',credentials:'same-origin'});
   try{
-    const response=await fetch(request);
+    const response=await fetchWithTimeout(request,3500);
     if(response&&response.ok){
       await cache.put(request,response.clone());
       // Also keep a queryless alias. It makes the offline shell resilient when
@@ -112,7 +119,7 @@ async function cacheSameOrigin(cache,url){
 async function cacheExternal(cache,url){
   const request=new Request(url,{mode:'no-cors',credentials:'omit',cache:'no-store'});
   try{
-    const response=await fetch(request);
+    const response=await fetchWithTimeout(request,2500);
     if(response&&(response.ok||response.type==='opaque')){await cache.put(request,response.clone());return true;}
   }catch(_){ }
   const previous=await oldCached(request);
@@ -153,28 +160,43 @@ async function trimRuntimeCache(cache,maxEntries=110){
   await Promise.all(keys.slice(0,keys.length-maxEntries).map(k=>cache.delete(k)));
 }
 
-async function networkFirstSameOrigin(req){
+async function refreshSameOrigin(cache,req){
+  try{
+    const res=await fetchWithTimeout(req,1800,{cache:'no-store'});
+    if(res&&res.ok){
+      await cache.put(req,res.clone());
+      await cache.put(canonicalRequest(req),res.clone());
+      await trimRuntimeCache(cache);
+      return true;
+    }
+  }catch(_){ }
+  return false;
+}
+
+async function cacheFirstSameOrigin(req){
   const cache=await caches.open(CACHE_NAME);
   const cached=await matchLocalAsset(cache,req);
+  if(cached)return cached;
   try{
-    const res=await fetch(req,{cache:'no-store'});
+    const res=await fetchWithTimeout(req,2200,{cache:'no-store'});
     if(res&&res.ok){
       cache.put(req,res.clone()).catch(()=>{});
       cache.put(canonicalRequest(req),res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});
       return res;
     }
   }catch(_){ }
-  return cached||new Response('',{status:503,statusText:'Offline'});
+  return new Response('',{status:503,statusText:'Offline'});
 }
 
 async function externalSupabase(req){
   const cache=await caches.open(CACHE_NAME);
   const cached=(await cache.match(req))||(await cache.match(SUPABASE_CDN));
+  if(cached)return cached;
   try{
-    const res=await fetch(req);
+    const res=await fetchWithTimeout(req,2200);
     if(res&&(res.ok||res.type==='opaque')){cache.put(req,res.clone()).catch(()=>{});return res;}
   }catch(_){ }
-  return cached||new Response('',{status:503,statusText:'Offline'});
+  return new Response('',{status:503,statusText:'Offline'});
 }
 
 self.addEventListener('fetch', event => {
@@ -196,23 +218,45 @@ self.addEventListener('fetch', event => {
 
   if(req.mode==='navigate'){
     event.respondWith((async()=>{
+      const cache=await caches.open(CACHE_NAME);
       const portalNav=url.pathname.endsWith('/guardian-portal.html');
       const guardianLoginNav=url.pathname.endsWith('/guardian-login.html');
       const fallback=portalNav?'./guardian-portal.html':guardianLoginNav?'./guardian-login.html':'./index.html';
-      try{
-        const preload=await event.preloadResponse;
-        const res=preload||await fetch(req);
-        if(res&&res.ok){const cache=await caches.open(CACHE_NAME);cache.put(absolute(fallback),res.clone()).catch(()=>{});}
-        return res;
-      }catch(_){
-        return (await caches.match(absolute(fallback)))||(await caches.match(absolute('./index.html')))||(await caches.match(absolute('./')))||new Response('Offline',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
+      const cached=(await matchLocalAsset(cache,req))
+        ||(await matchLocalAsset(cache,new Request(absolute(fallback),{credentials:'same-origin'})))
+        ||(await matchLocalAsset(cache,new Request(absolute('./index.html'),{credentials:'same-origin'})));
+      if(cached){
+        event.waitUntil((async()=>{
+          try{
+            const res=await fetchWithTimeout(req,1800,{cache:'no-store'});
+            if(res&&res.ok){
+              await cache.put(absolute(fallback),res.clone());
+              await cache.put(canonicalRequest(req),res.clone()).catch(()=>{});
+            }
+          }catch(_){ }
+        })());
+        return cached;
       }
+      try{
+        const preload=await Promise.race([event.preloadResponse,new Promise(r=>setTimeout(()=>r(null),700))]);
+        const res=preload||await fetchWithTimeout(req,2200,{cache:'no-store'});
+        if(res&&res.ok){cache.put(absolute(fallback),res.clone()).catch(()=>{});return res;}
+      }catch(_){ }
+      return new Response('Offline',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
     })());
     return;
   }
 
   const isCodeAsset=/\.(?:js|css)$/.test(url.pathname)||url.pathname.endsWith('/manifest.json');
-  if(isCodeAsset){event.respondWith(networkFirstSameOrigin(req));return;}
+  if(isCodeAsset){
+    event.respondWith((async()=>{
+      const cache=await caches.open(CACHE_NAME);
+      const cached=await matchLocalAsset(cache,req);
+      if(cached){event.waitUntil(refreshSameOrigin(cache,req));return cached;}
+      return cacheFirstSameOrigin(req);
+    })());
+    return;
+  }
 
   event.respondWith((async()=>{
     const cache=await caches.open(CACHE_NAME);
@@ -238,5 +282,5 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.3'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.4'});
 });

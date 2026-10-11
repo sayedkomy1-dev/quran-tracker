@@ -2341,7 +2341,9 @@ window.addEventListener('resize',()=>{
   },180);
 });
 
-window.addEventListener('load',async ()=>{
+async function wlqStartApp(){
+  if(globalThis.__wlqAppStarted)return;
+  globalThis.__wlqAppStarted=true;
   // 0. Authentication gate. First use requires online Google authentication;
   // previously trusted devices may continue locally while offline.
   if(globalThis.WeLiveQuranAuth){
@@ -2366,7 +2368,7 @@ window.addEventListener('load',async ()=>{
   renderSt();
 
   // 5. Hide splash
-  setTimeout(()=>document.getElementById('splash')?.classList.add('hide'),650);
+  setTimeout(()=>document.getElementById('splash')?.classList.add('hide'),120);
 
   // 6. PWA setup
   setupInstallPrompt();
@@ -2387,7 +2389,9 @@ window.addEventListener('load',async ()=>{
   if(typeof initQuranEngine==='function') await initQuranEngine();
   if(globalThis.WeLiveQuranAuth?.afterAppInit) await globalThis.WeLiveQuranAuth.afterAppInit();
   showAccountMigrationNotice();
-});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>wlqStartApp().catch(err=>{console.error('[boot] failed',err);document.getElementById('splash')?.classList.add('hide');}),{once:true});
+else setTimeout(()=>wlqStartApp().catch(err=>{console.error('[boot] failed',err);document.getElementById('splash')?.classList.add('hide');}),0);
 
 // ══════════════════════════════════════
 // v6.2 — SMART QURAN WORKFLOW + BROADCASTS

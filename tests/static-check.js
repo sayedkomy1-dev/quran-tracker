@@ -340,7 +340,7 @@ assert(css10.includes('.v109-kpis')&&css10.includes('.v109-table')&&css10.includ
 
 // v10.10.0 runtime/cache bridge guards.
 assert(html.includes('js/features/mushaf-offline.js?v=10.10.0'),'Mushaf feature must be cache-busted in HTML');
-assert(sw.includes('isCodeAsset')&&sw.includes("fetch(req,{cache:'no-store'})"),'service worker must use network-first for code assets');
+assert(sw.includes('isCodeAsset')&&sw.includes('cacheFirstSameOrigin')&&sw.includes('refreshSameOrigin'),'service worker must use cache-first for code assets with background refresh');
 assert(v9.includes('ImamApp?.MushafOffline?.render')&&v9.includes('ImamApp?.MushafOffline?.openCurrent'),'v9 must explicitly bridge to the new Mushaf runtime');
 assert(mushafOffline.includes('render:renderPrimaryUI')&&mushafOffline.includes('openCurrent:currentMushafPage'),'Mushaf runtime must export explicit render/openCurrent entry points');
 assert(mushafOffline.includes('قارئ 10.10.0'),'Mushaf UI field verification marker missing');
