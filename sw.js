@@ -1,5 +1,5 @@
-/* أكاديمية الإمام — Service Worker v10.10.0 Stage 5 (Offline Reliability) */
-const CACHE_NAME = 'quran-pwa-v10.10.0-s5';
+/* أكاديمية الإمام — Service Worker v10.10.0 Stage 5.1 (Offline Shell Hotfix) */
+const CACHE_NAME = 'quran-pwa-v10.10.0-s5.1';
 const APP_VERSION = '10.10.0';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
@@ -67,17 +67,45 @@ const CORE_SHELL = [
 ];
 
 function absolute(url){return new URL(url,self.location.href).href;}
+function canonicalRequest(input){
+  const u=new URL(typeof input==='string'?absolute(input):input.url);
+  u.search='';u.hash='';
+  return new Request(u.href,{credentials:'same-origin'});
+}
 async function oldCached(request){
-  try{return await caches.match(request);}catch(_){return null;}
+  try{
+    return (await caches.match(request))||(await caches.match(request,{ignoreSearch:true}))||null;
+  }catch(_){return null;}
+}
+async function matchLocalAsset(cache,request){
+  try{
+    return (await cache.match(request))
+      ||(await cache.match(request,{ignoreSearch:true}))
+      ||(await cache.match(canonicalRequest(request)))
+      ||(await caches.match(request))
+      ||(await caches.match(request,{ignoreSearch:true}))
+      ||(await caches.match(canonicalRequest(request)))
+      ||null;
+  }catch(_){return null;}
 }
 async function cacheSameOrigin(cache,url){
   const request=new Request(absolute(url),{cache:'reload',credentials:'same-origin'});
   try{
     const response=await fetch(request);
-    if(response&&response.ok){await cache.put(request,response.clone());return true;}
+    if(response&&response.ok){
+      await cache.put(request,response.clone());
+      // Also keep a queryless alias. It makes the offline shell resilient when
+      // an older HTML document asks for the same CSS/JS with a different cache-buster.
+      await cache.put(canonicalRequest(request),response.clone());
+      return true;
+    }
   }catch(_){ }
   const previous=await oldCached(request);
-  if(previous){await cache.put(request,previous.clone());return true;}
+  if(previous){
+    await cache.put(request,previous.clone());
+    await cache.put(canonicalRequest(request),previous.clone());
+    return true;
+  }
   console.warn('[SW] shell asset unavailable',url);
   return false;
 }
@@ -127,10 +155,14 @@ async function trimRuntimeCache(cache,maxEntries=110){
 
 async function networkFirstSameOrigin(req){
   const cache=await caches.open(CACHE_NAME);
-  const cached=await cache.match(req);
+  const cached=await matchLocalAsset(cache,req);
   try{
     const res=await fetch(req,{cache:'no-store'});
-    if(res&&res.ok){cache.put(req,res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});return res;}
+    if(res&&res.ok){
+      cache.put(req,res.clone()).catch(()=>{});
+      cache.put(canonicalRequest(req),res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});
+      return res;
+    }
   }catch(_){ }
   return cached||new Response('',{status:503,statusText:'Offline'});
 }
@@ -184,7 +216,7 @@ self.addEventListener('fetch', event => {
 
   event.respondWith((async()=>{
     const cache=await caches.open(CACHE_NAME);
-    const cached=await cache.match(req);
+    const cached=await matchLocalAsset(cache,req);
     if(cached)return cached;
     try{
       const res=await fetch(req);
@@ -206,5 +238,5 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:5});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.1'});
 });

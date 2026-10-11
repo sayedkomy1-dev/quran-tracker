@@ -265,6 +265,7 @@ function migrateData(){
 // v10.1.4 keeps legacy keys untouched until the teacher explicitly claims them.
 // ══════════════════════════════════════
 const WLQ_LEGACY_CLAIM_KEY='wlq.legacy.claim.v1';
+const WLQ_OFFLINE_SAFETY_KEY='wlq.offline.last-good.v1';
 let storageScopeUserId='';
 let storageScopeEmail='';
 let accountMigrationNotice=null;
@@ -337,6 +338,25 @@ function accountSnapshotFromLocalStorage(){
     tasks:parseJSONSafe(localStorage.getItem(accountLocalKey('tasks')),[]),
     settings:parseJSONSafe(localStorage.getItem(accountLocalKey('settings')),{})
   };
+}
+function readOfflineSafetySnapshot(){
+  try{
+    const box=JSON.parse(localStorage.getItem(WLQ_OFFLINE_SAFETY_KEY)||'null');
+    if(!box||String(box.userId||'')!==storageScopeUserId)return null;
+    const snap=box.snapshot;
+    if(!snap||typeof snap!=='object')return null;
+    return{students:Array.isArray(snap.students)?snap.students:[],sessions:Array.isArray(snap.sessions)?snap.sessions:[],tasks:Array.isArray(snap.tasks)?snap.tasks:[],settings:snap.settings&&typeof snap.settings==='object'?snap.settings:{}};
+  }catch(_){return null;}
+}
+function writeOfflineSafetySnapshot(){
+  try{
+    if(!storageScopeUserId)return;
+    const next={students,sessions,tasks,settings};
+    const prior=readOfflineSafetySnapshot();
+    // Never let a transient empty offline boot erase a previously good snapshot.
+    if(!snapshotHasData(next)&&snapshotHasData(prior)&&navigator.onLine===false)return;
+    localStorage.setItem(WLQ_OFFLINE_SAFETY_KEY,JSON.stringify({userId:storageScopeUserId,email:storageScopeEmail,savedAt:new Date().toISOString(),snapshot:next}));
+  }catch(e){console.warn('تعذر حفظ نسخة الأوفلاين الاحتياطية',e);}
 }
 function applySnapshot(x,source='account'){
   students=Array.isArray(x?.students)?x.students:[];
@@ -446,8 +466,13 @@ async function initDB(){
     legacySnapshot=legacySnapshotFromLocalStorage();
   }
 
+  const offlineSafety=readOfflineSafetySnapshot();
   if(accountSnapshot){
-    applySnapshot(accountSnapshot,'account');
+    if(navigator.onLine===false&&!snapshotHasData(accountSnapshot)&&snapshotHasData(offlineSafety)) applySnapshot(offlineSafety,'offline-safety');
+    else applySnapshot(accountSnapshot,'account');
+  }else if(navigator.onLine===false&&snapshotHasData(offlineSafety)){
+    applySnapshot(offlineSafety,'offline-safety');
+    accountMigrationNotice={type:'offline-safety',counts:snapshotCounts(offlineSafety)};
   }else if(snapshotHasData(legacySnapshot)){
     const claim=readLegacyClaim();
     if(claim?.userId===storageScopeUserId){
@@ -475,13 +500,14 @@ async function initDB(){
   settings.accountOwner={...(settings.accountOwner||{}),userId:storageScopeUserId,email:storageScopeEmail};
   const changed=migrateData();
   if(changed||!accountSnapshot) save();
-  else idbWriteSnapshot();
+  else {idbWriteSnapshot();writeOfflineSafetySnapshot();}
 }
 
 
 function showAccountMigrationNotice(){
   const n=accountMigrationNotice;accountMigrationNotice=null;if(!n)return;
   if(n.type==='claimed'){const c=n.counts||{};toast(`تم ربط ${c.students||0} طالب و${c.sessions||0} حصة بهذا الحساب${n.recovered?' واستعادة الترحيل':''}`,'success');}
+  else if(n.type==='offline-safety'){const c=n.counts||{};toast(`تمت استعادة النسخة المحلية الآمنة: ${c.students||0} طالب و${c.sessions||0} حصة`,'success');}
   else if(n.type==='legacy-owned-by-other')toast('توجد بيانات قديمة على هذا الجهاز مرتبطة بحساب آخر؛ تم فتح مساحة فارغة لهذا الحساب.','info');
   else if(n.type==='empty')toast('تم فتح مساحة بيانات فارغة لهذا الحساب، والبيانات القديمة لم تُحذف.','info');
 }
@@ -494,6 +520,7 @@ function save(){
     localStorage.setItem(accountLocalKey('settings'),JSON.stringify(settings));
   }catch(e){console.warn('تعذر حفظ نسخة localStorage الخاصة بالحساب',e);}
   idbWriteSnapshot();
+  writeOfflineSafetySnapshot();
   queueMicrotask(()=>{try{updateTaskBadge();}catch(_){} });
 }
 

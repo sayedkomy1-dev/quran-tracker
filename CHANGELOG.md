@@ -1,3 +1,9 @@
+## v10.10.0 Stage 5.1 — Offline Shell Hotfix
+- Hardened service-worker CSS/JS cache lookup with query-insensitive and canonical URL aliases.
+- Added a same-account last-good offline safety snapshot so a transient offline boot cannot open as an empty account.
+- Added minimal inline critical styling as a final fallback if stylesheet delivery is interrupted.
+- No SQL or local Schema changes.
+
 ## v10.10.0 — Stage 3.3 Guardian Access Polish & Forgot PIN
 - توضيح دورة إنشاء رمز ولي الأمر: زر «إنشاء رمز دخول لولي الأمر» لأول تفعيل، ثم «إنشاء PIN جديد» بعد الربط.
 - إضافة إرسال رابط الدخول عبر WhatsApp من شاشة المحفظ، مع بقاء PIN ظاهرًا مرة واحدة فقط بعد إنشائه.
