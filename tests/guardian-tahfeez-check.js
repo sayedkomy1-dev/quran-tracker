@@ -15,6 +15,6 @@ ok(js.includes('AUDIO_CACHE')&&js.includes('downloadRange')&&js.includes('downlo
 ok(js.includes('api.quran.com/api/v4/quran/verses/qpc_hafs'),'QPC Hafs source missing');
 ok(share.includes('learning:{')&&share.includes('newAssignment:'),'structured teacher assignment missing from portal snapshot');
 ok(view.includes('ImamGuardianTahfeez?.setContext'),'portal renderer does not pass student context to Tahfeez');
-ok(sw.includes("quran-pwa-v11.2.0-error1")&&sw.includes("'./guardian-tahfeez.css?v=11.2.0-s1'")&&sw.includes("'./js/features/guardian-tahfeez.js?v=11.2.0-s1'"),'Tahfeez assets not protected by offline shell');
+ok(sw.includes("quran-pwa-v11.2.0-error1.1")&&sw.includes("'./guardian-tahfeez.css?v=11.2.0-s1.1'")&&sw.includes("'./js/features/guardian-tahfeez.js?v=11.2.0-s1.1'"),'Tahfeez assets not protected by offline shell');
 ok(css.includes('.tahfeez-player')&&css.includes('.tahfeez-ayah.playing'),'Tahfeez visual states missing');
 console.log('Guardian Tahfeez Center checks passed');

@@ -10,7 +10,7 @@
 <script src="js/core/offline-bootstrap.js?v=11.0.0"></script>
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="stylesheet" href="guardian-portal.css?v=11.1.0">
-<link rel="stylesheet" href="guardian-tahfeez.css?v=11.2.0-s1">
+<link rel="stylesheet" href="guardian-tahfeez.css?v=11.2.0-s1.1">
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
 </style>
@@ -98,8 +98,8 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 
         <div class="tahfeez-grid">
           <label class="tahfeez-field tahfeez-wide"><span>السورة</span><select id="tahfeezSurah"></select></label>
-          <label class="tahfeez-field"><span>من الآية</span><select id="tahfeezFrom"></select></label>
-          <label class="tahfeez-field"><span>إلى الآية</span><select id="tahfeezTo"></select></label>
+          <label class="tahfeez-field"><span>من الآية</span><input id="tahfeezFrom" type="number" inputmode="numeric" min="1" step="1" value="1" aria-label="من الآية"></label>
+          <label class="tahfeez-field"><span>إلى الآية</span><input id="tahfeezTo" type="number" inputmode="numeric" min="1" step="1" value="7" aria-label="إلى الآية"></label>
           <label class="tahfeez-field tahfeez-wide"><span>القارئ</span><select id="tahfeezReciter"></select></label>
           <label class="tahfeez-field"><span>السرعة</span><select id="tahfeezSpeed"><option value="0.75">0.75×</option><option value="0.85">0.85×</option><option value="1" selected>1×</option><option value="1.15">1.15×</option><option value="1.25">1.25×</option></select></label>
           <label class="tahfeez-field"><span>مرات التكرار</span><input id="tahfeezRepeat" type="number" min="1" max="30" value="1" inputmode="numeric"></label>
@@ -113,9 +113,9 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
             <button type="button" data-mode="group">عدة آيات</button>
           </div>
           <div id="tahfeezTargetControls" class="tahfeez-target-controls" hidden>
-            <label id="tahfeezSingleWrap" class="tahfeez-field"><span>الآية</span><select id="tahfeezSingle"></select></label>
-            <label id="tahfeezGroupFromWrap" class="tahfeez-field" hidden><span>من</span><select id="tahfeezGroupFrom"></select></label>
-            <label id="tahfeezGroupToWrap" class="tahfeez-field" hidden><span>إلى</span><select id="tahfeezGroupTo"></select></label>
+            <label id="tahfeezSingleWrap" class="tahfeez-field"><span>الآية</span><input id="tahfeezSingle" type="number" inputmode="numeric" min="1" step="1" value="1" aria-label="رقم الآية"></label>
+            <label id="tahfeezGroupFromWrap" class="tahfeez-field" hidden><span>من</span><input id="tahfeezGroupFrom" type="number" inputmode="numeric" min="1" step="1" value="1" aria-label="من آية في مجموعة التكرار"></label>
+            <label id="tahfeezGroupToWrap" class="tahfeez-field" hidden><span>إلى</span><input id="tahfeezGroupTo" type="number" inputmode="numeric" min="1" step="1" value="7" aria-label="إلى آية في مجموعة التكرار"></label>
           </div>
         </div>
 
@@ -163,7 +163,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
   </div>
 </section>
 
-<script src="js/features/guardian-tahfeez.js?v=11.2.0-s1"></script>
+<script src="js/features/guardian-tahfeez.js?v=11.2.0-s1.1"></script>
 <script src="js/features/guardian-portal-view.js?v=11.1.0"></script>
 </body>
 </html>

@@ -2977,7 +2977,7 @@ function renderDirections(){
 }
 function fillJuzSelect(){
   const el=document.getElementById('juz-j');if(!el)return;
-  el.innerHTML='<option value="">— اختر الجزء باسمه —</option>'+JZ.map((j,i)=>`<option value="${i}">${esc(j)}</option>`).join('');
+  el.innerHTML='<option value="">— اختر الجزء باسمه —</option>'+JZ.map((j,i)=>`<option value="${i}">${esc(j)} (${i+1})</option>`).join('');
 }
 function fillSurahSelects(){
   const dl=document.getElementById('surahList');

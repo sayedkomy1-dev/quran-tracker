@@ -60,22 +60,26 @@
   }
   function remoteAudio(rec,ch,ayah){return `https://everyayah.com/data/${encodeURIComponent(rec)}/${String(ch).padStart(3,'0')}${String(ayah).padStart(3,'0')}.mp3`;}
   function revokeObject(){if(state.objectUrl){try{URL.revokeObjectURL(state.objectUrl);}catch(_){}state.objectUrl='';}}
-  function optionRows(from,to,selected){let s='';for(let i=from;i<=to;i++)s+=`<option value="${i}" ${i===selected?'selected':''}>${i}</option>`;return s;}
+  function setAyahNumberInput(id,min,max,value){
+    const el=$(id);if(!el)return;el.min=String(min);el.max=String(max);el.step='1';el.value=String(clamp(value,min,max,min));
+  }
   function fillAyahSelectors(preserve=true){
-    const r=currentRange(),max=r.max;
+    const ch=currentChapter(),max=surahAyahs(ch);
     const old={from:Number($('tahfeezFrom')?.value||1),to:Number($('tahfeezTo')?.value||max),single:Number($('tahfeezSingle')?.value||1),gf:Number($('tahfeezGroupFrom')?.value||1),gt:Number($('tahfeezGroupTo')?.value||max)};
-    const f=clamp(preserve?old.from:1,1,max,1),t=clamp(preserve?old.to:max,1,max,max);
-    $('tahfeezFrom').innerHTML=optionRows(1,max,f);$('tahfeezTo').innerHTML=optionRows(1,max,Math.max(f,t));
-    const lo=Math.min(f,Math.max(f,t)),hi=Math.max(f,t);
-    $('tahfeezSingle').innerHTML=optionRows(lo,hi,clamp(old.single,lo,hi,lo));
-    $('tahfeezGroupFrom').innerHTML=optionRows(lo,hi,clamp(old.gf,lo,hi,lo));
-    $('tahfeezGroupTo').innerHTML=optionRows(lo,hi,clamp(old.gt,lo,hi,hi));
+    const f=clamp(preserve?old.from:1,1,max,1),t=clamp(preserve?old.to:max,1,max,max),to=Math.max(f,t);
+    setAyahNumberInput('tahfeezFrom',1,max,f);setAyahNumberInput('tahfeezTo',1,max,to);
+    const lo=f,hi=to;
+    setAyahNumberInput('tahfeezSingle',lo,hi,clamp(old.single,lo,hi,lo));
+    setAyahNumberInput('tahfeezGroupFrom',lo,hi,clamp(old.gf,lo,hi,lo));
+    setAyahNumberInput('tahfeezGroupTo',lo,hi,clamp(old.gt,lo,hi,hi));
     updateLabels();
   }
   function updateTargetSelectors(){
     const r=currentRange(),lo=r.from,hi=r.to;
-    const vals={single:clamp($('tahfeezSingle')?.value,lo,hi,lo),gf:clamp($('tahfeezGroupFrom')?.value,lo,hi,lo),gt:clamp($('tahfeezGroupTo')?.value,lo,hi,hi)};
-    $('tahfeezSingle').innerHTML=optionRows(lo,hi,vals.single);$('tahfeezGroupFrom').innerHTML=optionRows(lo,hi,vals.gf);$('tahfeezGroupTo').innerHTML=optionRows(lo,hi,Math.max(vals.gf,vals.gt));
+    // Reflect clamped values back into the typed number inputs so invalid values never linger.
+    setAyahNumberInput('tahfeezFrom',1,r.max,lo);setAyahNumberInput('tahfeezTo',1,r.max,hi);
+    const single=clamp($('tahfeezSingle')?.value,lo,hi,lo),gf=clamp($('tahfeezGroupFrom')?.value,lo,hi,lo),gt=clamp($('tahfeezGroupTo')?.value,lo,hi,hi);
+    setAyahNumberInput('tahfeezSingle',lo,hi,single);setAyahNumberInput('tahfeezGroupFrom',lo,hi,gf);setAyahNumberInput('tahfeezGroupTo',lo,hi,Math.max(gf,gt));
     updateLabels();renderText();savePrefs();
   }
   function updateLabels(){

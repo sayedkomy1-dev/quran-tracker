@@ -115,7 +115,7 @@ function v1051AddJuz(){
 function v10SurahItem(name,status='not_heard'){const n=String(name||'').replace(/^سورة\s+/,'').trim(),idx=S.findIndex(s=>s.n===n);if(idx<0)return null;return{id:`surah-${idx+1}`,type:'surah',surahId:idx+1,surahName:S[idx].n,label:`سورة ${S[idx].n}`,status,evaluation:'',grade:'',errors:[],notes:''};}
 function v1059RenderJuzChips(){
   const el=document.getElementById('juz-chips');if(!el)return;
-  el.innerHTML=juzChips.map((raw,i)=>{const parsed=V1051_CARRY.parseJuzChip(raw,JZ);let label=String(raw||'');if(parsed){const j=JZ.indexOf(parsed.juzName)+1;label=parsed.quarter?`${parsed.juzName} — ${V1052_STRUCTURE.quarterLabel(j,parsed.quarter)}`:`${parsed.juzName} — حزبان · 8 أرباع`;}return `<span class="chip v1059-structure-chip" title="${v10Esc(label)}">${v10Esc(label)}<span class="chip-x" onclick="rmJuzChip(${i})">✕</span></span>`;}).join('');
+  el.innerHTML=juzChips.map((raw,i)=>{const parsed=V1051_CARRY.parseJuzChip(raw,JZ);let label=String(raw||'');if(parsed){const j=JZ.indexOf(parsed.juzName)+1;label=parsed.quarter?`${parsed.juzName} (${j}) — ${V1052_STRUCTURE.quarterLabel(j,parsed.quarter)}`:`${parsed.juzName} (${j}) — حزبان · 8 أرباع`;}return `<span class="chip v1059-structure-chip" title="${v10Esc(label)}">${v10Esc(label)}<span class="chip-x" onclick="rmJuzChip(${i})">✕</span></span>`;}).join('');
 }
 function v1051QuarterItem(juzName,quarter,status='not_heard'){const idx=JZ.indexOf(juzName);if(idx<0||quarter<1||quarter>8)return null;return{id:`juz-${idx+1}-q${quarter}`,type:'juz_quarter',juzIndex:idx+1,juzName,quarter,label:V1051_CARRY.quarterChip(juzName,quarter),status,evaluation:'',grade:'',errors:[],notes:''};}
 function v10ExpandJuz(chip){const parsed=V1051_CARRY.parseJuzChip(chip,JZ);if(!parsed)return[];if(parsed.quarter)return[v1051QuarterItem(parsed.juzName,parsed.quarter)].filter(Boolean);return[1,2,3,4,5,6,7,8].map(q=>v1051QuarterItem(parsed.juzName,q)).filter(Boolean);}
@@ -160,7 +160,7 @@ function setReviewItemGrade(groupId,itemId,grade){
   updateReviewSuggestion();scheduleDraftSave();
 }
 function setReviewItemStatus(groupId,itemId,status){if(status==='completed')return setReviewItemGrade(groupId,itemId,'جيد');if(status==='repeat'||status==='not_heard')return setReviewItemGrade(groupId,itemId,'إعادة');}
-function v1051ItemDisplay(it){if(it?.type==='juz_quarter'){const x=V1052_STRUCTURE.itemLabel(it);if(x)return x;}return it?.label||V1051_CARRY.itemLabel(it)||it?.surahName||'مقرر مراجعة';}
+function v1051ItemDisplay(it){if(it?.type==='juz_quarter'){const j=Number(it.juzIndex)||JZ.indexOf(it.juzName)+1;if(j>0&&it.juzName)return `${it.juzName} (${j}) — ${V1052_STRUCTURE.quarterLabel(j,Number(it.quarter)||1)}`;const x=V1052_STRUCTURE.itemLabel(it);if(x)return x;}return it?.label||V1051_CARRY.itemLabel(it)||it?.surahName||'مقرر مراجعة';}
 function v10ReviewGroupHTML(a){
   const result=V10.reviewResults[a.id]||{};
   return `<div class="v10-review-group"><h4>${v10Esc(a.groupName)}</h4><div class="v10-review-note">قيّم كل عنصر سمعه الطالب. أي عنصر تتركه بلا تقييم سيُسجل «لم يُسمع» ويُرحّل تلقائيًا للحصة القادمة.</div>${(a.items||[]).map(it=>{

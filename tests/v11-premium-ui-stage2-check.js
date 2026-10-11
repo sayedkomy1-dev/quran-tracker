@@ -15,7 +15,7 @@ ok(html.includes('v11.css?v=11.0.0-s2'),'stage2 stylesheet URL missing');
 ok(html.includes('js/features/v11-ui.js?v=11.0.0-s2'),'stage2 controller URL missing');
 ok(sw.includes("quran-pwa-v11.2.0-error1"),'stage2 cache generation missing');
 ok(sw.includes("'./v11.css?v=11.0.0-s2'")&&sw.includes("'./js/features/v11-ui.js?v=11.0.0-s2'"),'stage2 assets must be offline cached');
-ok(sw.includes("uiStage:'11.2-error-marking-1'"),'stage2 service-worker status missing');
+ok(sw.includes("uiStage:'11.2-error-marking-1.1'"),'stage2 service-worker status missing');
 ok(js.includes("const STAGE='premium-2'"),'stage2 marker missing');
 ok(js.includes('ensureSessionNavigator')&&js.includes('updateSessionContext'),'session workspace polish missing');
 ok(js.includes("state=()=>g.ImamApp?.State||{}"),'UI must use read-only app state bridge');

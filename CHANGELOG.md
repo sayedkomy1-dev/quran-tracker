@@ -1,3 +1,17 @@
+# v11.2.0 — Interactive Error Marking Stage 1.1 Hotfix
+
+- Fixed Quran word-error persistence after the v10 compatibility layer by installing final draft/session payload bridges after v10 overrides.
+- Draft annotations now save immediately after add/resolve/delete and again on Android hide/page exit.
+- Correction mode and the selected reading context are remembered locally; correction starts enabled on first use.
+- Added teacher-defined custom error labels in addition to preset pronunciation/memorization/tajweed choices.
+- Added full ayah text to structured word annotations so marked-text images can be rebuilt after reopening.
+- Added annotated PNG generation and Android/Web Share handoff for WhatsApp/report sharing, with local PNG fallback.
+- Fixed dark-mode contrast of error-type buttons and added a custom-error color family.
+- Fixed the Guardian Tahfeez active-ayah pale/white contrast and fragmented parent highlight.
+- Replaced Guardian Tahfeez ayah dropdowns with typed numeric inputs for from/to/single/group ranges.
+- Added Juz number in parentheses next to the Juz name in teacher review selection/chips/items.
+- Schema remains 12; no SQL changes; existing student/session data is not migrated or deleted.
+
 # v11.2.0 — Interactive Error Marking Stage 1
 
 - Added word-level Quran correction for the teacher session workflow.

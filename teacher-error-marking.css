@@ -5,3 +5,33 @@
 .error-log-item.qmark-rich{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.error-log-item.qmark-rich small{font-size:9px;color:var(--mut,#748078)}.error-log-item.qmark-rich.resolved{opacity:.68}.error-log-item .qmark-status{font-size:8px;border-radius:999px;padding:2px 5px;background:#dff0e2;color:#2e6f40}
 @media(max-width:620px){.qmark-panel-top{align-items:stretch}.qmark-toggle{width:100%}.qmark-panel label{min-width:0;width:100%}.qmark-count{align-self:flex-start}.qmark-types{grid-template-columns:repeat(3,minmax(0,1fr))}.qmark-sheet-card{max-height:86vh}.qmark-current-item{align-items:flex-start;flex-direction:column}.qmark-current-item>div:last-child{display:flex;gap:6px;width:100%}.qmark-current-item button{flex:1}}
 @media(prefers-color-scheme:dark){.qmark-legend .pronunciation{background:#4b2820;color:#ffd7ca}.qmark-legend .memory{background:#44391c;color:#ffeab0}.qmark-legend .tajweed{background:#223452;color:#d5e4ff}.qmark-legend .resolved{background:#203f2a;color:#d7f1df}.qmark-word.qmark-pronunciation{background:#503026;color:#fff}.qmark-word.qmark-memory{background:#4a3c1c;color:#fff}.qmark-word.qmark-tajweed{background:#243956;color:#fff}.qmark-word.qmark-resolved{background:#22452e;color:#fff}.qmark-type.pronunciation{background:#3b251f}.qmark-type.memory{background:#38301d}.qmark-type.tajweed{background:#213149}}
+
+/* v11.2.0 Stage 1.1 — high contrast + custom error entry + image share */
+.qmark-share{border:1px solid #2f7d55;background:#eef8f1;color:#19583a;border-radius:12px;padding:9px 12px;font-weight:800;cursor:pointer;white-space:nowrap}
+.qmark-custom-entry{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--br,#e0e5e1)}
+.qmark-custom-entry input{min-width:0;height:42px;border:1px solid #cfd9d1;border-radius:11px;background:#fff;color:#17251c;padding:0 11px;font:700 12px Arial,Tahoma,sans-serif;outline:none}
+.qmark-custom-entry input:focus{border-color:#6b4ca3;box-shadow:0 0 0 3px rgba(107,76,163,.12)}
+.qmark-custom-entry button{height:42px;border:1px solid #7656aa;border-radius:11px;background:#efe7fb;color:#53377b;padding:0 13px;font-weight:900;cursor:pointer}
+.qmark-custom-types{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.qmark-custom-types>span{font-size:9px;color:var(--mut,#748078)}
+.qmark-custom-types button{border:1px solid #cbb8e9;background:#f6f0ff;color:#55397d;border-radius:999px;padding:5px 9px;font-size:9px;font-weight:800;cursor:pointer}
+.qmark-legend .custom{background:#efe3ff;color:#5e3d86}
+.qmark-word.qmark-custom{background:#efe3ff;box-shadow:inset 0 -3px #8a64bf}
+/* Keep preset choices readable even when Android reports dark system theme. */
+.qmark-type.pronunciation{background:#fff0ea!important;color:#71301f!important;border-color:#e8a58f!important}
+.qmark-type.memory{background:#fff7d6!important;color:#624a09!important;border-color:#dcc36d!important}
+.qmark-type.tajweed{background:#e9f1ff!important;color:#244b7d!important;border-color:#9db7df!important}
+.qmark-type.custom{background:#f0e9ff!important;color:#583a7a!important;border-color:#c1a9e3!important}
+.qmark-type:active{transform:translateY(1px)}
+@media(max-width:620px){.qmark-share{width:100%}.qmark-custom-entry{grid-template-columns:1fr}.qmark-custom-entry button{width:100%}}
+@media(prefers-color-scheme:dark){
+  .qmark-share{background:#dff2e7;color:#174d34;border-color:#4c9a70}
+  .qmark-custom-entry input{background:#fff;color:#17251c;border-color:#ccd7ce}
+  .qmark-custom-entry button{background:#efe7fb;color:#53377b;border-color:#a78aca}
+  .qmark-custom-types button{background:#f6f0ff;color:#55397d;border-color:#cbb8e9}
+  .qmark-word.qmark-custom{background:#4a3267;color:#fff;box-shadow:inset 0 -3px #a987d0}
+  .qmark-type.pronunciation{background:#fff0ea!important;color:#71301f!important}
+  .qmark-type.memory{background:#fff7d6!important;color:#624a09!important}
+  .qmark-type.tajweed{background:#e9f1ff!important;color:#244b7d!important}
+  .qmark-type.custom{background:#f0e9ff!important;color:#583a7a!important}
+}

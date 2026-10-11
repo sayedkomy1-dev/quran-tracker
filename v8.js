@@ -44,13 +44,20 @@ function v8EnsureId(obj,prefix){if(!obj.id)obj.id=makeId(prefix);return obj.id;}
 function v8SafeText(v,max=5000){return String(v??'').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'').slice(0,max);}
 function v8NormalizeErrorRecord(x,fallbackAt=''){
   if(typeof x==='string')x={type:x,at:fallbackAt||v8Now()};
-  if(!x||!V8_ERROR_TYPES.includes(x.type))return null;
-  const out={type:x.type,at:v8SafeText(x.at||fallbackAt||v8Now(),40)};
-  if(x.source==='quran-word'){
+  if(!x)return null;
+  const isQuranWord=x.source==='quran-word';
+  const type=v8SafeText(x.type,60).trim().replace(/\s+/g,' ');
+  // v11.2.0 Stage 1.1: Quran word annotations may use teacher-defined labels.
+  // Legacy/free-standing error rows keep the historical whitelist.
+  if(!type||(!isQuranWord&&!V8_ERROR_TYPES.includes(type)))return null;
+  const out={type,at:v8SafeText(x.at||fallbackAt||v8Now(),40)};
+  if(isQuranWord){
     out.id=/^[A-Za-z0-9._:-]{1,160}$/.test(String(x.id||''))?String(x.id):`qe-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
     out.source='quran-word';
     out.mode=['new_read','talaqqin','recitation','review'].includes(x.mode)?x.mode:'recitation';
+    out.group=['pronunciation','memory','tajweed','custom'].includes(x.group)?x.group:(['تشكيل','نطق حرف','حذف حرف','زيادة حرف','كلمة خاطئة'].includes(type)?'pronunciation':['نسيان','تردد','تلقين','حفظ','نسيان آية'].includes(type)?'memory':['مد','غنة','إخفاء','إدغام','إقلاب','قلقلة','وقف/ابتداء','حكم تجويدي آخر','تجويد'].includes(type)?'tajweed':'custom');
     out.surah=v8SafeText(x.surah,120);out.surahId=v8Clamp(x.surahId,1,114);out.ayah=v8Clamp(x.ayah,1,400);out.wordIndex=v8Clamp(x.wordIndex,0,1000);out.word=v8SafeText(x.word,120);
+    out.ayahText=v8SafeText(x.ayahText,1200);
     out.resolved=!!x.resolved;out.resolvedAt=out.resolved?v8SafeText(x.resolvedAt||x.at||fallbackAt||v8Now(),40):'';
     if(x.note)out.note=v8SafeText(x.note,500);
   }
