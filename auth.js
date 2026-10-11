@@ -1,4 +1,4 @@
-/* We Live Quran — Authentication & Access Control v10.4.1
+/* We Live Quran — Authentication & Access Control v10.10.0 Stage 5
  * Google OAuth via Supabase, server-enforced app access, trusted-device offline fallback.
  */
 'use strict';
@@ -144,6 +144,12 @@
       if(error)throw error;
       const session=data?.session;
       if(!session?.user){
+        // Supabase keeps its own local session, but browsers may evict that key
+        // independently from the app's trusted-device marker. While genuinely
+        // offline, keep the already-approved teacher inside the local-first app.
+        // An explicit sign-out still clears both stores, so this cannot bypass
+        // a user-initiated logout.
+        if(navigator.onLine===false&&await useTrustedFallback('Supabase session unavailable while offline'))return true;
         trustedClear();
         setGate({state:'سجّل الدخول للوصول إلى التطبيق',note:'للمحفظ: استخدم Google. لولي الأمر أو الطالب: استخدم بوابة المتابعة.',login:true,guardian:true,kind:'login'});
         return false;

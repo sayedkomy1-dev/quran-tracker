@@ -598,3 +598,10 @@
 - Back dismisses the top modal/sheet, Quran range dropdown, Mushaf drawer, or Mushaf reader before changing pages.
 - Page Back returns to the actual previous app screen; Home is protected by a double-Back exit guard.
 - No SQL, Schema, student, session, or guardian-data changes.
+## v10.10.0 — Stage 5: Offline Reliability
+- يبدأ تسجيل Service Worker قبل تسجيل الدخول بدل انتظاره حتى اكتمال تشغيل التطبيق.
+- App shell ذري: لا يتم تفعيل Worker جديد إذا كانت ملفات التشغيل الأساسية ناقصة، مع استعادة الملفات من الكاش السابق عند تعذر الشبكة.
+- تخزين Supabase browser bundle في كاش الـPWA لتقليل الاعتماد على CDN عند التشغيل Offline.
+- إصلاح Trusted Offline fallback عندما تكون جلسة Supabase المحلية غير موجودة والجهاز غير متصل.
+- لا تغيير في Schema 12 أو SQL أو بنية بيانات الطلاب والحصص.
+

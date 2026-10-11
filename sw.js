@@ -1,6 +1,8 @@
-/* أكاديمية الإمام — Service Worker v10.10.0 Stage 4 */
-const CACHE_NAME = 'quran-pwa-v10.10.0-s4';
+/* أكاديمية الإمام — Service Worker v10.10.0 Stage 5 (Offline Reliability) */
+const CACHE_NAME = 'quran-pwa-v10.10.0-s5';
 const APP_VERSION = '10.10.0';
+const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+
 const APP_SHELL = [
   './',
   './index.html',
@@ -27,6 +29,7 @@ const APP_SHELL = [
   './js/features/quran-engine.js?v=10.10.0',
   './js/features/quran-structure.js?v=10.10.0',
   './js/core/runtime.js?v=10.10.0',
+  './js/core/offline-bootstrap.js?v=10.10.0',
   './js/core/mobile-navigation.js?v=10.10.0',
   './js/features/v10-data.js?v=10.10.0',
   './js/features/recitation-carry.js?v=10.10.0',
@@ -52,37 +55,111 @@ const APP_SHELL = [
   './assets/kfgqpc/mushaf604/page-002-dark.png'
 ];
 
+// If any of these are unavailable, activating the new worker would make the
+// installed PWA unusable offline. Keep the previous worker active instead.
+const CORE_SHELL = [
+  './index.html',
+  './styles.css?v=10.10.0',
+  './app.js?v=10.10.0',
+  './auth.js?v=10.10.0',
+  './js/core/runtime.js?v=10.10.0',
+  './js/core/offline-bootstrap.js?v=10.10.0'
+];
+
+function absolute(url){return new URL(url,self.location.href).href;}
+async function oldCached(request){
+  try{return await caches.match(request);}catch(_){return null;}
+}
+async function cacheSameOrigin(cache,url){
+  const request=new Request(absolute(url),{cache:'reload',credentials:'same-origin'});
+  try{
+    const response=await fetch(request);
+    if(response&&response.ok){await cache.put(request,response.clone());return true;}
+  }catch(_){ }
+  const previous=await oldCached(request);
+  if(previous){await cache.put(request,previous.clone());return true;}
+  console.warn('[SW] shell asset unavailable',url);
+  return false;
+}
+async function cacheExternal(cache,url){
+  const request=new Request(url,{mode:'no-cors',credentials:'omit',cache:'no-store'});
+  try{
+    const response=await fetch(request);
+    if(response&&(response.ok||response.type==='opaque')){await cache.put(request,response.clone());return true;}
+  }catch(_){ }
+  const previous=await oldCached(request);
+  if(previous){await cache.put(request,previous.clone());return true;}
+  console.warn('[SW] optional external asset unavailable',url);
+  return false;
+}
+
 self.addEventListener('install', event => {
   event.waitUntil((async()=>{
     const cache=await caches.open(CACHE_NAME);
-    // Cache each shell asset independently. A transient failure for one file
-    // must not prevent the new service worker from installing.
-    await Promise.all(APP_SHELL.map(async url=>{
-      try{await cache.add(url);}catch(err){console.warn('[SW] precache failed',url,err);}
-    }));
+    const results=await Promise.all(APP_SHELL.map(url=>cacheSameOrigin(cache,url)));
+    // The Supabase browser client is optional for trusted offline startup, but
+    // caching it removes the last CDN dependency on normal offline launches.
+    await cacheExternal(cache,SUPABASE_CDN);
+    for(const url of CORE_SHELL){
+      const hit=await cache.match(absolute(url));
+      if(!hit)throw new Error(`[SW] refusing incomplete offline shell: ${url}`);
+    }
+    if(!results.some(Boolean))throw new Error('[SW] no app shell assets available');
     await self.skipWaiting();
   })());
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil((async()=>{
+    // Delete old app caches only after Stage 5 has installed a complete core shell.
     const keys=await caches.keys();
     await Promise.all(keys.filter(k=>k.startsWith('quran-pwa-')&&k!==CACHE_NAME).map(k=>caches.delete(k)));
-    if(self.registration.navigationPreload) await self.registration.navigationPreload.enable().catch(()=>{});
+    if(self.registration.navigationPreload)await self.registration.navigationPreload.enable().catch(()=>{});
     await self.clients.claim();
   })());
 });
 
-async function trimRuntimeCache(cache,maxEntries=80){
+async function trimRuntimeCache(cache,maxEntries=110){
   const keys=await cache.keys();
   if(keys.length<=maxEntries)return;
   await Promise.all(keys.slice(0,keys.length-maxEntries).map(k=>cache.delete(k)));
+}
+
+async function networkFirstSameOrigin(req){
+  const cache=await caches.open(CACHE_NAME);
+  const cached=await cache.match(req);
+  try{
+    const res=await fetch(req,{cache:'no-store'});
+    if(res&&res.ok){cache.put(req,res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});return res;}
+  }catch(_){ }
+  return cached||new Response('',{status:503,statusText:'Offline'});
+}
+
+async function externalSupabase(req){
+  const cache=await caches.open(CACHE_NAME);
+  const cached=(await cache.match(req))||(await cache.match(SUPABASE_CDN));
+  try{
+    const res=await fetch(req);
+    if(res&&(res.ok||res.type==='opaque')){cache.put(req,res.clone()).catch(()=>{});return res;}
+  }catch(_){ }
+  return cached||new Response('',{status:503,statusText:'Offline'});
 }
 
 self.addEventListener('fetch', event => {
   const req=event.request;
   if(req.method!=='GET'||!req.url.startsWith('http'))return;
   const url=new URL(req.url);
+
+  // The only third-party runtime required by the teacher shell is Supabase JS.
+  // Cache it explicitly so a controlled PWA does not depend on jsDelivr offline.
+  if(url.href===SUPABASE_CDN||(
+    url.hostname==='cdn.jsdelivr.net'&&
+    url.pathname.includes('/@supabase/supabase-js@2')
+  )){
+    event.respondWith(externalSupabase(req));
+    return;
+  }
+
   if(url.origin!==self.location.origin)return;
 
   if(req.mode==='navigate'){
@@ -93,29 +170,27 @@ self.addEventListener('fetch', event => {
       try{
         const preload=await event.preloadResponse;
         const res=preload||await fetch(req);
-        if(res&&res.ok){const cache=await caches.open(CACHE_NAME);cache.put(fallback,res.clone()).catch(()=>{});}
+        if(res&&res.ok){const cache=await caches.open(CACHE_NAME);cache.put(absolute(fallback),res.clone()).catch(()=>{});}
         return res;
       }catch(_){
-        return (await caches.match(fallback))||(await caches.match('./index.html'))||(await caches.match('./'))||new Response('Offline',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
+        return (await caches.match(absolute(fallback)))||(await caches.match(absolute('./index.html')))||(await caches.match(absolute('./')))||new Response('Offline',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
       }
     })());
     return;
   }
 
+  const isCodeAsset=/\.(?:js|css)$/.test(url.pathname)||url.pathname.endsWith('/manifest.json');
+  if(isCodeAsset){event.respondWith(networkFirstSameOrigin(req));return;}
+
   event.respondWith((async()=>{
-    const isCodeAsset=/\.(?:js|css)$/.test(url.pathname)||url.pathname.endsWith('/manifest.json');
-    const cached=await caches.match(req);
-    const network=fetch(req,{cache:'no-store'}).then(async res=>{
-      if(res&&res.ok){
-        const cache=await caches.open(CACHE_NAME);
-        cache.put(req,res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});
-      }
-      return res;
-    }).catch(()=>null);
-    // Code/config is network-first so a newly deployed reader cannot be shadowed
-    // by the previous service worker cache. Other same-origin assets stay cache-first.
-    if(isCodeAsset)return (await network)||cached||new Response('',{status:503,statusText:'Offline'});
-    return cached||(await network)||new Response('',{status:503,statusText:'Offline'});
+    const cache=await caches.open(CACHE_NAME);
+    const cached=await cache.match(req);
+    if(cached)return cached;
+    try{
+      const res=await fetch(req);
+      if(res&&res.ok){cache.put(req,res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});return res;}
+    }catch(_){ }
+    return new Response('',{status:503,statusText:'Offline'});
   })());
 });
 
@@ -131,5 +206,5 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:5});
 });

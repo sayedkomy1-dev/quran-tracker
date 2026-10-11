@@ -13,5 +13,5 @@ ok(nav.includes("document.querySelectorAll('.mo.open')")||nav.includes("d.queryS
 ok(nav.includes('closeTeacherMushafReader'),'Mushaf reader Back handling missing');
 ok(nav.includes('اضغط رجوع مرة أخرى للخروج'),'double-back exit guard missing');
 ok(sw.includes("./js/core/mobile-navigation.js?v=10.10.0"),'navigation script must be in PWA shell');
-ok(sw.includes("quran-pwa-v10.10.0-s4"),'service worker cache generation must advance');
+ok(/quran-pwa-v10\.10\.0-s[45]/.test(sw),'service worker cache generation must be Stage 4 or newer');
 console.log('mobile-navigation-check: PASS');

@@ -2218,7 +2218,10 @@ function setupNetworkDetection(){
 async function registerSW(){
   if(!('serviceWorker' in navigator))return;
   try{
-    const reg=await navigator.serviceWorker.register('./sw.js');
+    // Stage 5 starts registration in <head>, before auth/CDN dependencies.
+    // Reuse that registration here so the existing update UX stays intact.
+    const reg=await (globalThis.WLQOfflineBootstrap?.ready||navigator.serviceWorker.register('./sw.js'));
+    if(!reg)return;
     if(reg.waiting){waitingSW=reg.waiting;document.getElementById('update-banner')?.classList.add('show');}
     reg.addEventListener('updatefound',()=>{
       const worker=reg.installing;if(!worker)return;

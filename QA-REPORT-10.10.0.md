@@ -97,3 +97,12 @@ PASS
 - Added `tests/mobile-navigation-check.js`.
 - Verifies load order, `popstate` routing, page history, modal/Mushaf dismissal coverage, double-Back Home guard, and Service Worker precache inclusion.
 - No SQL migration in this stage.
+## Stage 5 Offline QA
+- Full automated test suite: PASS.
+- `offline-reliability-check.js`: PASS.
+- `offline-auth-runtime-check.js`: PASS.
+- JavaScript syntax check: PASS.
+- SQL directory compared with Stage 4: no differences.
+- Local Schema: 12.
+- Device acceptance test still required: launch installed PWA once online, then enable airplane mode and relaunch.
+

@@ -1,0 +1,22 @@
+'use strict';
+const fs=require('fs'),path=require('path');
+const root=path.join(__dirname,'..');
+const read=f=>fs.readFileSync(path.join(root,f),'utf8');
+function ok(v,m){if(!v)throw new Error(m);}
+const html=read('index.html'),auth=read('auth.js'),sw=read('sw.js'),app=read('app.js');
+const gl=read('guardian-login.html'),gp=read('guardian-portal.html');
+const bootstrap=read('js/core/offline-bootstrap.js');
+ok(html.includes('js/core/offline-bootstrap.js?v=10.10.0'),'teacher shell must register SW from head');
+ok(html.indexOf('offline-bootstrap.js')<html.indexOf('cdn.jsdelivr.net/npm/@supabase/supabase-js@2'),'offline bootstrap must run before Supabase CDN');
+ok(gl.includes('offline-bootstrap.js')&&gp.includes('offline-bootstrap.js'),'guardian shells must also install the PWA worker');
+ok(bootstrap.includes("navigator.serviceWorker.register('./sw.js')"),'offline bootstrap registration missing');
+ok(app.includes('WLQOfflineBootstrap?.ready'),'late app bootstrap must reuse early SW registration');
+ok(sw.includes("quran-pwa-v10.10.0-s5"),'Stage 5 cache name missing');
+ok(sw.includes("SUPABASE_CDN")&&sw.includes("response.type==='opaque'"),'Supabase CDN must be cacheable as an opaque cross-origin response');
+ok(sw.includes('CORE_SHELL')&&sw.includes('caches.match(request)'),'new worker must recover shell assets from previous cache');
+ok(sw.includes("'./js/core/offline-bootstrap.js?v=10.10.0'"),'offline bootstrap itself must be precached');
+const noSession=auth.indexOf('if(!session?.user)');
+const offlineFallback=auth.indexOf("navigator.onLine===false&&await useTrustedFallback",noSession);
+const clearTrusted=auth.indexOf('trustedClear();',noSession);
+ok(noSession>=0&&offlineFallback>noSession&&clearTrusted>offlineFallback,'trusted offline fallback must run before clearing trust when Supabase session is absent');
+console.log('offline-reliability-check: PASS');

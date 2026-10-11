@@ -120,3 +120,6 @@ The guardian portal no longer relies on a native select control for sibling/stud
 
 ## Stage 4 — Mobile Navigation & Back
 Hardware/browser Back is now routed through app history. Modals and Mushaf overlays are dismissed first, then prior app screens are restored, with a double-Back exit guard on Home. No database change.
+## Stage 5 — Offline Reliability
+يركز هذا الجزء على تشغيل نسخة المحفظ المثبتة بدون إنترنت بعد اعتماد الجهاز مرة واحدة Online. تم تقديم تسجيل مبكر للـService Worker، كاش آمن/ذري للـApp Shell، كاش اختياري لمكتبة Supabase الخارجية، وإصلاح حالة فقد جلسة Supabase المحلية أثناء Offline مع بقاء الجهاز موثوقًا. لا توجد أي Migration جديدة وSchema المحلي ما زال 12.
+

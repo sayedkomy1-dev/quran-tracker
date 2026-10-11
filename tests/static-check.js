@@ -98,7 +98,7 @@ assert(v9.includes("document.body.classList.add('v9-shell-ready')"),'v9 shell re
 assert(sw.includes('self.skipWaiting()'),'stabilization service worker should activate promptly over the broken v9 cache');
 
 assert(sw.includes('trimRuntimeCache'),'service worker runtime cache must be bounded');
-assert(sw.includes('APP_SHELL.map(async url'),'service-worker precache should tolerate a single failed asset');
+assert(sw.includes('cacheSameOrigin')&&sw.includes('CORE_SHELL')&&sw.includes('refusing incomplete offline shell'),'service-worker must preserve an atomic offline shell with fallback to previous cache');
 assert(app.includes("candidateStatus!=='active'")&&app.includes("st.studentStatus!=='active'"),'paused/archived students must not reserve schedule slots');
 assert(v8.includes("pinKdf:'pbkdf2-sha256'")&&v8.includes('250000'),'PIN must use salted PBKDF2');
 assert(v8.includes('verifyStoredPin')&&v8.includes('pinLockedUntil'),'PIN migration/throttling is missing');
