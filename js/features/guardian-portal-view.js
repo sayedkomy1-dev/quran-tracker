@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v11.1.0 — guardian/student portal renderer + Tahfeez Center context.
+/* We Live Quran v11.2.0 — guardian/student portal renderer + Tahfeez Center context.
    Supports: Stage 1 #data= snapshot, Stage 2 #p= live link,
    and Stage 3 #s= phone/PIN authenticated short-lived session. */
 (function guardianPortalView(g){
@@ -62,7 +62,7 @@
     $('portalAssignmentDate').textContent=data.assignment?.date&&data.assignment.date!=='—'?`من حصة ${data.assignment.date}`:'لا توجد حصة حضور بعد';
     const items=Array.isArray(data.assignment?.items)?data.assignment.items:[];$('portalAssignment').innerHTML=items.length?items.map(x=>`<article class="portal-assignment-item"><b>${esc(x.icon||'')} ${esc(x.label||'')}</b><p>${esc(x.text||'')}</p></article>`).join(''):'<div class="portal-empty">لا يوجد تكليف مسجل حاليًا.</div>';
     const attention=Array.isArray(data.attention)?data.attention:[];$('portalAttention').innerHTML=attention.length?attention.map(x=>`<div class="portal-attention-item"><b>${esc(x.label)}</b><span>${x.score!==null&&x.score!==undefined?`${esc(x.score)}%`:esc(x.grade||'يحتاج متابعة')}</span></div>`).join(''):'<div class="portal-good">✅ لا توجد إشارات حديثة تستدعي التثبيت.</div>';
-    const recent=Array.isArray(data.recent)?data.recent:[];$('portalRecent').innerHTML=recent.length?recent.map(x=>`<article class="portal-session ${statusClass(x.status)}"><div class="portal-session-head"><b>${esc(x.status||'—')} · ${esc(x.date||'—')}</b><span class="portal-session-score">${x.score===null||x.score===undefined?'':`${esc(x.score)}%`}</span></div>${Array.isArray(x.recitation)&&x.recitation.length?`<ul>${x.recitation.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}</article>`).join(''):'<div class="portal-empty">لا توجد حصص مسجلة بعد.</div>';
+    const recent=Array.isArray(data.recent)?data.recent:[];$('portalRecent').innerHTML=recent.length?recent.map(x=>{const corrections=Array.isArray(x.corrections)?x.corrections:[];return `<article class="portal-session ${statusClass(x.status)}"><div class="portal-session-head"><b>${esc(x.status||'—')} · ${esc(x.date||'—')}</b><span class="portal-session-score">${x.score===null||x.score===undefined?'':`${esc(x.score)}%`}</span></div>${Array.isArray(x.recitation)&&x.recitation.length?`<ul>${x.recitation.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}${corrections.length?`<div class="portal-corrections"><b>مواضع التصحيح</b>${corrections.map(c=>`<div class="portal-correction ${c.resolved?'resolved':''}"><span>${c.resolved?'✓':'•'} ${esc(c.surah?`سورة ${c.surah} · آية ${c.ayah}`:`آية ${c.ayah}`)}</span><strong>«${esc(c.word||'—')}»${c.char?` · الحرف «${esc(c.char)}»`:''}</strong><em>${esc(c.type||'')}</em></div>`).join('')}</div>`:''}</article>`;}).join(''):'<div class="portal-empty">لا توجد حصص مسجلة بعد.</div>';
     setNote(meta.session?'session':meta.live?'live':'snapshot');
     try{g.ImamGuardianTahfeez?.setContext?.(data);}catch(err){console.warn('[guardian tahfeez context]',err);}
     $('portalContent').hidden=false;$('portalError').hidden=true;

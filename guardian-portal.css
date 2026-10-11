@@ -18,3 +18,7 @@
 .portal-student-choice small{font-size:8px;color:var(--mut);font-weight:600}
 @media(max-width:650px){.portal-switcher-head{display:block}.portal-switcher-head small{display:block;text-align:right;margin-top:2px}.portal-student-choices{grid-template-columns:1fr 1fr}}
 @media(max-width:380px){.portal-student-choices{grid-template-columns:1fr}}
+
+/* v11.2.0 Stage 2 — correction details for guardian/student */
+.portal-corrections{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line);display:grid;gap:6px}.portal-corrections>b{font-size:10px;color:var(--green)}.portal-correction{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;padding:7px 8px;border-radius:9px;background:#fff7ef;border:1px solid #f0d8c1}.portal-correction span{font-size:8px;color:var(--mut)}.portal-correction strong{font-size:10px;color:var(--ink)}.portal-correction em{grid-column:1/-1;font-style:normal;font-size:9px;color:#8b4a28}.portal-correction.resolved{background:var(--greenp);border-color:#cfe4d6}.portal-correction.resolved em{color:var(--green)}
+@media(max-width:560px){.portal-correction{grid-template-columns:1fr}.portal-correction em{grid-column:auto}}

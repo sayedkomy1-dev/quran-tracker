@@ -1,3 +1,12 @@
+## v11.2.0 — Interactive Error Marking Stage 2
+- Added exact Arabic grapheme/letter targeting inside Quran words.
+- Letter-level annotations persist with the same session/draft/cloud payload as word-level annotations.
+- Added letter underlines on Quran text and in generated correction PNGs.
+- Improved PNG creation reliability on Android by preferring Canvas `toBlob()`.
+- Added detailed correction locations to WhatsApp reports while preserving direct guardian-chat opening.
+- Added correction details to recent sessions in the guardian/student portal.
+- Schema remains 12; no SQL changes.
+
 ## v11.2.0 — Stage 1.3 Direct WhatsApp Restore
 - Restored direct guardian WhatsApp opening for Save & Send.
 - Error-image sharing is now explicit/separate and no longer interrupts the main WhatsApp flow.

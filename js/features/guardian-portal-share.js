@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v11.1.0 — Guardian & Student Portal + structured Tahfeez assignment.
+/* We Live Quran v11.2.0 — Guardian & Student Portal + structured Tahfeez assignment.
    Stage 1 snapshot links and Stage 2 stable live links remain available.
    Stage 3 adds guardian login by the student's registered phone + secure 6-digit PIN.
    Stage 3.3 adds teacher-visible forgot-PIN requests and clearer credential actions.
@@ -71,12 +71,25 @@
     if(carry.length)out.push({icon:'🔄',label:'إعادة وتثبيت',text:carry.join('، ')});
     return out.slice(0,8);
   }
+  function portalCorrections(ses,limit=12){
+    const rows=Array.isArray(ses?.recitationErrors)?ses.recitationErrors:[];
+    return rows.filter(x=>x?.source==='quran-word'&&x?.word).slice(0,limit).map(x=>({
+      surah:String(x.surah||'').slice(0,80),
+      ayah:Math.max(1,Number(x.ayah)||1),
+      word:String(x.word||'').slice(0,80),
+      char:x.targetLevel==='char'?String(x.charText||'').slice(0,20):'',
+      type:String(x.type||'').slice(0,60),
+      resolved:!!x.resolved,
+      mode:['new_read','talaqqin','recitation','review'].includes(x.mode)?x.mode:'recitation'
+    }));
+  }
   function recentSessions(studentId,limit=8){
     return stateSessions().filter(x=>x.studentId===studentId).slice().sort((a,b)=>dateValue(b)-dateValue(a)).slice(0,limit).map(ses=>({
       date:dateLabel(ses),
       status:String(ses.status||'—'),
       score:ses.status==='حضر'?sessionAverage(ses):null,
-      recitation:ses.status==='حضر'?actualText(ses):[]
+      recitation:ses.status==='حضر'?actualText(ses):[],
+      corrections:ses.status==='حضر'?portalCorrections(ses):[]
     }));
   }
   function fallbackProgress(studentId){

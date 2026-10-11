@@ -16,8 +16,8 @@ const pkg=JSON.parse(read('package.json'));
 new vm.Script(feature,{filename:'guardian-portal-share.js'});
 new vm.Script(view,{filename:'guardian-portal-view.js'});
 assert(pkg.version==='11.2.0','package version must be 10.10.0');
-assert(html.includes('guardian-portal-share.js?v=11.1.0'),'guardian portal share feature missing from main app');
-assert(sw.includes("'./guardian-portal.html'")&&sw.includes("'./guardian-portal.css?v=11.1.0'")&&sw.includes("'./js/features/guardian-portal-view.js?v=11.1.0'"),'guardian portal assets missing from offline shell');
+assert(html.includes('guardian-portal-share.js?v=11.2.0-s2'),'guardian portal share feature missing from main app');
+assert(sw.includes("'./guardian-portal.html'")&&sw.includes("'./guardian-portal.css?v=11.2.0-s2'")&&sw.includes("'./js/features/guardian-portal-view.js?v=11.2.0-s2'"),'guardian portal assets missing from offline shell');
 assert(sw.includes("portalNav=url.pathname.endsWith('/guardian-portal.html')"),'guardian portal navigation fallback missing');
 assert(portal.includes('name="robots" content="noindex,nofollow,noarchive"'),'guardian portal must be noindex');
 assert(!portal.includes('auth.js')&&!portal.includes('supabase'),'read-only snapshot portal must not bootstrap teacher authentication or Supabase');
@@ -39,7 +39,7 @@ const context={
   navigator:{},open:()=>null,
   students:[{id:'s1',name:'أحمد',parent:'ولي أحمد',phone:'201001234567',group:'حلقة النور',level:'متوسط',studentStatus:'active'}],
   sessions:[
-    {id:'secret-session-id',studentId:'s1',status:'حضر',date:new Date(now-2*86400000).toISOString(),assessmentScores:{new:88},actualRecitation:{new:{surah:'البقرة',from:1,to:5}},new:{surah:'البقرة',from:6,to:10},rec:{surah:'الفاتحة',from:1,to:7}},
+    {id:'secret-session-id',studentId:'s1',status:'حضر',date:new Date(now-2*86400000).toISOString(),assessmentScores:{new:88},actualRecitation:{new:{surah:'البقرة',from:1,to:5}},new:{surah:'البقرة',from:6,to:10},rec:{surah:'الفاتحة',from:1,to:7},recitationErrors:[{source:'quran-word',surah:'البقرة',ayah:3,word:'يؤمنون',targetLevel:'char',charText:'ؤ',type:'نطق حرف',resolved:false}]},
     {id:'absence-id',studentId:'s1',status:'غاب',date:new Date(now-86400000).toISOString()}
   ],
   settings:{circle:'أكاديمية الاختبار',name:'الشيخ محمد'},
@@ -55,6 +55,7 @@ assert(snap.student.name==='أحمد'&&snap.student.guardian==='ولي أحمد'
 assert(snap.metrics.mastery===88&&snap.metrics.attendance===50&&snap.metrics.quranProgress===12,'portal metrics not derived from current analytics');
 assert(snap.assignment.items.some(x=>x.label==='الحفظ الجديد'&&x.text.includes('6–10')),'current assignment missing from snapshot');
 assert(snap.recent.length===2&&snap.recent.some(x=>x.status==='غاب'),'recent attendance history missing');
+assert(snap.recent.some(x=>Array.isArray(x.corrections)&&x.corrections.some(c=>c.word==='يؤمنون'&&c.char==='ؤ'&&c.type==='نطق حرف')),'guardian recent-session correction detail missing');
 const serialized=JSON.stringify(snap);
 assert(!serialized.includes('201001234567'),'phone number must never be embedded in portal snapshot');
 assert(!serialized.includes('secret-session-id')&&!serialized.includes('absence-id')&&!serialized.includes('"s1"'),'internal IDs must never be embedded in portal snapshot');

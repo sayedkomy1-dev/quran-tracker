@@ -51,6 +51,6 @@ Audio-assisted error suggestions for omissions/additions/likely word errors or d
 
 ## v11.2 implementation status
 - **Stage 1 complete:** word-level interactive correction, error taxonomy, reading context and corrected state.
-- **Stage 2 next:** letter-level targeting + marked-text guardian image/export.
+- **Stage 2 delivered:** letter-level targeting, char-aware marked-text image/export, detailed WhatsApp correction locations and guardian recent-session correction details.
 - **Stage 3 planned:** persistent student error map and repeated-error analytics feeding Smart Revision Engine.
 
