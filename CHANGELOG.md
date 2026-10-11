@@ -617,3 +617,9 @@
 - Removed the blocking Supabase CDN script from the teacher shell; online auth loads it conditionally with a timeout.
 - Added bounded online profile verification fallback for broken connections.
 - Android/offline WhatsApp opens via the native `whatsapp://` URI with the message prefilled; actual delivery waits for connectivity.
+
+
+## v10.10.0 — Stage 5.3 Offline Boot + WhatsApp Handoff
+- Trusted-first offline startup removes the Android false-online auth wait.
+- IndexedDB startup has a bounded fallback to the mirrored local account snapshot.
+- Android WhatsApp opens through the native scheme/intent with the message prefilled even when the device has no internet route.

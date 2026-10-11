@@ -1,4 +1,4 @@
-/* We Live Quran — Authentication & Access Control v10.10.0 Stage 5.2
+/* We Live Quran — Authentication & Access Control v10.10.0 Stage 5.3
  * Google OAuth via Supabase, server-enforced app access, trusted-device offline fallback.
  */
 'use strict';
@@ -166,15 +166,45 @@
     if(reason)console.warn('[auth] using trusted-device offline fallback:',reason);
     return true;
   }
+  async function verifyTrustedInBackground(){
+    // navigator.onLine is not reliable on every Android/PWA build. Never block
+    // a previously approved device on it; verify opportunistically in background.
+    if(navigator.onLine===false)return;
+    try{
+      if(!(await ensureSupabaseLibrary()))return;
+      const sb=getClient();if(!sb)return;
+      const {data,error}=await withTimeout(sb.auth.getSession(),1800,'AUTH_SESSION_TIMEOUT');
+      if(error)throw error;
+      const session=data?.session;if(!session?.user)return;
+      const profile=await withTimeout(fetchProfile(session.user),2200,'AUTH_VERIFY_TIMEOUT');
+      if(profile?.status!=='active'){
+        trustedClear();access=profile||null;onlineVerified=true;
+        if(profile?.status==='blocked')setGate({state:'تم إيقاف هذا الحساب',note:'تواصل مع إدارة We Live Quran إذا كنت تعتقد أن هذا الإجراء غير صحيح.',signout:true,kind:'blocked'});
+        else setGate({state:'الحساب في انتظار التفعيل',note:'يلزم تفعيل الحساب من الإدارة قبل متابعة الاستخدام.',signout:true,retry:true,kind:'pending'});
+        return;
+      }
+      access=profile;trustedWrite(profile);onlineVerified=true;
+      document.documentElement.dataset.wlqAuth='verified';
+    }catch(err){console.warn('[auth] background verification deferred',err?.message||err);}
+  }
   async function beforeAppInit(){
     ensureGate();
+
+    // Stage 5.3: trusted-first boot. Android can report navigator.onLine=true
+    // even in airplane/no-route states. If this device was already approved,
+    // open the local-first app immediately and verify in the background when
+    // connectivity actually works. This removes the auth splash dead-wait.
+    const trusted=trustedRead();
+    if(trusted){
+      access=profileFromTrusted(trusted);onlineVerified=false;unlockGate();
+      document.documentElement.dataset.wlqAuth='trusted-fast';
+      setTimeout(verifyTrustedInBackground,0);
+      return true;
+    }
+
     setGate({state:'جارٍ التحقق من الحساب…',kind:'loading'});
 
-    // Stage 5.2 fast path: when the device is genuinely offline, never wait on
-    // the Supabase CDN or a network timeout. A previously approved device goes
-    // straight into the local-first app. First use still requires online auth.
     if(navigator.onLine===false){
-      if(await useTrustedFallback('offline fast path'))return true;
       setGate({state:'يلزم الاتصال بالإنترنت لتسجيل الدخول أول مرة.',note:'بعد اعتماد هذا الجهاز يمكن فتح التطبيق بدون إنترنت.',retry:true,kind:'offline'});
       return false;
     }

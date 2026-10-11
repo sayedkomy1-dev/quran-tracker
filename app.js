@@ -449,13 +449,22 @@ function idbWriteSnapshot(){
   }catch(e){console.warn('تعذر الكتابة إلى IndexedDB للحساب',e);}
 }
 
+function wlqTimeout(promise,ms,label){
+  let timer;
+  const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(label||'LOCAL_TIMEOUT')),ms);});
+  return Promise.race([Promise.resolve(promise).finally(()=>clearTimeout(timer)),timeout]);
+}
+
 async function initDB(){
   initStorageScope();
   const baseSettings=freshAccountSettings();
   let rows=[],map={},accountSnapshot=null,legacySnapshot=null;
   try{
-    db=await openQuranDB();
-    rows=await idbGetAll(db);
+    // IndexedDB can remain blocked after Android kills/restarts a PWA process.
+    // localStorage mirrors the same account snapshot, so never let IDB hold the
+    // splash forever: fall back after a short deterministic timeout.
+    db=await wlqTimeout(openQuranDB(),1400,'IDB_OPEN_TIMEOUT');
+    rows=await wlqTimeout(idbGetAll(db),1400,'IDB_READ_TIMEOUT');
     rows.forEach(r=>{if(r&&r.key!=null)map[r.key]=r.val;});
     accountSnapshot=snapshotFromMap(map,`acct:${storageScopeUserId}:`)||accountSnapshotFromLocalStorage();
     legacySnapshot=snapshotFromMap(map,'')||legacySnapshotFromLocalStorage();
@@ -1397,22 +1406,29 @@ function openWhatsApp(student,msg){
   if(!/^20\d{10}$/.test(phone)){toast('رقم واتساب غير صحيح','error');return false;}
   const text=encodeURIComponent(String(msg||''));
   const nativeUrl=`whatsapp://send?phone=${phone}&text=${text}`;
+  const intentUrl=`intent://send?phone=${phone}&text=${text}#Intent;scheme=whatsapp;action=android.intent.action.VIEW;end`;
   const webUrl=`https://wa.me/${phone}?text=${text}`;
   const android=/Android/i.test(navigator.userAgent||'');
 
-  // Stage 5.2: on Android use WhatsApp's native URI directly. This handoff does
-  // not need the web to be reachable, so WhatsApp can open with the message
-  // already prepared while the phone is offline; actual delivery waits for
-  // WhatsApp to regain connectivity.
+  // Stage 5.3: a hidden anchor is unreliable from installed Android PWAs.
+  // Navigate directly to the custom scheme so Android hands the payload to the
+  // installed WhatsApp app without needing wa.me or any internet connection.
+  // If Chrome/PWA does not resolve that scheme, try an Android intent URI while
+  // this document is still visible. Delivery itself remains WhatsApp's job.
   if(android||navigator.onLine===false){
     try{
-      const a=document.createElement('a');
-      a.href=nativeUrl;
-      a.style.display='none';
-      a.setAttribute('aria-hidden','true');
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(()=>a.remove(),1200);
+      let handedOff=false;
+      const onVis=()=>{if(document.visibilityState==='hidden')handedOff=true;};
+      document.addEventListener('visibilitychange',onVis,{once:true});
+      window.location.href=nativeUrl;
+      if(android){
+        setTimeout(()=>{
+          if(!handedOff&&document.visibilityState!=='hidden'){
+            try{window.location.href=intentUrl;}catch(_){ }
+          }
+        },700);
+      }
+      setTimeout(()=>document.removeEventListener('visibilitychange',onVis),1800);
       if(navigator.onLine===false)toast('تم تجهيز الرسالة في واتساب — سيتم الإرسال عند توفر الإنترنت','success');
       return true;
     }catch(err){console.warn('[whatsapp] native handoff failed',err);}

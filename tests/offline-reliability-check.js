@@ -12,12 +12,12 @@ ok(auth.includes("SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-
 ok(gl.includes('offline-bootstrap.js')&&gp.includes('offline-bootstrap.js'),'guardian shells must also install the PWA worker');
 ok(bootstrap.includes("navigator.serviceWorker.register('./sw.js')"),'offline bootstrap registration missing');
 ok(app.includes('WLQOfflineBootstrap?.ready'),'late app bootstrap must reuse early SW registration');
-ok(sw.includes("quran-pwa-v10.10.0-s5.2"),'Stage 5.2 cache name missing');
+ok(sw.includes("quran-pwa-v10.10.0-s5.3"),'Stage 5.2 cache name missing');
 ok(sw.includes("SUPABASE_CDN")&&sw.includes("response.type==='opaque'"),'Supabase CDN must be cacheable as an opaque cross-origin response');
 ok(sw.includes('CORE_SHELL')&&sw.includes('caches.match(request)'),'new worker must recover shell assets from previous cache');
 ok(sw.includes("'./js/core/offline-bootstrap.js?v=10.10.0'"),'offline bootstrap itself must be precached');
-const noSession=auth.indexOf('if(!session?.user)');
-const offlineFallback=auth.indexOf("navigator.onLine===false&&await useTrustedFallback",noSession);
-const clearTrusted=auth.indexOf('trustedClear();',noSession);
-ok(noSession>=0&&offlineFallback>noSession&&clearTrusted>offlineFallback,'trusted offline fallback must run before clearing trust when Supabase session is absent');
+ok(auth.includes('const trusted=trustedRead();'),'trusted-first auth marker lookup missing');
+ok(auth.indexOf('const trusted=trustedRead();')<auth.indexOf('const libReady=await ensureSupabaseLibrary()'),'trusted-first boot must happen before Supabase loading');
+ok(app.includes("wlqTimeout(openQuranDB(),1400,'IDB_OPEN_TIMEOUT')"),'IndexedDB open timeout fallback missing');
+ok(app.includes("wlqTimeout(idbGetAll(db),1400,'IDB_READ_TIMEOUT')"),'IndexedDB read timeout fallback missing');
 console.log('offline-reliability-check: PASS');

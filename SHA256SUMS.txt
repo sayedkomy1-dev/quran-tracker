@@ -6,10 +6,11 @@ ba89480f2ed05ba71df3c2871bb3072bb710c8c0eb91bb7ff487aee49a0c11a8  ./AUDIT-10.10.
 f0e052ac32484cb1a2d5ae170ede42e50137775a1029e9c6c15d1f165fa3baa7  ./AUDIT-10.10.0-NAV-OFFLINE.md
 7c26688d09ff8894981c783eb1c0bc5012879ccfe45104592a28170461a269a6  ./AUDIT-10.10.0-OFFLINE-5.1.md
 233b3fb3eff6d890bc5c8a1138e0aa92abfb160eca74911ac5c2a089cffaaa18  ./AUDIT-10.10.0-OFFLINE-5.2.md
+c883c2cf1634cd8a75316b615aa135fecf93d68019b9aee0df8efbe82613d2a1  ./AUDIT-10.10.0-OFFLINE-5.3.md
 0f4e67131c866b6808658c538129f32755e639456190e5a47d76bfc3c80fd1c1  ./AUDIT-10.10.0-OFFLINE-RELIABILITY.md
 af0311e82c8a616bdb2e9fbc2832cbb3a24973c00ce9027819038146d5c7f9a5  ./AUDIT-V10.md
 d5c9a717fbd5f7289df44d5df613963b1023cbd50ffe3bec8cbb1b0ffd2952e7  ./CHANGELOG-v9.2.md
-20222cc91c62f2a78f060efa66ab54af5587a6cbb0c12e109395d6b64548e140  ./CHANGELOG.md
+5c36ddfc0bc00aae1320a747b97859bd9d116e5deee081889e80bc637a19a2cd  ./CHANGELOG.md
 d6dec4981f02f1927c152da17fd04826ceb7c204d3ccb01a96d8452fec448a49  ./CNAME
 7d1d4b68b70f7a3b261759e6045da72caebe4537875b0b0447994f2b6d9f579a  ./DEPLOYMENT.md
 82d038f6af7c5d18cad6e091248c22cb62fdd4aa22190a74422fea924e1dd286  ./HOTFIX-v9.2.1.md
@@ -84,10 +85,9 @@ d075d8b99bfa524bbd28305d5673519f16cfc4078148ac8f0d4947c2ecb254dc  ./RELEASE-10.6
 64bc7bc3e4a5910c6e128412fa816d1680406bccad269ebd91a9cc93669a95f1  ./RELEASE-10.9.0.md
 fca41621fd27647f878d4bd278c8d94f8ba042728723382df56b801ea45e0be5  ./RELEASE-9.2.2.md
 6c6b35f8a0dae1d6983206dc9dfeb987343f49ef362a0af074386e01b3c0450e  ./RUNTIME-AUDIT-V10.1.md
-8721414cba4ef9c66e587759127d6eaecef459bf226b2873e12b0a9004e9141a  ./SHA256SUMS.txt
 5048d9a44c256e1173fd91ef0c203d74c178e86d88d2241f7041f479df548cab  ./V9-IMPLEMENTATION.md
 b095dfe4456c5026093def7e19e9d9541c14facdf6cc2f93d9ec5c438f058170  ./VERSION
-b79af064a07c5ae845390ca7f230f9fc2767ec5fe4bfcb9683c7eac149e62949  ./app.js
+970ea5430008505d85fc5ad1dfad89a2724d12516e7c2b2b5a529606ab49521d  ./app.js
 38026c876edc6e1dfa61a4ba135fed0aa75d76fc9ff1ba1a784ad7d2576b5361  ./assets/kfgqpc/ayah-page-map.json
 1fb6f484cc835efbba72af0db596e7927489852878f10a2866031e4a31237b03  ./assets/kfgqpc/mushaf-meta.json
 cae16406edaadc4e68b3d44fd09b6addd68a32144fbd73db939ba195bb823599  ./assets/kfgqpc/mushaf604/frame.png
@@ -243,7 +243,7 @@ eaec00f41bdc2437c57c7ba1a69a518ee566ab47e1312ec75314c159db4df917  ./assets/kfgqp
 76d19290ba7daf7cfa00f83ae0a386f07b8de5816e5fcab96945a42b670fdc9a  ./assets/mushaf-corner.svg
 77023feff6cfd8700200e1eec326959afd1a39ceb1016ac490523c7f825505b4  ./assets/mushaf-title-ornament.svg
 b5c8b6ff5faf7d4b7b175011a311ee178f46347140fed65a0f61a254f637a8f2  ./auth.css
-42c88087490dcf214f9d1d02c96612060a251ab825364066028183e1dac489d5  ./auth.js
+db9149096d9e5f657065411acb8453bd4de5e98488eeb8c21a3bb8ae0fd51fa4  ./auth.js
 5fadbade6084700133269ab6c9b067a7a3f027cc26e442e92204bf359cbd1d16  ./branding/academy-badge-source.png
 0e691950ab4f6b647638f354d738285459846a39bb653c78e5e12c55d87cb074  ./branding/academy-icon-source.png
 3bce66e25ffd74c365cbbbfd68ce2a133edde8f61936f9894445054cad24b5a9  ./favicon.png
@@ -307,7 +307,6 @@ afd19db26fd6877d77d8455895c4f223f1b7940f2089fc756bb9deb721fdaabc  ./screenshots/
 f8eaff021fc31660955ac0b1221cbdab6fa0cd5fd83e4681b7cf76f387bc9222  ./screenshots/RELEASE-10.1.5.md
 fca41621fd27647f878d4bd278c8d94f8ba042728723382df56b801ea45e0be5  ./screenshots/RELEASE-9.2.2.md
 6c6b35f8a0dae1d6983206dc9dfeb987343f49ef362a0af074386e01b3c0450e  ./screenshots/RUNTIME-AUDIT-V10.1.md
-051b1e1b70d52dbff42ec0248bb53de444e2619463b9088af9efa19fd7d1ba73  ./screenshots/SHA256SUMS.txt
 5048d9a44c256e1173fd91ef0c203d74c178e86d88d2241f7041f479df548cab  ./screenshots/V9-IMPLEMENTATION.md
 af36705d84c58cd49a52d30c7313c64b24fbf624d9feba90b3dfbe53326a6aa1  ./screenshots/VERSION
 a112921f5f09821f8112d128defbe4ae1793bbe3f7c6fbc6c11d8ccb6c2d12bf  ./screenshots/app.js
@@ -359,7 +358,7 @@ e2ee210099231f20d2005138bf3de83dcb0abb8c6344254d276981622fa025c7  ./sql/guardian
 2cd2104617b8833897a773f39fdaed795d3a1ad902dd582a4bdce167b6e6dcfb  ./sql/supabase-setup.sql
 5f4c5de555bf095e4c26978464bcffdfae6e31b00c6feb04adde596e5b55bbdc  ./sql/supabase-sync.sql
 ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
-eccaebfd2903dab6680f0f4c4598be7f050af309432aa948706fdd3be6c17b5f  ./sw.js
+4145fdd6925ae776adfb7f62b176fc83a2b6fce919a47c165ad8e0d31a3fe250  ./sw.js
 ea20f4f217006cce39302d24e30306e779831e4556126eb41c5ef7a9869c219e  ./sync-core.js
 2c46679379ddeacb58fc54b2608472c67fca55fab4e01acaa60acb75525eb3e3  ./terms.html
 a0ab0760c2cc0e56d5e484db3f1f37ddf8cc13d5ddcc8ee0e1bde6adf483e586  ./tests/ayah-page-map-check.js
@@ -380,10 +379,10 @@ e7000dc6751ec18ba6840f56cbb2715f882f91ca2deeca864947651c00da2239  ./tests/guardi
 e9a6c66be4f0e726adf8c5da1ba4d9f8600ed6446f24579c2eac93bfc45a60c2  ./tests/mobile-navigation-check.js
 b3a8e5f8aa710378cf6e0a2bfd3df2425c31659b03b2928df8e843a20fe2457d  ./tests/mobile-navigation-runtime-check.js
 4563a118ba22991d0a75194c5217b71423766ad8b418790d253c25cc5f65ed8b  ./tests/offline-auth-runtime-check.js
-11b52cd31d6406682cdd2e3b5a71a950b878e50c891deafadc3cbab3453f9876  ./tests/offline-reliability-check.js
+3204812d17ac2ab748aaddeb4f77f496e16ec004b3b8ceab88d9713a4f6a2903  ./tests/offline-reliability-check.js
 767676682df35c3ce5612e60e03aff84e033051dae7582691e66fc969db30b6c  ./tests/offline-safety-snapshot-check.js
-ed9dfb12cc78128c8d85b87e5b367c87f4ade798eb58f2d7b81fbb96e8913c5f  ./tests/offline-style-fallback-check.js
-2cdd69e70ac0a4b309f4f96fa10114077aad06d443d28cbcffb17af28dd089f8  ./tests/offline-whatsapp-check.js
+67835d16a390f469f425138a86ebbb09d321733a0905eadd2a127ad53556d7dd  ./tests/offline-style-fallback-check.js
+19db3a6d25cccb7d9025e5cfb80a7c59c3b8e801187c6495d0f2767b00c12bc9  ./tests/offline-whatsapp-check.js
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
 4e362a119199abf07675fe09523ec2e30f6b31b51223d57e4150a47b1ca021c2  ./tests/static-check.js
