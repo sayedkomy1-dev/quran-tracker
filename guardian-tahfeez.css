@@ -12,3 +12,10 @@ body.tahfeez-open{overflow:hidden}.tahfeez-shell{position:fixed;z-index:10000;in
 @media(max-width:820px){.tahfeez-section-head{flex-direction:column}.tahfeez-head-actions{width:100%;justify-content:stretch}.tahfeez-head-actions button{flex:1}.tahfeez-practice-modes{grid-template-columns:repeat(4,minmax(0,1fr));overflow-x:auto}.tahfeez-practice-modes button{min-width:110px}.tahfeez-focus-text{font-size:23px}.tahfeez-reader-head{align-items:flex-end}.tahfeez-reader-actions{display:flex;gap:6px}.tahfeez-reader-actions button{padding:7px 9px;font-size:10px}}
 @media(max-width:430px){.tahfeez-practice-modes{grid-template-columns:repeat(4,105px)}.tahfeez-focus-card{padding:12px}.tahfeez-focus-text{font-size:21px}.tahfeez-reader-head{flex-direction:column;align-items:stretch}.tahfeez-reader-actions{justify-content:flex-end}}
 @media(prefers-color-scheme:dark){.tahfeez-practice-modes button{background:#18251d;border-color:#2d4034;color:#e7eee9}.tahfeez-practice-modes button small{color:#9aa69e}.tahfeez-practice-modes button.active{background:#203a2b;border-color:#3b7d5d}.tahfeez-link-btn.secondary{background:#1d2b22;color:#b8c7bd}.tahfeez-focus-card{background:linear-gradient(135deg,#17251c,#181d18);border-color:#2d4034}.tahfeez-focus-text{color:#e7eee8}.tahfeez-progress-track{background:#26342b}}
+
+/* v11.2 Stage 1 — mobile Quran reader geometry fix.
+   Avoid native <button> layout artifacts on long ayat in Android Chrome. */
+.tahfeez-ayah{min-height:0!important;height:auto!important;max-height:none!important;vertical-align:baseline;white-space:normal;appearance:none;-webkit-appearance:none;box-sizing:content-box}
+.tahfeez-ayah:focus-visible{outline:2px solid #2b7b56;outline-offset:2px}
+@media(max-width:820px){.tahfeez-reader{padding-bottom:10px}.tahfeez-text{min-height:0;height:auto}.tahfeez-layout{min-height:0}.tahfeez-player{z-index:4}}
+@media(max-width:430px){.tahfeez-player{padding-top:7px;padding-bottom:calc(7px + env(safe-area-inset-bottom))}.tahfeez-now{min-height:18px}.tahfeez-seek-row{margin:4px auto}.tahfeez-control{width:37px;height:37px}.tahfeez-control.play{width:46px;height:46px}.tahfeez-secondary-controls{margin-top:4px}}

@@ -9,5 +9,5 @@ ok(js.includes('updateSessionProgress')&&js.includes('tahfeezProgressBar'),'sess
 ok(js.includes('LAST_PREFIX')&&js.includes('resumeLast')&&js.includes('saveLast'),'per-student resume state missing');
 ok(js.includes('toggleReveal')&&js.includes('applyTextVisibility'),'self-test reveal logic missing');
 ok(css.includes('.tahfeez-practice-modes')&&css.includes('.tahfeez-focus-card')&&css.includes('.tahfeez-text.concealed'),'Stage2 visual states missing');
-ok(sw.includes("quran-pwa-v11.1.0-tahfeez2")&&sw.includes("uiStage:'11.1-tahfeez-2'"),'Stage2 service worker version missing');
+ok(sw.includes("quran-pwa-v11.2.0-error1")&&sw.includes("uiStage:'11.2-error-marking-1'"),'Stage2 service worker version missing');
 console.log('Guardian Tahfeez Center Stage 2 checks passed');

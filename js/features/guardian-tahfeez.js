@@ -1,5 +1,5 @@
 'use strict';
-/* Imam Academy v11.1.0 — Guardian/Student Tahfeez Center, Stage 2.
+/* Imam Academy v11.2.0 — Guardian/Student Tahfeez Center, Stage 2.1 layout fix.
    Read-only learning player: range/single/group repetition, talaqqin mode,
    full transport controls, QPC Hafs text cache, and optional offline audio. */
 (function guardianTahfeezFeature(g){
@@ -171,8 +171,8 @@
   function renderText(){
     const r=currentRange(),bounds=repeatBounds(),rows=state.verses.filter(v=>v.ayah>=r.from&&v.ayah<=r.to),el=$('tahfeezText');if(!el)return;
     if(!rows.length){el.innerHTML='<div class="tahfeez-empty">سيظهر النص العثماني هنا بعد التحميل.</div>';return;}
-    el.innerHTML=rows.map(v=>`<button type="button" class="tahfeez-ayah ${v.ayah===state.selectedAyah?'selected':''} ${v.ayah>=bounds.from&&v.ayah<=bounds.to?'target':''}" data-ayah="${v.ayah}"><span>${esc(v.text)}</span><i>${v.ayah}</i></button>`).join('');
-    el.querySelectorAll('.tahfeez-ayah').forEach(btn=>btn.addEventListener('click',()=>selectAyah(Number(btn.dataset.ayah),false)));applyTextVisibility();updateFocus();
+    el.innerHTML=rows.map(v=>`<span role="button" tabindex="0" class="tahfeez-ayah ${v.ayah===state.selectedAyah?'selected':''} ${v.ayah>=bounds.from&&v.ayah<=bounds.to?'target':''}" data-ayah="${v.ayah}"><span>${esc(v.text)}</span><i>${v.ayah}</i></span>`).join(' ');
+    el.querySelectorAll('.tahfeez-ayah').forEach(btn=>{btn.addEventListener('click',()=>selectAyah(Number(btn.dataset.ayah),false));btn.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectAyah(Number(btn.dataset.ayah),false);}});});applyTextVisibility();updateFocus();
   }
   function selectAyah(a,play=false){
     const r=currentRange();state.selectedAyah=clamp(a,r.from,r.to,r.from);$('tahfeezNowAyah').textContent=`الآية ${state.selectedAyah}`;

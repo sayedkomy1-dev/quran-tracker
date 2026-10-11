@@ -11,7 +11,7 @@ const V8_PLANS={
   stabilize:{label:'ختمة تثبيت',icon:'🧱',sections:{new:false,rec:true,far:true,juz:true,surahReview:true}},
   shortSurahs:{label:'قصار السور',icon:'🌙',sections:{new:true,rec:true,far:false,juz:false,surahReview:true}}
 };
-const V8_ERROR_TYPES=['حفظ','تردد','تلقين','تجويد','تشكيل','نسيان آية'];
+const V8_ERROR_TYPES=['حفظ','تردد','تلقين','تجويد','تشكيل','نسيان آية','نطق حرف','حذف حرف','زيادة حرف','كلمة خاطئة','نسيان','مد','غنة','إخفاء','إدغام','إقلاب','قلقلة','وقف/ابتداء','حكم تجويدي آخر'];
 const V8_PASS_GRADES=new Set(['ممتاز','جيد جداً','جيد']);
 const V8={
   inited:false,sessionErrors:[],voiceNoteId:'',pendingVoiceBlob:null,mediaRecorder:null,mediaChunks:[],recordStartedAt:0,
@@ -42,6 +42,20 @@ function v8SurahIndex(v){
 }
 function v8EnsureId(obj,prefix){if(!obj.id)obj.id=makeId(prefix);return obj.id;}
 function v8SafeText(v,max=5000){return String(v??'').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,'').slice(0,max);}
+function v8NormalizeErrorRecord(x,fallbackAt=''){
+  if(typeof x==='string')x={type:x,at:fallbackAt||v8Now()};
+  if(!x||!V8_ERROR_TYPES.includes(x.type))return null;
+  const out={type:x.type,at:v8SafeText(x.at||fallbackAt||v8Now(),40)};
+  if(x.source==='quran-word'){
+    out.id=/^[A-Za-z0-9._:-]{1,160}$/.test(String(x.id||''))?String(x.id):`qe-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+    out.source='quran-word';
+    out.mode=['new_read','talaqqin','recitation','review'].includes(x.mode)?x.mode:'recitation';
+    out.surah=v8SafeText(x.surah,120);out.surahId=v8Clamp(x.surahId,1,114);out.ayah=v8Clamp(x.ayah,1,400);out.wordIndex=v8Clamp(x.wordIndex,0,1000);out.word=v8SafeText(x.word,120);
+    out.resolved=!!x.resolved;out.resolvedAt=out.resolved?v8SafeText(x.resolvedAt||x.at||fallbackAt||v8Now(),40):'';
+    if(x.note)out.note=v8SafeText(x.note,500);
+  }
+  return out;
+}
 function v8Toast(msg,type='info'){try{toast(msg,type);}catch(_){console.log(msg);}}
 
 function migrateV8Data(){
@@ -53,8 +67,9 @@ function migrateV8Data(){
   });
   sessions.forEach(se=>{
     if(!Array.isArray(se.recitationErrors)){se.recitationErrors=[];changed=true;}
-    if(se.recitationErrors.some(x=>typeof x==='string')){se.recitationErrors=se.recitationErrors.map(x=>typeof x==='string'?{type:x,at:se.updatedAt||se.date||v8Now()}:x);changed=true;}
-    se.recitationErrors=se.recitationErrors.filter(x=>x&&V8_ERROR_TYPES.includes(x.type)).map(x=>({type:x.type,at:x.at||se.date||v8Now()}));
+    const normalizedErrors=se.recitationErrors.map(x=>v8NormalizeErrorRecord(x,se.updatedAt||se.date||v8Now())).filter(Boolean);
+    if(JSON.stringify(normalizedErrors)!==JSON.stringify(se.recitationErrors))changed=true;
+    se.recitationErrors=normalizedErrors;
     if(se.voiceNoteId!=null)se.voiceNoteId=v8SafeText(se.voiceNoteId,160);
     if(!se.updatedAt){se.updatedAt=se.createdAt||se.date||v8Now();changed=true;}
   });
@@ -254,7 +269,12 @@ function applyReviewSuggestion(i){const x=V8.currentDue?.[i];if(!x)return;const 
 // ──────────────────────────────────────
 function addRecitationError(type){if(!V8_ERROR_TYPES.includes(type))return;V8.sessionErrors.push({type,at:v8Now()});renderSessionErrors();scheduleDraftSave();}
 function removeRecitationError(i){V8.sessionErrors.splice(i,1);renderSessionErrors();scheduleDraftSave();}
-function renderSessionErrors(){const n=V8.sessionErrors.length,l=document.getElementById('errorCountLabel'),el=document.getElementById('sessionErrorList');if(l)l.textContent=n===1?'خطأ واحد':`${n} أخطاء`;if(el)el.innerHTML=V8.sessionErrors.map((x,i)=>`<span class="error-log-item">${v8Esc(x.type)} <button type="button" onclick="removeRecitationError(${i})">✕</button></span>`).join('')||'<span class="txt-mut" style="font-size:10px">اضغط على نوع الخطأ أثناء التسميع؛ يمكن تكراره أكثر من مرة.</span>';}
+function renderSessionErrors(){
+  const n=V8.sessionErrors.length,l=document.getElementById('errorCountLabel'),el=document.getElementById('sessionErrorList');if(l)l.textContent=n===1?'خطأ واحد':`${n} أخطاء`;if(!el)return;
+  const modeLabel=m=>m==='new_read'?'الحفظ الجديد':m==='talaqqin'?'التلقين':m==='review'?'المراجعة':'التسميع';
+  el.innerHTML=V8.sessionErrors.map((x,i)=>{if(x?.source==='quran-word'){const where=[x.surah?`سورة ${v8Esc(x.surah)}`:'',x.ayah?`آية ${v8Esc(x.ayah)}`:'',x.word?`«${v8Esc(x.word)}»`:''].filter(Boolean).join(' · ');return `<span class="error-log-item qmark-rich ${x.resolved?'resolved':''}"><b>${v8Esc(x.type)}</b><small>${v8Esc(modeLabel(x.mode))}${where?' · '+where:''}</small>${x.resolved?'<span class="qmark-status">تم التصحيح</span>':''}<button type="button" onclick="removeRecitationError(${i})">✕</button></span>`;}return `<span class="error-log-item">${v8Esc(x.type)} <button type="button" onclick="removeRecitationError(${i})">✕</button></span>`;}).join('')||'<span class="txt-mut" style="font-size:10px">اضغط على نوع الخطأ أو افتح النص القرآني وفعّل وضع التصحيح التفاعلي.</span>';
+  try{globalThis.ImamTeacherErrorMarking?.paintAllWords?.();}catch(_){}
+}
 function studentErrorSummary(studentId){const m={};sessions.filter(s=>s.studentId===studentId).forEach(s=>(s.recitationErrors||[]).forEach(e=>m[e.type]=(m[e.type]||0)+1));return Object.entries(m).sort((a,b)=>b[1]-a[1]);}
 
 // ──────────────────────────────────────
@@ -531,7 +551,7 @@ async function autoCloudSync(){if(!settings.sync?.auto||!syncConfigValid())retur
 // ──────────────────────────────────────
 function sanitizeBackupData(d){
   const safe=__IMAM_BASE__.sanitizeBackupData(d);safe.students.forEach((st,i)=>{const raw=d.students?.[i]||{};st.plan=V8_PLANS[raw.plan]?raw.plan:'balanced';st.nextMode=['same','next'].includes(raw.nextMode)?raw.nextMode:'same';});
-  safe.sessions.forEach((se,i)=>{const raw=(d.sessions||[])[i]||{};se.recitationErrors=(raw.recitationErrors||[]).filter(x=>x&&V8_ERROR_TYPES.includes(x.type)).slice(0,1000).map(x=>({type:x.type,at:v8SafeText(x.at,40)}));if(/^[A-Za-z0-9._:-]{1,160}$/.test(String(raw.voiceNoteId||'')))se.voiceNoteId=raw.voiceNoteId;if(Array.isArray(raw.reviewAssignments))se.reviewAssignments=JSON.parse(JSON.stringify(raw.reviewAssignments));if(Array.isArray(raw.reviewResults))se.reviewResults=JSON.parse(JSON.stringify(raw.reviewResults));if(raw.assessmentScores&&typeof raw.assessmentScores==='object'){const scores={};for(const k of ['new','rec','far','juz','surahReview']){if(raw.assessmentScores[k]===null||raw.assessmentScores[k]===undefined||raw.assessmentScores[k]==='')continue;const n=Math.round(Number(raw.assessmentScores[k]));if(Number.isFinite(n))scores[k]=Math.max(0,Math.min(100,n));}if(Object.keys(scores).length)se.assessmentScores=scores;}});return safe;
+  safe.sessions.forEach((se,i)=>{const raw=(d.sessions||[])[i]||{};se.recitationErrors=(raw.recitationErrors||[]).slice(0,1000).map(x=>v8NormalizeErrorRecord(x,se.updatedAt||se.date||v8Now())).filter(Boolean);if(/^[A-Za-z0-9._:-]{1,160}$/.test(String(raw.voiceNoteId||'')))se.voiceNoteId=raw.voiceNoteId;if(Array.isArray(raw.reviewAssignments))se.reviewAssignments=JSON.parse(JSON.stringify(raw.reviewAssignments));if(Array.isArray(raw.reviewResults))se.reviewResults=JSON.parse(JSON.stringify(raw.reviewResults));if(raw.assessmentScores&&typeof raw.assessmentScores==='object'){const scores={};for(const k of ['new','rec','far','juz','surahReview']){if(raw.assessmentScores[k]===null||raw.assessmentScores[k]===undefined||raw.assessmentScores[k]==='')continue;const n=Math.round(Number(raw.assessmentScores[k]));if(Number.isFinite(n))scores[k]=Math.max(0,Math.min(100,n));}if(Object.keys(scores).length)se.assessmentScores=scores;}});return safe;
 }
 function importData(e){
   const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!d||!Array.isArray(d.students)||!Array.isArray(d.sessions||[]))throw new Error('بنية الملف غير صحيحة');const safe=sanitizeBackupData(d);if(!confirm(`سيتم استبدال البيانات الحالية واستيراد ${safe.students.length} طالب و${safe.sessions.length} حصة.\nيفضل أخذ نسخة احتياطية أولاً.\n\nهل تريد الاستمرار؟`))return;const localSync=settings.sync,localSecurity=settings.security;students=safe.students;sessions=safe.sessions;tasks=safe.tasks||[];const cfg=d.settings&&typeof d.settings==='object'?d.settings:{};settings={...settings,...cfg,sync:localSync,security:localSecurity};migrateV8Data();if(typeof globalThis.v10Migrate==='function')globalThis.v10Migrate();__IMAM_BASE__.save();renderHome();renderV8Settings();v8Toast('تم استيراد البيانات وترقيتها إلى v10.1','success');goPage('home');}catch(err){v8Toast(`ملف غير صالح: ${err.message||'تعذر القراءة'}`,'error');}finally{e.target.value='';}};reader.readAsText(file);

@@ -48,3 +48,9 @@ Audio-assisted error suggestions for omissions/additions/likely word errors or d
 - Database growth is additive; destructive migrations are avoided.
 - Each stage follows: package → replace files while preserving `.git` → commit without push → review → SQL only when required → push → real-device validation.
 - Local schema is changed only when a real local-data migration is necessary.
+
+## v11.2 implementation status
+- **Stage 1 complete:** word-level interactive correction, error taxonomy, reading context and corrected state.
+- **Stage 2 next:** letter-level targeting + marked-text guardian image/export.
+- **Stage 3 planned:** persistent student error map and repeated-error analytics feeding Smart Revision Engine.
+

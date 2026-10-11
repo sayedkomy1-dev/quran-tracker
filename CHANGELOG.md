@@ -1,3 +1,13 @@
+# v11.2.0 — Interactive Error Marking Stage 1
+
+- Added word-level Quran correction for the teacher session workflow.
+- Added reading contexts: new memorization, talaqqin, recitation and review.
+- Added detailed pronunciation/memorization/tajweed error types.
+- Added resolved/corrected status while retaining error history.
+- Preserved structured annotations through backup/import and cloud session payloads.
+- Fixed the Android Guardian Tahfeez blank-area/native verse-control geometry issue.
+- Kept Schema 12; no SQL changes.
+
 ## v11.1.0 — Tahfeez Center Stage 2
 - Added Listening / Talaqqin / Stabilization / Self-test presets.
 - Added active ayah focus card and hide/reveal self-test mode.

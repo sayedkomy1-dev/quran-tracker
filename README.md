@@ -331,3 +331,8 @@ Teacher-entered 0–100 mastery percentages are now stored with each recitation 
 ## v10.7.0 — Student Progress Dashboard
 
 ملف الطالب يحتوي الآن على تبويب **التقدم** الذي يفتح افتراضيًا ويعرض متوسط الإتقان من النسب التي يكتبها المحفظ، نسبة الحضور، الإعادات، الحفظ الجديد، مستوى كل نوع مراجعة، اتجاه الأداء، والمواضع التي تحتاج تثبيت. يمكن تغيير الفترة بين 30 يومًا و90 يومًا وكل الفترة، كما يمكن فتح WhatsApp بملخص تقدم جاهز للمراجعة قبل الإرسال. لا توجد أي ترقية Schema أو SQL في هذا الإصدار.
+## Current release — v11.2.0 Stage 1
+Interactive teacher correction is now available from the Quran text modal. The teacher can mark a word, classify the error, record whether it occurred during new memorization, talaqqin, recitation or review, and later mark it corrected without losing the historical record.
+
+The Guardian Tahfeez reader also includes the Android long-ayah blank-area layout fix. Schema remains 12 and this stage requires no SQL migration.
+
