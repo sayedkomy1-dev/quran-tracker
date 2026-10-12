@@ -17,6 +17,7 @@
 <link rel="manifest" href="guardian-manifest.json?v=11.2.0-s4.1">
 <link rel="stylesheet" href="guardian-portal.css?v=11.2.0-s4.1">
 <link rel="stylesheet" href="guardian-tahfeez.css?v=11.2.0-s4.1">
+<link rel="stylesheet" href="smart-revision.css?v=11.3.0-s1">
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
 </style>
@@ -81,6 +82,11 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
         <div class="portal-audio-controls"><select id="portalAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري راشد العفاسي</option><option value="husary">محمود خليل الحصري</option><option value="muaiqly">ماهر المعيقلي</option></select><button id="portalAudioShareBtn" type="button" onclick="guardianShareAssignmentAudio()">📲 مشاركة صوت التكليف</button></div>
         <small id="portalAudioStatus">يتم إنشاء ملف للتكليف الحالي فقط.</small>
       </div>
+    </section>
+
+    <section class="portal-card portal-revision-card" id="portalSmartRevision" hidden>
+      <div class="portal-card-head"><div><b>🧠 مراجعة اليوم</b><small>مقترحات ذكية مبنية على أخطاء التسميع السابقة</small></div><strong id="portalSmartRevisionCount">0</strong></div>
+      <div id="portalSmartRevisionBody"></div>
     </section>
 
     <section class="portal-card portal-correction-focus" id="portalCorrectionFocus" hidden>
@@ -195,6 +201,6 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <script src="js/features/quran-audio-export.js?v=11.2.0-s4.1"></script>
 <script src="js/features/guardian-audio-assist.js?v=11.2.0-s4.1"></script>
 <script src="js/features/guardian-tahfeez.js?v=11.2.0-s4.1"></script>
-<script src="js/features/guardian-portal-view.js?v=11.2.0-s4.1"></script>
+<script src="js/features/guardian-portal-view.js?v=11.3.0-s1"></script>
 </body>
 </html>

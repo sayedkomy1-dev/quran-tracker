@@ -736,3 +736,10 @@
 - Added teacher dashboard for last activity, visits, Tahfeez starts, ayah listens, completed repetitions and correction-audio use.
 - Added 7/30 day filters and all-student status list including students who have not used the portal.
 - Added `sql/guardian-portal-engagement.sql`; local Schema remains 12 and learning records are untouched.
+
+## v11.3.0 — Smart Revision Engine · Stage 1
+- Added persistent error notebook computed from Quran correction annotations across sessions.
+- Added deterministic spaced-review queue and repeated-error prioritization.
+- Added teacher home daily-review queue and per-student Smart Revision card.
+- Added guardian/student daily revision card with direct Tahfeez stabilization practice.
+- No SQL; Local Schema remains 12.

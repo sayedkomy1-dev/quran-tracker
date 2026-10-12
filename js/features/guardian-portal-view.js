@@ -58,6 +58,20 @@
   }
   function correctionGroups(rows){const map=new Map();for(const c of rows||[]){const key=`${c.surah||''}:${c.ayah||0}`;if(!map.has(key))map.set(key,{surah:c.surah||'',ayah:Number(c.ayah)||1,text:c.ayahText||'',rows:[]});const g=map.get(key);if(!g.text&&c.ayahText)g.text=c.ayahText;g.rows.push(c);}return [...map.values()];}
   function practiceCorrectionRange(surah,from,to){try{g.ImamGuardianTahfeez?.openCorrectionRange?.({surah,from,to,practiceMode:'stabilize'});}catch(err){console.warn('[guardian correction practice]',err);}}
+  function revisionPractice(surah,from,to){
+    try{g.ImamGuardianEngagement?.log?.('correction_practice_open',1,{origin:'smart_revision',surah:String(surah||'').slice(0,80),from:Number(from)||1,to:Number(to)||Number(from)||1});}catch(_){}
+    try{g.ImamGuardianTahfeez?.openCorrectionRange?.({surah,from,to,practiceMode:'stabilize'});}catch(err){console.warn('[guardian smart revision]',err);}
+  }
+  function renderSmartRevision(data){
+    const box=$('portalSmartRevision'),body=$('portalSmartRevisionBody'),count=$('portalSmartRevisionCount');if(!box||!body||!count)return;
+    const rev=data?.smartRevision||null,rows=Array.isArray(rev?.today)?rev.today:[],upcoming=Array.isArray(rev?.upcoming)?rev.upcoming:[];
+    if(!rev||(!rows.length&&!upcoming.length)){box.hidden=true;body.innerHTML='';count.textContent='0';return;}
+    box.hidden=false;count.textContent=rows.length?`${rows.length} اليوم`:'القادم';
+    const source=rows.length?rows:upcoming.slice(0,3),groups=new Map();
+    for(const x of source){const surah=String(x.surah||'').trim()||'—',ayah=Math.max(1,Number(x.ayah)||1);if(!groups.has(surah))groups.set(surah,{from:ayah,to:ayah,rows:[]});const gr=groups.get(surah);gr.from=Math.min(gr.from,ayah);gr.to=Math.max(gr.to,ayah);gr.rows.push(x);}
+    body.innerHTML=`<div class="portal-revision-stats"><div><b>${Math.max(0,Number(rev.dueCount)||0)}</b><span>مستحق الآن</span></div><div><b>${Math.max(0,Number(rev.overdueCount)||0)}</b><span>متأخر</span></div><div><b>${Math.max(0,Number(rev.repeatedCount)||0)}</b><span>خطأ متكرر</span></div></div>${rows.length?'':'<div class="portal-good" style="margin-bottom:8px">✓ لا توجد مراجعات مستحقة اليوم — هذه أقرب مواضع قادمة.</div>'}<div class="portal-revision-list">${[...groups.entries()].map(([surah,gr])=>`<article class="portal-revision-group"><div class="portal-revision-group-head"><b>سورة ${esc(surah)} · ${gr.from}${gr.to>gr.from?'–'+gr.to:''}</b><button type="button" data-revision-surah="${esc(surah)}" data-revision-from="${gr.from}" data-revision-to="${gr.to}">▶ تدريب</button></div>${gr.rows.map(x=>`<div class="portal-revision-item"><span><strong>«${esc(x.word||'—')}»${x.char?` · الحرف «${esc(x.char)}»`:''}</strong><small>${esc((x.type||[]).join('، ')||'موضع تصحيح')} · ${x.occurrences>1?`تكرر ${x.occurrences}×`:'مرة واحدة'}</small></span><em>${esc(x.dueLabel||'')}</em></div>`).join('')}</article>`).join('')}</div>`;
+    body.querySelectorAll('[data-revision-surah]').forEach(btn=>btn.addEventListener('click',()=>revisionPractice(btn.dataset.revisionSurah,Number(btn.dataset.revisionFrom),Number(btn.dataset.revisionTo))));
+  }
   function renderCorrectionFocus(recent){
     const latest=(recent||[]).find(x=>Array.isArray(x.corrections)&&x.corrections.length),box=$('portalCorrectionFocus'),body=$('portalCorrectionFocusBody');if(!box||!body)return;
     if(!latest){box.hidden=true;body.innerHTML='';return;}const rows=latest.corrections||[],open=rows.filter(x=>!x.resolved).length,done=rows.length-open,groups=correctionGroups(rows);
@@ -83,6 +97,7 @@
     const items=Array.isArray(data.assignment?.items)?data.assignment.items:[];$('portalAssignment').innerHTML=items.length?items.map(x=>`<article class="portal-assignment-item"><b>${esc(x.icon||'')} ${esc(x.label||'')}</b><p>${esc(x.text||'')}</p></article>`).join(''):'<div class="portal-empty">لا يوجد تكليف مسجل حاليًا.</div>';
     const attention=Array.isArray(data.attention)?data.attention:[];$('portalAttention').innerHTML=attention.length?attention.map(x=>`<div class="portal-attention-item"><b>${esc(x.label)}</b><span>${x.score!==null&&x.score!==undefined?`${esc(x.score)}%`:esc(x.grade||'يحتاج متابعة')}</span></div>`).join(''):'<div class="portal-good">✅ لا توجد إشارات حديثة تستدعي التثبيت.</div>';
     const recent=Array.isArray(data.recent)?data.recent:[];$('portalRecent').innerHTML=recent.length?recent.map(x=>{const corrections=Array.isArray(x.corrections)?x.corrections:[];return `<article class="portal-session ${statusClass(x.status)}"><div class="portal-session-head"><b>${esc(x.status||'—')} · ${esc(x.date||'—')}</b><span class="portal-session-score">${x.score===null||x.score===undefined?'':`${esc(x.score)}%`}</span></div>${Array.isArray(x.recitation)&&x.recitation.length?`<ul>${x.recitation.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}${corrections.length?`<div class="portal-corrections"><b>مواضع التصحيح</b>${corrections.map(c=>`<div class="portal-correction ${c.resolved?'resolved':''}"><span>${c.resolved?'✓':'•'} ${esc(c.surah?`سورة ${c.surah} · آية ${c.ayah}`:`آية ${c.ayah}`)}</span><strong>«${esc(c.word||'—')}»${c.char?` · الحرف «${esc(c.char)}»`:''}</strong><em>${esc(c.type||'')}</em></div>`).join('')}</div>`:''}</article>`;}).join(''):'<div class="portal-empty">لا توجد حصص مسجلة بعد.</div>';
+    renderSmartRevision(data);
     renderCorrectionFocus(recent);
     setNote(meta.session?'session':meta.live?'live':'snapshot');
     try{g.ImamGuardianTahfeez?.setContext?.(data);}catch(err){console.warn('[guardian tahfeez context]',err);}

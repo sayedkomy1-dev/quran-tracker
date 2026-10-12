@@ -127,6 +127,7 @@
         newAssignment:latest?.new?.surah?{surah:String(latest.new.surah),from:Math.max(1,Number(latest.new.from)||1),to:Math.max(1,Number(latest.new.to)||Number(latest.new.from)||1),full:!!latest.new.full}:null,
         assignmentDate:latest?dateLabel(latest):'—'
       },
+      smartRevision:(()=>{try{return g.ImamApp?.SmartRevision?.buildGuardian?.(studentId)||null;}catch(_){return null;}})(),
       attention,
       recent:recentSessions(studentId,8)
     };
