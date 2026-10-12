@@ -1,5 +1,5 @@
 'use strict';
-/* Imam Academy v11.2.0 Stage 4 — guardian audio help.
+/* Imam Academy v11.2.0 Stage 4.1 — guardian audio help + engagement tracking.
    Assignment MP3: Mishary/Husary/Muaiqly. Correction pronunciation: Mishary only. */
 (function guardianAudioAssist(g){
   const SURAS=['الفاتحة','البقرة','آل عمران','النساء','المائدة','الأنعام','الأعراف','الأنفال','التوبة','يونس','هود','يوسف','الرعد','إبراهيم','الحجر','النحل','الإسراء','الكهف','مريم','طه','الأنبياء','الحج','المؤمنون','النور','الفرقان','الشعراء','النمل','القصص','العنكبوت','الروم','لقمان','السجدة','الأحزاب','سبأ','فاطر','يس','الصافات','ص','الزمر','غافر','فصلت','الشورى','الزخرف','الدخان','الجاثية','الأحقاف','محمد','الفتح','الحجرات','ق','الذاريات','الطور','النجم','القمر','الرحمن','الواقعة','الحديد','المجادلة','الحشر','الممتحنة','الصف','الجمعة','المنافقون','التغابن','الطلاق','التحريم','الملك','القلم','الحاقة','المعارج','نوح','الجن','المزمل','المدثر','القيامة','الإنسان','المرسلات','النبأ','النازعات','عبس','التكوير','الانفطار','المطففين','الانشقاق','البروج','الطارق','الأعلى','الغاشية','الفجر','البلد','الشمس','الليل','الضحى','الشرح','التين','العلق','القدر','البينة','الزلزلة','العاديات','القارعة','التكاثر','العصر','الهمزة','الفيل','قريش','الماعون','الكوثر','الكافرون','النصر','المسد','الإخلاص','الفلق','الناس'];
@@ -14,6 +14,7 @@
     try{
       status.textContent='جارٍ تجهيز ملف الصوت…';const file=await g.ImamQuranAudioExport.buildFile({chapter,surah:a.surah,from:a.full?1:a.from,to:a.full?(context?.learning?.newAssignment?.to||a.to):a.to,reciter},p=>{if(status&&p.total)status.textContent=`جارٍ تجهيز الصوت ${Math.min(p.done+1,p.total)}/${p.total}…`;});
       const out=await g.ImamQuranAudioExport.shareFile(file,{title:`تكليف ${context?.student?.name||'الطالب'}`,text:`التكليف الصوتي — سورة ${a.surah} ${a.from||1}–${a.to||a.from||1}`});status.textContent=out.downloaded?'تم تنزيل الملف؛ أرسله عبر WhatsApp من الملفات.':'تم فتح المشاركة — اختر WhatsApp.';
+      try{g.ImamGuardianEngagement?.log?.('assignment_audio_share',1,{surah:String(a.surah||''),from:Number(a.from)||1,to:Number(a.to)||Number(a.from)||1,reciter});}catch(_){}
     }catch(err){if(err?.name==='AbortError'){status.textContent='تم إلغاء المشاركة';}else{console.warn('[guardian assignment audio]',err);status.textContent='تعذر تجهيز الملف الآن';toast(/TOO_LARGE/.test(String(err))?'التكليف طويل جدًا لملف واحد؛ قلل نطاق الآيات':'تعذر تجهيز ملف الصوت؛ حاول مع اتصال أقوى');}}
     finally{if(btn)btn.disabled=false;}
   }
@@ -36,6 +37,7 @@
       const timing=await wordTiming(chapter,ayah,wordIndex,word);await new Promise((resolve,reject)=>{if(audio.readyState>=1)return resolve();const ok=()=>{cleanup();resolve();},bad=()=>{cleanup();reject(new Error('AUDIO_LOAD'));},cleanup=()=>{audio.removeEventListener('loadedmetadata',ok);audio.removeEventListener('error',bad);};audio.addEventListener('loadedmetadata',ok,{once:true});audio.addEventListener('error',bad,{once:true});audio.load();});
       if(timing){audio.currentTime=Math.max(0,timing.start-.12);await audio.play();const stopAt=timing.end+.22;const guard=()=>{if(audio.currentTime>=stopAt){audio.pause();audio.removeEventListener('timeupdate',guard);}};audio.addEventListener('timeupdate',guard);wordStopTimer=setTimeout(()=>{audio.pause();audio.removeEventListener('timeupdate',guard);},Math.max(800,(stopAt-Math.max(0,timing.start-.12))*1300));toast(`🔊 ${word||'الكلمة'} — بصوت الشيخ مشاري`);}
       else{audio.currentTime=0;await audio.play();toast(`تعذر قص الكلمة بدقة؛ تم تشغيل الآية ${ayah} بصوت الشيخ مشاري`);}
+      try{g.ImamGuardianEngagement?.log?.('correction_audio_play',1,{chapter,ayah,wordIndex,precise:!!timing});}catch(_){}
     }catch(err){console.warn('[guardian word pronunciation]',err);toast('تعذر تشغيل النطق الآن');}
   }
   function setContext(data){context=data||null;const box=$('portalAudioAssist');if(box)box.hidden=!context?.learning?.newAssignment;}

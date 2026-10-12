@@ -1,5 +1,5 @@
 'use strict';
-/* We Live Quran v11.2.0 — guardian/student portal renderer + Tahfeez Center context.
+/* We Live Quran v11.2.0 Stage 4.1 — guardian/student portal renderer + Tahfeez Center context.
    Supports: Stage 1 #data= snapshot, Stage 2 #p= live link,
    and Stage 3 #s= phone/PIN authenticated short-lived session. */
 (function guardianPortalView(g){
@@ -119,14 +119,16 @@
   }
   function selectSessionStudent(value){
     const i=Math.max(0,Math.min(sessionRows.length-1,Number(value)||0)),row=sessionRows[i];if(!row||!validSnapshot(row.snapshot))return;
+    try{g.ImamGuardianEngagement?.setContext?.({sessionToken,studentRef:row.student_ref,studentName:row.snapshot?.student?.name||''});}catch(err){console.warn('[guardian engagement context]',err);}
     render(row.snapshot,{session:true,updatedAt:row.updated_at});setStudentSwitcher(sessionRows,i);setLiveState('online','🔒 جلسة ولي الأمر موثّقة — قراءة فقط');
+    try{g.ImamGuardianEngagement?.logPortalOpen?.();}catch(_){}
   }
   async function fetchSession(token){const payload=await publicRpc('guardian_portal_session_read',{p_session:token});return payload&&Array.isArray(payload.students)?payload:null;}
   function rememberSession(token){
     try{sessionStorage.setItem(SESSION_KEY,token);history.replaceState(null,'',`${location.pathname}${location.search}#guardian`);}catch(_){/* fragment remains if storage is unavailable */}
   }
   function storedSession(){try{return uuid(sessionStorage.getItem(SESSION_KEY));}catch(_){return '';}}
-  function forgetSession(){try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}sessionToken='';sessionRows=[];}
+  function forgetSession(){try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}sessionToken='';sessionRows=[];try{g.ImamGuardianEngagement?.setContext?.({});}catch(_){} }
   async function loadSession(token,{manual=false}={}){
     sessionToken=token;liveToken='';setNote('session');setLiveState('loading',manual?'جارٍ تحديث بيانات الطلاب…':'جارٍ تحميل صفحة الطالب…');
     try{

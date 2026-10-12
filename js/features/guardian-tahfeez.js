@@ -1,5 +1,5 @@
 'use strict';
-/* Imam Academy v11.2.0 — Guardian/Student Tahfeez Center, Stage 3 correction-review bridge.
+/* Imam Academy v11.2.0 Stage 4.1 — guided guardian Tahfeez practice + engagement tracking.
    Read-only learning player: range/single/group repetition, talaqqin mode,
    full transport controls, QPC Hafs text cache, and optional offline audio. */
 (function guardianTahfeezFeature(g){
@@ -200,6 +200,7 @@
     const r=currentRange(),rec=$('tahfeezReciter').value,audio=$('tahfeezAudio');setPlayingAyah(a);$('tahfeezPlaybackState').textContent=`الدورة ${state.cycle} · الآية ${a}`;updateSessionProgress();
     try{
       const src=await audioSource(r.chapter,a,rec);audio.playbackRate=clamp($('tahfeezSpeed').value,.5,1.5,1);audio.volume=clamp($('tahfeezVolume').value,0,1,1);audio.src=src.src;audio.dataset.offline=src.offline?'1':'0';if(resetTime)audio.currentTime=0;await audio.play();state.playing=true;state.paused=false;updatePlayButton();
+      try{g.ImamGuardianEngagement?.log?.('ayah_listen',1,{chapter:r.chapter,ayah:a,cycle:state.cycle,itemLoop:state.itemLoop,mode:state.practiceMode,offline:!!src.offline});}catch(_){}
     }catch(e){state.playing=false;state.paused=false;updatePlayButton();$('tahfeezPlaybackState').textContent=navigator.onLine===false?'الصوت غير محفوظ لهذا الموضع':'تعذر تشغيل الصوت';toast(navigator.onLine===false?'نزّل التكليف أولًا للاستماع دون إنترنت':'تعذر تشغيل الصوت الآن');}
   }
   async function playSingle(a){
@@ -207,9 +208,11 @@
   }
   function startPlayback(){
     savePrefs();state.sequence=buildSequence();if(!state.sequence.length)return toast('اختر نطاقًا صحيحًا أولًا');
+    const r=currentRange();try{g.ImamGuardianEngagement?.log?.('tahfeez_start',1,{chapter:r.chapter,from:r.from,to:r.to,mode:state.practiceMode,tutor:!!$('tahfeezTutor').checked});}catch(_){}
     state.sequenceIndex=0;state.cycle=1;state.itemLoop=1;clearCountdown();updateSessionProgress(0);playCurrentItem();updateLoopState();
   }
   function audioEnded(){
+    try{const r=currentRange(),a=state.sequence[state.sequenceIndex]||state.selectedAyah;g.ImamGuardianEngagement?.log?.('repeat_complete',1,{chapter:r.chapter,ayah:a,cycle:state.cycle,itemLoop:state.itemLoop,mode:state.practiceMode});}catch(_){}
     const tutor=!!$('tahfeezTutor').checked,itemMax=tutor?clamp($('tahfeezTutorRepeat').value,1,20,3):1,pause=tutor?clamp($('tahfeezTutorPause').value,0,30,2)*1000:150;
     if(state.itemLoop<itemMax){state.itemLoop++;updateSessionProgress();$('tahfeezPlaybackState').textContent=`ردد الآية ${state.sequence[state.sequenceIndex]} · ${state.itemLoop}/${itemMax}`;scheduleNext(()=>playCurrentItem(),pause);return;}
     state.itemLoop=1;
@@ -218,7 +221,7 @@
     if(state.cycle<cycles){state.cycle++;state.sequenceIndex=0;updateSessionProgress();scheduleNext(()=>playCurrentItem(),pause);return;}
     finishPlayback();
   }
-  function finishPlayback(){state.playing=false;state.paused=false;clearTimeout(state.timer);state.timer=null;clearCountdown();updateSessionProgress(Number.MAX_SAFE_INTEGER);$('tahfeezPlaybackState').textContent='اكتمل التشغيل';updatePlayButton();document.querySelectorAll('.tahfeez-ayah.playing').forEach(x=>x.classList.remove('playing'));}
+  function finishPlayback(){state.playing=false;state.paused=false;clearTimeout(state.timer);state.timer=null;clearCountdown();updateSessionProgress(Number.MAX_SAFE_INTEGER);$('tahfeezPlaybackState').textContent='اكتمل التشغيل';updatePlayButton();document.querySelectorAll('.tahfeez-ayah.playing').forEach(x=>x.classList.remove('playing'));try{const r=currentRange();g.ImamGuardianEngagement?.log?.('tahfeez_complete',1,{chapter:r.chapter,from:r.from,to:r.to,cycles:state.cycle,mode:state.practiceMode});}catch(_){} }
   function playPause(){
     const audio=$('tahfeezAudio');
     if(!state.playing&&!state.paused){startPlayback();return;}
@@ -271,16 +274,19 @@
   }
   function loadAssignment(){
     const a=state.assignment;if(!a)return toast('لا يوجد تكليف حفظ جديد من المحفظ حاليًا');const idx=SURAS.findIndex(x=>x[0]===a.surah);if(idx<0)return toast('تعذر تحديد السورة من التكليف');
+    try{g.ImamGuardianEngagement?.log?.('assignment_load',1,{surah:String(a.surah||''),from:Number(a.from)||1,to:Number(a.to)||Number(a.from)||1});}catch(_){}
     $('tahfeezSurah').value=String(idx+1);fillAyahSelectors(false);const max=surahAyahs(idx+1),from=a.full?1:clamp(a.from,1,max,1),to=a.full?max:clamp(a.to,from,max,from);$('tahfeezFrom').value=String(from);$('tahfeezTo').value=String(to);updateTargetSelectors();state.selectedAyah=from;loadText();toast('تم تحميل تكليف المحفظ');
   }
   function open(){
     const shell=$('guardianTahfeez');if(!shell)return;state.open=true;shell.hidden=false;shell.setAttribute('aria-hidden','false');document.body.classList.add('tahfeez-open');setNet();
+    try{const r=currentRange();g.ImamGuardianEngagement?.log?.('tahfeez_open',1,{chapter:r.chapter,from:r.from,to:r.to,mode:state.practiceMode});}catch(_){}
     state.lastState=readLast();updateResumeButton();if(!state.historyPushed){history.pushState({guardianTahfeez:true},'',location.href);state.historyPushed=true;}
     if(state.assignment&&!shell.dataset.assignmentOpened){shell.dataset.assignmentOpened='1';loadAssignment();}else loadText();refreshOfflineStatus();
   }
 
   function openCorrectionRange(input){
     const surah=String(input?.surah||'').trim(),idx=SURAS.findIndex(x=>x[0]===surah);if(idx<0)return toast('تعذر تحديد السورة لمراجعة موضع التصحيح');
+    try{g.ImamGuardianEngagement?.log?.('correction_practice_open',1,{surah,from:Number(input?.from)||1,to:Number(input?.to)||Number(input?.from)||1});}catch(_){}
     const shell=$('guardianTahfeez');if(!shell)return;const chapter=idx+1,max=surahAyahs(chapter),from=clamp(input?.from,1,max,1),to=clamp(input?.to,from,max,from);
     // A correction review is an explicit user action; never let the automatic assignment opener replace it.
     shell.dataset.assignmentOpened='1';

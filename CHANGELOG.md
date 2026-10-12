@@ -729,3 +729,10 @@
 - Added guardian quick navigation, installable PWA manifest, Light/Dark/Kids themes, and compact correction review.
 - Preserved direct WhatsApp Save & Send behavior; binary audio sharing stays a separate explicit action.
 - No SQL changes; schema remains 12.
+
+
+## v11.2.0 — Stage 4.1 Guardian Engagement Tracking
+- Added privacy-preserving guardian study activity events behind valid phone+PIN sessions.
+- Added teacher dashboard for last activity, visits, Tahfeez starts, ayah listens, completed repetitions and correction-audio use.
+- Added 7/30 day filters and all-student status list including students who have not used the portal.
+- Added `sql/guardian-portal-engagement.sql`; local Schema remains 12 and learning records are untouched.

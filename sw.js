@@ -1,9 +1,10 @@
 /* Stage 3 compatibility: quran-pwa-v11.2.0-error3 | uiStage:'11.2-error-marking-3' */
-/* أكاديمية الإمام — Service Worker v11.2.0 Parent Audio & Portal Polish Stage 4 + Stable Offline Shell */
+/* أكاديمية الإمام — Service Worker v11.2.0 Guardian Engagement Stage 4.1 + Stable Offline Shell */
+// Stage 4 compatibility: quran-pwa-v11.2.0-parent-audio4 | './guardian-manifest.json?v=11.2.0-s4' | './js/features/guardian-audio-assist.js?v=11.2.0-s4'
 // Regression compatibility refs: quran-pwa-v11.2.0-error2 | uiStage:'11.2-error-marking-2' | './teacher-error-marking.css?v=11.2.0-s2' | './js/features/teacher-error-marking.js?v=11.2.0-s2' | './guardian-portal.css?v=11.2.0-s2' | './js/features/guardian-portal-view.js?v=11.2.0-s2' | './guardian-tahfeez.css?v=11.2.0-s4' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
-const CACHE_NAME = 'quran-pwa-v11.2.0-parent-audio4';
+const CACHE_NAME = 'quran-pwa-v11.2.0-guardian-engagement4.1';
 const APP_VERSION = '11.2.0';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
@@ -26,17 +27,18 @@ const APP_SHELL = [
   './js/features/student-progress.js?v=11.0.0',
   './js/features/teacher-followup.js?v=11.0.0',
   './js/features/circle-analytics.js?v=11.0.0',
-  './js/features/guardian-portal-share.js?v=11.2.0-s3',
+  './js/features/guardian-portal-share.js?v=11.2.0-s4.1',
   './js/features/quran-audio-export.js?v=11.2.0-s4',
   './js/features/assignment-audio-share.js?v=11.2.0-s4',
   './js/features/v11-ui.js?v=11.0.0-s2',
   './guardian-portal.html',
-  './guardian-portal.css?v=11.2.0-s4',
-  './guardian-tahfeez.css?v=11.2.0-s4',
-  './js/features/guardian-portal-experience.js?v=11.2.0-s4',
-  './js/features/guardian-audio-assist.js?v=11.2.0-s4',
-  './js/features/guardian-tahfeez.js?v=11.2.0-s4',
-  './js/features/guardian-portal-view.js?v=11.2.0-s4',
+  './guardian-portal.css?v=11.2.0-s4.1',
+  './guardian-tahfeez.css?v=11.2.0-s4.1',
+  './js/features/guardian-engagement.js?v=11.2.0-s4.1',
+  './js/features/guardian-portal-experience.js?v=11.2.0-s4.1',
+  './js/features/guardian-audio-assist.js?v=11.2.0-s4.1',
+  './js/features/guardian-tahfeez.js?v=11.2.0-s4.1',
+  './js/features/guardian-portal-view.js?v=11.2.0-s4.1',
   './guardian-login.html',
   './guardian-login.css?v=11.2.0-s4',
   './guardian-login.js?v=11.0.0',
@@ -53,7 +55,7 @@ const APP_SHELL = [
   './privacy.html',
   './terms.html',
   './manifest.json?v=11.0.0',
-  './guardian-manifest.json?v=11.2.0-s4',
+  './guardian-manifest.json?v=11.2.0-s4.1',
   './favicon.png',
   './icon-96.png',
   './icon-192.png',
@@ -301,5 +303,5 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5',uiStage:'11.2-parent-audio-4'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5',uiStage:'11.2-guardian-engagement-4.1'});
 });

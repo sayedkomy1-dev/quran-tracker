@@ -8,7 +8,7 @@
 (function guardianPortalShareFeature(g){
   const VERSION=1;
   const LIVE_RPC={publish:'guardian_portal_publish',status:'guardian_portal_status',revoke:'guardian_portal_revoke'};
-  const ACCESS_RPC={status:'guardian_portal_access_status',enable:'guardian_portal_access_enable',reset:'guardian_portal_access_reset_pin',unlink:'guardian_portal_access_unlink',refresh:'guardian_portal_access_refresh',resetList:'guardian_portal_reset_requests_list',resetResolve:'guardian_portal_reset_request_resolve',resetDismiss:'guardian_portal_reset_request_dismiss'};
+  const ACCESS_RPC={status:'guardian_portal_access_status',enable:'guardian_portal_access_enable',reset:'guardian_portal_access_reset_pin',unlink:'guardian_portal_access_unlink',refresh:'guardian_portal_access_refresh',resetList:'guardian_portal_reset_requests_list',resetResolve:'guardian_portal_reset_request_resolve',resetDismiss:'guardian_portal_reset_request_dismiss',engagement:'guardian_portal_activity_summary'};
   let lastGuardianSecret=null;
   let pendingResetRequests=[];
 
@@ -391,6 +391,14 @@
         </div>
       </div>
 
+      <details class="v1010-engagement-details" open>
+        <summary>📊 متابعة استخدام ولي الأمر</summary>
+        <div class="v1010-engagement-head"><div><b>هل تمّت المذاكرة في المنزل؟</b><small>تظهر الزيارات وتشغيل التحفيظ والتكرار من بوابة الهاتف + PIN.</small></div><select id="v1010EngagementDays" onchange="v1010EngagementDaysChanged()"><option value="7">آخر 7 أيام</option><option value="30">آخر 30 يومًا</option></select></div>
+        <div id="v1010EngagementSelected" class="v1010-engagement-selected"><div class="v1010-reset-empty">جارٍ تحميل نشاط ولي الأمر…</div></div>
+        <div class="v1010-engagement-actions"><button class="btn btn-out btn-sm" onclick="v1010RefreshEngagement()">🔄 تحديث النشاط</button></div>
+        <div id="v1010EngagementList" class="v1010-engagement-list"></div>
+      </details>
+
       <details class="v1010-link-details">
         <summary>🔗 الرابط المباشر (اختياري — Stage 2)</summary>
         <div class="v1010-portal-info"><b>رابط حي مباشر</b><p>يبقى متاحًا كطريقة مشاركة سريعة. أي شخص يملك الرابط يستطيع القراءة، لذلك الدخول برقم الهاتف + PIN هو الخيار الأساسي الآن.</p></div>
@@ -531,10 +539,39 @@
     if(!s.active){el.className='v1010-portal-status stopped';el.innerHTML='<b>الرابط المباشر غير نشط</b><span>يمكن تفعيله لاحقًا من أزرار الرابط المباشر بدون التأثير على دخول الهاتف.</span>';return;}
     el.className='v1010-portal-status active';el.innerHTML=`<b>✅ الرابط الحي نشط</b><span>آخر نشر: ${esc(statusTime(s.updatedAt)||'—')}</span>`;
   }
-  function openPicker(selected='') {const id=fillPicker(selected);clearGuardianSecret();g.document.getElementById('v1010PortalModal')?.classList.add('open');Promise.all([refreshPhoneAccessStatus(id),refreshPickerStatus(id),refreshResetRequests()]);}
+  function engagementTime(value){
+    if(!value)return 'لا يوجد نشاط بعد';const d=new Date(value);if(Number.isNaN(d.getTime()))return 'لا يوجد نشاط بعد';
+    const diff=Math.max(0,Date.now()-d.getTime()),m=Math.floor(diff/60000);if(m<1)return 'الآن';if(m<60)return `منذ ${m} دقيقة`;const h=Math.floor(m/60);if(h<24)return `منذ ${h} ساعة`;const days=Math.floor(h/24);if(days<14)return `منذ ${days} يوم`;return d.toLocaleDateString('ar-EG',{day:'numeric',month:'short'});
+  }
+  async function engagementSummary(days=7){
+    if(!liveAvailable())return {available:false,rows:[],days};
+    try{const data=await rpc(ACCESS_RPC.engagement,{p_days:Math.max(1,Math.min(90,Number(days)||7))}),x=Array.isArray(data)?data[0]:data;return {available:true,rows:Array.isArray(x?.rows)?x.rows:[],days:Number(x?.days)||days,generatedAt:x?.generated_at||''};}
+    catch(err){return {available:false,rows:[],days,error:err};}
+  }
+  async function refreshEngagement({silent=false}={}){
+    const selected=g.document?.getElementById?.('v1010EngagementSelected'),list=g.document?.getElementById?.('v1010EngagementList'),period=g.document?.getElementById?.('v1010EngagementDays');if(!selected||!list)return false;
+    const days=Math.max(1,Math.min(90,Number(period?.value)||7));
+    if(g.navigator?.onLine===false){selected.innerHTML='<div class="v1010-engagement-state offline"><b>Offline</b><span>تحديث نشاط ولي الأمر يحتاج اتصالًا بالإنترنت.</span></div>';list.innerHTML='';return false;}
+    if(!silent)selected.innerHTML='<div class="v1010-reset-empty">جارٍ تحميل نشاط ولي الأمر…</div>';
+    const out=await engagementSummary(days);
+    if(!out.available){selected.innerHTML=isBackendMissing(out.error)?'<div class="v1010-engagement-state warn"><b>Stage 4.1 يحتاج تفعيل SQL</b><span>شغّل sql/guardian-portal-engagement.sql في Supabase مرة واحدة.</span></div>':'<div class="v1010-engagement-state warn"><b>تعذر تحميل النشاط</b><span>تحقق من الاتصال ثم أعد المحاولة.</span></div>';list.innerHTML='';return false;}
+    const students=activeStudents(),refs=await Promise.all(students.map(async st=>({st,ref:await studentRef(st.id)}))),map=new Map((out.rows||[]).map(r=>[String(r.student_ref||''),r]));
+    const items=refs.map(x=>({st:x.st,ref:x.ref,row:map.get(x.ref)||null})),current=items.find(x=>x.st.id===pickedId())||items[0]||null,row=current?.row;
+    if(!current){selected.innerHTML='<div class="v1010-reset-empty">لا يوجد طلاب نشطون.</div>';list.innerHTML='';return true;}
+    if(!row){selected.innerHTML=`<div class="v1010-engagement-state warn"><b>${esc(current.st.name)} — البوابة غير مفعلة</b><span>فعّل دخول الهاتف + PIN أولًا حتى يبدأ تسجيل نشاط المذاكرة.</span></div>`;}
+    else{
+      const active24=(Number(row.portal_visits_24h)||0)>0,last=engagementTime(row.last_activity_at),didStudy=(Number(row.tahfeez_starts)||0)>0;
+      selected.innerHTML=`<div class="v1010-engagement-status ${active24?'active':''}"><b>${active24?'✅ دخل خلال آخر 24 ساعة':didStudy?'📖 استخدم التحفيظ خلال الفترة':'⏳ لم يبدأ التحفيظ خلال الفترة'}</b><span>${esc(current.st.name)} · آخر نشاط: ${esc(last)}</span></div><div class="v1010-engagement-kpis"><span><b>${Number(row.portal_visits)||0}</b><small>زيارة</small></span><span><b>${Number(row.tahfeez_starts)||0}</b><small>بدء تحفيظ</small></span><span><b>${Number(row.ayah_listens)||0}</b><small>تشغيل آية</small></span><span><b>${Number(row.repeat_completions)||0}</b><small>تكرار مكتمل</small></span><span><b>${Number(row.tahfeez_completions)||0}</b><small>جلسة مكتملة</small></span><span><b>${Number(row.correction_audio_plays)||0}</b><small>نطق خطأ</small></span></div>`;
+    }
+    list.innerHTML=`<div class="v1010-engagement-list-head"><b>كل الطلاب</b><small>الفترة: ${days} أيام</small></div>${items.map(x=>{const r=x.row;if(!r)return `<button type="button" class="v1010-engagement-row unlinked" onclick="document.getElementById('v1010PortalStudent').value='${esc(x.st.id)}';v1010PortalStudentChanged()"><span><b>${esc(x.st.name)}</b><small>البوابة غير مفعلة</small></span><em>—</em></button>`;const started=Number(r.tahfeez_starts)||0,repeats=Number(r.repeat_completions)||0,active24=(Number(r.portal_visits_24h)||0)>0,status=active24?'دخل خلال 24س':started?'ذاكر خلال الفترة':'لم يبدأ التحفيظ';return `<button type="button" class="v1010-engagement-row ${active24?'active':''}" onclick="document.getElementById('v1010PortalStudent').value='${esc(x.st.id)}';v1010PortalStudentChanged()"><span><b>${esc(x.st.name)}</b><small>${status} · آخر نشاط ${esc(engagementTime(r.last_activity_at))}</small></span><em>${repeats} تكرار</em></button>`;}).join('')}`;
+    return true;
+  }
+  function engagementDaysChanged(){return refreshEngagement();}
+
+  function openPicker(selected='') {const id=fillPicker(selected);clearGuardianSecret();g.document.getElementById('v1010PortalModal')?.classList.add('open');Promise.all([refreshPhoneAccessStatus(id),refreshPickerStatus(id),refreshResetRequests(),refreshEngagement()]);}
   function closePicker(){clearGuardianSecret();g.document.getElementById('v1010PortalModal')?.classList.remove('open');}
   function pickedId(){return g.document.getElementById('v1010PortalStudent')?.value||'';}
-  function studentChanged(){clearGuardianSecret();const id=pickedId();Promise.all([refreshPhoneAccessStatus(id),refreshPickerStatus(id)]);}
+  function studentChanged(){clearGuardianSecret();const id=pickedId();Promise.all([refreshPhoneAccessStatus(id),refreshPickerStatus(id),refreshEngagement({silent:true})]);}
   function openPicked(){const id=pickedId();if(id)return openPortal(id);toastSafe('لا يوجد طالب محدد','error');return null;}
   function copyPicked(){const id=pickedId();if(id)return copyPortalLink(id);toastSafe('لا يوجد طالب محدد','error');return false;}
   function refreshPicked(){const id=pickedId();if(id)return refreshLivePortal(id);toastSafe('لا يوجد طالب محدد','error');return false;}
@@ -589,9 +626,9 @@
     v1010CopyPickedPortal:copyPicked,v1010RefreshPickedPortal:refreshPicked,v1010RevokePickedPortal:revokePicked,
     v1010CopyPickedSnapshot:copyPickedSnapshot,v1010PortalStudentChanged:studentChanged,v1010OpenSelectedGuardianPortal:openSelectedGuardian,
     v1010EnablePhoneAccess:enablePickedPhone,v1010ResetPhonePin:resetPickedPhone,v1010UnlinkPhoneAccess:unlinkPickedPhone,
-    v1010OpenGuardianLogin:openGuardianLogin,v1010CopyGuardianLogin:copyGuardianLogin,v1010CopyGuardianCredentials:copyGuardianCredentials,v1010SendGuardianCredentials:sendGuardianCredentials,v1010SendGuardianLoginLink:sendGuardianLoginLink,v1010RefreshResetRequests:refreshResetRequests,v1010ResolveResetRequest:resolveResetRequest,v1010DismissResetRequest:dismissResetRequest
+    v1010OpenGuardianLogin:openGuardianLogin,v1010CopyGuardianLogin:copyGuardianLogin,v1010CopyGuardianCredentials:copyGuardianCredentials,v1010SendGuardianCredentials:sendGuardianCredentials,v1010SendGuardianLoginLink:sendGuardianLoginLink,v1010RefreshResetRequests:refreshResetRequests,v1010ResolveResetRequest:resolveResetRequest,v1010DismissResetRequest:dismissResetRequest,v1010RefreshEngagement:refreshEngagement,v1010EngagementDaysChanged:engagementDaysChanged
   });
   g.ImamApp=g.ImamApp||{};
-  g.ImamApp.GuardianPortal=Object.freeze({buildSnapshot,portalUrl,liveUrl,loginUrl:guardianLoginUrl,publish:publishLive,status:liveStatus,revoke:revokePortal,open:openPortal,copyLink:copyPortalLink,copySnapshot:copySnapshotLink,accessStatus,enablePhoneAccess,resetPhonePin,unlinkPhoneAccess,refreshPhoneSnapshot,refreshResetRequests,resolveResetRequest,dismissResetRequest});
+  g.ImamApp.GuardianPortal=Object.freeze({buildSnapshot,portalUrl,liveUrl,loginUrl:guardianLoginUrl,publish:publishLive,status:liveStatus,revoke:revokePortal,open:openPortal,copyLink:copyPortalLink,copySnapshot:copySnapshotLink,accessStatus,enablePhoneAccess,resetPhonePin,unlinkPhoneAccess,refreshPhoneSnapshot,refreshResetRequests,resolveResetRequest,dismissResetRequest,engagementSummary,refreshEngagement});
   if(g.document?.readyState==='loading')g.document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0),{once:true});else setTimeout(init,0);
 })(globalThis);

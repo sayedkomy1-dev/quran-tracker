@@ -1,5 +1,5 @@
 'use strict';
-/* Imam Academy v11.2.0 Stage 4 — guardian portal install + themes + quick navigation. */
+/* Imam Academy v11.2.0 Stage 4.1 — guardian portal install + themes + tracked quick navigation. */
 (function guardianPortalExperience(g){
   const THEME_KEY='wlq_guardian_theme_v1';let installPrompt=null;
   function getTheme(){try{return localStorage.getItem(THEME_KEY)||'light';}catch(_){return'light';}}
@@ -14,7 +14,10 @@
     toast('من قائمة المتصفح ⋮ اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»');
   }
   function syncInstall(){document.querySelectorAll('[data-guardian-install]').forEach(b=>{b.hidden=!!(matchMedia('(display-mode: standalone)').matches||navigator.standalone);});}
-  function scrollToId(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+  function scrollToId(id){
+    const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    try{const map={portalAssignmentCard:'assignment_view',portalCorrectionFocus:'correction_view'};if(map[id])g.ImamGuardianEngagement?.log?.(map[id],1,{source:'quick_nav'});}catch(_){}
+  }
   g.guardianSetTheme=applyTheme;g.guardianInstallPortal=install;g.guardianGoTo=scrollToId;
   applyTheme(getTheme(),false);
   g.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;syncInstall();});g.addEventListener('appinstalled',()=>{installPrompt=null;syncInstall();toast('تم تثبيت بوابة ولي الأمر ✓');});

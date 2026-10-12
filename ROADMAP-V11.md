@@ -52,7 +52,9 @@ Audio-assisted error suggestions for omissions/additions/likely word errors or d
 ## v11.2 implementation status
 - **Stage 1 complete:** word-level interactive correction, error taxonomy, reading context and corrected state.
 - **Stage 2 delivered:** letter-level targeting, char-aware marked-text image/export, detailed WhatsApp correction locations and guardian recent-session correction details.
-- **Stage 3 planned:** persistent student error map and repeated-error analytics feeding Smart Revision Engine.
+- **Stage 3 complete:** correction review card, guardian display and direct home-practice bridge.
+- **Stage 4 complete:** parent audio tools, PWA themes/install and portal polish.
+- **Stage 4.1 delivered:** guardian engagement tracking and teacher dashboard.
 
 
 ### v11.2 Stage 3 — Correction Review Card
@@ -63,5 +65,5 @@ Audio-assisted error suggestions for omissions/additions/likely word errors or d
 ### v11.2 Stage 4 — Parent Audio & Portal Polish (implemented)
 Audio assignment sharing, Mishary correction pronunciation, guardian PWA install, portal organization, themes, and compact correction review.
 
-### v11.2 Stage 4.1 — Guardian Engagement Telemetry (next)
-Additive backend events for guardian login/portal open, Tahfeez start, audio plays and repeat completions, followed by a teacher-facing engagement dashboard. This stage requires reviewed additive SQL and does not replace v11.3 Smart Revision Engine; v11.3 resumes immediately after telemetry is stable.
+### v11.2 Stage 4.1 — Guardian Engagement Tracking (implemented)
+Additive backend events now track guardian portal use, Tahfeez starts, ayah playback, completed repetition cycles, correction audio and assignment-audio actions. The teacher has a 7/30-day engagement dashboard and can see who entered, who studied, last activity and repeat counts. This requires `sql/guardian-portal-engagement.sql`; local Schema remains 12. v11.3 Smart Revision Engine resumes after real-device validation.
