@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<!-- v11.2 regression compatibility refs: guardian-tahfeez.css?v=11.2.0-s1.1 | guardian-tahfeez.js?v=11.2.0-s1.1 -->
+<!-- Stage 3 compatibility: guardian-portal-view.js?v=11.2.0-s3 -->
+<!-- legacy Tahfeez refs: guardian-tahfeez.css?v=11.2.0-s1.1 | guardian-tahfeez.js?v=11.2.0-s1.1 -->
+<!-- v11.2 regression compatibility refs: guardian-tahfeez.css?v=11.2.0-s4 | guardian-tahfeez.js?v=11.2.0-s1.1 -->
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -11,8 +13,9 @@
 <title>بوابة ولي الأمر — أكاديمية الإمام</title>
 <script src="js/core/offline-bootstrap.js?v=11.0.0"></script>
 <link rel="icon" href="favicon.png" type="image/png">
-<link rel="stylesheet" href="guardian-portal.css?v=11.2.0-s3">
-<link rel="stylesheet" href="guardian-tahfeez.css?v=11.2.0-s1.1">
+<link rel="manifest" href="guardian-manifest.json?v=11.2.0-s4">
+<link rel="stylesheet" href="guardian-portal.css?v=11.2.0-s4">
+<link rel="stylesheet" href="guardian-tahfeez.css?v=11.2.0-s4">
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
 </style>
@@ -21,7 +24,10 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <main class="portal-shell">
   <header class="portal-header">
     <div class="portal-brand"><img src="icon-192.png" alt=""><div><b id="portalAcademy">أكاديمية الإمام لتحفيظ القرآن الكريم</b><span>بوابة ولي الأمر / الطالب</span></div></div>
-    <div class="portal-actions"><button type="button" id="portalRefreshBtn" onclick="portalRefresh()" hidden>🔄 تحديث</button><button type="button" id="portalShareBtn" onclick="portalShare()">📤 مشاركة</button><button type="button" onclick="portalPrint()">🖨️ طباعة / PDF</button><button type="button" id="portalLogoutBtn" onclick="portalLogout()" hidden>🚪 خروج</button></div>
+    <div class="portal-actions">
+      <div class="portal-theme-actions" aria-label="مظهر البوابة"><button type="button" data-portal-theme-btn="light" onclick="guardianSetTheme('light')" title="الوضع النهاري">☀️</button><button type="button" data-portal-theme-btn="dark" onclick="guardianSetTheme('dark')" title="الوضع الليلي">🌙</button><button type="button" data-portal-theme-btn="kids" onclick="guardianSetTheme('kids')" title="وضع الطفل">⭐</button></div>
+      <button type="button" data-guardian-install onclick="guardianInstallPortal()">📱 تثبيت</button><button type="button" id="portalRefreshBtn" onclick="portalRefresh()" hidden>🔄 تحديث</button><button type="button" id="portalShareBtn" onclick="portalShare()">📤 مشاركة</button><button type="button" onclick="portalPrint()">🖨️ طباعة / PDF</button><button type="button" id="portalLogoutBtn" onclick="portalLogout()" hidden>🚪 خروج</button>
+    </div>
   </header>
 
   <section id="portalError" class="portal-error" hidden>
@@ -36,6 +42,14 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <div><span class="portal-kicker" id="portalPeriod">آخر 30 يومًا</span><h1 id="portalStudent">—</h1><p id="portalMeta">—</p></div>
       <div class="portal-updated"><small id="portalUpdatedLabel">آخر تحديث للرابط</small><b id="portalUpdated">—</b></div>
     </section>
+
+    <nav class="portal-quick-nav" aria-label="اختصارات البوابة">
+      <button type="button" onclick="openGuardianTahfeez()"><span>▶</span><b>ابدأ التحفيظ</b></button>
+      <button type="button" onclick="guardianGoTo('portalAssignmentCard')"><span>📝</span><b>التكليف</b></button>
+      <button type="button" onclick="guardianGoTo('portalCorrectionFocus')"><span>✦</span><b>التصحيح</b></button>
+      <button type="button" onclick="guardianGoTo('portalQuranCard')"><span>📈</span><b>التقدم</b></button>
+      <button type="button" onclick="guardianGoTo('portalRecentCard')"><span>📅</span><b>الحصص</b></button>
+    </nav>
 
     <section class="portal-kpis" aria-label="مؤشرات التقدم">
       <article><small>متوسط الإتقان</small><strong id="portalMastery">—</strong><span id="portalTrend">—</span></article>
@@ -58,9 +72,14 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <div class="portal-progress"><i id="portalQuranBar"></i></div>
     </section>
 
-    <section class="portal-card">
+    <section class="portal-card" id="portalAssignmentCard">
       <div class="portal-card-head"><div><b>📝 التكليف الحالي</b><small id="portalAssignmentDate">آخر حصة حضور</small></div></div>
       <div id="portalAssignment" class="portal-assignment"></div>
+      <div id="portalAudioAssist" class="portal-audio-assist" hidden>
+        <div><b>🎧 مساعدة صوتية للتكليف</b><small>ملف MP3 بسرعة التلاوة الأصلية — مناسب للإرسال على WhatsApp</small></div>
+        <div class="portal-audio-controls"><select id="portalAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري راشد العفاسي</option><option value="husary">محمود خليل الحصري</option><option value="muaiqly">ماهر المعيقلي</option></select><button id="portalAudioShareBtn" type="button" onclick="guardianShareAssignmentAudio()">📲 مشاركة صوت التكليف</button></div>
+        <small id="portalAudioStatus">يتم إنشاء ملف للتكليف الحالي فقط.</small>
+      </div>
     </section>
 
     <section class="portal-card portal-correction-focus" id="portalCorrectionFocus" hidden>
@@ -73,7 +92,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <div id="portalAttention" class="portal-attention"></div>
     </section>
 
-    <section class="portal-card">
+    <section class="portal-card" id="portalRecentCard">
       <div class="portal-card-head"><div><b>📅 آخر الحصص</b><small>عرض مختصر للمتابعة</small></div></div>
       <div id="portalRecent" class="portal-recent"></div>
     </section>
@@ -170,7 +189,10 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
   </div>
 </section>
 
-<script src="js/features/guardian-tahfeez.js?v=11.2.0-s3"></script>
-<script src="js/features/guardian-portal-view.js?v=11.2.0-s3"></script>
+<script src="js/features/guardian-portal-experience.js?v=11.2.0-s4"></script>
+<script src="js/features/quran-audio-export.js?v=11.2.0-s4"></script>
+<script src="js/features/guardian-audio-assist.js?v=11.2.0-s4"></script>
+<script src="js/features/guardian-tahfeez.js?v=11.2.0-s4"></script>
+<script src="js/features/guardian-portal-view.js?v=11.2.0-s4"></script>
 </body>
 </html>

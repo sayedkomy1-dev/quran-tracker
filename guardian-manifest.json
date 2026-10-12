@@ -1,0 +1,18 @@
+{
+  "id": "./guardian-portal-app",
+  "name": "بوابة ولي الأمر — حلقة تحفيظ القرآن الكريم",
+  "short_name": "متابعة القرآن",
+  "description": "بوابة متابعة وتحفيظ الطالب لولي الأمر والطالب",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./guardian-login.html?source=guardian-pwa",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f4ec",
+  "theme_color": "#145A3A",
+  "icons": [
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"icon-maskable.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ]
+}

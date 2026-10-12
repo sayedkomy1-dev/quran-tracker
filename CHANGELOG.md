@@ -721,3 +721,11 @@
 - Added one-tap bridge from unresolved correction ranges to Tahfeez Center stabilization mode.
 - Preserved direct WhatsApp Save & Send behavior as a separate message-first workflow.
 - No SQL migration; local Schema remains 12.
+
+## v11.2.0 — Stage 4 Parent Audio & Portal Polish
+- Added assignment MP3 export/share for Mishary, Husary, and Maher Al-Muaiqly at original speed.
+- Added Mishary correction-word pronunciation assistance with timing-aware clipping and explicit ayah fallback.
+- Added teacher-side assignment audio share action.
+- Added guardian quick navigation, installable PWA manifest, Light/Dark/Kids themes, and compact correction review.
+- Preserved direct WhatsApp Save & Send behavior; binary audio sharing stays a separate explicit action.
+- No SQL changes; schema remains 12.

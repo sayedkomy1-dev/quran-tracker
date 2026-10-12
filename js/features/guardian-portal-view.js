@@ -40,7 +40,7 @@
     const title=$('portalNoteTitle'),text=$('portalNoteText');setModeActions(mode);
     if(mode==='session'){
       if(title)title.textContent='دخول آمن برقم الهاتف + PIN';
-      if(text)text.textContent='هذه جلسة قراءة فقط بعد التحقق من رقم الهاتف ورمز الدخول. لا يمكن تعديل بيانات الطالب، وتنتهي الجلسة تلقائيًا خلال 12 ساعة.';
+      if(text)text.textContent='هذه جلسة قراءة فقط بعد التحقق من رقم الهاتف ورمز الدخول. رمز PIN نفسه يظل صالحًا حتى يغيّره المحفظ، بينما قد يحتاج تسجيل الدخول على هذا الجهاز إلى تجديد دوري.';
     }else if(mode==='live'){
       if(title)title.textContent='رابط قراءة فقط قابل للتحديث';
       if(text)text.textContent='يعرض هذا الرابط آخر نسخة نشرها المحفظ. لا يمكن تعديل بيانات الأكاديمية من هذه الصفحة، ويمكن للمحفظ إيقاف الرابط في أي وقت.';
@@ -63,8 +63,11 @@
     if(!latest){box.hidden=true;body.innerHTML='';return;}const rows=latest.corrections||[],open=rows.filter(x=>!x.resolved).length,done=rows.length-open,groups=correctionGroups(rows);
     box.hidden=false;$('portalCorrectionFocusDate').textContent=`من حصة ${latest.date||'الأخيرة'} · ${done} تم تصحيحها · ${open} تحتاج متابعة`;$('portalCorrectionFocusCount').textContent=open?`${open} للمراجعة`:'✓ مكتملة';
     const ranges=new Map();for(const c of rows.filter(x=>!x.resolved)){const key=c.surah||'';if(!key)continue;const a=Number(c.ayah)||1;if(!ranges.has(key))ranges.set(key,{from:a,to:a});else{const r=ranges.get(key);r.from=Math.min(r.from,a);r.to=Math.max(r.to,a);}}
-    body.innerHTML=`<div class="portal-correction-summary"><span><b>${rows.length}</b> علامة</span><span><b>${open}</b> تحتاج مراجعة</span><span><b>${done}</b> تم تصحيحها</span></div><div class="portal-correction-verses">${groups.map(gr=>`<article class="portal-correction-verse"><div class="portal-correction-verse-head"><b>سورة ${esc(gr.surah||'—')} · آية ${esc(gr.ayah)}</b><span>${gr.rows.every(x=>x.resolved)?'✓ تم التصحيح':`${gr.rows.filter(x=>!x.resolved).length} للمراجعة`}</span></div>${renderVerseWithMarks(gr)}<div class="portal-correction-tags">${gr.rows.map(c=>`<span class="${correctionClass(c)}">${c.resolved?'✓ ':''}${c.char?`الحرف «${esc(c.char)}» · `:''}${esc(c.type)} <small>${esc(correctionModeLabel(c.mode))}</small></span>`).join('')}</div></article>`).join('')}</div>${ranges.size?`<div class="portal-correction-practice"><b>تدريب منزلي على مواضع التصحيح</b>${[...ranges.entries()].map(([surah,r])=>`<button type="button" data-correction-surah="${esc(surah)}" data-correction-from="${r.from}" data-correction-to="${r.to}">▶ سورة ${esc(surah)} ${r.from}${r.to>r.from?'–'+r.to:''}</button>`).join('')}</div>`:'<div class="portal-correction-complete">✓ تم تصحيح كل المواضع المسجلة في هذه الحصة.</div>'}`;
+    const verseHtml=groups.map((gr,gi)=>`<article class="portal-correction-verse ${gi>=3?'portal-correction-extra':''}" ${gi>=3?'hidden':''}><div class="portal-correction-verse-head"><b>سورة ${esc(gr.surah||'—')} · آية ${esc(gr.ayah)}</b><span>${gr.rows.every(x=>x.resolved)?'✓ تم التصحيح':`${gr.rows.filter(x=>!x.resolved).length} للمراجعة`}</span></div>${renderVerseWithMarks(gr)}<div class="portal-correction-tags">${gr.rows.map((c,ci)=>`<span class="${correctionClass(c)}">${c.resolved?'✓ ':''}${c.char?`الحرف «${esc(c.char)}» · `:''}${esc(c.type)} <small>${esc(correctionModeLabel(c.mode))}</small></span><button type="button" class="portal-pronounce-btn" data-pronounce-row="${gi}:${ci}" aria-label="نطق ${esc(c.word||'الكلمة')} بصوت مشاري">🔊 نطق «${esc(c.word||'الكلمة')}»</button>`).join('')}</div></article>`).join('');
+    body.innerHTML=`<div class="portal-correction-summary"><span><b>${rows.length}</b> علامة</span><span><b>${open}</b> تحتاج مراجعة</span><span><b>${done}</b> تم تصحيحها</span></div><div class="portal-correction-verses">${verseHtml}</div>${groups.length>3?`<button type="button" class="portal-show-corrections" id="portalShowCorrections">عرض كل مواضع التصحيح (${groups.length})</button>`:''}${ranges.size?`<div class="portal-correction-practice"><b>المراجعة المنزلية</b><small>ابدأ بمواضع الأخطاء ثم كررها في وضع التثبيت.</small>${[...ranges.entries()].map(([surah,r])=>`<button type="button" data-correction-surah="${esc(surah)}" data-correction-from="${r.from}" data-correction-to="${r.to}">▶ سورة ${esc(surah)} ${r.from}${r.to>r.from?'–'+r.to:''}</button>`).join('')}</div>`:'<div class="portal-correction-complete">✓ تم تصحيح كل المواضع المسجلة في هذه الحصة.</div>'}`;
     body.querySelectorAll('[data-correction-surah]').forEach(btn=>btn.addEventListener('click',()=>practiceCorrectionRange(btn.dataset.correctionSurah,Number(btn.dataset.correctionFrom),Number(btn.dataset.correctionTo))));
+    body.querySelectorAll('[data-pronounce-row]').forEach(btn=>btn.addEventListener('click',()=>{const [gi,ci]=btn.dataset.pronounceRow.split(':').map(Number),c=groups[gi]?.rows?.[ci];if(c)g.ImamGuardianAudio?.pronounce?.({surah:c.surah,ayah:c.ayah,word:c.word,wordIndex:c.wordIndex});}));
+    $('portalShowCorrections')?.addEventListener('click',e=>{const extra=[...body.querySelectorAll('.portal-correction-extra')],showing=extra.some(x=>x.hidden);extra.forEach(x=>x.hidden=!showing);e.currentTarget.textContent=showing?'إخفاء التفاصيل':`عرض كل مواضع التصحيح (${groups.length})`;});
   }
   function render(data,meta={}){
     $('portalAcademy').textContent=data.academy?.name||'أكاديمية الإمام لتحفيظ القرآن الكريم';
@@ -83,6 +86,7 @@
     renderCorrectionFocus(recent);
     setNote(meta.session?'session':meta.live?'live':'snapshot');
     try{g.ImamGuardianTahfeez?.setContext?.(data);}catch(err){console.warn('[guardian tahfeez context]',err);}
+    try{g.ImamGuardianAudio?.setContext?.(data);}catch(err){console.warn('[guardian audio context]',err);}
     $('portalContent').hidden=false;$('portalError').hidden=true;
   }
   async function publicRpc(name,args){
@@ -151,7 +155,7 @@
     location.replace('guardian-login.html');
   }
   function printPage(){window.print();}
-  g.portalShare=share;g.portalPrint=printPage;g.portalRefresh=refresh;g.portalLogout=logout;g.portalSelectStudent=selectSessionStudent;
+  g.portalShare=share;g.portalPrint=printPage;g.portalRefresh=refresh;g.portalLogout=logout;g.portalSelectStudent=selectSessionStudent;g.portalToast=toast;
 
   (async()=>{
     try{

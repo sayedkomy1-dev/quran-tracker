@@ -59,3 +59,9 @@ Audio-assisted error suggestions for omissions/additions/likely word errors or d
 - Premium marked-text image preview/share.
 - Guardian/student latest correction card.
 - Direct home-practice bridge into Tahfeez Center for unresolved verses.
+
+### v11.2 Stage 4 — Parent Audio & Portal Polish (implemented)
+Audio assignment sharing, Mishary correction pronunciation, guardian PWA install, portal organization, themes, and compact correction review.
+
+### v11.2 Stage 4.1 — Guardian Engagement Telemetry (next)
+Additive backend events for guardian login/portal open, Tahfeez start, audio plays and repeat completions, followed by a teacher-facing engagement dashboard. This stage requires reviewed additive SQL and does not replace v11.3 Smart Revision Engine; v11.3 resumes immediately after telemetry is stable.

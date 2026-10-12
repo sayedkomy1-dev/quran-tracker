@@ -8,7 +8,8 @@
 <title>دخول ولي الأمر — أكاديمية الإمام</title>
 <script src="js/core/offline-bootstrap.js?v=11.0.0"></script>
 <link rel="icon" href="favicon.png">
-<link rel="stylesheet" href="guardian-login.css?v=11.0.0">
+<link rel="manifest" href="guardian-manifest.json?v=11.2.0-s4">
+<link rel="stylesheet" href="guardian-login.css?v=11.2.0-s4">
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
 </style>
@@ -21,6 +22,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <div><b>أكاديمية الإمام لتحفيظ القرآن الكريم</b><span>بوابة ولي الأمر / الطالب</span></div>
     </div>
 
+    <div class="guardian-login-tools"><div class="guardian-login-themes"><button type="button" data-portal-theme-btn="light" onclick="guardianSetTheme('light')">☀️ نهاري</button><button type="button" data-portal-theme-btn="dark" onclick="guardianSetTheme('dark')">🌙 ليلي</button><button type="button" data-portal-theme-btn="kids" onclick="guardianSetTheme('kids')">⭐ طفل</button></div><button type="button" data-guardian-install onclick="guardianInstallPortal()">📱 تثبيت البوابة</button></div>
     <div class="guardian-login-icon">👨‍👩‍👧</div>
     <h1 id="guardianLoginTitle">دخول ولي الأمر</h1>
     <p class="guardian-login-lead">اكتب رقم الهاتف المسجل لدى المحفظ ورمز الدخول المكوّن من 6 أرقام.</p>
@@ -32,7 +34,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 
       <label for="guardianPin">رمز الدخول PIN</label>
       <input id="guardianPin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" dir="ltr" placeholder="••••••" maxlength="6" pattern="[0-9]{6}" required>
-      <small>الرمز يصدره المحفظ. لا تشاركه مع أي شخص غير مخوّل بمتابعة الطالب.</small>
+      <small>الرمز يصدره المحفظ ويظل صالحًا حتى يغيّره أو يعطّله. لا تشاركه مع أي شخص غير مخوّل بمتابعة الطالب.</small>
 
       <button id="guardianLoginSubmit" type="submit">دخول إلى صفحة الطالب</button>
       <div id="guardianLoginState" class="guardian-login-state" role="status" aria-live="polite"></div>
@@ -51,6 +53,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
   </section>
   <footer>بالقرآن نحيا 🌿</footer>
 </main>
+<script src="js/features/guardian-portal-experience.js?v=11.2.0-s4"></script>
 <script src="guardian-login.js?v=11.0.0"></script>
 </body>
 </html>

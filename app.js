@@ -3235,3 +3235,12 @@ globalThis.__IMAM_BASE__={
   smartContinueFromAssessment,buildWAMsg,fillFromLast,renderReport,renderComparison,academyFooter,save,
   fillAyah,fillSurahSelects,filterSurahDropdown,selectSurahOption,sanitizeBackupData,importData
 };
+
+// v11.2.0 Stage 4 compatibility entry point; implementation loads from assignment-audio-share.js.
+function shareCurrentAssignmentAudio(){
+  const impl=globalThis.ImamTeacherAssignmentAudio?.share;
+  if(typeof impl==='function')return impl();
+  const section=typeof readSection==='function'?readSection('new'):null;
+  if(!section?.surahId){toast('حدد الحفظ الجديد أولًا','error');return;}
+  toast('مكوّن الصوت لم يكتمل تحميله بعد — حاول مرة أخرى','error');
+}
