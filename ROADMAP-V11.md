@@ -9,14 +9,17 @@ Guardian/student Tahfeez button; select surah, reciter and ayah range; full play
 ## v11.2 — Interactive Recitation & Error Marking
 Runs during **new memorization while the student reads to the teacher**, **student repetition behind the teacher/talqeen**, final recitation and review. Teacher taps a Quran word/letter and records the error: tashkeel, letter pronunciation, omitted/added letter, wrong word, hesitation, forgetting, madd, ghunnah, idgham, ikhfa, iqlab, qalqalah, waqf/ibtida or other tajweed issue. Each mark stores the learning context and correction state. `Mastered` keeps the history while marking the issue corrected. The system generates a marked Quran-text image for home revision while preserving structured annotations for later analytics.
 
-## v11.3 — Smart Revision Engine — IN PROGRESS (Stage 1 delivered)
+## v11.3 — Smart Revision Engine — Stage 1 delivered; explicit review-outcome grading deferred
 Persistent error notebook, repeated-error heatmap and spaced review schedule based on the learner's actual errors and mastery state. Daily revision list appears to teacher, learner and guardian.
 
 ### v11.3 Stage 1 — Daily Queue & Persistent Error Notebook
 Historical Quran annotations are aggregated by exact word/character location. Unresolved errors are due the next day; corrected locations move through 3/7/14/30-day intervals as corrected encounters accumulate. Teacher home/profile views and the guardian Tahfeez bridge consume the same engine. No SQL; Local Schema stays 12.
 
-## v11.4 — Goals & Memorization Planning
+## v11.4 — Goals & Memorization Planning — IN PROGRESS (Stage 1 delivered)
 Long-term memorization target, weekly lesson capacity, automatic breakdown into sessions, milestone tracking, ahead/behind-plan calculation and guardian-friendly progress view.
+
+### v11.4 Stage 1 — Long-term Goal & Automatic Pace
+Per-student Juz or Surah/ayah goal with start/deadline, sessions-per-week pacing, unique completed-ayah calculation, 25/50/75/100 milestones, ahead/on-plan/behind status, recommended ayat per session, one-click next-session assignment, and a read-only guardian goal card.
 
 ## v11.5 — Student Finance & Monthly Accounting
 Per-student session price and monthly session agreement; attendance-aware monthly entitlement; discounts/additions/brought-forward balance; immutable payment ledger; amount due/paid/remaining; month close; guardian financial summary; statement/receipt sharing.

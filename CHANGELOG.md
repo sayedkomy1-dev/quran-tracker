@@ -1,3 +1,8 @@
+# v11.4.0 — Goals & Memorization Planning Stage 1
+- Added per-student long-term Quran goals, automatic pacing, milestones, plan status, next-session suggestion and guardian plan view.
+- Explicit Smart Revision outcome grading remains deferred by product decision.
+- No SQL; Local Schema remains 12.
+
 ## v11.2.0 — Interactive Error Marking Stage 2
 - Added exact Arabic grapheme/letter targeting inside Quran words.
 - Letter-level annotations persist with the same session/draft/cloud payload as word-level annotations.

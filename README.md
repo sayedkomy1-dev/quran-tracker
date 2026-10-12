@@ -353,3 +353,7 @@ Teacher-entered 0–100 mastery percentages are now stored with each recitation 
 
 ## v11.3.0 Smart Revision Engine — Stage 1
 The app now derives a persistent Quran error notebook from saved recitation annotations and builds a daily spaced-review queue for teachers and guardians. The first stage is computation-only over existing session data, so no SQL or Local Schema migration is required.
+
+
+## v11.4 Stage 1
+Goals & Memorization Planning adds per-student long-term Quran targets, automatic pace calculation, milestones, next-session suggestions and a guardian-friendly progress card. No SQL migration is required.

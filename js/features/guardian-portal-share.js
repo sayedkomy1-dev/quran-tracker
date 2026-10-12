@@ -128,6 +128,7 @@
         assignmentDate:latest?dateLabel(latest):'—'
       },
       smartRevision:(()=>{try{return g.ImamApp?.SmartRevision?.buildGuardian?.(studentId)||null;}catch(_){return null;}})(),
+      memorizationPlan:(()=>{try{return g.ImamApp?.GoalPlanner?.buildGuardian?.(studentId)||null;}catch(_){return null;}})(),
       attention,
       recent:recentSessions(studentId,8)
     };
