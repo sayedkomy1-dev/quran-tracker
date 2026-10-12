@@ -54,3 +54,8 @@ Audio-assisted error suggestions for omissions/additions/likely word errors or d
 - **Stage 2 delivered:** letter-level targeting, char-aware marked-text image/export, detailed WhatsApp correction locations and guardian recent-session correction details.
 - **Stage 3 planned:** persistent student error map and repeated-error analytics feeding Smart Revision Engine.
 
+
+### v11.2 Stage 3 — Correction Review Card
+- Premium marked-text image preview/share.
+- Guardian/student latest correction card.
+- Direct home-practice bridge into Tahfeez Center for unresolved verses.

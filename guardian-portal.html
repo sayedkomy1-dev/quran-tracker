@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+<!-- v11.2 regression compatibility refs: guardian-tahfeez.css?v=11.2.0-s1.1 | guardian-tahfeez.js?v=11.2.0-s1.1 -->
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#145A3A">
@@ -9,7 +11,7 @@
 <title>بوابة ولي الأمر — أكاديمية الإمام</title>
 <script src="js/core/offline-bootstrap.js?v=11.0.0"></script>
 <link rel="icon" href="favicon.png" type="image/png">
-<link rel="stylesheet" href="guardian-portal.css?v=11.2.0-s2">
+<link rel="stylesheet" href="guardian-portal.css?v=11.2.0-s3">
 <link rel="stylesheet" href="guardian-tahfeez.css?v=11.2.0-s1.1">
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
@@ -59,6 +61,11 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
     <section class="portal-card">
       <div class="portal-card-head"><div><b>📝 التكليف الحالي</b><small id="portalAssignmentDate">آخر حصة حضور</small></div></div>
       <div id="portalAssignment" class="portal-assignment"></div>
+    </section>
+
+    <section class="portal-card portal-correction-focus" id="portalCorrectionFocus" hidden>
+      <div class="portal-card-head"><div><b>🪶 بطاقة التصحيح الأخيرة</b><small id="portalCorrectionFocusDate">راجع المواضع التي ظهرت أثناء القراءة</small></div><strong id="portalCorrectionFocusCount">0</strong></div>
+      <div id="portalCorrectionFocusBody"></div>
     </section>
 
     <section class="portal-card">
@@ -163,7 +170,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
   </div>
 </section>
 
-<script src="js/features/guardian-tahfeez.js?v=11.2.0-s1.1"></script>
-<script src="js/features/guardian-portal-view.js?v=11.2.0-s2"></script>
+<script src="js/features/guardian-tahfeez.js?v=11.2.0-s3"></script>
+<script src="js/features/guardian-portal-view.js?v=11.2.0-s3"></script>
 </body>
 </html>

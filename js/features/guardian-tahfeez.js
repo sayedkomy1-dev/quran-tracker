@@ -1,5 +1,5 @@
 'use strict';
-/* Imam Academy v11.2.0 — Guardian/Student Tahfeez Center, Stage 2.1 layout fix.
+/* Imam Academy v11.2.0 — Guardian/Student Tahfeez Center, Stage 3 correction-review bridge.
    Read-only learning player: range/single/group repetition, talaqqin mode,
    full transport controls, QPC Hafs text cache, and optional offline audio. */
 (function guardianTahfeezFeature(g){
@@ -278,6 +278,18 @@
     state.lastState=readLast();updateResumeButton();if(!state.historyPushed){history.pushState({guardianTahfeez:true},'',location.href);state.historyPushed=true;}
     if(state.assignment&&!shell.dataset.assignmentOpened){shell.dataset.assignmentOpened='1';loadAssignment();}else loadText();refreshOfflineStatus();
   }
+
+  function openCorrectionRange(input){
+    const surah=String(input?.surah||'').trim(),idx=SURAS.findIndex(x=>x[0]===surah);if(idx<0)return toast('تعذر تحديد السورة لمراجعة موضع التصحيح');
+    const shell=$('guardianTahfeez');if(!shell)return;const chapter=idx+1,max=surahAyahs(chapter),from=clamp(input?.from,1,max,1),to=clamp(input?.to,from,max,from);
+    // A correction review is an explicit user action; never let the automatic assignment opener replace it.
+    shell.dataset.assignmentOpened='1';
+    $('tahfeezSurah').value=String(chapter);fillAyahSelectors(false);$('tahfeezFrom').value=String(from);$('tahfeezTo').value=String(to);updateTargetSelectors();state.selectedAyah=from;
+    setPracticeMode(input?.practiceMode||'stabilize',true);
+    if(!state.open){state.open=true;shell.hidden=false;shell.setAttribute('aria-hidden','false');document.body.classList.add('tahfeez-open');setNet();state.lastState=readLast();updateResumeButton();if(!state.historyPushed){history.pushState({guardianTahfeez:true},'',location.href);state.historyPushed=true;}}
+    loadText();refreshOfflineStatus();toast(`تم فتح مواضع التصحيح: سورة ${surah} ${from}${to>from?'–'+to:''}`);
+  }
+
   function close(fromPop=false){
     if(!state.open)return;stop();state.open=false;$('guardianTahfeez').hidden=true;$('guardianTahfeez').setAttribute('aria-hidden','true');document.body.classList.remove('tahfeez-open');
     if(!fromPop&&state.historyPushed){state.historyPushed=false;history.back();}else state.historyPushed=false;
@@ -300,7 +312,7 @@
     window.addEventListener('online',()=>{setNet();refreshOfflineStatus();});window.addEventListener('offline',setNet);window.addEventListener('popstate',()=>{if(state.open)close(true);});
     updateLabels();updateLoopState();updateFocus();updateSessionProgress(0);applyTextVisibility();setNet();
   }
-  g.ImamGuardianTahfeez={setContext:configureAssignment,open,close,loadAssignment,loadText,resumeLast,setPracticeMode};
-  g.openGuardianTahfeez=open;g.closeGuardianTahfeez=close;g.tahfeezToggleSettings=toggleSettings;g.tahfeezLoadAssignment=loadAssignment;g.tahfeezResumeLast=resumeLast;g.tahfeezToggleReveal=toggleReveal;g.tahfeezLoadText=loadText;g.tahfeezPlayPause=playPause;g.tahfeezStop=()=>stop();g.tahfeezPreviousAyah=()=>jumpAyah(-1);g.tahfeezNextAyah=()=>jumpAyah(1);g.tahfeezSeekBy=seekBy;g.tahfeezToggleMute=toggleMute;g.tahfeezDownloadRange=downloadRange;g.tahfeezDownloadSurah=downloadSurah;g.tahfeezClearDownloads=clearDownloads;
+  g.ImamGuardianTahfeez={setContext:configureAssignment,open,close,loadAssignment,loadText,resumeLast,setPracticeMode,openCorrectionRange};
+  g.openGuardianTahfeez=open;g.openGuardianCorrectionRange=openCorrectionRange;g.closeGuardianTahfeez=close;g.tahfeezToggleSettings=toggleSettings;g.tahfeezLoadAssignment=loadAssignment;g.tahfeezResumeLast=resumeLast;g.tahfeezToggleReveal=toggleReveal;g.tahfeezLoadText=loadText;g.tahfeezPlayPause=playPause;g.tahfeezStop=()=>stop();g.tahfeezPreviousAyah=()=>jumpAyah(-1);g.tahfeezNextAyah=()=>jumpAyah(1);g.tahfeezSeekBy=seekBy;g.tahfeezToggleMute=toggleMute;g.tahfeezDownloadRange=downloadRange;g.tahfeezDownloadSurah=downloadSurah;g.tahfeezClearDownloads=clearDownloads;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(globalThis);

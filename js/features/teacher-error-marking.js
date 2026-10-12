@@ -1,5 +1,5 @@
 'use strict';
-/* Imam Academy v11.2.0 — Interactive Quran Error Marking, Stage 2.
+/* Imam Academy v11.2.0 — Interactive Quran Error Marking, Stage 3.
    Adds precise character-level annotations, richer guardian/report detail, and
    more robust annotated PNG generation while preserving direct WhatsApp Save & Send. */
 (function teacherErrorMarking(g){
@@ -10,7 +10,7 @@
   ];
   const CONTEXTS={new_read:'الحفظ الجديد — قراءة الطالب',talaqqin:'التلقين — ترديد خلف الشيخ',recitation:'التسميع',review:'المراجعة'};
   const PREF_KEY='imam:qmark:prefs:v2';
-  const state={enabled:true,context:'recitation',target:null,observer:null,installed:false,customTypes:[]};
+  const state={enabled:true,context:'recitation',target:null,observer:null,installed:false,customTypes:[],previewFile:null,previewUrl:''};
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const appState=()=>g.ImamApp?.State||{};
@@ -139,7 +139,7 @@
     el.querySelectorAll('[data-resolve]').forEach(b=>b.addEventListener('click',()=>toggleResolved(b.dataset.resolve)));el.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>removeError(b.dataset.remove)));
   }
   function installPanel(){
-    const note=$('quranSourceNote');if(!note||$('quranCorrectionPanel'))return;const panel=document.createElement('div');panel.id='quranCorrectionPanel';panel.className='qmark-panel';panel.innerHTML=`<div class="qmark-panel-top"><button type="button" id="qmarkToggle" class="qmark-toggle">✎ تفعيل وضع التصحيح</button><label><span>مرحلة القراءة</span><select id="qmarkContext"><option value="new_read">الحفظ الجديد — قراءة الطالب</option><option value="talaqqin">التلقين — ترديد خلف الشيخ</option><option value="recitation">التسميع</option><option value="review">المراجعة</option></select></label><span id="qmarkCount" class="qmark-count">0 علامات</span><button type="button" id="qmarkShareImage" class="qmark-share">▣ مشاركة صورة الأخطاء</button></div><div id="qmarkHint" class="qmark-hint"></div><div class="qmark-legend"><span class="pronunciation">نطق/حروف</span><span class="memory">حفظ/تردد</span><span class="tajweed">تجويد</span><span class="custom">مخصص</span><span class="char">تحديد حرف</span><span class="resolved">تم التصحيح</span></div>`;note.insertAdjacentElement('afterend',panel);$('qmarkToggle').addEventListener('click',toggle);$('qmarkContext').addEventListener('change',e=>setContext(e.target.value));$('qmarkShareImage').addEventListener('click',shareCurrentDraftImage);refreshPanel();
+    const note=$('quranSourceNote');if(!note||$('quranCorrectionPanel'))return;const panel=document.createElement('div');panel.id='quranCorrectionPanel';panel.className='qmark-panel';panel.innerHTML=`<div class="qmark-panel-top"><button type="button" id="qmarkToggle" class="qmark-toggle">✎ تفعيل وضع التصحيح</button><label><span>مرحلة القراءة</span><select id="qmarkContext"><option value="new_read">الحفظ الجديد — قراءة الطالب</option><option value="talaqqin">التلقين — ترديد خلف الشيخ</option><option value="recitation">التسميع</option><option value="review">المراجعة</option></select></label><span id="qmarkCount" class="qmark-count">0 علامات</span><button type="button" id="qmarkPreviewImage" class="qmark-preview">▣ معاينة بطاقة التصحيح</button><button type="button" id="qmarkShareImage" class="qmark-share">↗ مشاركة الصورة</button></div><div id="qmarkHint" class="qmark-hint"></div><div class="qmark-legend"><span class="pronunciation">نطق/حروف</span><span class="memory">حفظ/تردد</span><span class="tajweed">تجويد</span><span class="custom">مخصص</span><span class="char">تحديد حرف</span><span class="resolved">تم التصحيح</span></div>`;note.insertAdjacentElement('afterend',panel);$('qmarkToggle').addEventListener('click',toggle);$('qmarkContext').addEventListener('change',e=>setContext(e.target.value));$('qmarkPreviewImage').addEventListener('click',previewCurrentDraftImage);$('qmarkShareImage').addEventListener('click',shareCurrentDraftImage);refreshPanel();
   }
   function updateContextForOpen(kind){if(kind==='new')setContext('new_read');else if(kind==='talaqqin')setContext('talaqqin');else if(kind==='review')setContext('review');else setContext('recitation');}
   function observe(){const c=$('quranVerseContent');if(!c||state.observer)return;state.observer=new MutationObserver(()=>decorate());state.observer.observe(c,{childList:true,subtree:true});decorate();}
@@ -167,30 +167,35 @@
     const charW=Math.max(9,throughW-prefixW);return{x:rightX-throughW,w:charW,y:baselineY+10};
   }
   function buildSnapshotCanvas(st,ses){
-    const groups=groupRows(rowsForImage(ses)),W=900,maxGroups=10,temp=document.createElement('canvas');temp.width=W;temp.height=Math.min(6200,470+Math.max(1,Math.min(groups.length,maxGroups))*520);const c=temp.getContext('2d');c.fillStyle='#F8F5EC';c.fillRect(0,0,temp.width,temp.height);c.direction='rtl';c.textAlign='right';
-    c.fillStyle='#0F5136';c.font='700 40px Arial';c.fillText('مواضع التصحيح في التلاوة',W-48,66);c.fillStyle='#26372E';c.font='700 27px Arial';c.fillText(st?.name||'الطالب',W-48,108);c.fillStyle='#6C786F';c.font='21px Arial';c.fillText(new Date(ses?.date||Date.now()).toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'}),W-48,144);
-    const legend=[['#DB6A4A','نطق/حروف'],['#C69B35','حفظ/تردد'],['#5D83C4','تجويد'],['#8A64BF','مخصص'],['#4D9B62','تم التصحيح']];let lx=W-48;c.font='16px Arial';for(const [col,label] of legend){const tw=c.measureText(label).width;c.fillStyle=col;c.fillRect(lx-14,168,10,10);c.fillStyle='#5D6962';c.fillText(label,lx-20,178);lx-=tw+55;}
-    let y=230;
+    const groups=groupRows(rowsForImage(ses)),rows=rowsForImage(ses),W=1080,maxGroups=12,temp=document.createElement('canvas');temp.width=W;temp.height=Math.min(7600,700+Math.max(1,Math.min(groups.length,maxGroups))*590);const c=temp.getContext('2d');c.fillStyle='#F7F3E8';c.fillRect(0,0,temp.width,temp.height);c.direction='rtl';c.textAlign='right';
+    // Premium document header.
+    c.fillStyle='#0F5136';c.fillRect(0,0,W,156);c.fillStyle='#D6B75C';c.fillRect(0,150,W,6);c.fillStyle='#FFFFFF';c.font='700 38px Arial';c.fillText(stateSettings().circle||'أكاديمية الإمام لتحفيظ القرآن الكريم',W-52,58);c.font='700 27px Arial';c.fillText('بطاقة مواضع التصحيح في التلاوة',W-52,108);
+    c.textAlign='left';c.font='700 20px Arial';c.fillStyle='#D9EADF';c.fillText('بالقرآن نحيا',52,82);c.textAlign='right';
+    const unresolved=rows.filter(x=>!x.resolved),resolved=rows.filter(x=>x.resolved);let y=205;
+    c.fillStyle='#1D3024';c.font='700 31px Arial';c.fillText(st?.name||'الطالب',W-52,y);c.fillStyle='#6E786F';c.font='20px Arial';c.fillText(`${new Date(ses?.date||Date.now()).toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'})} · ${ctxLabel(rows.find(x=>!x.resolved)?.mode||rows[0]?.mode||'recitation')}`,W-52,y+35);
+    const stats=[{n:rows.length,l:'إجمالي العلامات',bg:'#EDF4EF',fg:'#145A3A'},{n:unresolved.length,l:'تحتاج مراجعة',bg:'#FFF0E6',fg:'#A94E32'},{n:resolved.length,l:'تم تصحيحها',bg:'#E8F5EC',fg:'#347A49'}];let sx=W-52;for(const x of stats){rounded(c,sx-250,y+65,230,88,16,x.bg);c.fillStyle=x.fg;c.font='700 31px Arial';c.fillText(String(x.n),sx-38,y+103);c.font='700 15px Arial';c.fillText(x.l,sx-38,y+130);sx-=246;}y+=190;
+    const legend=[['#DB6A4A','نطق/حروف'],['#C69B35','حفظ/تردد'],['#5D83C4','تجويد'],['#8A64BF','مخصص'],['#4D9B62','تم التصحيح']];let lx=W-52;c.font='16px Arial';for(const [col,label] of legend){const tw=c.measureText(label).width;c.fillStyle=col;c.fillRect(lx-14,y,10,10);c.fillStyle='#5D6962';c.fillText(label,lx-20,y+10);lx-=tw+62;}y+=52;
     for(const grp of groups.slice(0,maxGroups)){
-      rounded(c,34,y-26,W-68,60,15,'#E9F2EC');c.fillStyle='#174F36';c.font='700 23px Arial';c.fillText(`سورة ${grp.surah} — الآية ${grp.ayah}`,W-54,y+12);y+=68;
+      rounded(c,38,y-24,W-76,62,15,'#E5EFE8');c.fillStyle='#174F36';c.font='700 23px Arial';c.fillText(`سورة ${grp.surah} — الآية ${grp.ayah}`,W-58,y+14);y+=78;
       const text=grp.text||grp.errors.sort((a,b)=>a.wordIndex-b.wordIndex).map(e=>e.word).join(' '),words=String(text).split(/\s+/).filter(Boolean),byIndex=new Map();for(const e of grp.errors){if(!byIndex.has(Number(e.wordIndex)))byIndex.set(Number(e.wordIndex),[]);byIndex.get(Number(e.wordIndex)).push(e);}
-      c.font='38px "Traditional Arabic","Amiri",serif';c.textAlign='right';c.direction='rtl';let x=W-54;const left=54,gap=14,lineH=68;
+      c.font='40px "Traditional Arabic","Amiri",serif';c.textAlign='right';c.direction='rtl';let x=W-58;const left=58,gap=16,lineH=76;
       for(let i=0;i<words.length;i++){
-        const word=words[i],mw=c.measureText(word).width;if(x-mw<left){x=W-54;y+=lineH;}
+        const word=words[i],mw=c.measureText(word).width;if(x-mw<left){x=W-58;y+=lineH;}
         const errs=byIndex.get(i)||[],wordErrs=errs.filter(e=>!rowIsChar(e)),charErrs=errs.filter(rowIsChar);
-        if(wordErrs.length)rounded(c,x-mw-6,y-43,mw+12,54,9,snapshotColor(wordErrs.find(e=>!e.resolved)||wordErrs[0]));
+        if(wordErrs.length)rounded(c,x-mw-7,y-46,mw+14,59,9,snapshotColor(wordErrs.find(e=>!e.resolved)||wordErrs[0]));
         c.fillStyle='#17251C';c.fillText(word,x,y);
-        for(const e of charErrs){const box=charUnderlineBox(c,word,Number(e.charIndex),x,y);if(!box)continue;c.strokeStyle=snapshotStroke(e);c.lineWidth=6;c.lineCap='round';c.beginPath();c.moveTo(box.x+2,box.y);c.lineTo(box.x+box.w-2,box.y);c.stroke();}
+        for(const e of charErrs){const box=charUnderlineBox(c,word,Number(e.charIndex),x,y);if(!box)continue;c.strokeStyle=snapshotStroke(e);c.lineWidth=7;c.lineCap='round';c.beginPath();c.moveTo(box.x+2,box.y);c.lineTo(box.x+box.w-2,box.y);c.stroke();}
         x-=mw+gap;
       }
-      y+=48;c.font='700 18px Arial';
+      y+=55;c.font='700 18px Arial';
       for(const [idx,errs] of [...byIndex.entries()].sort((a,b)=>a[0]-b[0])){
-        const word=words[idx]||errs[0]?.word||'الموضع',types=[...new Set(errs.map(e=>`${rowIsChar(e)?`الحرف «${e.charText||''}» — `:''}${e.type}${e.resolved?' ✓':''}`))].join('، ');c.fillStyle='#526158';c.fillText(`• ${word}: ${types}`,W-58,y);y+=30;
+        const word=words[idx]||errs[0]?.word||'الموضع',types=[...new Set(errs.map(e=>`${rowIsChar(e)?`الحرف «${e.charText||''}» — `:''}${e.type}${e.resolved?' ✓':''}`))].join('، ');c.fillStyle=errs.some(e=>!e.resolved)?'#70472F':'#3A7149';c.fillText(`• ${word}: ${types}`,W-62,y);y+=31;
       }
-      y+=28;if(y>temp.height-240)break;
+      y+=34;if(y>temp.height-380)break;
     }
-    if(groups.length>maxGroups){c.fillStyle='#8A5B22';c.font='700 19px Arial';c.fillText(`+ ${groups.length-maxGroups} آيات أخرى محفوظة في سجل الحصة`,W-48,y);y+=38;}
-    c.fillStyle='#78827A';c.font='18px Arial';c.fillText(stateSettings().circle||'أكاديمية الإمام لتحفيظ القرآن الكريم',W-48,y+28);const H=Math.min(temp.height,Math.max(470,y+70)),out=document.createElement('canvas');out.width=W;out.height=H;out.getContext('2d').drawImage(temp,0,0,W,H,0,0,W,H);return out;
+    if(groups.length>maxGroups){c.fillStyle='#8A5B22';c.font='700 19px Arial';c.fillText(`+ ${groups.length-maxGroups} آيات أخرى محفوظة في سجل الحصة`,W-52,y);y+=42;}
+    if(unresolved.length){rounded(c,38,y,W-76,88,16,'#FFF7E8');c.fillStyle='#8A5B22';c.font='700 20px Arial';c.fillText('للمراجعة المنزلية',W-58,y+31);c.font='17px Arial';const focus=[...new Set(unresolved.slice(0,8).map(e=>`سورة ${e.surah} ${e.ayah}: ${e.word}${rowIsChar(e)?` (${e.charText})`:''}`))].join(' · ');c.fillText(focus.slice(0,115),W-58,y+62);y+=110;}
+    c.fillStyle='#78827A';c.font='17px Arial';c.fillText('اللون الأخضر = تم التصحيح داخل الحصة · بقية العلامات تحتاج مراجعة وتثبيت',W-52,y+22);c.fillText(stateSettings().name?`المحفظ: ${stateSettings().name}`:'',W-52,y+49);const H=Math.min(temp.height,Math.max(620,y+82)),out=document.createElement('canvas');out.width=W;out.height=H;out.getContext('2d').drawImage(temp,0,0,W,H,0,0,W,H);return out;
   }
   async function canvasFile(canvas,st){
     let blob=await new Promise(resolve=>{try{canvas.toBlob(resolve,'image/png',1);}catch(_){resolve(null);}});
@@ -198,10 +203,20 @@
     const name=`quran-errors-${String(st?.name||'student').replace(/[^\p{L}\p{N}-]+/gu,'-').slice(0,40)}.png`;return new File([blob],name,{type:'image/png'});
   }
   function downloadFile(file){const u=URL.createObjectURL(file),a=document.createElement('a');a.href=u;a.download=file.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);}
+  async function shareSnapshotFile(file,st,msg=''){
+    try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({files:[file],title:`بطاقة التصحيح — ${st?.name||''}`,text:String(msg||'')});return true;}}catch(e){if(e?.name==='AbortError')return true;console.warn('[qmark] native file share failed',e);}return false;
+  }
   async function shareErrorSnapshot(st,ses,msg=''){
     const rows=rowsForImage(ses);if(!rows.length)return false;let file;try{file=await canvasFile(buildSnapshotCanvas(st,ses),st);}catch(e){console.warn('[qmark] snapshot failed',e);return false;}
-    try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){await navigator.share({files:[file],title:`مواضع التصحيح — ${st?.name||''}`,text:String(msg||'')});return true;}}catch(e){if(e?.name==='AbortError')return true;console.warn('[qmark] native file share failed',e);}
-    downloadFile(file);try{toast('تم تنزيل صورة الأخطاء. سيتم فتح رسالة ولي الأمر أيضًا.','info');}catch(_){}return false;
+    if(await shareSnapshotFile(file,st,msg))return true;downloadFile(file);try{toast('تم تنزيل بطاقة التصحيح كصورة PNG','success');}catch(_){}return false;
+  }
+  function ensurePreview(){
+    if($('qmarkPreview'))return;const el=document.createElement('div');el.id='qmarkPreview';el.className='qmark-preview-modal';el.hidden=true;el.innerHTML=`<div class="qmark-preview-backdrop" data-preview-close="1"></div><section class="qmark-preview-card" role="dialog" aria-modal="true" aria-label="معاينة بطاقة التصحيح"><header><div><small>معاينة قبل المشاركة</small><b>بطاقة مواضع التصحيح</b></div><button type="button" data-preview-close="1">✕</button></header><div class="qmark-preview-scroll"><img id="qmarkPreviewImg" alt="بطاقة مواضع التصحيح"></div><footer><button type="button" id="qmarkPreviewDownload">↓ تنزيل PNG</button><button type="button" id="qmarkPreviewShare" class="primary">↗ مشاركة</button></footer></section>`;document.body.appendChild(el);el.addEventListener('click',e=>{if(e.target?.dataset?.previewClose)closePreview();});$('qmarkPreviewDownload').addEventListener('click',()=>{if(state.previewFile)downloadFile(state.previewFile);});$('qmarkPreviewShare').addEventListener('click',async()=>{if(!state.previewFile)return;const sid=$('sesSt')?.value,st=findStudent(sid),data=typeof g.buildSesData==='function'?g.buildSesData():{},ses={studentId:sid,date:$('sesDate')?.value||new Date().toISOString().slice(0,10),...data},msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';if(!await shareSnapshotFile(state.previewFile,st,msg)){downloadFile(state.previewFile);try{toast('جهازك لا يدعم مشاركة ملف الصورة مباشرة؛ تم تنزيلها','info');}catch(_){}}});
+  }
+  function closePreview(){const el=$('qmarkPreview');if(el)el.hidden=true;if(state.previewUrl){URL.revokeObjectURL(state.previewUrl);state.previewUrl='';}state.previewFile=null;}
+  function currentSnapshotData(){const sid=$('sesSt')?.value,st=findStudent(sid);if(!sid||!st)return null;const data=typeof g.buildSesData==='function'?g.buildSesData():{},dateKey=$('sesDate')?.value||new Date().toISOString().slice(0,10),ses={studentId:sid,date:dateKey,status:typeof sesStatus!=='undefined'?sesStatus:'حضر',...data};return{st,ses};}
+  async function previewCurrentDraftImage(){
+    const pack=currentSnapshotData();if(!pack){try{toast('اختر الطالب أولًا','error');}catch(_){}return;}if(!rowsForImage(pack.ses).length){try{toast('لا توجد علامات أخطاء لإنشاء بطاقة','info');}catch(_){}return;}ensurePreview();try{const file=await canvasFile(buildSnapshotCanvas(pack.st,pack.ses),pack.st);if(state.previewUrl)URL.revokeObjectURL(state.previewUrl);state.previewFile=file;state.previewUrl=URL.createObjectURL(file);$('qmarkPreviewImg').src=state.previewUrl;$('qmarkPreview').hidden=false;}catch(e){console.warn('[qmark] preview failed',e);try{toast('تعذر إنشاء معاينة بطاقة التصحيح','error');}catch(_){}}
   }
   function safeOpenWhatsApp(st,msg){
     try{
@@ -212,13 +227,11 @@
     return false;
   }
   async function shareCurrentDraftImage(){
-    const sid=$('sesSt')?.value,st=findStudent(sid);
-    if(!sid||!st){try{toast('اختر الطالب أولًا','error');}catch(_){}return;}
-    const data=typeof g.buildSesData==='function'?g.buildSesData():{},dateKey=$('sesDate')?.value||new Date().toISOString().slice(0,10),ses={studentId:sid,date:dateKey,status:typeof sesStatus!=='undefined'?sesStatus:'حضر',...data};
+    const pack=currentSnapshotData();if(!pack){try{toast('اختر الطالب أولًا','error');}catch(_){}return;}const {st,ses}=pack;
     if(!rowsForImage(ses).length){try{toast('لا توجد علامات أخطاء على النص لإنشاء صورة','info');}catch(_){}return;}
     const msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';
     const shared=await shareErrorSnapshot(st,ses,msg);
-    if(!shared)safeOpenWhatsApp(st,msg);
+    if(!shared)try{toast('تم إنشاء بطاقة التصحيح. يمكنك إرسال الرسالة مباشرة بزر حفظ وإرسال.','info');}catch(_){}
   }
   function correctionDetailsText(ses){
     const all=quranErrors(ses?.recitationErrors||[]),rows=all.slice().sort((a,b)=>(Number(a.resolved)-Number(b.resolved))||(Number(a.surahId)-Number(b.surahId))||(Number(a.ayah)-Number(b.ayah))||(Number(a.wordIndex)-Number(b.wordIndex))).slice(0,12);
@@ -265,6 +278,6 @@
     },'v11.2.0-error1.3');
   }
   function init(){if(state.installed)return;state.installed=true;readPrefs();installPersistenceBridges();installPanel();ensureSheet();observe();hookOpeners();installReportBridge();installWhatsAppBridge();refreshPanel();document.addEventListener('visibilitychange',()=>{if(document.hidden){savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}}});g.addEventListener?.('pagehide',()=>{savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}},{capture:true});}
-  g.ImamTeacherErrorMarking={init,toggle,setContext,decorate,paintAllWords,closeSheet,shareErrorSnapshot,shareCurrentDraftImage,graphemes};
+  g.ImamTeacherErrorMarking={init,toggle,setContext,decorate,paintAllWords,closeSheet,shareErrorSnapshot,shareCurrentDraftImage,previewCurrentDraftImage,graphemes};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(globalThis);

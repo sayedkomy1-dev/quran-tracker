@@ -78,6 +78,10 @@
       ayah:Math.max(1,Number(x.ayah)||1),
       word:String(x.word||'').slice(0,80),
       char:x.targetLevel==='char'?String(x.charText||'').slice(0,20):'',
+      charIndex:x.targetLevel==='char'?Math.max(0,Number(x.charIndex)||0):-1,
+      wordIndex:Math.max(0,Number(x.wordIndex)||0),
+      ayahText:String(x.ayahText||'').slice(0,1200),
+      group:['pronunciation','memory','tajweed','custom'].includes(x.group)?x.group:'',
       type:String(x.type||'').slice(0,60),
       resolved:!!x.resolved,
       mode:['new_read','talaqqin','recitation','review'].includes(x.mode)?x.mode:'recitation'

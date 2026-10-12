@@ -713,3 +713,11 @@
 - Bumped app/service-worker runtime to v11.1.0 / `quran-pwa-v11.1.0-tahfeez1`.
 - No SQL changes; local Schema remains 12.
 
+
+## v11.2.0 — Error Marking Stage 3
+- Added premium correction-card PNG with preview, download and share flow.
+- Added latest correction review card to guardian/student portal.
+- Added verse-level visual marking in guardian portal using saved word/character targets.
+- Added one-tap bridge from unresolved correction ranges to Tahfeez Center stabilization mode.
+- Preserved direct WhatsApp Save & Send behavior as a separate message-first workflow.
+- No SQL migration; local Schema remains 12.
