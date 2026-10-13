@@ -315,3 +315,19 @@ body.v11-stage2 .tog{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--v11-line
 
 /* v11.2.0 Stage 4 — teacher assignment audio share */
 .assignment-audio-share{display:grid;grid-template-columns:minmax(150px,.7fr) minmax(190px,1.3fr);gap:7px;margin-top:8px}.assignment-audio-share select{min-height:42px;border:1px solid var(--v11-line,#dfe7e2);border-radius:12px;background:var(--v11-surface,#fff);color:var(--v11-ink,#17251d);padding:0 9px;font:800 10px Tahoma,Arial,sans-serif}.assignment-audio-share .btn{margin:0!important;min-height:42px}@media(max-width:520px){.assignment-audio-share{grid-template-columns:1fr}.assignment-audio-share select,.assignment-audio-share .btn{width:100%}}
+
+/* v11.4.1 — Profile mobile action hotfix.
+   No five-button sticky panel obscuring the scrollable student's progress. */
+@media(max-width:799px){
+  body.v11-stage2 #pg-profile .v11-profile-actions{position:static;bottom:auto;z-index:auto;backdrop-filter:none;-webkit-backdrop-filter:none;box-shadow:none;background:transparent;border:0;padding:7px 0 0;margin:0!important}
+  body.v11-stage2 #pg-profile .v11-profile-action-panel{display:block;margin:0 0 14px;border:1px solid var(--v11-line);border-radius:16px;background:var(--v11-surface);box-shadow:var(--v11-shadow-sm);overflow:hidden}
+  body.v11-stage2 #pg-profile .v11-profile-action-panel>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;padding:12px 14px;color:var(--v11-ink);font-size:13px;font-weight:800;cursor:pointer;list-style:none}
+  body.v11-stage2 #pg-profile .v11-profile-action-panel>summary::-webkit-details-marker{display:none}
+  body.v11-stage2 #pg-profile .v11-profile-action-panel>summary:after{content:'⌄';font-size:18px;color:var(--v11-primary);transition:transform .16s}
+  body.v11-stage2 #pg-profile .v11-profile-action-panel[open]>summary:after{transform:rotate(180deg)}
+  body.v11-stage2 #pg-profile .v11-profile-action-panel[open]>summary{border-bottom:1px solid var(--v11-line)}
+  body.v11-stage2 #pg-profile .v11-profile-action-panel:not([open]) #profileActions{display:none!important}
+  body.v11-stage2 #pg-profile .v11-profile-action-panel[open] .v11-profile-actions{padding:9px!important;display:flex!important;gap:6px!important}
+  body.v11-stage2 #pg-profile .v11-profile-action-panel .v11-profile-actions .btn{min-height:44px;flex:1 1 calc(50% - 6px);font-size:11px;white-space:normal}
+  body.v11-stage2 #pg-profile .v11-profile-action-panel .v11-profile-actions .btn.btn-red{flex-basis:100%}
+}

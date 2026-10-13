@@ -112,7 +112,21 @@
 
   function decorateProfile(){
     const hdr=document.getElementById('profHdr');if(hdr)hdr.classList.add('v11-profile-head');
-    const actions=document.getElementById('profileActions');if(actions)actions.classList.add('v11-profile-actions');
+    const actions=document.getElementById('profileActions');
+    if(actions){
+      actions.classList.add('v11-profile-actions');
+      // On small screens, place the five actions in an accessible disclosure near the profile
+      // navigation. Never float them above the student progress/history or bottom navigation.
+      if(!document.getElementById('v11ProfileActionsDisclosure') &&
+         typeof window.matchMedia==='function' && window.matchMedia('(max-width:799px)').matches){
+        const panel=document.createElement('details');
+        panel.id='v11ProfileActionsDisclosure';panel.className='v11-profile-action-panel';
+        const summary=document.createElement('summary');summary.textContent='⚙️ إجراءات الطالب';
+        panel.appendChild(summary);panel.appendChild(actions);
+        const after=document.getElementById('v9ProfileTabs')||hdr;
+        if(after)after.insertAdjacentElement('afterend',panel);
+      }
+    }
     ['profProgress','profStop','profMap','profErrors','profTrack','profChart','profWeak','profHist'].forEach(id=>document.getElementById(id)?.classList.add('v11-profile-section'));
   }
 

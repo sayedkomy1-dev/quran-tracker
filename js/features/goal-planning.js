@@ -91,13 +91,27 @@
   const PASSING_GRADES=new Set(['ممتاز','جيد جداً','جيد جدا','جيد']);
   function completedKeys(studentId){
     const set=new Set();
-    sessions().filter(s=>String(s.studentId)===String(studentId)&&s.status==='حضر').forEach(s=>{
-      // A proposed assignment is NOT an achieved memorization. Only a graded,
-      // passing, actually recited new memorization range counts towards the goal.
+    // Sort first: pre-v11.2 sessions graded the *previous* attended session's
+    // new assignment. Newer sessions record the precise actualRecitation.new.
+    const ordered=sessions().filter(s=>String(s.studentId)===String(studentId)&&s.status==='حضر')
+      .slice().sort((a,b)=>String(a.sessionDate||a.date||a.createdAt||'').localeCompare(String(b.sessionDate||b.date||b.createdAt||'')));
+    ordered.forEach((s,i)=>{
       const actual=s.actualRecitation?.new;
       const grade=String(s.prevGrades?.new||s.assessmentScores?.new||'').trim();
-      if(actual&&PASSING_GRADES.has(grade))sectionVerses(actual).forEach(k=>set.add(k));
-      else if(!actual&&s.new&&PASSING_GRADES.has(String(s.new.grade||'')))sectionVerses(s.new).forEach(k=>set.add(k));
+      if(actual){
+        // The actual range, not the new assignment for this visit, is authoritative.
+        if(PASSING_GRADES.has(grade))sectionVerses(actual).forEach(k=>set.add(k));
+        return;
+      }
+      // Legacy v5: the grade was attached to the same assigned section.
+      if(s.new&&PASSING_GRADES.has(String(s.new.grade||'')))sectionVerses(s.new).forEach(k=>set.add(k));
+      // Legacy v6: prevGrades.new belongs to the previous session's task.
+      // Never treat an ungraded assignment as completed.
+      if(PASSING_GRADES.has(String(s.prevGrades?.new||''))){
+        for(let j=i-1;j>=0;j--){
+          if(ordered[j].new?.surah){sectionVerses(ordered[j].new).forEach(k=>set.add(k));break;}
+        }
+      }
     });
     return set;
   }
@@ -135,7 +149,7 @@
     let targetLabel='';
     if(goal.targetType==='quran')targetLabel='القرآن الكريم كاملًا';
     else if(goal.targetType==='juz')targetLabel=`الجزء ${goal.juz}`;
-    else if(goal.targetType==='juzRange')targetLabel=`الأجزاء من ${goal.juzFrom} إلى ${goal.juzTo}`;
+    else if(goal.targetType==='juzRange')targetLabel=goal.juzFrom===goal.juzTo?`الجزء ${goal.juzFrom}`:`الأجزاء من ${goal.juzFrom} إلى ${goal.juzTo}`;
     else if(goal.targetType==='custom')targetLabel=`من ${target[0].surah} ${goal.from} إلى ${target.at(-1).surah} ${goal.endAyah}`;
     else targetLabel=`سورة ${target[0].surah}${goal.from===1&&goal.to===(surahs()[goal.surahId-1]?.a||goal.to)?' كاملة':` ${goal.from}–${goal.to}`}`;
     const milestones=[25,50,75,100].map(n=>({pct:n,done:pct>=n}));

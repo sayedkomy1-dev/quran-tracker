@@ -52,9 +52,27 @@ assert.equal(count({targetType:'surah',surahId:112,from:1,to:4}),4);
 assert.equal(G.cleanGoal({targetType:'juzRange',juzFrom:30,juzTo:31}).juzTo,30);
 assert.equal(G.cleanGoal({targetType:'custom',surahId:10,from:5,endSurahId:9,endAyah:1}).endSurahId,10);
 assert.equal(G.cleanGoal({...base,weekDays:[2,2,5,8,-1]}).sessionsPerWeek,2);
+// Historical v6 records: a passing prevGrades.new applies to the previous
+// attended session's new assignment (not to today's new task).
+records.sessions.length=0;
+records.sessions.push(
+  {studentId:'st1',status:'حضر',sessionDate:'2026-06-10',new:{surah:'الفاتحة',from:2,to:3}},
+  {studentId:'st1',status:'حضر',sessionDate:'2026-06-13',new:{surah:'الفاتحة',from:4,to:5},prevGrades:{new:'ممتاز'}},
+  {studentId:'st1',status:'حضر',sessionDate:'2026-06-20',new:{surah:'الفاتحة',from:6,to:7},prevGrades:{new:'ضعيف'}},
+  {studentId:'st1',status:'حضر',sessionDate:'2026-06-23',new:{surah:'الفاتحة',from:1,to:1},prevGrades:{new:'جيد'}}
+);
+a=G.analyze('st1','2026-10-20');
+assert.equal(a.doneCount,4,'only successfully graded old assignments 2–3 and 6–7 count');
+assert.equal(a.next.from,1,'proposed next ayah skips successfully completed historical assignments');
+// Any session with a precise actual range must never also credit an old assignment.
+records.sessions.push({studentId:'st1',status:'حضر',sessionDate:'2026-06-27',new:{surah:'الفاتحة',from:1,to:7},prevGrades:{new:'ممتاز'},actualRecitation:{new:{surah:'الفاتحة',from:1,to:1}}});
+a=G.analyze('st1','2026-10-20');
+assert.equal(a.doneCount,5,'actual range alone is the evidence when present');
+records.sessions.push({studentId:'st1',status:'حضر',sessionDate:'2026-06-29',prevGrades:{new:'إعادة'},actualRecitation:{new:{surah:'الفاتحة',from:4,to:5}}});
+assert.equal(G.analyze('st1','2026-10-20').doneCount,5,'failed recitation must not count');
 // Consent is mandatory: decline must never mutate the teacher's draft.
 records.sessions.length=0;
 ctx.goalPlanningApply('st1');assert.equal(prompted,1);assert.equal(applied,0);assert.equal(saved,0);
 approved=true;
 ctx.goalPlanningApply('st1');assert.equal(prompted,2);assert.equal(applied,1);assert.equal(saved,1);
-console.log('PASS goal-planning-calculation-check (verified learning evidence, 5 goal types, real schedules, consent)');
+console.log('PASS goal-planning-calculation-check (verified modern and legacy learning evidence, 5 goal types, real schedules, consent)');
