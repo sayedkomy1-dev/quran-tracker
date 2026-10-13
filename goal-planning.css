@@ -29,3 +29,33 @@ html[data-theme="dark"] .goal-plan-editor,html[data-theme="dark"] .goal-plan-day
 html[data-theme="dark"] .goal-plan-editor-preview,html[data-theme="dark"] .goal-plan-kpis>div,html[data-theme="dark"] .goal-plan-next,html[data-theme="dark"] .goal-plan-pacing>div{background:#22392d;color:var(--txt,#f1f6f2)}
 html[data-theme="dark"] .goal-plan-track{background:#344b40}
 @media(max-width:400px){.goal-plan-home-row{flex-wrap:wrap}.goal-plan-home-row .goal-plan-status{font-size:10px}.goal-plan-pacing{grid-template-columns:1fr}}
+
+/* v11.4 Stage 2 — actual milestones, calm delay awareness and guardian celebration */
+.goal-plan-warning,.portal-goal-delay{margin:10px 0;padding:11px 12px;border:1px solid #e8bf88;border-radius:13px;background:#fff5e7;color:#704311;line-height:1.7}
+.goal-plan-warning b,.goal-plan-warning small{display:block}.goal-plan-warning small{font-size:11px;margin-top:3px}
+.goal-plan-milestone-detail,.portal-goal-achievement{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:9px;margin:8px 0 10px}
+.goal-plan-milestone-detail b,.goal-plan-milestone-detail small,.portal-goal-achievement b,.portal-goal-achievement small{display:block}
+.goal-plan-milestone-detail small,.portal-goal-achievement small{font-size:11px;color:var(--mut,#66756b);margin-top:4px}
+.goal-plan-milestone-detail button,.portal-goal-achievement button{border:1px solid #c9a34c;border-radius:10px;background:#fff9ea;color:#714c0c;padding:8px 11px;font-weight:800;cursor:pointer}
+.goal-plan-home-alert{font-size:11px;display:inline-block;margin-top:8px;border-radius:12px;padding:5px 10px;background:#fff0df;color:#814511}
+.portal-goal-dates{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:12px 0 10px;border:1px solid var(--line,#e3e9e4);border-radius:12px;padding:10px;font-size:12px}
+.portal-goal-dates strong{overflow-wrap:anywhere;text-align:left}
+.portal-goal-achievements{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.portal-goal-achievements span{background:#f0f2ef;color:#657268;border-radius:9px;padding:6px 9px;font-size:11px;font-weight:800}
+.portal-goal-achievements .done{background:#e6f5e9;color:#176139}
+.portal-goal-achievement{padding:10px 11px;background:linear-gradient(135deg,#fff8e6,#eef8f0);border-radius:12px}
+.portal-goal-delay{font-size:12px}
+.goal-milestone-overlay{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;padding:18px calc(18px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));background:rgba(6,26,19,.65);backdrop-filter:blur(5px)}
+.goal-milestone-dialog{width:min(100%,420px);max-height:90dvh;overflow-y:auto;box-sizing:border-box;background:#fffdf7;color:#173c2b;border:2px solid #d3aa52;border-radius:24px;box-shadow:0 22px 65px rgba(0,0,0,.22);padding:23px 21px;text-align:center}
+.goal-milestone-sparkles{color:#bb8b27;font-size:19px;letter-spacing:14px;animation:goal-twinkle 1.6s ease-in-out 2}
+.goal-milestone-medal{font-size:52px;margin:10px 0}.goal-milestone-dialog h2{font-size:21px;margin:8px 0;color:#145a3a}.goal-milestone-dialog p{font-size:14px;line-height:1.8;margin:10px 0}.goal-milestone-dialog>strong{display:block;color:#946715;font-size:38px}.goal-milestone-dialog>small{display:block;line-height:1.8;color:#536b5b;margin:10px 0 18px}.goal-milestone-dialog button{width:100%;padding:13px;border:0;border-radius:12px;background:#145a3a;color:#fff;font-size:15px;font-weight:800;cursor:pointer}
+@keyframes goal-twinkle{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
+@media(prefers-reduced-motion:reduce){.goal-milestone-sparkles{animation:none}}
+html[data-theme="dark"] .goal-plan-warning,html[data-portal-theme="dark"] .portal-goal-delay{background:#47351d;color:#ffe1ad;border-color:#735322}
+html[data-theme="dark"] .goal-plan-milestone-detail button,html[data-portal-theme="dark"] .portal-goal-achievement button{background:#443718;color:#ffdf96;border-color:#7c6636}
+html[data-portal-theme="dark"] .portal-goal-dates{border-color:#45614f}
+html[data-portal-theme="dark"] .portal-goal-achievement{background:#233628;color:#eef6f0}
+html[data-portal-theme="dark"] .portal-goal-achievements span{background:#2e4035;color:#d2dfd5}
+html[data-portal-theme="dark"] .portal-goal-achievements span.done{background:#17482f;color:#d5f1dc}
+#portalGoalDelay[hidden],#portalGoalAchievement[hidden]{display:none!important}
+@media(max-width:390px){.goal-plan-milestone-detail button,.portal-goal-achievement button{width:100%}.portal-goal-dates{flex-direction:column;align-items:stretch}.portal-goal-dates strong{text-align:start}}

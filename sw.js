@@ -7,8 +7,8 @@
 // Regression compatibility refs: quran-pwa-v11.2.0-error2 | uiStage:'11.2-error-marking-2' | './teacher-error-marking.css?v=11.2.0-s2' | './js/features/teacher-error-marking.js?v=11.2.0-s2' | './guardian-portal.css?v=11.2.0-s2' | './js/features/guardian-portal-view.js?v=11.2.0-s2' | './guardian-tahfeez.css?v=11.2.0-s4' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
-const CACHE_NAME = 'quran-pwa-v11.4.1-goal-planning1-mobile-hotfix';
-const APP_VERSION = '11.4.0';
+const CACHE_NAME = 'quran-pwa-v11.4.2-goal-planning2';
+const APP_VERSION = '11.4.2';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
 const APP_SHELL = [
@@ -25,7 +25,7 @@ const APP_SHELL = [
   './quran-engine.css?v=11.0.0',
   './teacher-error-marking.css?v=11.2.0-s3',
   './smart-revision.css?v=11.3.0-s1',
-  './goal-planning.css?v=11.4.0-s1.1',
+  './goal-planning.css?v=11.4.2-s2',
   './v10.js?v=11.2.0-s1.1',
   './js/features/teacher-error-marking.js?v=11.2.0-s3',
   './js/features/guardian-communication.js?v=11.0.0',
@@ -33,7 +33,7 @@ const APP_SHELL = [
   './js/features/teacher-followup.js?v=11.0.0',
   './js/features/circle-analytics.js?v=11.0.0',
   './js/features/smart-revision.js?v=11.3.0-s1',
-  './js/features/goal-planning.js?v=11.4.1-legacy-progress',
+  './js/features/goal-planning.js?v=11.4.2-s2',
   './js/features/guardian-portal-share.js?v=11.4.0-s1',
   './js/features/quran-audio-export.js?v=11.2.0-s4',
   './js/features/assignment-audio-share.js?v=11.2.0-s4',
@@ -45,13 +45,13 @@ const APP_SHELL = [
   './js/features/guardian-portal-experience.js?v=11.2.0-s4.1',
   './js/features/guardian-audio-assist.js?v=11.2.0-s4.1',
   './js/features/guardian-tahfeez.js?v=11.2.0-s4.1',
-  './js/features/guardian-portal-view.js?v=11.4.0-s1',
+  './js/features/guardian-portal-view.js?v=11.4.2-s2',
   './guardian-login.html',
   './guardian-login.css?v=11.2.0-s4',
   './guardian-login.js?v=11.0.0',
   './js/features/quran-engine.js?v=11.0.0',
   './js/features/quran-structure.js?v=11.0.0',
-  './js/core/runtime.js?v=11.2.0',
+  './js/core/runtime.js?v=11.4.2-s2',
   './js/core/offline-bootstrap.js?v=11.0.0',
   './js/core/mobile-navigation.js?v=11.0.0',
   './js/features/v10-data.js?v=11.0.0',
@@ -87,14 +87,14 @@ const CORE_SHELL = [
   './v11.css?v=11.4.1-profile-ui',
   './teacher-error-marking.css?v=11.2.0-s3',
   './smart-revision.css?v=11.3.0-s1',
-  './goal-planning.css?v=11.4.0-s1.1',
+  './goal-planning.css?v=11.4.2-s2',
   './js/features/smart-revision.js?v=11.3.0-s1',
-  './js/features/goal-planning.js?v=11.4.1-legacy-progress',
+  './js/features/goal-planning.js?v=11.4.2-s2',
   './js/features/v11-ui.js?v=11.4.1-profile-ui',
   './js/features/teacher-error-marking.js?v=11.2.0-s3',
   './app.js?v=11.2.0-s1.1',
   './auth.js?v=11.0.0',
-  './js/core/runtime.js?v=11.2.0',
+  './js/core/runtime.js?v=11.4.2-s2',
   './js/core/offline-bootstrap.js?v=11.0.0'
 ];
 
@@ -314,5 +314,5 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5',uiStage:'11.4-goal-planning-1'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5',uiStage:'11.4-goal-planning-2'});
 });

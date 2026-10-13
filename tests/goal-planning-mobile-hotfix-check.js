@@ -2,12 +2,12 @@
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const read=f=>fs.readFileSync(f,'utf8');
 const html=read('index.html'),ui=read('js/features/v11-ui.js'),css=read('v11.css'),sw=read('sw.js'),goal=read('js/features/goal-planning.js');
-for(const [name,path,version] of [['style','v11.css','11.4.1-profile-ui'],['ui','js/features/v11-ui.js','11.4.1-profile-ui'],['logic','js/features/goal-planning.js','11.4.1-legacy-progress']]){
+for(const [name,path,version] of [['style','v11.css','11.4.1-profile-ui'],['ui','js/features/v11-ui.js','11.4.1-profile-ui'],['logic','js/features/goal-planning.js','11.4.2-s2']]){
   const ref=path+'?v='+version;
   assert.ok(html.includes(ref),name+' live HTML cache-bust not updated');
   assert.ok(sw.includes("'./"+ref+"'"),name+' SW cache must match HTML');
 }
-assert.ok(sw.includes("quran-pwa-v11.4.1-goal-planning1-mobile-hotfix"));
+assert.ok(sw.includes("quran-pwa-v11.4.2-goal-planning2"));
 assert.ok(ui.includes('v11ProfileActionsDisclosure')&&ui.includes("document.createElement('details')"));
 assert.ok(ui.includes("document.getElementById('v9ProfileTabs')||hdr"));
 assert.ok(css.includes('#pg-profile .v11-profile-actions{position:static;bottom:auto'));

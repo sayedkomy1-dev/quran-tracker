@@ -1,5 +1,5 @@
 'use strict';
-/* Imam Academy v11.4.0 — Goals & Memorization Planning, Stage 1.
+/* Imam Academy v11.4.0 — Goals & Memorization Planning, Stage 1 + Stage 2.
    Per-student long-term Quran target with automatic pacing, milestones,
    ahead/behind calculation, next-session suggestion and guardian summary.
    Stored additively on the existing student object; Local Schema remains 12. */
@@ -120,7 +120,7 @@
     const target=targetVerses(goal);if(!target.length)return{student:st,goal,error:'TARGET_EMPTY'};
     const done=completedKeys(studentId),remaining=target.filter(v=>!done.has(`${v.surahId}:${v.ayah}`));
     const total=target.length,doneCount=total-remaining.length,remainingCount=remaining.length;
-    const pct=total?Math.round(doneCount*100/total):0;
+    const pct=total?Math.floor(doneCount*100/total):0;
     const plannedDays=actualDays(goal),frequency=plannedDays.length||goal.sessionsPerWeek;
     const start=goal.startDate||todayKey(),deadline=goal.targetDate||'';
     const plannedSessions=deadline?countScheduled(start,deadline,plannedDays,frequency):0;
@@ -152,8 +152,17 @@
     else if(goal.targetType==='juzRange')targetLabel=goal.juzFrom===goal.juzTo?`الجزء ${goal.juzFrom}`:`الأجزاء من ${goal.juzFrom} إلى ${goal.juzTo}`;
     else if(goal.targetType==='custom')targetLabel=`من ${target[0].surah} ${goal.from} إلى ${target.at(-1).surah} ${goal.endAyah}`;
     else targetLabel=`سورة ${target[0].surah}${goal.from===1&&goal.to===(surahs()[goal.surahId-1]?.a||goal.to)?' كاملة':` ${goal.from}–${goal.to}`}`;
-    const milestones=[25,50,75,100].map(n=>({pct:n,done:pct>=n}));
+    // A rounded progress label must never award a milestone early (e.g. 24.9% -> 25%).
+    const milestones=[25,50,75,100].map(n=>({pct:n,done:doneCount*100>=total*n}));
+    const unlocked=milestones.filter(m=>m.done).map(m=>m.pct);
+    const latestMilestone=unlocked.length?unlocked[unlocked.length-1]:0;
+    const remainingToNext=latestMilestone===100?0:Math.max(0,Math.ceil(total*(latestMilestone+25)/100)-doneCount);
+    const delayed=['behind','overdue'].includes(status);
+    const delayMessage=delayed?(status==='overdue'
+      ?`انتهى الموعد المستهدف، وما زال ${remainingCount} آية تحتاج إلى تسميع ناجح. راجع الخطة مع الطالب.`
+      :`التقدم أقل من المتوقع بمقدار ${Math.max(0,expectedPct-pct)} نقطة مئوية. راجع وتيرة الحفظ أو تاريخ الهدف.`):'';
     return{student:st,goal,target,total,doneCount,remainingCount,pct,expectedPct,diff,daysLeft,
+      latestMilestone,remainingToNext,delayMessage,
       sessionsLeft,sessionsUntilDeadline,plannedSessions,recommended,preferred,nextPace,expectedFinish,
       status,statusLabel,next,targetLabel,milestones};
   }
@@ -255,6 +264,31 @@
     const minimum=Math.ceil(target.length/Math.max(1,amount));
     box.innerHTML=`<b>${target.length} آية</b> · <b>${amount} حصة مخططة</b> · المطلوب للحاق بالموعد <b>${minimum} آية/حصة</b>${fake.ayahPerSession?` · المقدار الذي حددته: <b>${fake.ayahPerSession} آية/حصة</b>`:''}`;
   }
+  function milestoneMarkup(a,context='teacher'){
+    const levels=a.milestones||[];
+    return `<div class="goal-plan-milestones" aria-label="مراحل الإنجاز">${levels.map(m=>`<span class="${m.done?'done':''}" title="${m.done?'تم اجتياز':'لم يكتمل بعد'} ${m.pct}%">${m.done?'✓ ':'○ '}${m.pct}%</span>`).join('')}</div>
+      <div class="goal-plan-milestone-detail">${a.latestMilestone===100?'<b>🏆 اكتمل هدف الحفظ!</b>':a.latestMilestone?`<b>🏅 تم تحقيق إنجاز ${a.latestMilestone}%</b><small>تبقّت ${a.remainingToNext} آية للوصول للمرحلة التالية</small>`:`<small>تبقّت ${a.remainingToNext} آية للوصول لأول إنجاز (25%)</small>`}
+      ${a.latestMilestone?`<button type="button" data-goal-celebrate="${a.latestMilestone}" data-goal-context="${esc(context)}">🎉 عرض التهنئة</button>`:''}</div>`;
+  }
+  function celebrateMilestone(name,level){
+    if(![25,50,75,100].includes(Number(level))||!document?.body)return;
+    document.getElementById('goalMilestoneModal')?.remove();
+    const overlay=document.createElement('div');overlay.id='goalMilestoneModal';overlay.className='goal-milestone-overlay';overlay.setAttribute('role','presentation');
+    overlay.innerHTML=`<section class="goal-milestone-dialog" role="dialog" aria-modal="true" aria-labelledby="goalMilestoneTitle" dir="rtl"><div class="goal-milestone-sparkles" aria-hidden="true">✦ ✧ ✦</div><div class="goal-milestone-medal" aria-hidden="true">${Number(level)===100?'🏆':'🏅'}</div><h2 id="goalMilestoneTitle">ما شاء الله، إنجاز رائع!</h2><p>${esc(name||'الطالب')} أتمّ ${Number(level)}% من خطة الحفظ الموثّقة بالتسميع الناجح.</p><strong>${Number(level)}%</strong><small>نسأل الله أن يبارك في حفظه ويعينه على الإتقان والتثبيت.</small><button type="button" data-goal-close>متابعة الرحلة القرآنية</button></section>`;
+    const close=()=>{document.removeEventListener('keydown',onKey);overlay.remove();};
+    const onKey=e=>{if(e.key==='Escape')close();};
+    overlay.addEventListener('click',e=>{if(e.target===overlay||e.target.closest('[data-goal-close]'))close();});
+    document.body.appendChild(overlay);document.addEventListener('keydown',onKey);
+    overlay.querySelector('[data-goal-close]')?.focus();
+  }
+  function goalPlanningCelebrate(studentId,level){
+    const a=analyze(studentId);if(!a||a.error||!a.milestones.some(m=>m.pct===Number(level)&&m.done))return false;
+    celebrateMilestone(a.student.name,level);return true;
+  }
+  function goalPlanningNotice(a){
+    if(!a.delayMessage)return '';
+    return `<div class="goal-plan-warning" role="status"><b>⏳ ${a.status==='overdue'?'الموعد المستهدف انتهى':'الخطة تحتاج متابعة'}</b><small>${esc(a.delayMessage)}</small><small>تنبيه إرشادي للمحفظ؛ لا يتم تغيير التكليف أو الجدول تلقائيًا.</small></div>`;
+  }
   function ensureProfileCard(){
     if($('goalPlanningCard'))return $('goalPlanningCard');const anchor=$('profStop')||$('profTrack')||$('profHist');if(!anchor)return null;const card=document.createElement('div');card.id='goalPlanningCard';card.className='card goal-planning-card';anchor.parentNode.insertBefore(card,anchor);return card;
   }
@@ -268,9 +302,11 @@
       <div class="goal-plan-progress"><div><b>${a.pct}%</b><span>المتوقع حتى اليوم ${a.expectedPct}%</span></div><div class="goal-plan-track"><i style="width:${Math.min(100,a.pct)}%"></i><em style="right:${Math.min(100,a.expectedPct)}%"></em></div></div>
       <div class="goal-plan-kpis"><div><b>${a.total}</b><span>إجمالي الآيات</span></div><div><b>${a.doneCount}</b><span>تم تسميعها بنجاح</span></div><div><b>${a.remainingCount}</b><span>المتبقي</span></div><div><b>${a.sessionsLeft}</b><span>حصة متوقعة</span></div></div>
       <div class="goal-plan-pacing"><div><small>المقدار لكل حصة</small><strong>${esc(pace)}</strong></div><div><small>تاريخ الإتمام المتوقع</small><strong>${esc(formatDate(a.expectedFinish))}</strong></div></div>
-      <div class="goal-plan-milestones">${a.milestones.map(m=>`<span class="${m.done?'done':''}">${m.done?'✓ ':''}${m.pct}%</span>`).join('')}</div>
+      ${goalPlanningNotice(a)}
+      ${milestoneMarkup(a)}
       <div class="goal-plan-next"><span><small>اقتراح الحفظ للحصة القادمة — لا يُطبق تلقائيًا</small><b>${next}</b></span>${a.next?`<button type="button" onclick="goalPlanningApply('${esc(studentId)}')">موافقة واستخدام</button>`:''}</div>
       <div class="goal-plan-actions"><button type="button" onclick="goalPlanningEdit('${esc(studentId)}')">تعديل الخطة</button></div>`;
+    card.querySelectorAll('[data-goal-celebrate]').forEach(btn=>btn.addEventListener('click',()=>goalPlanningCelebrate(studentId,Number(btn.dataset.goalCelebrate))));
   }
   function ensureHomeCard(){
     let node=$('goalPlanningHome');if(node)return node;
@@ -284,7 +320,7 @@
     if(!stats.length){box.innerHTML='<div class="goal-plan-home-head"><b>🎯 خطط الحفظ</b><small>ابدأ من ملف الطالب لإنشاء أول خطة.</small></div>';return;}
     const completed=stats.filter(x=>x.status==='complete').length,behind=stats.filter(x=>['behind','overdue'].includes(x.status)).length;
     const ranked=stats.filter(x=>x.status!=='complete').sort((a,b)=>({overdue:0,behind:1,ontrack:2,ahead:3}[a.status]??4)-({overdue:0,behind:1,ontrack:2,ahead:3}[b.status]??4)).slice(0,4);
-    box.innerHTML=`<div class="goal-plan-home-head"><div><b>🎯 خطط الحفظ</b><small>${stats.length} طالب لديهم خطة · ${completed} مكتملة · ${behind} تحتاج متابعة</small></div></div>
+    box.innerHTML=`<div class="goal-plan-home-head"><div><b>🎯 خطط الحفظ</b><small>${stats.length} طالب لديهم خطة · ${completed} مكتملة · ${behind} تحتاج متابعة</small></div>${behind?`<span class="goal-plan-home-alert" role="status">⏳ ${behind} خطة تحتاج متابعة</span>`:''}</div>
       <div class="goal-plan-home-list">${ranked.map(a=>`<button type="button" class="goal-plan-home-row" data-goal-student="${esc(a.student.id)}"><span><b>${esc(a.student.name)}</b><small>${esc(a.targetLabel)}</small></span><strong>${a.pct}%</strong><em class="goal-plan-status ${a.status}">${esc(a.statusLabel)}</em></button>`).join('')||'<small>كل الخطط الحالية مكتملة ✓</small>'}</div>`;
     box.querySelectorAll('[data-goal-student]').forEach(btn=>btn.addEventListener('click',()=>g.openProf?.(btn.dataset.goalStudent)));
   }
@@ -302,7 +338,7 @@
       catch(err){console.warn('[goal plan apply]',err);g.toast?.('تعذر تطبيق الاقتراح','error');}
     },120);return true;
   }
-  function guardianData(studentId){const a=analyze(studentId);if(!a||a.error)return null;return{targetLabel:a.targetLabel,targetDate:a.goal.targetDate,progress:a.pct,expected:a.expectedPct,status:a.status,statusLabel:a.statusLabel,completed:a.doneCount,remaining:a.remainingCount,recommendedPerSession:a.recommended,sessionsLeft:a.sessionsLeft,expectedFinish:a.expectedFinish,next:a.next?{surah:a.next.surah,from:a.next.from,to:a.next.to,count:a.next.count}:null,milestones:a.milestones};}
+  function guardianData(studentId){const a=analyze(studentId);if(!a||a.error)return null;return{targetLabel:a.targetLabel,targetDate:a.goal.targetDate,progress:a.pct,expected:a.expectedPct,status:a.status,statusLabel:a.statusLabel,completed:a.doneCount,total:a.total,remaining:a.remainingCount,recommendedPerSession:a.recommended,sessionsLeft:a.sessionsLeft,expectedFinish:a.expectedFinish,delayMessage:a.delayMessage,latestMilestone:a.latestMilestone,remainingToNext:a.remainingToNext,next:a.next?{surah:a.next.surah,from:a.next.from,to:a.next.to,count:a.next.count}:null,milestones:a.milestones};}
 
 
   function installHooks(){
@@ -311,12 +347,23 @@
     const baseEdit=g.editSt;if(typeof baseEdit==='function'){const wrapped=function(...args){const st=studentById(currentStudentId());const out=baseEdit.apply(this,args);setTimeout(()=>fillEditor(st),0);return out;};legacy?.override?legacy.override('editSt',wrapped,'v11.4-goal-plan1'):g.editSt=wrapped;}
     const baseSave=g.saveSt;if(typeof baseSave==='function'){const wrapped=function(...args){const editing=typeof editId!=='undefined'?editId:null,before=students().length,existing=editing?studentById(editing):null,goal=readEditorGoal(existing?.memorizationGoal);if(!validateEditor())return;const out=baseSave.apply(this,args);if($('stModal')?.classList.contains('open'))return out;let st=editing?studentById(editing):(students().length>before?students().at(-1):null);if(st){if(goal)st.memorizationGoal=goal;else delete st.memorizationGoal;st.updatedAt=new Date().toISOString();g.save?.();setTimeout(()=>{renderProfile(st.id);renderHome();try{g.ImamApp?.GuardianPortal?.refreshPhoneSnapshot?.(st.id);}catch(_){}},0);}return out;};legacy?.override?legacy.override('saveSt',wrapped,'v11.4-goal-plan1'):g.saveSt=wrapped;}
     const baseOpen=g.openProf;if(typeof baseOpen==='function'){const wrapped=function(id,...args){const out=baseOpen.call(this,id,...args);setTimeout(()=>renderProfile(id),0);return out;};legacy?.override?legacy.override('openProf',wrapped,'v11.4-goal-plan1'):g.openProf=wrapped;}
-    const baseSession=g.saveSession;if(typeof baseSession==='function'){const wrapped=function(...args){const out=baseSession.apply(this,args);if(out?.studentId)setTimeout(()=>{renderProfile(out.studentId);renderHome();},0);return out;};legacy?.override?legacy.override('saveSession',wrapped,'v11.4-goal-plan1'):g.saveSession=wrapped;}
+    const baseSession=g.saveSession;if(typeof baseSession==='function'){const wrapped=function(...args){
+      const sid=String($('sesSt')?.value||currentStudentId()||'');
+      const before=sid?analyze(sid):null;
+      const out=baseSession.apply(this,args);
+      if(out?.studentId)setTimeout(()=>{
+        const after=analyze(out.studentId);renderProfile(out.studentId);renderHome();
+        if(before&&after&&!after.error&&String(before.student?.id)===String(after.student?.id)&&after.latestMilestone>before.latestMilestone){
+          g.toast?.(`🏅 مبروك! ${after.student.name} وصل إلى ${after.latestMilestone}% من خطة الحفظ`,'success');
+          // Congratulations do not generate certificates or alter student records.
+        }
+      },0);
+      return out;};legacy?.override?legacy.override('saveSession',wrapped,'v11.4-goal-plan1'):g.saveSession=wrapped;}
     const baseHome=g.renderHome;if(typeof baseHome==='function'){const wrapped=function(...args){const out=baseHome.apply(this,args);renderHome();return out;};legacy?.override?legacy.override('renderHome',wrapped,'v11.4-goal-plan1'):g.renderHome=wrapped;}
     const baseSan=g.sanitizeBackupData;if(typeof baseSan==='function'){const wrapped=function(d,...args){const safe=baseSan.call(this,d,...args);safe.students.forEach((st,i)=>{const goal=cleanGoal(d.students?.[i]?.memorizationGoal);if(goal)st.memorizationGoal=goal;});return safe;};legacy?.override?legacy.override('sanitizeBackupData',wrapped,'v11.4-goal-plan1'):g.sanitizeBackupData=wrapped;}
   }
 
-  g.goalPlanningApply=applyNext;g.goalPlanningEdit=editGoal;
-  g.ImamApp=g.ImamApp||{};g.ImamApp.GoalPlanner={cleanGoal,goalFor,targetVerses,completedKeys,analyze,renderProfile,renderHome,applyNext,buildGuardian:guardianData};
+  g.goalPlanningApply=applyNext;g.goalPlanningEdit=editGoal;g.goalPlanningCelebrate=goalPlanningCelebrate;
+  g.ImamApp=g.ImamApp||{};g.ImamApp.GoalPlanner={cleanGoal,goalFor,targetVerses,completedKeys,analyze,renderProfile,renderHome,applyNext,buildGuardian:guardianData,celebrateMilestone,goalPlanningCelebrate};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installHooks();},{once:true});else installHooks();
 })(globalThis);

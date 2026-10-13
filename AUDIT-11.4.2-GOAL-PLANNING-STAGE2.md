@@ -1,0 +1,1 @@
+v11.4 Stage 2 audit: scope and safety checks in QA-REPORT-11.4.2-STAGE2.md. Existing data preserved. SQL Additive requirement not needed; no SQL changes. Local Schema=12. Milestone crossing is only via passing recitation and teacher-controlled session save. Guardian reads read-only published snapshots. Real-device verification pending.

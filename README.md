@@ -1,3 +1,11 @@
+## v11.4 Stage 2 — Milestones & Guardian Goal Progress (11.4.2)
+
+- Milestones 25% / 50% / 75% / 100% are awarded strictly on verified, successful ayah recitations (not rounded-up display percentages or assignments).
+- In the teacher profile, milestone achievements, an optional congratulation dialog, and a gentle behind-schedule notice appear within the existing goal card; no certificate or automatic changes to assignments.
+- The teacher overview highlights the number of plans needing attention.
+- The guardian read-only portal shows milestone badges, expected completion date, supportive delay notices and an optional achievement congratulation. Data comes from the existing protected guardian snapshot; no additional SQL or sensitive credentials.
+- Local Schema stays **12**, and all existing WhatsApp, audio, revision, PWA offline, guardian login, and student/session data routes remain untouched.
+
 ## v11.2.0 — Guardian Engagement Tracking (Stage 4.1)
 
 بوابة ولي الأمر تسجل الآن مؤشرات استخدام تعليمية آمنة لحسابات الهاتف + PIN: فتح البوابة، بدء التحفيظ، تشغيل الآيات، التكرارات المكتملة، نطق الأخطاء ومشاركة صوت التكليف. المحفظ يرى ملخص 7/30 يومًا لكل الطلاب ويعرف من دخل ومن لم يبدأ التحفيظ وآخر نشاط. المرحلة تتطلب `sql/guardian-portal-engagement.sql` مرة واحدة، وLocal Schema يبقى 12. راجع `RELEASE-11.2.0-STAGE4.1.md`.

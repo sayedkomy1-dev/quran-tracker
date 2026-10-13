@@ -1,0 +1,44 @@
+'use strict';
+/* v11.4 Stage 2: real milestone boundaries, read-only guardian projection,
+   no certificate issuance, teacher-only control over assignments. */
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const load=f=>fs.readFileSync(f,'utf8');
+const html=load('index.html'),portal=load('guardian-portal.html'),goal=load('js/features/goal-planning.js'),view=load('js/features/guardian-portal-view.js'),style=load('goal-planning.css'),sw=load('sw.js'),share=load('js/features/guardian-portal-share.js');
+const S=vm.runInNewContext('('+load('app.js').match(/const S=(\[[\s\S]*?\]);\s*const JZ=/)[1]+')');
+const now='2026-10-20';
+const records={students:[{id:'a',name:'Test student',memorizationGoal:{enabled:true,targetType:'surah',surahId:2,from:1,to:286,startDate:'2026-10-01',targetDate:'2026-10-31',sessionsPerWeek:3,weekDays:[0,2,4],ayahPerSession:20}}],sessions:[],curStId:'a'};
+let mutations=0,confirmed=0;
+const context={S,ImamApp:{State:records},document:{readyState:'loading',addEventListener(){},getElementById(){return null;}},setTimeout(fn){fn();},console,confirm(){confirmed++;return false;},setSectionAutoValue(){mutations++;},scheduleDraftSave(){mutations++;}};
+context.globalThis=context;
+vm.runInNewContext(goal,context,{filename:'goal-planning.js'});
+const planner=context.ImamApp.GoalPlanner;
+function grade(from,to,pass=true){records.sessions.push({studentId:'a',status:'حضر',sessionDate:now,actualRecitation:{new:{surah:'البقرة',from,to}},prevGrades:{new:pass?'ممتاز':'إعادة'}});}
+let a=planner.analyze('a',now);assert.equal(a.pct,0);assert.equal(a.latestMilestone,0);assert.ok(a.delayMessage.includes('التقدم أقل'));
+grade(1,71);a=planner.analyze('a',now);
+assert.equal(a.doneCount,71);assert.equal(a.pct,24,'do not round 24.82% to a milestone');
+assert.equal(a.latestMilestone,0);assert.ok(!a.milestones[0].done);
+grade(72,72);a=planner.analyze('a',now);assert.equal(a.latestMilestone,25);assert.equal(a.remainingToNext,71);
+grade(73,143);a=planner.analyze('a',now);assert.equal(a.latestMilestone,50);
+grade(144,214);a=planner.analyze('a',now);assert.equal(a.latestMilestone,50);
+grade(215,215);a=planner.analyze('a',now);assert.equal(a.latestMilestone,75);
+grade(216,286);a=planner.analyze('a',now);assert.equal(a.latestMilestone,100);assert.equal(a.pct,100);assert.equal(a.status,'complete');assert.equal(a.remainingToNext,0);
+assert.equal(a.next,null);assert.equal(a.delayMessage,'');
+const gp=planner.buildGuardian('a');assert.equal(gp.total,286);assert.equal(gp.completed,286);assert.equal(gp.latestMilestone,100);assert.equal(gp.remainingToNext,0);
+assert.ok(/^\d{4}-\d{2}-\d{2}$/.test(gp.expectedFinish));
+assert.equal(gp.milestones.length,4);assert.ok(gp.milestones.every(x=>x.done));
+assert.ok(!JSON.stringify(gp).includes('phone')&&!JSON.stringify(gp).includes('PIN'));
+assert.ok(!('certificate' in gp),'Stage 2 must not generate formal certificates');
+records.sessions.length=0;grade(1,40,false);assert.equal(planner.analyze('a',now).latestMilestone,0,'failed assessments cannot unlock achievements');
+context.goalPlanningApply('a');assert.equal(confirmed,1);assert.equal(mutations,0,'teacher denial must not alter a session');
+for(const id of ['portalGoalFinish','portalGoalDelay','portalGoalMilestones','portalGoalAchievement'])assert.ok(portal.includes(`id="${id}"`),`${id} missing from guardian portal`);
+assert.ok(view.includes('function portalGoalCelebrate')&&view.includes('portalGoalDate')&&view.includes('portalGoalAchievement'),'read-only milestone view missing');
+assert.ok(view.includes('total>0?completed*100>=total*n'),'guardian must honor exact milestone counts');
+assert.ok(goal.includes('function goalPlanningNotice')&&goal.includes('goalPlanningCelebrate')&&goal.includes('function celebrateMilestone'),'teacher milestone UI missing');
+assert.ok(style.includes('.goal-milestone-dialog')&&style.includes('prefers-reduced-motion:reduce'),'mobile/reduced-motion celebration styles missing');
+assert.ok(share.includes('memorizationPlan')&&share.includes('GoalPlanner?.buildGuardian'),'guardian must receive plan through existing snapshot security boundary');
+assert.ok(html.includes('goal-planning.css?v=11.4.2-s2')&&html.includes('goal-planning.js?v=11.4.2-s2'),'teacher cache-busting missing');
+assert.ok(portal.includes('guardian-portal-view.js?v=11.4.2-s2'),'guardian cache-busting missing');
+for(const key of ['goal-planning.css?v=11.4.2-s2','goal-planning.js?v=11.4.2-s2','guardian-portal-view.js?v=11.4.2-s2'])assert.ok(sw.includes(key),'offline shell missing '+key);
+assert.ok(sw.includes('quran-pwa-v11.4.2-goal-planning2'),'SW update missing');
+assert.ok(!goal.includes('reviewOutcome')&&!goal.includes('needs_stabilization'),'deferred review-outcome engine must stay deferred');
+console.log('PASS goal-planning-stage2-check (24.8/25/50/75/100, projected date, guardian, overdue notice, failed grade, consent, offline wiring)');

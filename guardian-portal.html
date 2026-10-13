@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="guardian-portal.css?v=11.2.0-s4.1">
 <link rel="stylesheet" href="guardian-tahfeez.css?v=11.2.0-s4.1">
 <link rel="stylesheet" href="smart-revision.css?v=11.3.0-s1">
-<link rel="stylesheet" href="goal-planning.css?v=11.4.0-s1.1">
+<link rel="stylesheet" href="goal-planning.css?v=11.4.2-s2">
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
 </style>
@@ -78,7 +78,11 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
     <section class="portal-card portal-goal-card" id="portalGoalCard" hidden>
       <div class="portal-goal-head"><div><b>🎯 خطة الحفظ</b><small id="portalGoalTarget">الهدف طويل المدى</small></div><span id="portalGoalStatus" class="portal-goal-status">على الخطة</span></div>
       <div class="portal-goal-progress"><div><strong id="portalGoalProgress">0%</strong><span id="portalGoalExpected">المتوقع الآن 0%</span></div><div class="portal-goal-track"><i id="portalGoalBar"></i><em id="portalGoalExpectedMark"></em></div></div>
-      <div class="portal-goal-kpis"><div><b id="portalGoalDone">0</b><span>تم حفظها</span></div><div><b id="portalGoalRemaining">0</b><span>متبقية</span></div><div><b id="portalGoalPace">0</b><span>آية/حصة</span></div></div>
+      <div class="portal-goal-kpis"><div><b id="portalGoalDone">0</b><span>تم تسميعها بنجاح</span></div><div><b id="portalGoalRemaining">0</b><span>متبقية</span></div><div><b id="portalGoalPace">0</b><span>آية/حصة مقترحة</span></div></div>
+      <div class="portal-goal-dates"><span>📅 موعد الإتمام المتوقع</span><strong id="portalGoalFinish">—</strong></div>
+      <div id="portalGoalDelay" class="portal-goal-delay" role="status" hidden></div>
+      <div id="portalGoalMilestones" class="portal-goal-achievements" aria-label="مراحل إنجاز خطة الحفظ"></div>
+      <div id="portalGoalAchievement" class="portal-goal-achievement" hidden></div>
       <div id="portalGoalNext" class="portal-goal-next" hidden></div>
     </section>
 
@@ -209,6 +213,6 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <script src="js/features/quran-audio-export.js?v=11.2.0-s4.1"></script>
 <script src="js/features/guardian-audio-assist.js?v=11.2.0-s4.1"></script>
 <script src="js/features/guardian-tahfeez.js?v=11.2.0-s4.1"></script>
-<script src="js/features/guardian-portal-view.js?v=11.4.0-s1"></script>
+<script src="js/features/guardian-portal-view.js?v=11.4.2-s2"></script>
 </body>
 </html>

@@ -72,14 +72,47 @@
     body.innerHTML=`<div class="portal-revision-stats"><div><b>${Math.max(0,Number(rev.dueCount)||0)}</b><span>مستحق الآن</span></div><div><b>${Math.max(0,Number(rev.overdueCount)||0)}</b><span>متأخر</span></div><div><b>${Math.max(0,Number(rev.repeatedCount)||0)}</b><span>خطأ متكرر</span></div></div>${rows.length?'':'<div class="portal-good" style="margin-bottom:8px">✓ لا توجد مراجعات مستحقة اليوم — هذه أقرب مواضع قادمة.</div>'}<div class="portal-revision-list">${[...groups.entries()].map(([surah,gr])=>`<article class="portal-revision-group"><div class="portal-revision-group-head"><b>سورة ${esc(surah)} · ${gr.from}${gr.to>gr.from?'–'+gr.to:''}</b><button type="button" data-revision-surah="${esc(surah)}" data-revision-from="${gr.from}" data-revision-to="${gr.to}">▶ تدريب</button></div>${gr.rows.map(x=>`<div class="portal-revision-item"><span><strong>«${esc(x.word||'—')}»${x.char?` · الحرف «${esc(x.char)}»`:''}</strong><small>${esc((x.type||[]).join('، ')||'موضع تصحيح')} · ${x.occurrences>1?`تكرر ${x.occurrences}×`:'مرة واحدة'}</small></span><em>${esc(x.dueLabel||'')}</em></div>`).join('')}</article>`).join('')}</div>`;
     body.querySelectorAll('[data-revision-surah]').forEach(btn=>btn.addEventListener('click',()=>revisionPractice(btn.dataset.revisionSurah,Number(btn.dataset.revisionFrom),Number(btn.dataset.revisionTo))));
   }
+  function portalGoalDate(value){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(String(value||'')))return 'غير محدد';
+    const date=new Date(value+'T12:00:00Z');
+    return Number.isNaN(date.getTime())?'غير محدد':date.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'});
+  }
+  function portalGoalCelebrate(name,level){
+    const n=Number(level);if(![25,50,75,100].includes(n))return;
+    $('portalGoalMilestoneDialog')?.remove();
+    const overlay=document.createElement('div');overlay.id='portalGoalMilestoneDialog';overlay.className='goal-milestone-overlay';
+    overlay.innerHTML=`<section class="goal-milestone-dialog" role="dialog" aria-modal="true" aria-labelledby="portalGoalCongratsTitle" dir="rtl"><div class="goal-milestone-sparkles" aria-hidden="true">✦ ✧ ✦</div><div class="goal-milestone-medal" aria-hidden="true">${n===100?'🏆':'🏅'}</div><h2 id="portalGoalCongratsTitle">ما شاء الله، تقدم مبارك!</h2><p>أتمّ ${esc(name)} نسبة ${n}% من خطة الحفظ بتسميع ناجح.</p><strong>${n}%</strong><small>بارك الله في الحفظ والمراجعة والثبات.</small><button type="button" data-goal-close>أكمل المتابعة</button></section>`;
+    const close=()=>{document.removeEventListener('keydown',onKey);overlay.remove();};
+    const onKey=e=>{if(e.key==='Escape')close();};
+    overlay.addEventListener('click',e=>{if(e.target===overlay||e.target.closest('[data-goal-close]'))close();});
+    document.body.appendChild(overlay);document.addEventListener('keydown',onKey);
+    overlay.querySelector('[data-goal-close]')?.focus();
+  }
   function renderGoalPlan(data){
     const box=$('portalGoalCard'),plan=data?.memorizationPlan||null;if(!box)return;
     if(!plan){box.hidden=true;return;}box.hidden=false;
     const progress=Math.max(0,Math.min(100,Number(plan.progress)||0)),expected=Math.max(0,Math.min(100,Number(plan.expected)||0));
-    $('portalGoalTarget').textContent=`${plan.targetLabel||'هدف الحفظ'} · حتى ${plan.targetDate?new Date(plan.targetDate+'T12:00:00').toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'}):'—'}`;
+    $('portalGoalTarget').textContent=`${plan.targetLabel||'هدف الحفظ'} · المستهدف ${portalGoalDate(plan.targetDate)}`;
     const status=$('portalGoalStatus');status.textContent=plan.statusLabel||'على الخطة';status.className=`portal-goal-status ${plan.status||'ontrack'}`;
     $('portalGoalProgress').textContent=`${Math.round(progress)}%`;$('portalGoalExpected').textContent=`المتوقع الآن ${Math.round(expected)}%`;$('portalGoalBar').style.width=`${progress}%`;$('portalGoalExpectedMark').style.right=`${expected}%`;
     $('portalGoalDone').textContent=String(Math.max(0,Number(plan.completed)||0));$('portalGoalRemaining').textContent=String(Math.max(0,Number(plan.remaining)||0));$('portalGoalPace').textContent=String(Math.max(0,Number(plan.recommendedPerSession)||0));
+    // Stage 2: clear read-only milestones and realistic completion projection.
+    const finish=$('portalGoalFinish');if(finish)finish.textContent=progress>=100?'الهدف مكتمل':portalGoalDate(plan.expectedFinish);
+    const warning=$('portalGoalDelay');if(warning){
+      const late=['behind','overdue'].includes(plan.status);
+      warning.hidden=!late;
+      warning.textContent=late?(plan.status==='overdue'?'⏳ انتهى الموعد المستهدف؛ يُرجى التواصل مع المحفظ لتحديث الخطة.':'⏳ التقدم أقل من المخطط؛ يمكن مراجعة وتيرة الحفظ مع المحفظ.') :'';
+    }
+    const total=Math.max(0,Number(plan.total)||0),completed=Math.max(0,Number(plan.completed)||0);
+    const levels=[25,50,75,100].map(n=>({pct:n,done:total>0?completed*100>=total*n:progress>=n}));
+    const milestones=$('portalGoalMilestones');if(milestones)milestones.innerHTML=levels.map(m=>`<span class="${m.done?'done':''}" title="${m.done?'تم':'قادم'} ${m.pct}%">${m.done?'✓':'○'} ${m.pct}%</span>`).join('');
+    const latest=levels.filter(m=>m.done).map(m=>m.pct).pop()||0;
+    const achievement=$('portalGoalAchievement');if(achievement){
+      achievement.hidden=!latest;
+      if(latest){achievement.innerHTML=`<span><b>🏅 ${latest===100?'أُنجز الهدف كاملًا!':`وصل إلى ${latest}% من الهدف`}</b><small>إنجاز مبني على التسميع الناجح الموثّق.</small></span><button type="button" id="portalGoalCelebrate">🎉 تهنئة</button>`;
+        $('portalGoalCelebrate')?.addEventListener('click',()=>portalGoalCelebrate(data?.student?.name||'الطالب',latest));
+      }else achievement.innerHTML='';
+    }
     const next=$('portalGoalNext');if(plan.next?.surah){next.hidden=false;next.innerHTML=`<span><small>مقترح المذاكرة القادمة</small><b>سورة ${esc(plan.next.surah)} ${Number(plan.next.from)||1}${Number(plan.next.to)>Number(plan.next.from)?'–'+Number(plan.next.to):''}</b></span><button type="button" id="portalGoalPractice">ابدأ الآن</button>`;$('portalGoalPractice')?.addEventListener('click',()=>{try{g.ImamGuardianTahfeez?.openCorrectionRange?.({surah:plan.next.surah,from:Number(plan.next.from)||1,to:Number(plan.next.to)||Number(plan.next.from)||1,practiceMode:'tutor'});g.ImamGuardianEngagement?.log?.('goal_practice_open',1,{surah:plan.next.surah,from:Number(plan.next.from)||1,to:Number(plan.next.to)||Number(plan.next.from)||1});}catch(err){console.warn('[guardian goal practice]',err);}});}else{next.hidden=false;next.innerHTML='<span><b>✓ تم تحقيق الهدف الحالي</b><small>بارك الله في الطالب ووفقه لما بعده.</small></span>';}
   }
   function renderCorrectionFocus(recent){

@@ -1,3 +1,10 @@
+## v11.4.2 — Goal & Memorization Planning · Stage 2
+
+- Verified milestone achievements at 25 / 50 / 75 / 100% on actual successful recitation counts.
+- Optional teacher + guardian achievement celebration, no automatic certificates.
+- Teacher late-plan guidance and dashboard alert; guardian read-only milestones, finish date and respectful delay indicator.
+- Versioned offline cache updated, Local Schema 12 unchanged, no SQL migrations.
+
 # v11.4.0 — Goals & Memorization Planning Stage 1
 - Added per-student long-term Quran goals, automatic pacing, milestones, plan status, next-session suggestion and guardian plan view.
 - Explicit Smart Revision outcome grading remains deferred by product decision.
