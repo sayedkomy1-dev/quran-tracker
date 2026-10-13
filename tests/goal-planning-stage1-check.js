@@ -10,7 +10,7 @@ const share=read('js/features/guardian-portal-share.js');
 const sw=read('sw.js');
 need(goal.includes('JUZ_STARTS')&&goal.includes('memorizationGoal'),'goal planner must support Juz/Surah stored goals');
 need(goal.includes('recommended')&&goal.includes('expectedPct')&&goal.includes('milestones'),'automatic pacing/milestones missing');
-need(goal.includes('goalPlanningApply')&&goal.includes("setSectionAutoValue?.('new'"),'one-click next assignment missing');
+need(goal.includes('goalPlanningApply')&&(goal.includes("setSectionAutoValue?.('new'")||goal.includes("setSectionAutoValue('new'")),'one-click next assignment missing');
 need(goal.includes("legacy.override('saveSt'")&&goal.includes("legacy.override('sanitizeBackupData'"),'student save/import preservation hooks missing');
 need(idx.includes('goal-planning.css?v=11.4.0-s1')&&idx.includes('js/features/goal-planning.js?v=11.4.0-s1'),'teacher app assets not wired');
 need(share.includes('memorizationPlan')&&share.includes('GoalPlanner?.buildGuardian'),'guardian snapshot must include plan summary');

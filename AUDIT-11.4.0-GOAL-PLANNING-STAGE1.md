@@ -25,3 +25,8 @@
 
 ## Stage boundary
 The explicit Smart Revision outcome buttons (mastered / needs stabilization / erred again) requested in the proposed v11.3 Stage 2 were intentionally deferred by product decision. v11.4 proceeds without adding that ledger.
+
+## Completion QA extension
+- Node-level behavioral test validates the full 6,236 ayat corpus, Juz 1 start/end, a complete multi-Juz range, multi-surah custom range, unique approved recitation progress, rejection of weak/absent grade, real weekly days, and explicit approval.
+- Existing regression suite retained in CI; only historical release-version expectations are advanced from 11.2.0 to 11.4.0.
+- Guardian functionality already bundled is preserved without additional SQL or portal feature changes.

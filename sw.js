@@ -6,8 +6,8 @@
 // Regression compatibility refs: quran-pwa-v11.2.0-error2 | uiStage:'11.2-error-marking-2' | './teacher-error-marking.css?v=11.2.0-s2' | './js/features/teacher-error-marking.js?v=11.2.0-s2' | './guardian-portal.css?v=11.2.0-s2' | './js/features/guardian-portal-view.js?v=11.2.0-s2' | './guardian-tahfeez.css?v=11.2.0-s4' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
-const CACHE_NAME = 'quran-pwa-v11.4.0-goal-planning1';
-const APP_VERSION = '11.2.0';
+const CACHE_NAME = 'quran-pwa-v11.4.0-goal-planning1-complete';
+const APP_VERSION = '11.4.0';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
 const APP_SHELL = [
@@ -24,7 +24,7 @@ const APP_SHELL = [
   './quran-engine.css?v=11.0.0',
   './teacher-error-marking.css?v=11.2.0-s3',
   './smart-revision.css?v=11.3.0-s1',
-  './goal-planning.css?v=11.4.0-s1',
+  './goal-planning.css?v=11.4.0-s1.1',
   './v10.js?v=11.2.0-s1.1',
   './js/features/teacher-error-marking.js?v=11.2.0-s3',
   './js/features/guardian-communication.js?v=11.0.0',
@@ -32,7 +32,7 @@ const APP_SHELL = [
   './js/features/teacher-followup.js?v=11.0.0',
   './js/features/circle-analytics.js?v=11.0.0',
   './js/features/smart-revision.js?v=11.3.0-s1',
-  './js/features/goal-planning.js?v=11.4.0-s1',
+  './js/features/goal-planning.js?v=11.4.0-s1.1',
   './js/features/guardian-portal-share.js?v=11.4.0-s1',
   './js/features/quran-audio-export.js?v=11.2.0-s4',
   './js/features/assignment-audio-share.js?v=11.2.0-s4',
@@ -86,9 +86,9 @@ const CORE_SHELL = [
   './v11.css?v=11.0.0-s2',
   './teacher-error-marking.css?v=11.2.0-s3',
   './smart-revision.css?v=11.3.0-s1',
-  './goal-planning.css?v=11.4.0-s1',
+  './goal-planning.css?v=11.4.0-s1.1',
   './js/features/smart-revision.js?v=11.3.0-s1',
-  './js/features/goal-planning.js?v=11.4.0-s1',
+  './js/features/goal-planning.js?v=11.4.0-s1.1',
   './js/features/v11-ui.js?v=11.0.0-s2',
   './js/features/teacher-error-marking.js?v=11.2.0-s3',
   './app.js?v=11.2.0-s1.1',

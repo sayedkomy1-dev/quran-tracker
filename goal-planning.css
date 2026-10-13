@@ -4,3 +4,28 @@
 .portal-goal-card .portal-goal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.portal-goal-card .portal-goal-status{padding:5px 8px;border-radius:999px;background:#eef3ef;font-size:11px;font-weight:900}.portal-goal-card .portal-goal-status.ahead,.portal-goal-card .portal-goal-status.complete{background:#e6f6eb;color:#17663b}.portal-goal-card .portal-goal-status.behind,.portal-goal-card .portal-goal-status.overdue{background:#fff0eb;color:#a33d24}.portal-goal-progress{margin:12px 0}.portal-goal-progress>div{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}.portal-goal-progress strong{font-size:22px;color:var(--portal-green,#145A3A)}.portal-goal-track{height:10px;border-radius:99px;background:#e8ece8;position:relative}.portal-goal-track i{position:absolute;right:0;top:0;bottom:0;border-radius:99px;background:#198754}.portal-goal-track em{position:absolute;top:-3px;width:2px;height:16px;background:#c99d31}.portal-goal-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.portal-goal-kpis div{background:rgba(20,90,58,.06);border-radius:11px;padding:8px;text-align:center}.portal-goal-kpis b{display:block;color:#145A3A}.portal-goal-kpis span{font-size:10px;color:#68766d}.portal-goal-next{margin-top:10px;padding:10px;border-radius:12px;background:#fff9e9;display:flex;align-items:center;justify-content:space-between;gap:8px}.portal-goal-next button{border:0;border-radius:10px;padding:8px 11px;background:#145A3A;color:#fff;font-weight:800}.portal-goal-next small{display:block;color:#7a776b}.portal-goal-next b{font-size:12px}
 @media(max-width:560px){.goal-plan-kpis{grid-template-columns:repeat(2,1fr)}.goal-plan-next,.goal-plan-empty{align-items:stretch;flex-direction:column}.goal-plan-next button,.goal-plan-empty button{width:100%}.portal-goal-kpis{grid-template-columns:repeat(3,1fr)}}
 html[data-theme="dark"] .goal-plan-editor,html[data-portal-theme="dark"] .portal-goal-card{background:#12231a;color:#f1f6f2}.dark .goal-plan-editor-preview,html[data-portal-theme="dark"] .portal-goal-kpis div{background:rgba(255,255,255,.06)}
+
+/* v11.4 Stage 1 completion — calm, accessible RTL fields and home overview */
+.goal-plan-editor-body .fld select,.goal-plan-editor-body .fld input{max-width:100%;min-width:0;box-sizing:border-box}
+.goal-plan-editor-body [hidden]{display:none!important}
+.goal-plan-editor-body .frow{align-items:start}
+.goal-plan-days{margin:11px 0 8px;border:1px solid var(--line,#dfe7df);border-radius:12px;padding:10px;min-width:0}
+.goal-plan-days legend{padding:0 6px;font-size:12px;font-weight:700}
+.goal-plan-days-options{display:flex;flex-wrap:wrap;gap:5px}
+.goal-plan-days-options label{display:flex;align-items:center;gap:4px;border:1px solid var(--line,#dfe7df);border-radius:30px;padding:5px 9px;font-size:11px;cursor:pointer;background:var(--card,#fff)}
+.goal-plan-days-options input{accent-color:var(--pri,#145A3A)}
+.goal-plan-days small{display:block;margin-top:6px;color:var(--mut,#66756b);line-height:1.5}
+.goal-plan-pacing{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 14px}
+.goal-plan-pacing>div{display:flex;flex-direction:column;gap:4px;border:1px solid var(--line,#e1e6e2);padding:9px;border-radius:12px}
+.goal-plan-pacing small{color:var(--mut,#66756b)}
+.goal-plan-pacing strong{font-size:12px;overflow-wrap:anywhere}
+.goal-planning-home{margin:12px 0}.goal-plan-home-head b{font-size:15px}.goal-plan-home-head small{display:block;color:var(--mut,#66756b);margin-top:4px;line-height:1.6}
+.goal-plan-home-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.goal-plan-home-row{display:flex;align-items:center;text-align:start;gap:10px;width:100%;min-height:48px;padding:9px;border:1px solid var(--line,#e1e6e2);border-radius:12px;background:var(--card,#fff);color:var(--txt,inherit);cursor:pointer}
+.goal-plan-home-row>span{flex:1;min-width:0}.goal-plan-home-row>span b{display:block;font-size:12px;overflow-wrap:anywhere}
+.goal-plan-home-row small{font-size:10px;display:block;margin-top:2px;color:var(--mut,#66756b);overflow-wrap:anywhere}
+.goal-plan-home-row>strong{font-size:15px;white-space:nowrap;color:var(--pri,#145A3A)}.goal-plan-home-row .goal-plan-status{font-style:normal}
+html[data-theme="dark"] .goal-plan-editor,html[data-theme="dark"] .goal-plan-days-options label,html[data-theme="dark"] .goal-plan-home-row{background:var(--card,#172820);color:var(--txt,#f1f6f2)}
+html[data-theme="dark"] .goal-plan-editor-preview,html[data-theme="dark"] .goal-plan-kpis>div,html[data-theme="dark"] .goal-plan-next,html[data-theme="dark"] .goal-plan-pacing>div{background:#22392d;color:var(--txt,#f1f6f2)}
+html[data-theme="dark"] .goal-plan-track{background:#344b40}
+@media(max-width:400px){.goal-plan-home-row{flex-wrap:wrap}.goal-plan-home-row .goal-plan-status{font-size:10px}.goal-plan-pacing{grid-template-columns:1fr}}
