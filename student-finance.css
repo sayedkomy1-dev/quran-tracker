@@ -1,0 +1,55 @@
+/* v11.5 Stage 1. Teacher-only finance, mobile-first RTL. */
+.student-finance-card{direction:rtl;scroll-margin-top:110px;overflow:hidden}
+.student-finance-card .fin-head,.student-finance-card .fin-period,.student-finance-card .fin-row,.student-finance-card .fin-payment{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.student-finance-card .fin-head{align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}
+.student-finance-card .fin-head .ch{margin:0 0 4px;font-size:18px}
+.student-finance-card .fin-head small,.student-finance-card .fin-field span,.student-finance-card .fin-hint{font-size:12px;color:var(--mut)}
+.student-finance-card .fin-head small{display:block;line-height:1.7}
+.student-finance-card .fin-pill{font-size:12px;font-weight:800;color:var(--gm);background:var(--gp);padding:8px 12px;border-radius:100px;white-space:nowrap}
+.student-finance-card .fin-pill.closed{color:var(--mut);background:var(--bg2,#eef3ef)}
+.student-finance-card .fin-period{padding:12px 0;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr)}
+.student-finance-card .fin-period label{font-size:13px;font-weight:700}
+.student-finance-card input,.student-finance-card select{background:var(--wh);color:var(--txt);border:1px solid var(--bdr);border-radius:12px;font:inherit;padding:12px;min-width:0;max-width:100%;box-sizing:border-box}
+.student-finance-card input:focus,.student-finance-card select:focus{outline:2px solid var(--gm);outline-offset:2px}
+.student-finance-card .fin-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:15px 0}
+.student-finance-card .fin-stats>div{background:var(--bg2,#f3f7f4);padding:12px 6px;border-radius:14px;text-align:center;min-width:0}
+.student-finance-card .fin-stats strong{display:block;font-size:22px;color:var(--gm)}
+.student-finance-card .fin-stats span{font-size:11px;color:var(--mut)}
+.student-finance-card .fin-balances{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.student-finance-card .fin-balances>div{border:1px solid var(--bdr);border-radius:15px;padding:12px;min-width:0}
+.student-finance-card .fin-balances small{display:block;color:var(--mut);font-size:11px;line-height:1.65}
+.student-finance-card .fin-balances strong{display:block;color:var(--gm);font-size:16px;margin-top:6px;overflow-wrap:anywhere}
+.student-finance-card .fin-balances .fin-owed{color:var(--red,#b04135)}
+.student-finance-card .fin-balances .fin-credit{color:var(--gm)}
+.student-finance-card .fin-row{font-size:13px;border-bottom:1px solid var(--bdr);padding:11px 0}
+.student-finance-card .fin-row>span{color:var(--mut)}
+.student-finance-card .fin-row b{font-size:13px;text-align:left}
+.student-finance-card .fin-buttons{margin-top:12px}
+.student-finance-card button{min-height:44px;border-radius:12px;font:inherit;font-weight:800;cursor:pointer;max-width:100%;touch-action:manipulation}
+.student-finance-card .fin-buttons button{border:1px solid var(--bdr);color:var(--gm);background:var(--wh);padding:9px 16px}
+.student-finance-card .fin-editor,.student-finance-card .fin-payment-form{padding:14px;margin-top:15px;border:1px solid var(--bdr);border-radius:18px;background:var(--bg2,#f4f7f4)}
+.student-finance-card .fin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.student-finance-card .fin-field{display:flex;flex-direction:column;gap:5px;min-width:0;margin-bottom:12px}
+.student-finance-card .fin-field span{line-height:1.6;font-weight:700}
+.student-finance-card .fin-check{display:flex;align-items:center;gap:10px;font-size:13px;margin:7px 0 15px}
+.student-finance-card .fin-check input{width:20px;height:20px;accent-color:var(--gm)}
+.student-finance-card .fin-primary{background:#0b6347;color:white;border:1px solid #0b6347;padding:12px 16px;width:100%}
+.student-finance-card h3{font-size:15px;margin:0 0 12px;color:var(--txt)}
+.student-finance-card .fin-payments{margin:18px 0 0}
+.student-finance-card .fin-pay-list{display:grid;gap:8px}
+.student-finance-card .fin-payment{background:var(--bg2,#f4f7f4);border:1px solid var(--bdr);border-radius:13px;padding:11px 12px}
+.student-finance-card .fin-payment b{display:block;color:var(--gm);font-size:15px}
+.student-finance-card .fin-payment small{display:block;color:var(--mut);font-size:11px;margin-top:2px}
+.student-finance-card .fin-ref{font-size:10px;color:var(--mut)}
+.student-finance-card .fin-close{border-top:1px solid var(--bdr);padding-top:15px;margin-top:16px}
+.student-finance-card .fin-close p,.student-finance-card .fin-closed-msg,.student-finance-card .fin-warning{font-size:12px;line-height:1.8;color:var(--mut)}
+.student-finance-card .fin-close button{background:transparent;color:var(--red,#b04135);border:1px solid var(--red,#b04135);padding:11px 15px;width:100%}
+.student-finance-card .fin-warning{background:#fff4dc;color:#80540c;border-radius:12px;padding:10px}
+html[data-theme="dark"] .student-finance-card .fin-warning{background:#44371a;color:#ffda88}
+@media(max-width:450px){.student-finance-card .fin-head{gap:10px}.student-finance-card .fin-balances{grid-template-columns:1fr}.student-finance-card .fin-balances>div{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px}.student-finance-card .fin-balances strong{margin:0;font-size:17px;text-align:left}.student-finance-card .fin-grid{grid-template-columns:1fr 1fr}.student-finance-card .fin-grid .fin-field{min-width:0}.student-finance-card .fin-stats strong{font-size:19px}}
+@media(max-width:340px){.student-finance-card .fin-grid{grid-template-columns:1fr}.student-finance-card .fin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.student-finance-card .fin-payment.voided{opacity:.65}
+.student-finance-card .fin-void-tag{font-size:11px;color:var(--red);font-weight:700}
+.student-finance-card .fin-void-btn{color:var(--red);background:transparent;border:1px solid var(--bdr);font-size:11px;padding:5px 10px;min-height:34px}
+[data-theme="dark"] .student-finance-card .fin-stats strong,[data-theme="dark"] .student-finance-card .fin-balances strong:not(.fin-owed),[data-theme="dark"] .student-finance-card .fin-payment b,[data-theme="dark"] .student-finance-card .fin-row b{color:var(--gl)}

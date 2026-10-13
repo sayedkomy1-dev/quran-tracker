@@ -16,6 +16,6 @@ need(idx.includes('goal-planning.css?v=11.4.2-s2')&&(idx.includes('js/features/g
 need(share.includes('memorizationPlan')&&share.includes('GoalPlanner?.buildGuardian'),'guardian snapshot must include plan summary');
 need(gp.includes('portalGoalCard')&&gp.includes('portalGoalNext'),'guardian goal card markup missing');
 need(view.includes('function renderGoalPlan')&&view.includes('portalGoalPractice')&&view.includes("practiceMode:'tutor'"),'guardian goal rendering/practice missing');
-need(sw.includes("quran-pwa-v11.4.2-goal-planning2")&&sw.includes('goal-planning.css?v=11.4.2-s2'),'service worker cache not bumped');
+need(sw.includes("quran-pwa-v11.5.0-student-finance1")&&sw.includes('goal-planning.css?v=11.4.2-s2'),'service worker cache not bumped');
 need(!goal.includes('reviewOutcome')&&!goal.includes('needs_stabilization'),'deferred smart revision outcome ledger must not be introduced');
 console.log('PASS goal-planning-stage1-check');

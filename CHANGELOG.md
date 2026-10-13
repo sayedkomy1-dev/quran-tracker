@@ -1,3 +1,8 @@
+## v11.5.0 — Student Finance & Monthly Accounting (Stage 1)
+- Added per-student teacher-only monthly account: session price, planned monthly sessions, billable absence, adjustment, opening balance, and real attendance-linked due calculations.
+- Added dated, append-only audit-friendly payment history (including void with reason), closed immutable months, carry-forward from previous closed month, responsive mobile card.
+- No SQL, Schema remains 12; finance is not yet published to guardian portal.
+
 ## v11.4.2 — Goal & Memorization Planning · Stage 2
 
 - Verified milestone achievements at 25 / 50 / 75 / 100% on actual successful recitation counts.

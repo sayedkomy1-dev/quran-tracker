@@ -7,7 +7,7 @@ for(const [name,path,version] of [['style','v11.css','11.4.1-profile-ui'],['ui',
   assert.ok(html.includes(ref),name+' live HTML cache-bust not updated');
   assert.ok(sw.includes("'./"+ref+"'"),name+' SW cache must match HTML');
 }
-assert.ok(sw.includes("quran-pwa-v11.4.2-goal-planning2"));
+assert.ok(sw.includes("quran-pwa-v11.5.0-student-finance1"));
 assert.ok(ui.includes('v11ProfileActionsDisclosure')&&ui.includes("document.createElement('details')"));
 assert.ok(ui.includes("document.getElementById('v9ProfileTabs')||hdr"));
 assert.ok(css.includes('#pg-profile .v11-profile-actions{position:static;bottom:auto'));
