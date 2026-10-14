@@ -631,6 +631,6 @@
     v1010OpenGuardianLogin:openGuardianLogin,v1010CopyGuardianLogin:copyGuardianLogin,v1010CopyGuardianCredentials:copyGuardianCredentials,v1010SendGuardianCredentials:sendGuardianCredentials,v1010SendGuardianLoginLink:sendGuardianLoginLink,v1010RefreshResetRequests:refreshResetRequests,v1010ResolveResetRequest:resolveResetRequest,v1010DismissResetRequest:dismissResetRequest,v1010RefreshEngagement:refreshEngagement,v1010EngagementDaysChanged:engagementDaysChanged
   });
   g.ImamApp=g.ImamApp||{};
-  g.ImamApp.GuardianPortal=Object.freeze({buildSnapshot,portalUrl,liveUrl,loginUrl:guardianLoginUrl,publish:publishLive,status:liveStatus,revoke:revokePortal,open:openPortal,copyLink:copyPortalLink,copySnapshot:copySnapshotLink,accessStatus,enablePhoneAccess,resetPhonePin,unlinkPhoneAccess,refreshPhoneSnapshot,refreshResetRequests,resolveResetRequest,dismissResetRequest,engagementSummary,refreshEngagement});
+  g.ImamApp.GuardianPortal=Object.freeze({buildSnapshot,portalUrl,liveUrl,studentRef,loginUrl:guardianLoginUrl,publish:publishLive,status:liveStatus,revoke:revokePortal,open:openPortal,copyLink:copyPortalLink,copySnapshot:copySnapshotLink,accessStatus,enablePhoneAccess,resetPhonePin,unlinkPhoneAccess,refreshPhoneSnapshot,refreshResetRequests,resolveResetRequest,dismissResetRequest,engagementSummary,refreshEngagement});
   if(g.document?.readyState==='loading')g.document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0),{once:true});else setTimeout(init,0);
 })(globalThis);

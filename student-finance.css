@@ -53,3 +53,35 @@ html[data-theme="dark"] .student-finance-card .fin-warning{background:#44371a;co
 .student-finance-card .fin-void-tag{font-size:11px;color:var(--red);font-weight:700}
 .student-finance-card .fin-void-btn{color:var(--red);background:transparent;border:1px solid var(--bdr);font-size:11px;padding:5px 10px;min-height:34px}
 [data-theme="dark"] .student-finance-card .fin-stats strong,[data-theme="dark"] .student-finance-card .fin-balances strong:not(.fin-owed),[data-theme="dark"] .student-finance-card .fin-payment b,[data-theme="dark"] .student-finance-card .fin-row b{color:var(--gl)}
+
+/* v11.5 Stage 2 — prominent student-profile shortcut, printer-friendly ledger. */
+.fin-shortcut{width:100%;display:flex;align-items:center;gap:12px;min-height:76px;margin:0 0 15px;padding:14px 18px;border:1px solid #b5dac4;border-radius:18px;background:linear-gradient(115deg,#e8f7ee,#ffffff);color:#104f34;box-shadow:0 6px 20px rgba(20,70,47,.08);cursor:pointer;text-align:right;font:inherit}
+.fin-shortcut:focus-visible{outline:3px solid #4a9e74;outline-offset:2px}
+.fin-shortcut-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:22px;background:#d2efdf;flex:none}
+.fin-shortcut-copy{flex:1;display:grid;gap:5px;min-width:0}.fin-shortcut-copy strong{font-size:18px}.fin-shortcut-copy small{font-size:12px;color:#496e58}.fin-shortcut-arrow{font-size:24px}
+.student-finance-card .fin-export-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:18px 0}
+.student-finance-card .fin-export-actions button{padding:11px 8px;border:1px solid #a5cbbb;background:var(--wh);color:var(--gm)}
+.student-finance-card .fin-export-actions button:last-child{background:#145a3a;color:#fff;border-color:#145a3a}
+.student-finance-card .fin-guardian-actions{border:1px solid var(--bdr);border-radius:15px;padding:13px;margin-bottom:17px;display:grid;gap:9px}
+.student-finance-card .fin-guardian-actions b,.student-finance-card .fin-guardian-actions small{display:block}
+.student-finance-card .fin-guardian-actions small{font-size:12px;color:var(--mut);line-height:1.7;margin-top:3px}
+.student-finance-card .fin-guardian-actions button{background:#eff8f1;color:#145a3a;padding:11px;border:1px solid #a5cbbb}
+.student-finance-card .fin-guardian-actions .fin-revoke{background:transparent;color:var(--red,#a53e37);border-color:var(--bdr)}
+.fin-print-sheet{display:none}
+@media(max-width:380px){.student-finance-card .fin-export-actions{grid-template-columns:1fr}}
+@media print{
+ body.fin-printing>*:not(#finPrintSheet){display:none!important}
+ body.fin-printing{background:#fff!important;color:#111!important;margin:0!important;padding:0!important}
+ body.fin-printing #finPrintSheet{display:block!important;position:static!important;width:100%!important;font:14px/1.85 Tahoma,Arial,sans-serif;color:#111!important;background:white!important;padding:14mm;box-sizing:border-box;direction:rtl}
+ #finPrintSheet h1{text-align:center;color:#124e33!important;font-size:23px;margin:0}
+ #finPrintSheet h2{text-align:center;margin:2px 0 16px}
+ #finPrintSheet p{text-align:center}
+ #finPrintSheet h3{margin-top:20px}
+ #finPrintSheet table{border-collapse:collapse;width:100%;margin:14px 0;table-layout:fixed}
+ #finPrintSheet td,#finPrintSheet th{border:1px solid #b9cac0;padding:8px;text-align:right;overflow-wrap:anywhere}
+ #finPrintSheet th{background:#e8f3ea!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ #finPrintSheet tr{break-inside:avoid}
+ #finPrintSheet .fin-print-footer{margin-top:30px;font-size:11px;color:#555}
+ @page{size:A4;margin:12mm}
+}
+@media(prefers-color-scheme:dark){html[data-theme="dark"] .fin-shortcut{background:#173729;color:#f4fff6;border-color:#49795c}html[data-theme="dark"] .fin-shortcut-copy small{color:#bddec7}}

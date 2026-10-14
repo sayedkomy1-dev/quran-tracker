@@ -1,6 +1,6 @@
 'use strict';
-/* Imam Academy v11.5 Stage 1 — Teacher-only, offline-first monthly ledger.
-   Additive student.studentFinance. No SQL, no guardian snapshot exposure.
+/* Imam Academy v11.5 Stage 2 — offline-first monthly ledger + secure guardian statements.
+   Additive student.studentFinance. Financial data NEVER enters public guardian snapshots.
    Currency: EGP, stored as integer piasters. Closed months are immutable. */
 (function studentFinanceFeature(g){
   const MAX_MONEY=10000000000; // piasters; defensive limit on each entry
@@ -156,22 +156,102 @@
       if(action==='payment')addFromForm();
       if(action==='close')closeFromForm();
       if(action==='void')voidFromForm(btn.dataset.finId);
+      if(action==='whatsapp')shareWhatsapp();
+      if(action==='print')printStatement();
+      if(action==='publish')publishToGuardian();
+      if(action==='revoke')revokeFromGuardian();
     });
     box.addEventListener('change',event=>{if(event.target.id==='finMonth'){ui.month=event.target.value;ui.editing=false;renderProfile();}});
     return box;
+  }
+  function ensureShortcut(id){
+    const header=$('profHdr');if(!header||!studentById(id))return;
+    let button=$('studentFinanceShortcut');
+    if(!button){
+      button=document.createElement('button');button.id='studentFinanceShortcut';button.className='fin-shortcut';button.type='button';
+      button.setAttribute('aria-controls','studentFinanceCard');
+      button.innerHTML='<span class="fin-shortcut-icon" aria-hidden="true">💰</span><span class="fin-shortcut-copy"><strong>الحسابات المالية</strong><small>المستحقات · الدفعات · كشف الحساب</small></span><span class="fin-shortcut-arrow" aria-hidden="true">←</span>';
+      // Keep it in the first visible screen, just after the student name, not below a long profile.
+      if(header.firstElementChild)header.firstElementChild.insertAdjacentElement('afterend',button);
+      else header.prepend(button);
+      button.addEventListener('click',()=>{const card=$('studentFinanceCard');if(card&&!card.hidden){card.scrollIntoView({block:'start',behavior:'smooth'});card.setAttribute('tabindex','-1');card.focus({preventScroll:true});}});
+    }
+  }
+  function statement(studentId,month){
+    const s=calculate(studentId,month),st=studentById(studentId);if(!s||!st)return null;
+    return {v:1,month,studentName:String(st.name||'طالب').slice(0,120),academy:String(app().settings?.circle||'أكاديمية الإمام لتحفيظ القرآن الكريم').slice(0,160),
+      teacher:String(app().settings?.name||'').slice(0,120),closed:s.closed,generatedAt:new Date().toISOString(),attendance:s.attendance,
+      absence:s.absence,billedSessions:s.billedSessions,plannedSessions:s.plannedSessions,rateCents:s.rateCents,
+      openingCents:s.openingCents,discountCents:s.discountCents,additionCents:s.additionCents,dueCents:s.dueCents,
+      paidCents:s.paidCents,balanceCents:s.balanceCents,
+      payments:s.payments.map(q=>({date:q.date,amountCents:q.amountCents,method:METHODS[q.method],voided:!!q.voidedAt})).slice(0,200)};
+  }
+  function plainStatement(x){
+    if(!x)return '';
+    const balance=x.balanceCents<0?`رصيد دائن لصالح الطالب: ${money(-x.balanceCents)}`:`المتبقي: ${money(x.balanceCents)}`;
+    return [`📿 ${x.academy}`,`💰 كشف حساب الطالب: ${x.studentName}`,`📅 شهر ${monthLabel(x.month)}`,
+      `الحضور: ${x.attendance} | الغياب: ${x.absence} | الحصص المحتسبة: ${x.billedSessions}`,
+      `سعر الحصة: ${money(x.rateCents)}`,`الرصيد السابق: ${money(x.openingCents)}`,
+      `الخصم: ${money(x.discountCents)} | الإضافة: ${money(x.additionCents)}`,
+      `إجمالي المستحق: ${money(x.dueCents)}`,`المدفوع: ${money(x.paidCents)}`,balance,
+      `حالة الشهر: ${x.closed?'مغلق':'مفتوح (كشف مبدئي)'}`,x.teacher?`المحفظ: ${x.teacher}`:''].filter(Boolean).join('\n');
+  }
+  function shareWhatsapp(){
+    const st=studentById(ui.studentId),x=statement(ui.studentId,ui.month);
+    if(!st||!x)return;
+    const phone=String(st.phone||'').replace(/[٠-٩]/g,c=>String(c.charCodeAt(0)-0x0660)).replace(/[^0-9]/g,'');
+    const normalized=phone.startsWith('0020')?phone.slice(2):/^01[0125]\d{8}$/.test(phone)?'20'+phone.slice(1):phone;
+    if(!/^20(10|11|12|15)\d{8}$/.test(normalized)){show('أضف رقم واتساب مصري صحيح لولي الأمر أولًا','error');return;}
+    const text=encodeURIComponent(plainStatement(x)),offline=g.navigator?.onLine===false;
+    const url=offline?`whatsapp://send?phone=${normalized}&text=${text}`:`https://wa.me/${normalized}?text=${text}`;
+    if(offline)g.location.href=url;else g.open?.(url,'_blank','noopener');
+  }
+  function printStatement(){
+    const x=statement(ui.studentId,ui.month);if(!x)return;
+    $('finPrintSheet')?.remove();
+    const root=document.createElement('section');root.id='finPrintSheet';root.dir='rtl';root.className='fin-print-sheet';
+    root.innerHTML=`<h1>${esc(x.academy)}</h1><p>💰 كشف حساب الطالب · ${esc(monthLabel(x.month))}</p><h2>${esc(x.studentName)}</h2>
+      <p>${x.closed?'حساب مغلق — نهائي':'حساب مفتوح — كشف مبدئي قابل للتحديث'}</p>
+      <table><tbody>${[['سعر الحصة',money(x.rateCents)],['عدد الحصص المستهدفة',x.plannedSessions],['الحضور',x.attendance],['الغياب',x.absence],['الحصص المحسوبة',x.billedSessions],['الرصيد السابق',money(x.openingCents)],['الخصم',money(x.discountCents)],['الإضافة',money(x.additionCents)],['إجمالي المستحق',money(x.dueCents)],['المدفوع',money(x.paidCents)],[x.balanceCents<0?'رصيد دائن لصالح الطالب':'المتبقي',money(Math.abs(x.balanceCents))]].map(row=>`<tr><th>${esc(row[0])}</th><td>${esc(row[1])}</td></tr>`).join('')}</tbody></table>
+      <h3>سجل الدفعات</h3><table><thead><tr><th>التاريخ</th><th>المبلغ</th><th>الطريقة</th><th>الحالة</th></tr></thead><tbody>${x.payments.map(q=>`<tr><td>${esc(q.date)}</td><td>${esc(money(q.amountCents))}</td><td>${esc(q.method)}</td><td>${q.voided?'ملغاة':'سارية'}</td></tr>`).join('')||'<tr><td colspan="4">لا توجد دفعات</td></tr>'}</tbody></table>
+      <p class="fin-print-footer">${esc(x.teacher)} · تم إعداد هذا الكشف في ${esc(displayDate(x.generatedAt.slice(0,10)))}</p>`;
+    document.body.appendChild(root);document.body.classList.add('fin-printing');
+    const cleanup=()=>{document.body.classList.remove('fin-printing');root.remove();};
+    g.addEventListener?.('afterprint',cleanup,{once:true});
+    try{g.print?.();}catch(err){cleanup();show('تعذر فتح نافذة الطباعة','error');}
+  }
+  async function secureRpc(method,ref,payload){
+    const client=g.WeLiveQuranAuth?.getClient?.();if(!g.WeLiveQuranAuth?.isActive?.()||!client||g.navigator?.onLine===false)throw new Error('NEED_ONLINE_AUTH');
+    const response=await client.rpc(method,method==='guardian_finance_publish'?{p_student_ref:ref,p_statement:payload}:{p_student_ref:ref});
+    if(response.error)throw response.error;return response.data;
+  }
+  async function publishToGuardian(){
+    const x=statement(ui.studentId,ui.month),api=g.ImamApp?.GuardianPortal;
+    if(!x||typeof api?.studentRef!=='function'){show('بوابة ولي الأمر غير جاهزة','error');return;}
+    if(!g.confirm?.('إرسال كشف هذا الشهر لبوابة ولي الأمر المسجل برقم الهاتف وPIN؟ هذا لا يرسل رسالة WhatsApp.'))return;
+    try{const ref=await api.studentRef(ui.studentId);await secureRpc('guardian_finance_publish',ref,x);show('تم تحديث كشف الحساب في بوابة ولي الأمر بأمان','success');}
+    catch(err){console.warn('[finance publish]',err);show('تعذر نشر الكشف. تأكد من تفعيل دخول ولي الأمر وتشغيل SQL الجديد والاتصال بالإنترنت','error');}
+  }
+  async function revokeFromGuardian(){
+    if(!g.confirm?.('هل تريد إخفاء كشوف الحساب المنشورة من بوابة ولي الأمر لهذا الطالب؟'))return;
+    try{const ref=await g.ImamApp.GuardianPortal.studentRef(ui.studentId);await secureRpc('guardian_finance_revoke',ref);show('تم إخفاء الحساب المالي من البوابة','success');}
+    catch(err){console.warn('[finance revoke]',err);show('تعذر إخفاء الكشف الآن. تحقق من الإنترنت وSQL','error');}
   }
   const field=(label,id,value,options={})=>`<label class="fin-field"><span>${label}</span><input id="${id}" type="${options.type||'number'}" ${options.type==='number'?'min="0" step="0.01" inputmode="decimal"':''} value="${esc(value)}" ${options.disabled?'disabled':''} ${options.max?`max="${options.max}"`:''}></label>`;
   function renderProfile(id=String(app().curStId||'')){
     const box=ensureCard();if(!box)return;const st=studentById(id);
     if(!st){box.hidden=true;return;}box.hidden=false;
     if(ui.studentId!==String(id)){ui.studentId=String(id);ui.month=monthNow();ui.editing=false;}
+    ensureShortcut(id);
     const s=calculate(id,ui.month);if(!s){box.innerHTML='<p>لا يمكن فتح الحساب المالي.</p>';return;}
     const {ledger}=s;
     const status=s.closed?'<span class="fin-pill closed">🔒 شهر مغلق</span>':'<span class="fin-pill">شهر مفتوح</span>';
-    box.innerHTML=`<div class="fin-head"><div><div class="ch">💰 الحساب الشهري</div><small>بيانات خاصة بالمحفظ · الجنيه المصري · لا تُعرض لولي الأمر حاليًا</small></div>${status}</div>
+    box.innerHTML=`<div class="fin-head"><div><div class="ch">💰 الحساب الشهري</div><small>الجنيه المصري · النشر لولي الأمر اختياري وآمن برقم الهاتف وPIN</small></div>${status}</div>
       <div class="fin-period"><label for="finMonth">اختر الشهر</label><input type="month" id="finMonth" value="${esc(ui.month)}" min="2020-01" max="2099-12"></div>
       <div class="fin-stats"><div><strong>${s.attendance}</strong><span>حضور</span></div><div><strong>${s.absence}</strong><span>غياب</span></div><div><strong>${s.billedSessions}</strong><span>حصص محسوبة</span></div><div><strong>${s.plannedSessions||'—'}</strong><span>حصص مستهدفة</span></div></div>
       <div class="fin-balances"><div><small>المستحق عن الشهر</small><strong>${money(s.dueCents)}</strong></div><div><small>المدفوع</small><strong>${money(s.paidCents)}</strong></div><div><small>${s.balanceCents<0?'رصيد دائن للطالب':'المتبقي شامل الرصيد السابق'}</small><strong class="${s.balanceCents>0?'fin-owed':'fin-credit'}">${money(Math.abs(s.balanceCents))}</strong></div></div>
+      <div class="fin-export-actions"><button type="button" data-fin-act="print">🖨️ حفظ PDF / طباعة</button><button type="button" data-fin-act="whatsapp">📲 إرسال حساب WhatsApp</button></div>
+      <div class="fin-guardian-actions"><div><b>🔐 كشف ولي الأمر</b><small>لا يظهر إلا بعد دخوله برقم الهاتف وPIN، وبعد مزامنتك يدويًا</small></div><button type="button" data-fin-act="publish">🔄 تحديث بوابة ولي الأمر</button><button type="button" class="fin-revoke" data-fin-act="revoke">إخفاء من البوابة</button></div>
       ${s.closed?`<p class="fin-closed-msg">🔒 تم إغلاق شهر ${esc(monthLabel(s.month))} في ${esc(displayDate(s.ledger.closedAt.slice(0,10)))}. الأرقام محفوظة ولا تتغير بأثر رجعي.</p>${s.changedAfterClosing?'<p class="fin-warning">⚠️ تغيّرت سجلات الحصص بعد إغلاق الشهر. الكشف المغلق محفوظ كما كان؛ راجع الفروق يدويًا في الشهر التالي.</p>':''}`:''}
       <div class="fin-row"><span>سعر الحصة</span><b>${money(ledger.rateCents)}</b></div><div class="fin-row"><span>احتساب الغياب</span><b>${ledger.chargeAbsence?'نعم':'لا'}</b></div>
       <div class="fin-row"><span>الرصيد السابق</span><b>${money(ledger.openingCents)}</b></div><div class="fin-row"><span>خصم / إضافة</span><b>${money(ledger.discountCents)} / ${money(ledger.additionCents)}</b></div>
@@ -211,6 +291,7 @@
   function closeFromForm(){
     if(ui.editing){show('احفظ إعدادات الشهر قبل إغلاقه','error');return;}
     const s=calculate(ui.studentId,ui.month);if(!s||s.closed)return;
+    if(ui.month===monthNow()&&g.prompt?.('أنت على وشك إغلاق الشهر الجاري قبل انتهائه. إذا كنت متأكدًا، اكتب كلمة إغلاق:')!=='إغلاق'){show('تم إلغاء إغلاق الشهر الجاري لحماية حسابات الطالب','info');return;}
     if(!g.confirm?.(`إغلاق حساب شهر ${monthLabel(ui.month)}؟\nالمستحق: ${money(s.dueCents)}\nالمدفوع: ${money(s.paidCents)}\nالمتبقي: ${money(s.balanceCents)}\n\nبعد الإغلاق لا يمكن تعديل هذا الشهر. تأكد من جميع الدفعات أولًا.`))return;
     if(closeMonth(ui.studentId,ui.month)){renderProfile();show('تم إغلاق الشهر وتثبيت الكشف','success');}else show('تعذر إغلاق الشهر','error');
   }
@@ -232,6 +313,6 @@
     }
   }
   g.ImamApp=g.ImamApp||{};
-  g.ImamApp.StudentFinance={cleanFinance,monthSessions,financeFor,calculate,updateMonth,addPayment,voidPayment,closeMonth,toCents,money,renderProfile};
+  g.ImamApp.StudentFinance={cleanFinance,monthSessions,financeFor,calculate,updateMonth,addPayment,voidPayment,closeMonth,toCents,money,renderProfile,statement,plainStatement,ensureShortcut};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installHooks,{once:true});else installHooks();
 })(globalThis);

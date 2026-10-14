@@ -37,8 +37,8 @@ assert.ok(goal.includes('function goalPlanningNotice')&&goal.includes('goalPlann
 assert.ok(style.includes('.goal-milestone-dialog')&&style.includes('prefers-reduced-motion:reduce'),'mobile/reduced-motion celebration styles missing');
 assert.ok(share.includes('memorizationPlan')&&share.includes('GoalPlanner?.buildGuardian'),'guardian must receive plan through existing snapshot security boundary');
 assert.ok(html.includes('goal-planning.css?v=11.4.2-s2')&&html.includes('goal-planning.js?v=11.4.2-s2'),'teacher cache-busting missing');
-assert.ok(portal.includes('guardian-portal-view.js?v=11.4.2-s2'),'guardian cache-busting missing');
-for(const key of ['goal-planning.css?v=11.4.2-s2','goal-planning.js?v=11.4.2-s2','guardian-portal-view.js?v=11.4.2-s2'])assert.ok(sw.includes(key),'offline shell missing '+key);
+assert.ok(portal.includes('guardian-portal-view.js?v=11.5.1-s2'),'guardian cache-busting missing');
+for(const key of ['goal-planning.css?v=11.4.2-s2','goal-planning.js?v=11.4.2-s2','guardian-portal-view.js?v=11.5.1-s2'])assert.ok(sw.includes(key),'offline shell missing '+key);
 assert.ok(sw.includes('quran-pwa-v11.5.0-student-finance1'),'SW update missing');
 assert.ok(!goal.includes('reviewOutcome')&&!goal.includes('needs_stabilization'),'deferred review-outcome engine must stay deferred');
 console.log('PASS goal-planning-stage2-check (24.8/25/50/75/100, projected date, guardian, overdue notice, failed grade, consent, offline wiring)');

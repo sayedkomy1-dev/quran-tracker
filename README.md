@@ -1,3 +1,7 @@
+## v11.5 Stage 2 — Finance Quick Access & Guardian Statements (11.5.1)
+
+A prominently visible finance button in the student's identity card jumps straight to monthly accounts. From there, the teacher can print/save PDF via device print, send a text statement directly to the guardian's WhatsApp, or explicitly publish a read-only statement to the phone/PIN guardian portal. This last option needs `sql/guardian-finance-statements.sql` executed in Supabase **after Git Commit review and before Push**. No financial data is exposed through public portal links. The local Schema remains 12. See `QA-REPORT-11.5.1-STAGE2.md`.
+
 ## v11.4 Stage 2 — Milestones & Guardian Goal Progress (11.4.2)
 
 - Milestones 25% / 50% / 75% / 100% are awarded strictly on verified, successful ayah recitations (not rounded-up display percentages or assignments).

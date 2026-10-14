@@ -11,6 +11,7 @@
   let sessionToken='';
   let portalMode='snapshot';
   let sessionRows=[];
+  let financeRequestId=0;
 
   function esc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
   function hashParams(){return new URLSearchParams((location.hash||'').replace(/^#/,''));}
@@ -140,6 +141,8 @@
     const items=Array.isArray(data.assignment?.items)?data.assignment.items:[];$('portalAssignment').innerHTML=items.length?items.map(x=>`<article class="portal-assignment-item"><b>${esc(x.icon||'')} ${esc(x.label||'')}</b><p>${esc(x.text||'')}</p></article>`).join(''):'<div class="portal-empty">لا يوجد تكليف مسجل حاليًا.</div>';
     const attention=Array.isArray(data.attention)?data.attention:[];$('portalAttention').innerHTML=attention.length?attention.map(x=>`<div class="portal-attention-item"><b>${esc(x.label)}</b><span>${x.score!==null&&x.score!==undefined?`${esc(x.score)}%`:esc(x.grade||'يحتاج متابعة')}</span></div>`).join(''):'<div class="portal-good">✅ لا توجد إشارات حديثة تستدعي التثبيت.</div>';
     const recent=Array.isArray(data.recent)?data.recent:[];$('portalRecent').innerHTML=recent.length?recent.map(x=>{const corrections=Array.isArray(x.corrections)?x.corrections:[];return `<article class="portal-session ${statusClass(x.status)}"><div class="portal-session-head"><b>${esc(x.status||'—')} · ${esc(x.date||'—')}</b><span class="portal-session-score">${x.score===null||x.score===undefined?'':`${esc(x.score)}%`}</span></div>${Array.isArray(x.recitation)&&x.recitation.length?`<ul>${x.recitation.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}${corrections.length?`<div class="portal-corrections"><b>مواضع التصحيح</b>${corrections.map(c=>`<div class="portal-correction ${c.resolved?'resolved':''}"><span>${c.resolved?'✓':'•'} ${esc(c.surah?`سورة ${c.surah} · آية ${c.ayah}`:`آية ${c.ayah}`)}</span><strong>«${esc(c.word||'—')}»${c.char?` · الحرف «${esc(c.char)}»`:''}</strong><em>${esc(c.type||'')}</em></div>`).join('')}</div>`:''}</article>`;}).join(''):'<div class="portal-empty">لا توجد حصص مسجلة بعد.</div>';
+    // Never trust financial fields in data= snapshots or public live links.
+    hideFinance();
     renderGoalPlan(data);
     renderSmartRevision(data);
     renderCorrectionFocus(recent);
@@ -176,10 +179,50 @@
       btn.addEventListener('click',()=>selectSessionStudent(btn.dataset.studentIndex));
     });
   }
+  function hideFinance(){
+    financeRequestId++;
+    const box=$('portalFinanceCard'),nav=$('portalFinanceNav'),body=$('portalFinanceBody');
+    if(box)box.hidden=true;if(nav)nav.hidden=true;if(body)body.textContent='';
+  }
+  function formatFinanceMoney(v){return `${(Number(v||0)/100).toLocaleString('ar-EG',{minimumFractionDigits:2,maximumFractionDigits:2})} ج.م`;}
+  function validFinanceStatement(x){
+    if(!x||x.v!==1||!/^20\d{2}-(0[1-9]|1[0-2])$/.test(String(x.month||'')))return false;
+    return ['rateCents','openingCents','dueCents','paidCents','balanceCents','discountCents','additionCents'].every(k=>Number.isSafeInteger(x[k])&&Math.abs(x[k])<=1e10);
+  }
+  function showFinance(x,updated){
+    if(!validFinanceStatement(x))return;
+    const box=$('portalFinanceCard'),body=$('portalFinanceBody'),nav=$('portalFinanceNav');
+    if(!box||!body||!nav)return;
+    const due=x.balanceCents<0?`رصيد دائن لصالح الطالب: ${formatFinanceMoney(-x.balanceCents)}`:`المتبقي: ${formatFinanceMoney(x.balanceCents)}`;
+    const month=new Date(`${x.month}-01T12:00:00Z`).toLocaleDateString('ar-EG',{month:'long',year:'numeric',timeZone:'UTC'});
+    const rows=(Array.isArray(x.payments)?x.payments:[]).slice(-20).reverse().filter(q=>
+      q&&/^\d{4}-\d{2}-\d{2}$/.test(String(q.date||''))&&Number.isSafeInteger(q.amountCents)&&q.amountCents>0);
+    const payments=rows.map(q=>`<div class="portal-finance-payment"><span>${esc(q.date)} · ${esc(String(q.method||'أخرى').slice(0,50))}${q.voided?' · ملغاة':''}</span><b>${esc(formatFinanceMoney(q.amountCents))}</b></div>`).join('');
+    body.innerHTML=`<div class="portal-finance-period">شهر ${esc(month)} · ${x.closed?'مغلق':'كشف مبدئي'}</div>
+      <div class="portal-finance-grid"><div><small>الحصص المحتسبة</small><b>${Math.max(0,Number(x.billedSessions)||0)}</b></div>
+      <div><small>سعر الحصة</small><b>${esc(formatFinanceMoney(x.rateCents))}</b></div>
+      <div><small>المستحق</small><b>${esc(formatFinanceMoney(x.dueCents))}</b></div>
+      <div><small>المدفوع</small><b>${esc(formatFinanceMoney(x.paidCents))}</b></div></div>
+      <div class="portal-finance-balance">${esc(due)}</div>
+      <div class="portal-finance-breakdown">حضور ${Math.max(0,Number(x.attendance)||0)} · غياب ${Math.max(0,Number(x.absence)||0)} · خصم ${esc(formatFinanceMoney(x.discountCents))} · إضافة ${esc(formatFinanceMoney(x.additionCents))}</div>
+      ${payments?`<h3 class="portal-finance-pay-head">سجل الدفعات</h3><div class="portal-finance-payments">${payments}</div>`:'<p class="portal-finance-empty">لا توجد دفعات منشورة لهذا الشهر.</p>'}
+      <small class="portal-finance-updated">آخر نشر بواسطة المحفظ: ${esc(formatDateTime(updated))} — لا يمكن تعديل الحساب من هذه البوابة</small>`;
+    box.hidden=false;nav.hidden=false;
+  }
+  async function loadFinance(session,studentRef){
+    const request=++financeRequestId;
+    if(!session||!studentRef)return;
+    try{
+      const result=await publicRpc('guardian_finance_session_read',{p_session:session,p_student_ref:studentRef});
+      if(request!==financeRequestId||session!==sessionToken)return;
+      if(result?.statement)showFinance(result.statement,result.updated_at);
+    }catch(err){if(request===financeRequestId)console.warn('[guardian finance]',String(err?.message||err));}
+  }
   function selectSessionStudent(value){
     const i=Math.max(0,Math.min(sessionRows.length-1,Number(value)||0)),row=sessionRows[i];if(!row||!validSnapshot(row.snapshot))return;
     try{g.ImamGuardianEngagement?.setContext?.({sessionToken,studentRef:row.student_ref,studentName:row.snapshot?.student?.name||''});}catch(err){console.warn('[guardian engagement context]',err);}
     render(row.snapshot,{session:true,updatedAt:row.updated_at});setStudentSwitcher(sessionRows,i);setLiveState('online','🔒 جلسة ولي الأمر موثّقة — قراءة فقط');
+    loadFinance(sessionToken,row.student_ref);
     try{g.ImamGuardianEngagement?.logPortalOpen?.();}catch(_){}
   }
   async function fetchSession(token){const payload=await publicRpc('guardian_portal_session_read',{p_session:token});return payload&&Array.isArray(payload.students)?payload:null;}
@@ -187,7 +230,7 @@
     try{sessionStorage.setItem(SESSION_KEY,token);history.replaceState(null,'',`${location.pathname}${location.search}#guardian`);}catch(_){/* fragment remains if storage is unavailable */}
   }
   function storedSession(){try{return uuid(sessionStorage.getItem(SESSION_KEY));}catch(_){return '';}}
-  function forgetSession(){try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}sessionToken='';sessionRows=[];try{g.ImamGuardianEngagement?.setContext?.({});}catch(_){} }
+  function forgetSession(){hideFinance();try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}sessionToken='';sessionRows=[];try{g.ImamGuardianEngagement?.setContext?.({});}catch(_){} }
   async function loadSession(token,{manual=false}={}){
     sessionToken=token;liveToken='';setNote('session');setLiveState('loading',manual?'جارٍ تحديث بيانات الطلاب…':'جارٍ تحميل صفحة الطالب…');
     try{

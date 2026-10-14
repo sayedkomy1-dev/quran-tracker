@@ -1,3 +1,11 @@
+## v11.5.1 — Student Finance Stage 2 · Quick Access / Statements / Guardian
+
+- A prominent 💰 finance button appears near the top of each student profile; tapping jumps to the monthly account.
+- Teacher: A4 printable account statement (browser Save as PDF), direct WhatsApp text, and explicit secure guardian financial statement publishing/hiding.
+- Guardian finances require login with phone + PIN, not public share/snapshot URL; view-only and only after teacher publishing.
+- New additive SQL `sql/guardian-finance-statements.sql`, local Schema 12 unchanged.
+- Current-month closing now requires typed confirmation; no changes to previous ledger calculations.
+
 ## v11.5.0 — Student Finance & Monthly Accounting (Stage 1)
 - Added per-student teacher-only monthly account: session price, planned monthly sessions, billable absence, adjustment, opening balance, and real attendance-linked due calculations.
 - Added dated, append-only audit-friendly payment history (including void with reason), closed immutable months, carry-forward from previous closed month, responsive mobile card.
