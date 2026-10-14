@@ -185,6 +185,7 @@
       }
       access=profile;trustedWrite(profile);onlineVerified=true;
       document.documentElement.dataset.wlqAuth='verified';
+      try{await globalThis.ImamApp?.Supervision?.initialize?.();}catch(_){}
     }catch(err){console.warn('[auth] background verification deferred',err?.message||err);}
   }
   async function beforeAppInit(){
@@ -294,7 +295,7 @@
     adminCard.innerHTML=`<div class="ch">👥 صلاحيات الدخول</div><p class="txt-mut mb8" style="font-size:12px">أي حساب Google جديد يبدأ بحالة «في الانتظار». فعّل فقط المحفظين المصرح لهم باستخدام التطبيق.</p><div class="settings-actions mb8"><button type="button" class="btn btn-out btn-sm" data-auth-refresh>تحديث المستخدمين</button></div><div data-auth-users></div>`;
     pg.prepend(adminCard);adminCard.querySelector('[data-auth-refresh]').addEventListener('click',loadAdminUsers);loadAdminUsers();
   }
-  async function afterAppInit(){injectHeaderUser();injectAdminCard();}
+  async function afterAppInit(){injectHeaderUser();injectAdminCard();try{await globalThis.ImamApp?.Supervision?.initialize?.();}catch(err){console.warn("[supervisor startup]",err);}}
   async function getAccessToken(){
     const sb=getClient();if(!sb)return '';
     try{return (await sb.auth.getSession())?.data?.session?.access_token||'';}catch(_){return '';}

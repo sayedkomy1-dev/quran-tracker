@@ -143,7 +143,7 @@
     const recent=Array.isArray(data.recent)?data.recent:[];$('portalRecent').innerHTML=recent.length?recent.map(x=>{const corrections=Array.isArray(x.corrections)?x.corrections:[];return `<article class="portal-session ${statusClass(x.status)}"><div class="portal-session-head"><b>${esc(x.status||'—')} · ${esc(x.date||'—')}</b><span class="portal-session-score">${x.score===null||x.score===undefined?'':`${esc(x.score)}%`}</span></div>${Array.isArray(x.recitation)&&x.recitation.length?`<ul>${x.recitation.map(t=>`<li>${esc(t)}</li>`).join('')}</ul>`:''}${corrections.length?`<div class="portal-corrections"><b>مواضع التصحيح</b>${corrections.map(c=>`<div class="portal-correction ${c.resolved?'resolved':''}"><span>${c.resolved?'✓':'•'} ${esc(c.surah?`سورة ${c.surah} · آية ${c.ayah}`:`آية ${c.ayah}`)}</span><strong>«${esc(c.word||'—')}»${c.char?` · الحرف «${esc(c.char)}»`:''}</strong><em>${esc(c.type||'')}</em></div>`).join('')}</div>`:''}</article>`;}).join(''):'<div class="portal-empty">لا توجد حصص مسجلة بعد.</div>';
     // Never trust financial fields in data= snapshots or public live links.
     hideFinance();
-    g.ImamGuardianMessages?.clear?.();
+    g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();
     renderGoalPlan(data);
     renderSmartRevision(data);
     renderCorrectionFocus(recent);
@@ -225,6 +225,7 @@
     render(row.snapshot,{session:true,updatedAt:row.updated_at});setStudentSwitcher(sessionRows,i);setLiveState('online','🔒 جلسة ولي الأمر موثّقة — قراءة فقط');
     loadFinance(sessionToken,row.student_ref);
     g.ImamGuardianMessages?.setContext?.({sessionToken,studentRef:row.student_ref});
+    g.ImamGuardianRatings?.setContext?.({sessionToken,studentRef:row.student_ref});
     try{g.ImamGuardianEngagement?.logPortalOpen?.();}catch(_){}
   }
   async function fetchSession(token){const payload=await publicRpc('guardian_portal_session_read',{p_session:token});return payload&&Array.isArray(payload.students)?payload:null;}
@@ -232,7 +233,7 @@
     try{sessionStorage.setItem(SESSION_KEY,token);history.replaceState(null,'',`${location.pathname}${location.search}#guardian`);}catch(_){/* fragment remains if storage is unavailable */}
   }
   function storedSession(){try{return uuid(sessionStorage.getItem(SESSION_KEY));}catch(_){return '';}}
-  function forgetSession(){hideFinance();g.ImamGuardianMessages?.clear?.();try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}sessionToken='';sessionRows=[];try{g.ImamGuardianEngagement?.setContext?.({});}catch(_){} }
+  function forgetSession(){hideFinance();g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}sessionToken='';sessionRows=[];try{g.ImamGuardianEngagement?.setContext?.({});}catch(_){} }
   async function loadSession(token,{manual=false}={}){
     sessionToken=token;liveToken='';setNote('session');setLiveState('loading',manual?'جارٍ تحديث بيانات الطلاب…':'جارٍ تحميل صفحة الطالب…');
     try{
@@ -244,7 +245,7 @@
   }
   function showError(title='الرابط غير صالح أو غير مكتمل',message='اطلب من المحفظ إنشاء رابط جديد من ملف الطالب داخل التطبيق.',loginAgain=false){
     const e=$('portalError');if(e){e.hidden=false;$('portalErrorTitle').textContent=title;$('portalErrorText').textContent=message;const back=$('portalLoginAgain');if(back)back.hidden=!loginAgain;}
-    g.ImamGuardianMessages?.clear?.();const c=$('portalContent');if(c)c.hidden=true;setLiveState('','');setStudentSwitcher([]);
+    g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();const c=$('portalContent');if(c)c.hidden=true;setLiveState('','');setStudentSwitcher([]);
   }
   function toast(msg){const t=document.createElement('div');t.className='portal-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1800);}
   async function share(){

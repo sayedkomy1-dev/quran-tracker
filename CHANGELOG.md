@@ -1,3 +1,11 @@
+## v11.7.0 — Teacher Rating & Supervision (Stage 1)
+- Guardian can privately rate teacher on six criteria after phone+PIN login; the form is unavailable via public/shared links.
+- Owner/supervisor-only private dashboard with teacher cards, published students, message counts, rating averages and ratings details.
+- Owner may grant/revoke supervisor capability using an isolated SQL permission table; existing app_users role constraint unchanged.
+- Read-only published-student progress and attendance summaries; explicitly not live local student data.
+- Append-only supervision audit of viewing details and permission actions.
+- No changes to WhatsApp reports, existing student/session data or local Schema 12.
+
 ## v11.6.0 — Guardian ↔ Teacher Messages (Stage 1)
 - Secure online-only guardian messages after phone + PIN session; per-student conversation.
 - Teacher inbox shortcut, categories (education, absence, finance, schedule, general), statuses new/read/replied, teacher replies.

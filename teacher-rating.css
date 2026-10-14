@@ -1,0 +1,28 @@
+/* v11.7 guardian private ratings and supervision. Keep platform theme semantics. */
+.portal-rating-card .portal-rating-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-top:12px}
+.portal-rating-form label{display:grid;gap:6px;font-weight:650;font-size:.92rem}
+.portal-rating-form select,.portal-rating-form textarea{border:1px solid #b9cec2;border-radius:12px;padding:10px;background:var(--card,#fff);color:var(--ink,inherit);font:inherit;width:100%;box-sizing:border-box}
+.portal-rating-form .rating-note{grid-column:1/-1}
+.portal-rating-form textarea{min-height:72px;resize:vertical}
+.portal-rating-form button{grid-column:1/-1;background:#116348;color:#fff;border:0;border-radius:14px;padding:13px;font-weight:700;cursor:pointer}
+.portal-rating-form button:disabled{opacity:.55}
+.portal-rating-status{font-size:.88rem;color:var(--portal-muted,#63746a);margin:10px 0 0}
+.supervision-overlay{position:fixed;inset:0;z-index:99999;background:rgba(4,18,14,.6);display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
+.supervision-overlay[hidden]{display:none!important}
+.supervision-dialog{direction:rtl;max-width:780px;width:100%;max-height:calc(100dvh - 24px);overflow:auto;overscroll-behavior:contain;border-radius:22px;background:var(--card,#fff);color:var(--text,#163329);padding:16px;box-sizing:border-box}
+.supervision-head,.supervisor-row-title,.supervision-toolbar,.supervision-buttons{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.supervision-head h2{font-size:1.15rem;margin:0}
+.supervision-head button,.supervision-toolbar button,.supervision-buttons button{border:1px solid #c7d5cb;border-radius:11px;padding:9px 11px;background:transparent;color:inherit;cursor:pointer}
+.supervision-note{font-size:.82rem;line-height:1.6;opacity:.85}
+.supervisor-row{border:1px solid #d1dfd8;border-radius:15px;padding:12px;margin:12px 0}
+.supervisor-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0}
+.supervisor-stats span{border-radius:10px;padding:9px;background:rgba(52,134,95,.09);font-size:.85rem}
+.supervisor-stats b{display:block;font-size:1.18rem}
+.supervisor-detail-row{border-bottom:1px solid #d7ded9;padding:12px 4px;line-height:1.8;font-size:.86rem}
+.supervisor-detail-row p{white-space:pre-wrap;overflow-wrap:anywhere}
+body.supervision-open{overflow:hidden}
+@media(max-width:480px){.portal-rating-card .portal-rating-form{grid-template-columns:1fr}.supervisor-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.supervision-dialog{padding:13px;max-height:calc(100dvh - 15px)}}
+
+/* Keep select controls legible in the guardian night and kids themes. */
+.portal-rating-form select option{background:var(--card,#fff);color:var(--ink,#162e22)}
+html[data-portal-theme="dark"] .portal-rating-form select,html[data-portal-theme="dark"] .portal-rating-form textarea{border-color:var(--line);background:var(--card);color:var(--ink)}

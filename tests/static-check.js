@@ -52,7 +52,7 @@ new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='11.6.0','VERSION must be 11.5.1');
+assert(version==='11.7.0','VERSION must be 11.5.1');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
