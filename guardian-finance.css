@@ -1,0 +1,17 @@
+/* Finance is only rendered after phone + PIN guardian session RPC. */
+.portal-finance-card{border-top:3px solid var(--gold)}
+.portal-finance-period{color:var(--mut);font-size:12px;margin:8px 0 13px}
+.portal-finance-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.portal-finance-grid>div{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--card);min-width:0}
+.portal-finance-grid small,.portal-finance-grid b{display:block}
+.portal-finance-grid small{color:var(--mut);font-size:10px}
+.portal-finance-grid b{color:var(--green);font-size:17px;overflow-wrap:anywhere;margin-top:6px}
+.portal-finance-balance{background:var(--greenp);border:1px solid var(--line);color:var(--green);font-weight:800;border-radius:12px;padding:12px;margin-top:12px}
+.portal-finance-breakdown{font-size:11px;color:var(--mut);line-height:1.9;margin:12px 0}
+.portal-finance-updated{display:block;font-size:10px;color:var(--mut);line-height:1.7}
+.portal-quick-nav button[hidden]{display:none!important}
+@media(max-width:650px){.portal-quick-nav:has(#portalFinanceNav:not([hidden])){grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+.portal-finance-pay-head{font-size:13px;margin:16px 0 8px;color:var(--ink)}
+.portal-finance-payments{display:grid;gap:7px}.portal-finance-payment{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border:1px solid var(--line);border-radius:10px;font-size:10px;color:var(--ink)}
+.portal-finance-payment b{color:var(--green);white-space:nowrap}.portal-finance-empty{font-size:10px;color:var(--mut)}
