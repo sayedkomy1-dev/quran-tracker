@@ -10,7 +10,7 @@ const js=read('js/features/v11-ui.js');
 const sw=read('sw.js');
 const runtime=read('js/core/runtime.js');
 new vm.Script(js,{filename:'js/features/v11-ui.js'});
-ok(runtime.includes("version:'11.5.1',schema:12"),'runtime version/schema mismatch');
+ok(runtime.includes("version:'11.6.0',schema:12"),'runtime version/schema mismatch');
 ok((html.includes('v11.css?v=11.0.0-s2')||html.includes('v11.css?v=11.4.1-profile-ui')),'stage2 stylesheet URL missing');
 ok((html.includes('js/features/v11-ui.js?v=11.0.0-s2')||html.includes('js/features/v11-ui.js?v=11.4.1-profile-ui')),'stage2 controller URL missing');
 ok(sw.includes("quran-pwa-v11.2.0-error1"),'stage2 cache generation missing');

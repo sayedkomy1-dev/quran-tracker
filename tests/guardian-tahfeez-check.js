@@ -4,7 +4,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const ok=(x,m)=>{if(!x)throw new Error(m)};
 const html=read('guardian-portal.html'),js=read('js/features/guardian-tahfeez.js'),css=read('guardian-tahfeez.css'),view=read('js/features/guardian-portal-view.js'),share=read('js/features/guardian-portal-share.js'),sw=read('sw.js'),pkg=JSON.parse(read('package.json'));
 new vm.Script(js,{filename:'guardian-tahfeez.js'});
-ok(pkg.version==='11.5.1','package must be v11.1.0');
+ok(pkg.version==='11.6.0','package must be v11.1.0');
 ok(html.includes('id="guardianTahfeez"')&&html.includes('>التحفيظ<'),'Tahfeez entry/overlay missing');
 ['tahfeezSurah','tahfeezFrom','tahfeezTo','tahfeezReciter','tahfeezRepeat','tahfeezTutor','tahfeezPlayBtn','tahfeezSeek','tahfeezVolume'].forEach(id=>ok(html.includes(`id="${id}"`),`missing ${id}`));
 ['النص كاملًا','آية واحدة','عدة آيات','وضع التلقين','تنزيل النطاق','تنزيل السورة','−10','+10'].forEach(t=>ok(html.includes(t),`missing UI ${t}`));

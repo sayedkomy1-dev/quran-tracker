@@ -1,3 +1,9 @@
+## v11.6.0 — Guardian ↔ Teacher Messages (Stage 1)
+- Secure online-only guardian messages after phone + PIN session; per-student conversation.
+- Teacher inbox shortcut, categories (education, absence, finance, schedule, general), statuses new/read/replied, teacher replies.
+- Additive dedicated guardian_teacher_messages SQL table with RLS, account/session checks, rate caps.
+- No change to existing manual WhatsApp reports or existing student/session content; Local Schema remains 12.
+
 ## v11.5.1 — Student Finance Stage 2 · Quick Access / Statements / Guardian
 
 - A prominent 💰 finance button appears near the top of each student profile; tapping jumps to the monthly account.
