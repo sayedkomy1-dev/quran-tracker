@@ -1,3 +1,10 @@
+## v11.7.1 — Supervision entry visibility hotfix (Stage 1)
+- Added a prominent 🛡️ supervision shortcut at the top of the teacher home quick actions for the signed-in owner. Supervisors still require confirmed backend access.
+- Permission errors are visible and can be retried instead of silently hiding the shortcut; all private RPCs remain server-authorized.
+- Added an independent startup retry if an older cached auth script misses its startup hook.
+- Updated `auth.js`, supervisor UI and CSS cache keys, incremented SW/runtime version without changing local schema 12.
+- No SQL change; do not rerun previously applied SQL.
+
 ## v11.7.0 — Teacher Rating & Supervision (Stage 1)
 - Guardian can privately rate teacher on six criteria after phone+PIN login; the form is unavailable via public/shared links.
 - Owner/supervisor-only private dashboard with teacher cards, published students, message counts, rating averages and ratings details.

@@ -26,3 +26,9 @@ body.supervision-open{overflow:hidden}
 /* Keep select controls legible in the guardian night and kids themes. */
 .portal-rating-form select option{background:var(--card,#fff);color:var(--ink,#162e22)}
 html[data-portal-theme="dark"] .portal-rating-form select,html[data-portal-theme="dark"] .portal-rating-form textarea{border-color:var(--line);background:var(--card);color:var(--ink)}
+
+/* v11.7.1 — visible, RTL owner entry independent from RPC availability. */
+.supervision-shortcut{grid-column:1/-1;display:flex;flex-direction:row;justify-content:flex-start;gap:10px;min-height:56px;text-align:right;border-color:var(--bdr,#b7d3c3);background:var(--wh,#fff);color:var(--txt,#183b2c)}
+.supervision-shortcut b{font-size:clamp(12px,1.1vw,15px)}
+.supervision-shortcut small{margin-inline-start:auto;min-width:0;font-size:clamp(10px,.9vw,12px);color:var(--mut,#596e64);line-height:1.5;text-align:left}
+@media(max-width:480px){.supervision-shortcut{flex-wrap:wrap}.supervision-shortcut small{flex-basis:100%;text-align:right;margin-inline-start:0}}

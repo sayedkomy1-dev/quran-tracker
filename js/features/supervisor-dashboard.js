@@ -4,7 +4,7 @@
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const labels={punctuality:'الالتزام',teaching:'التعليم',followup:'المتابعة',kindness:'التعامل',benefit:'الاستفادة',clarity:'الوضوح'};
-  let allowed=false,isOwner=false,teachers=[],busy=false;
+  let allowed=false,isOwner=false,teachers=[],busy=false,accessCheck=null,accessHint="جارٍ التحقق من الصلاحية…";
   function client(){return g.WeLiveQuranAuth?.getClient?.();}
   async function rpc(name,args={}){if(g.navigator?.onLine===false||!g.WeLiveQuranAuth?.isActive?.()||!client())throw Error('INTERNET_LOGIN_REQUIRED');
     const {data,error}=await client().rpc(name,args);if(error)throw error;return data;
@@ -15,7 +15,7 @@
     el.innerHTML=`<div class="supervision-dialog" role="dialog" aria-modal="true" aria-labelledby="supervisionHeading" dir="rtl">
       <div class="supervision-head"><h2 id="supervisionHeading">🛡️ لوحة الإشراف</h2><button type="button" data-supervision="close" aria-label="إغلاق">✕</button></div>
       <p class="supervision-note">للمالك والمشرف المصرح به فقط. أرقام الطلاب مستمدة من آخر بيانات منشورة، وليست قراءة مباشرة لبيانات المحفظ المحلية.</p>
-      <div class="supervision-toolbar"><button type="button" data-supervision="reload">↻ تحديث</button><button type="button" data-supervision="audit">📜 سجل الاطلاع</button></div>
+      <div class="supervision-toolbar"><button type="button" data-supervision="verify">↻ إعادة التحقق من الصلاحية</button><button type="button" data-supervision="reload">↻ تحديث</button><button type="button" data-supervision="audit">📜 سجل الاطلاع</button></div>
       <p id="supervisorStatus" role="status"></p><div id="supervisorRows"></div><div id="supervisorDetail" hidden></div>
     </div>`;
     document.body.appendChild(el);
@@ -23,7 +23,8 @@
       if(event.target===el||event.target.closest('[data-supervision="close"]'))return close();
       const btn=event.target.closest('[data-supervision]');if(!btn||busy)return;
       const action=btn.dataset.supervision,id=btn.dataset.teacher;
-      if(action==='reload')return reload();
+      if(action==='verify')return authorizeAndReload();
+      if(action==='reload')return authorizeAndReload();
       if(action==='audit')return audit();
       if(action==='students')return detail(id,'students');
       if(action==='ratings')return detail(id,'ratings');
@@ -60,17 +61,89 @@
     try{const result=await rpc('app_supervision_audit_feed');host.innerHTML='<h3>سجل الإشراف</h3>'+(result.events||[]).map(e=>`<div class="supervisor-detail-row">${esc(e.actor||'إدارة')} · ${esc(e.action)} · ${esc(new Date(e.at).toLocaleString('ar-EG'))}</div>`).join('');}
     catch(err){host.textContent='تعذر تحميل سجل الإشراف.';}
   }
-  function open(){if(!allowed)return;ensure();$('supervisionDialog').hidden=false;document.body.classList.add('supervision-open');reload();}
-  function close(){if($('supervisionDialog'))$('supervisionDialog').hidden=true;document.body.classList.remove('supervision-open');}
-  async function initialize(){allowed=false;isOwner=false;
-    if(!g.WeLiveQuranAuth?.isActive?.()||g.navigator?.onLine===false)return;
-    try{const result=await rpc('app_supervision_access');allowed=!!result?.allowed;isOwner=!!result?.owner;
-      if(!allowed)return;
-      if(!isOwner){const role=document.querySelector('#wlqUserMenu .wlq-user-pop span');if(role)role.textContent='مشرف';}
-      const home=$('teacherInboxHomeButton');if(!home||$('supervisorShortcut'))return;
-      const b=document.createElement('button');b.type='button';b.className='quick-action';b.id='supervisorShortcut';b.innerHTML='<span>🛡️</span><b>لوحة الإشراف</b>';
-      home.parentElement.appendChild(b);b.addEventListener('click',open);
-    }catch(err){/* Remain hidden unless backend confirms role. */}
+  function ensureShortcut(){
+    // Owner label is used ONLY to show the entry point. Actual data access is
+    // authorized by the Supabase RPC, never by the cached owner label.
+    if(!g.WeLiveQuranAuth?.isOwner?.()&&!allowed)return;
+    const home=$('teacherInboxHomeButton');if(!home)return;
+    let button=$('supervisorShortcut');
+    if(!button){
+      button=document.createElement('button');button.type='button';
+      button.className='quick-action supervision-shortcut';button.id='supervisorShortcut';
+      button.innerHTML='<span aria-hidden="true">🛡️</span><b>لوحة الإشراف</b><small id="supervisorAccessHint" aria-live="polite"></small>';
+      home.parentElement.prepend(button);
+      button.addEventListener('click',open);
+    }
+    const hint=$('supervisorAccessHint');if(hint)hint.textContent=accessHint;
   }
+  function clearPrivateView(){
+    const rows=$('supervisorRows'),detail=$('supervisorDetail');
+    if(rows)rows.replaceChildren();
+    if(detail){detail.hidden=true;detail.replaceChildren();}
+    teachers=[];
+  }
+  function accessFailure(err){
+    const text=String(err?.message||'');
+    if(/INTERNET_LOGIN_REQUIRED/i.test(text)||g.navigator?.onLine===false)
+      return 'مطلوب اتصال بالإنترنت وجلسة دخول صالحة';
+    if(/JWT|401|403|auth|session|token/i.test(text))
+      return 'يلزم تجديد جلسة الدخول بجوجل';
+    return 'تعذر التحقق، اضغط للمحاولة مجددًا';
+  }
+  function verifyAccess(){
+    if(accessCheck)return accessCheck;
+    accessHint='جارٍ التحقق من الصلاحية…';ensureShortcut();
+    accessCheck=(async()=>{
+      try{
+        const result=await rpc('app_supervision_access');
+        allowed=result?.allowed===true;isOwner=result?.owner===true;
+        accessHint=allowed?'متاحة للإدارة':(g.WeLiveQuranAuth?.isOwner?.()?'تعذّر تأكيد صلاحية المالك':'غير مصرح');
+        if(allowed&&!isOwner){const role=document.querySelector('#wlqUserMenu .wlq-user-pop span');if(role)role.textContent='مشرف';}
+      }catch(err){
+        allowed=false;isOwner=false;accessHint=accessFailure(err);
+        console.warn('[supervision] access verification failed:',err?.message||String(err));
+      }
+      if(!allowed){
+        clearPrivateView();
+        if(!g.WeLiveQuranAuth?.isOwner?.()){
+          $('supervisorShortcut')?.remove?.();close();
+        }
+      }
+      ensureShortcut();return allowed;
+    })().finally(()=>{accessCheck=null;});
+    return accessCheck;
+  }
+  async function authorizeAndReload(){
+    status('جارٍ التأكد من صلاحية الإشراف…');
+    const permitted=await verifyAccess();
+    if(!permitted){
+      if($('supervisorRows'))$('supervisorRows').replaceChildren();
+      if($('supervisorDetail')){$('supervisorDetail').hidden=true;$('supervisorDetail').replaceChildren();}
+      status(accessHint+' — لا تُعرض بيانات الإدارة إلا بعد الموافقة من الخادم.');
+      return;
+    }
+    await reload();
+  }
+  function open(){
+    // A trusted owner may SEE this entry point even when connectivity is down.
+    // No dashboard RPC or private records are displayed without server authorization.
+    if(!g.WeLiveQuranAuth?.isOwner?.()&&!allowed)return;
+    ensure();$('supervisionDialog').hidden=false;
+    document.body.classList.add('supervision-open');authorizeAndReload();
+  }
+  function close(){if($('supervisionDialog'))$('supervisionDialog').hidden=true;document.body.classList.remove('supervision-open');}
+  async function initialize(){
+    ensureShortcut();
+    if(!g.WeLiveQuranAuth?.isActive?.())return false;
+    return verifyAccess();
+  }
+  // Also initialize when an older, cached auth bootstrap misses its afterAppInit
+  // hook. The normal auth path still calls initialize immediately after login.
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{
+    g.setTimeout?.(initialize,1500);g.setTimeout?.(initialize,6000);
+  },{once:true});
+  else {g.setTimeout?.(initialize,1500);g.setTimeout?.(initialize,6000);}
+  g.addEventListener?.('online',initialize);
   g.ImamApp=g.ImamApp||{};g.ImamApp.Supervision={initialize,open,close};
+
 })(globalThis);
