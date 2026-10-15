@@ -1,3 +1,12 @@
+## v11.7.3 — Supervision Stage 2: student rosters and scoped permissions
+- Each teacher's published students can now be expanded **inline under their own card**, with names and last published learning metrics.
+- Added teacher-triggered private administrative roster sync from the Students page; syncs names, group, level and aggregate attendance only (never phone/PIN/finance); no data is deleted, and empty/unloaded rosters are not sent.
+- Owner overview provides teacher coverage and roster synchronization status; the owner controls teacher-by-teacher supervision permissions.
+- Supervisors can access only the teacher scopes and read capabilities explicitly granted by the owner: student names, learning indicators, private ratings, message counts. Supervisors cannot manage roles or read the owner's audit feed.
+- Owner audit now includes supervisor-scope edits. All permission enforcement happens inside backend RPCs; frontend shortcuts never grant access.
+- Existing guardian portal, WhatsApp, offline shell, finance and student/session local Schema 12 remain unchanged. New SQL is **non-destructive additive**; existing supervision RPC bodies are replaced solely to close the former all-teacher access path for supervisors.
+- No automatic publish of local student rosters: each teacher must manually sync the list from their Students page.
+
 ## v11.7.2 — Supervision prominent Home button hotfix (Stage 1)
 - Confirmed prior shortcut was inserted into hidden legacy `.smart-actions`, concealed by the v9 Premium Home CSS.
 - Moved owner/supervisor entry into a separate prominent green-and-gold card BEFORE the Premium Home dashboard. Proper RTL, responsive mobile layout, and readable dark/light themes.

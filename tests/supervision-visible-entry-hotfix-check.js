@@ -3,9 +3,9 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const html=fs.readFileSync('index.html','utf8'),sw=fs.readFileSync('sw.js','utf8');
 const source=fs.readFileSync('js/features/supervisor-dashboard.js','utf8');
 const auth=fs.readFileSync('auth.js','utf8');
-assert.match(html,/src="auth\.js\?v=11\.7\.2-home-entry"/);
-assert.match(sw,/\.\/auth\.js\?v=11\.7\.2-home-entry/);
-assert.match(sw,/\.\/js\/features\/supervisor-dashboard\.js\?v=11\.7\.2-home-entry/);
+assert.match(html,/src="auth\.js\?v=11\.7\.3-scoped-oversight"/);
+assert.match(sw,/\.\/auth\.js\?v=11\.7\.3-scoped-oversight/);
+assert.match(sw,/\.\/js\/features\/supervisor-dashboard\.js\?v=11\.7\.3-scoped-oversight/);
 assert.match(auth,/ImamApp\?\.Supervision\?\.initialize/);
 
 const css=fs.readFileSync('teacher-rating.css','utf8');

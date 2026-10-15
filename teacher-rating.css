@@ -74,3 +74,36 @@ html[data-portal-theme="dark"] .portal-rating-form select,html[data-portal-theme
   #pg-home #supervisorShortcut .supervision-home-arrow{font-size:23px}
 }
 @media print {#pg-home > #supervisorShortcut.supervision-home-entry{display:none!important}}
+
+/* v11.7.3 — scoped supervision details directly under the chosen teacher. */
+.supervision-dialog{max-width:980px}
+.supervisor-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.supervisor-overview>div{border:1px solid #ccdfd3;border-radius:13px;padding:12px;background:rgba(30,120,78,.07);display:grid;gap:4px;text-align:center}
+.supervisor-overview strong{font-size:1.45rem;color:var(--v11-primary,#146044)}
+.supervisor-overview small{font-size:.77rem;line-height:1.5}
+.supervision-roster-hint{font-size:.83rem;line-height:1.6;color:var(--mut,#596e64);margin:8px 0}
+.supervisor-inline-detail{margin-top:12px;padding:14px;border:1px solid #c8dcd0;border-radius:13px;background:var(--card,#fff)}
+.supervisor-inline-detail[hidden]{display:none!important}
+.supervision-subhead{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.supervision-subhead h3{font-size:1.05rem;margin:0}
+.supervision-subhead button,.supervision-scope-row button{border:1px solid #b3cfc0;color:var(--v11-primary,#155c42);background:transparent;border-radius:11px;padding:8px 11px;font:inherit;cursor:pointer}
+.supervisor-student-row{background:rgba(55,130,96,.055);border:1px solid #d6e4dc;padding:12px;margin:9px 0;border-radius:12px}
+.supervisor-student-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.supervisor-student-top strong{font-size:.98rem}
+.supervisor-student-top small{color:var(--mut,#647568);font-size:.78rem}
+.supervisor-student-row p{margin:6px 0;line-height:1.7;font-size:.83rem}
+.supervisor-student-metrics{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}
+.supervisor-student-metrics span{border-radius:8px;padding:5px 8px;background:rgba(36,131,88,.1);font-size:.78rem}
+.supervisor-student-row>small{font-size:.73rem;opacity:.75}
+.supervision-scope-row{border:1px solid #d0e0d6;padding:12px;margin:10px 0;border-radius:13px;display:grid;gap:10px}
+.supervision-scope-options{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.supervision-scope-options label{display:flex;gap:6px;align-items:center;font-size:.88rem;cursor:pointer}
+.supervision-scope-options input{accent-color:#156b4b;width:17px;height:17px}
+.supervision-roster-sync{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;margin:6px 0 16px;
+ background:var(--v11-surface,#fff);color:var(--v11-ink,#193d30);border:1px solid var(--v11-line,#c7d9cc);border-radius:16px}
+.supervision-roster-sync>div{min-width:0;flex:1;display:grid;gap:5px}
+.supervision-roster-sync small{font-size:.75rem;line-height:1.6;color:var(--mut,#627567)}
+.supervision-roster-sync p{margin:0;font-size:.81rem;line-height:1.5}
+.supervision-roster-sync button{background:#13583f;border:0;color:white;padding:11px 14px;border-radius:12px;font:inherit;font-size:.83rem;font-weight:750;cursor:pointer}
+.supervision-roster-sync button:disabled{opacity:.6;cursor:wait}
+@media(max-width:600px){.supervisor-overview{grid-template-columns:repeat(2,minmax(0,1fr))}.supervision-roster-sync{flex-direction:column;align-items:stretch}.supervision-roster-sync button{width:100%}.supervisor-inline-detail{padding:10px}}

@@ -1,157 +1,198 @@
 'use strict';
-/* v11.7 Stage 1 — owner / supervisor only. All permissions enforced again inside SQL RPC. */
+/* v11.7.3 — owner academy oversight; scoped, read-only supervisor access. */
 (function supervision(g){
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const labels={punctuality:'الالتزام',teaching:'التعليم',followup:'المتابعة',kindness:'التعامل',benefit:'الاستفادة',clarity:'الوضوح'};
-  let allowed=false,isOwner=false,teachers=[],busy=false,accessCheck=null,accessHint="جارٍ التحقق من الصلاحية…";
+  let allowed=false,isOwner=false,teachers=[],busy=false,accessCheck=null,accessHint='جارٍ التحقق من الصلاحية…',requestSeq=0;
   function client(){return g.WeLiveQuranAuth?.getClient?.();}
-  async function rpc(name,args={}){if(g.navigator?.onLine===false||!g.WeLiveQuranAuth?.isActive?.()||!client())throw Error('INTERNET_LOGIN_REQUIRED');
+  async function rpc(name,args={}){
+    if(g.navigator?.onLine===false||!g.WeLiveQuranAuth?.isActive?.()||!client())throw Error('INTERNET_LOGIN_REQUIRED');
     const {data,error}=await client().rpc(name,args);if(error)throw error;return data;
   }
   function status(text){if($('supervisorStatus'))$('supervisorStatus').textContent=text;}
+  function formatDate(value){if(!value)return '—';const d=new Date(value);return Number.isFinite(d.getTime())?d.toLocaleDateString('ar-EG'):'—';}
+  function metric(value){return value==null?'—':esc(value);}
   function ensure(){if($('supervisionDialog'))return;
     const el=document.createElement('section');el.id='supervisionDialog';el.hidden=true;el.className='supervision-overlay';
     el.innerHTML=`<div class="supervision-dialog" role="dialog" aria-modal="true" aria-labelledby="supervisionHeading" dir="rtl">
-      <div class="supervision-head"><h2 id="supervisionHeading">🛡️ لوحة الإشراف</h2><button type="button" data-supervision="close" aria-label="إغلاق">✕</button></div>
-      <p class="supervision-note">للمالك والمشرف المصرح به فقط. أرقام الطلاب مستمدة من آخر بيانات منشورة، وليست قراءة مباشرة لبيانات المحفظ المحلية.</p>
-      <div class="supervision-toolbar"><button type="button" data-supervision="verify">↻ إعادة التحقق من الصلاحية</button><button type="button" data-supervision="reload">↻ تحديث</button><button type="button" data-supervision="audit">📜 سجل الاطلاع</button></div>
-      <p id="supervisorStatus" role="status"></p><div id="supervisorRows"></div><div id="supervisorDetail" hidden></div>
+      <div class="supervision-head"><h2 id="supervisionHeading">🛡️ لوحة الإشراف والأكاديمية</h2><button type="button" data-supervision="close" aria-label="إغلاق">✕</button></div>
+      <p class="supervision-note">المالك يشرف على جميع المحفظين. المشرف يرى فقط المحفظين والأقسام التي منحه إياها المالك. كشف الطلاب يحتاج مزامنة من حساب المحفظ؛ مؤشرات البوابة قد لا تكون لحظية.</p>
+      <div class="supervision-toolbar"><button type="button" data-supervision="verify">↻ التحقق من الصلاحية</button><button type="button" data-supervision="reload">↻ تحديث</button><button id="supervisionAuditButton" type="button" data-supervision="audit" hidden>📜 سجل الاطلاع — للمالك</button></div>
+      <p id="supervisorStatus" role="status"></p><div id="supervisorOverview"></div><div id="supervisorRows"></div><div id="supervisorDetail" hidden></div>
     </div>`;
     document.body.appendChild(el);
     el.addEventListener('click',async event=>{
       if(event.target===el||event.target.closest('[data-supervision="close"]'))return close();
       const btn=event.target.closest('[data-supervision]');if(!btn||busy)return;
       const action=btn.dataset.supervision,id=btn.dataset.teacher;
-      if(action==='verify')return authorizeAndReload();
-      if(action==='reload')return authorizeAndReload();
+      if(action==='verify'||action==='reload')return authorizeAndReload();
       if(action==='audit')return audit();
-      if(action==='students')return detail(id,'students');
-      if(action==='ratings')return detail(id,'ratings');
+      if(action==='students-close'){const h=inlineHost(btn.closest('.supervisor-row'));if(h)h.hidden=true;return;}
+      if(action==='students'||action==='ratings')return detail(id,action,btn.closest('.supervisor-row'));
+      if(action==='scope')return scopes(id,btn.closest('.supervisor-row'));
+      if(action==='scope-save')return saveScope(id,btn.dataset.target,btn.closest('.supervisor-row'));
       if(action==='grant'||action==='revoke')return grant(id,action==='grant');
     });
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!el.hidden)close();});
   }
+  function teacherSummary(t){
+    const synced=t.roster_synced_at!=null;
+    const count=Number(t.roster_students)||0,published=Number(t.published_students)||0;
+    return t.can_students===false?'الطلاب خارج نطاق صلاحيتك':synced?
+      `كشف متزامن: ${count} طالبًا · منشورون لولي الأمر: ${published}`:
+      `منشورون لولي الأمر: ${published} · كشف جميع الطلاب لم يُزامَن بعد`;
+  }
   function render(){const host=$('supervisorRows');if(!host)return;
-    host.innerHTML=teachers.map(t=>`<article class="supervisor-row">
+    const viewable=teachers.filter(t=>t.can_students!==false);
+    const rosterSum=viewable.filter(t=>t.roster_synced_at).reduce((n,t)=>n+(Number(t.roster_students)||0),0);
+    const overview=$('supervisorOverview');if(overview)overview.innerHTML=`<div class="supervisor-overview">
+      <div><strong>${teachers.length}</strong><small>محفظون في نطاق المتابعة</small></div>
+      <div><strong>${rosterSum}</strong><small>طلاب في الكشوف المتزامنة</small></div>
+      <div><strong>${viewable.filter(t=>t.roster_synced_at).length} / ${viewable.length}</strong><small>محفظون زامنوا كشف الطلاب</small></div>
+    </div>${isOwner?'<p class="supervision-note">المالك: يمكنك إدارة نطاق كل مشرف، ومراجعة التقييمات الخاصة، والاطلاع على سجل الإشراف. لا يمكن فتح بيانات محلية لم يزامنها المحفظ.</p>':''}`;
+    const auditButton=$('supervisionAuditButton');if(auditButton)auditButton.hidden=!isOwner;
+    host.innerHTML=teachers.map(t=>`<article class="supervisor-row" data-supervision-row="${esc(t.id)}">
       <div class="supervisor-row-title"><b>${esc(t.name||'محفظ')}</b>${t.supervisor?'<small>مشرف مفعّل</small>':(t.role==='owner'?'<small>المالك</small>':'')}</div>
-      <div class="supervisor-stats"><span>طلاب منشورون <b>${Number(t.published_students)||0}</b></span><span>رسائل <b>${Number(t.messages)||0}</b></span><span>تقييمات <b>${Number(t.rated_guardians)||0}</b></span><span>متوسط <b>${t.rating_average==null?'—':esc(t.rating_average)+' / 5'}</b></span></div>
-      <div class="supervision-buttons"><button data-supervision="students" data-teacher="${esc(t.id)}">عرض الطلاب</button><button data-supervision="ratings" data-teacher="${esc(t.id)}">التقييمات الخاصة</button>
-      ${isOwner&&t.role!=='owner'?`<button data-supervision="${t.supervisor?'revoke':'grant'}" data-teacher="${esc(t.id)}">${t.supervisor?'إلغاء الإشراف':'منح الإشراف'}</button>`:''}</div>
-      </article>`).join('')||'<p>لا توجد حسابات محفظين نشطة حاليًا.</p>';
+      <p class="supervision-roster-hint">${esc(teacherSummary(t))}</p>
+      <div class="supervisor-stats"><span>طلاب منشورون <b>${metric(t.published_students)}</b></span><span>كشف الطلاب <b>${t.roster_synced_at==null?'لم يُزامَن':metric(t.roster_students)}</b></span><span>رسائل <b>${metric(t.messages)}</b></span><span>تقييمات <b>${metric(t.rated_guardians)}</b></span><span>متوسط التقييم <b>${t.rating_average==null?'—':esc(t.rating_average)+' / 5'}</b></span></div>
+      <div class="supervision-buttons">${t.can_students!==false?`<button data-supervision="students" data-teacher="${esc(t.id)}">👥 عرض أسماء الطلاب</button>`:''}
+      ${t.can_ratings!==false?`<button data-supervision="ratings" data-teacher="${esc(t.id)}">⭐ التقييمات الخاصة</button>`:''}
+      ${isOwner&&t.role!=='owner'?`<button data-supervision="${t.supervisor?'revoke':'grant'}" data-teacher="${esc(t.id)}">${t.supervisor?'إلغاء صفة المشرف':'منح صفة المشرف'}</button>${t.supervisor?`<button data-supervision="scope" data-teacher="${esc(t.id)}">⚙️ صلاحيات ونطاق المشرف</button>`:''}`:''}</div>
+      <div class="supervisor-inline-detail" data-supervision-detail hidden></div>
+    </article>`).join('')||'<p>لا يوجد محفظون في نطاق صلاحيتك. يحدد المالك المحفظين والأقسام المسموح لك بمتابعتها.</p>';
   }
-  async function reload(){status('جارٍ تحميل بيانات الإشراف…');$('supervisorDetail').hidden=true;
-    try{const d=await rpc('app_supervision_dashboard');teachers=Array.isArray(d?.teachers)?d.teachers:[];render();status('تم التحديث. البيانات متاحة للإدارة فقط.');}
-    catch(err){status('تعذر تحميل بيانات الإشراف. تحقق من الإنترنت وصلاحيات الحساب وتنفيذ SQL.');}
+  async function reload(){status('جارٍ تحميل بيانات الإشراف…');const seq=++requestSeq;
+    try{const d=await rpc('app_supervision_dashboard');if(seq!==requestSeq)return;
+      teachers=Array.isArray(d?.teachers)?d.teachers:[];render();
+      status(isOwner?'تم التحديث. جميع الصلاحيات الإدارية تخضع للتحقق من الخادم.':'تم التحديث. تظهر لك الصلاحيات التي حددها المالك فقط.');
+    }catch(err){status('تعذر تحميل بيانات الإشراف. راجع اتصال الإنترنت وتنفيذ SQL الجديد وصلاحية الحساب.');console.warn('[supervision dashboard]',err?.message||err);}
   }
-  async function detail(id,kind){if(!teachers.some(t=>t.id===id))return;busy=true;const host=$('supervisorDetail');host.hidden=false;host.innerHTML='<p>جارٍ التحميل…</p>';
+  function inlineHost(row){return row?.querySelector?.('[data-supervision-detail]')||$('supervisorDetail');}
+  function inlineNotice(host,text){host.hidden=false;host.textContent=text;}
+  function reveal(host){host.hidden=false;host.scrollIntoView?.({behavior:'smooth',block:'nearest'});}
+  async function detail(id,kind,row){if(!teachers.some(t=>t.id===id))return;
+    const host=inlineHost(row);if(!host)return;busy=true;inlineNotice(host,'جارٍ تحميل البيانات…');
     try{const d=await rpc(kind==='ratings'?'app_supervision_rating_details':'app_supervision_students',{p_teacher_id:id});
-      const heading=kind==='ratings'?'التقييمات الخاصة بالإدارة':'بيانات الطلاب المنشورة';
-      const content=kind==='ratings'?(d.ratings||[]).map(r=>`<article class="supervisor-detail-row"><b>${esc(new Date(r.updated_at).toLocaleDateString('ar-EG'))}</b><div>${Object.entries(labels).map(([key,l])=>`${l}: ${Number(r.scores?.[key])||0}/5`).join(' · ')}</div>${r.note?`<p>${esc(r.note)}</p>`:''}</article>`).join(''):(d.students||[]).map(s=>`<article class="supervisor-detail-row"><b>${esc(s.name||'طالب')}</b><div>الإتقان: ${esc(s.mastery||'—')} · الحضور: ${esc(s.attendance||'—')} · الإعادات: ${esc(s.repeats||'—')} · آيات جديدة: ${esc(s.new_ayat||'—')}</div></article>`).join('');
-      host.innerHTML=`<h3>${heading}</h3><p class="supervision-note">${kind==='students'?'مؤشرات آخر نسخة منشورة؛ قد تختلف عن السجلات المحلية المباشرة.':'لا تظهر هذه التقييمات للمحفظ.'}</p>${content||'<p>لا توجد بيانات منشورة.</p>'}`;
-      host.scrollIntoView({behavior:'smooth',block:'nearest'});
-    }catch(err){host.textContent='تعذر تحميل التفاصيل؛ تأكد من الصلاحيات.';}finally{busy=false;}
+      const heading=kind==='ratings'?'⭐ التقييمات الخاصة بالإدارة':'👥 كشف الطلاب لدى المحفظ';
+      const records=kind==='ratings'?(d?.ratings||[]):(d?.students||[]);
+      const content=kind==='ratings'?records.map(r=>`<article class="supervisor-detail-row"><b>${esc(formatDate(r.updated_at))}</b><p>${Object.entries(labels).map(([key,l])=>`${l}: ${Number(r.scores?.[key])||0}/5`).join(' · ')}</p>${r.note?`<p>${esc(r.note)}</p>`:''}</article>`).join(''):
+      records.map((s,i)=>`<article class="supervisor-student-row"><div class="supervisor-student-top"><strong>${i+1}. ${esc(s.name||'طالب')}</strong><small>${s.roster?'ضمن الكشف المتزامن':'منشور لولي الأمر فقط'}</small></div>
+      ${s.group||s.level?`<p>${s.group?'المجموعة: '+esc(s.group):''} ${s.level?' · المستوى: '+esc(s.level):''}</p>`:''}
+      <div class="supervisor-student-metrics"><span>الحضور: ${s.present==null?'—':metric(s.present)}</span><span>الغياب: ${s.absent==null?'—':metric(s.absent)}</span><span>الإتقان: ${metric(s.mastery)}</span><span>نسبة الحضور المنشورة: ${metric(s.attendance)}</span><span>الإعادات: ${metric(s.repeats)}</span><span>آيات جديدة: ${metric(s.new_ayat)}</span></div>
+      <small>آخر تحديث: ${esc(formatDate(s.updated_at))}</small></article>`).join('');
+      host.innerHTML=`<div class="supervision-subhead"><h3>${heading} (${records.length})</h3><button type="button" data-supervision="students-close" aria-label="طي التفاصيل">إغلاق</button></div>
+      <p class="supervision-note">${kind==='students'?(d?.roster_synced_at?'آخر مزامنة لكشف المحفظ: '+esc(formatDate(d.roster_synced_at))+' · مؤشرات ولي الأمر من آخر نسخة منشورة.':'لم يُزامِن المحفظ كشف طلابه بعد؛ ستظهر الأسماء المنشورة فقط. افتح صفحة الطلاب في حساب المحفظ واضغط «مزامنة كشف الطلاب للإدارة».'):'التقييمات خاصة بالمالك أو المشرف المخوّل بهذه الصلاحية.'}</p>
+      ${content||'<p class="supervision-no-data">لا توجد بيانات متاحة. لو عدد الطلاب المنشورين أكبر من صفر، حدّث الصفحة وأعد المحاولة.</p>'}`;
+      // Use the SAME teacher card so the user doesn't need to scroll to the end of all teachers.
+      reveal(host);
+    }catch(err){inlineNotice(host,'تعذر تحميل كشف البيانات. تحقق من اتصال الإنترنت وصلاحية الحساب وتشغيل تحديث قاعدة البيانات.');console.warn('[supervision details]',err?.message||err);}
+    finally{busy=false;}
+  }
+  async function scopes(id,row){if(!isOwner)return;const host=inlineHost(row);if(!host)return;busy=true;inlineNotice(host,'جارٍ تحميل صلاحيات المشرف…');
+    try{const d=await rpc('app_supervisor_scope_get',{p_supervisor_user_id:id});
+      const items=Array.isArray(d?.teachers)?d.teachers:[];
+      host.innerHTML=`<h3>⚙️ نطاق المشرف وصلاحياته</h3><p class="supervision-note">اختر المحفظين المسموح بمتابعتهم، ثم حدد الصلاحيات لكل محفظ. بدون تحديد صلاحيات لن تظهر بياناته للمشرف. التقييمات مغلقة افتراضيًا، وسجل الإدارة والمالية غير متاحين للمشرف.</p>`+
+      (items.map(t=>`<div class="supervision-scope-row"><strong>${esc(t.name||'محفظ')}</strong><div class="supervision-scope-options">
+      <label><input type="checkbox" data-cap="students" ${t.students?'checked':''}> الطلاب</label>
+      <label><input type="checkbox" data-cap="progress" ${t.progress?'checked':''}> مؤشرات التقدم</label>
+      <label><input type="checkbox" data-cap="ratings" ${t.ratings?'checked':''}> التقييمات الخاصة</label>
+      <label><input type="checkbox" data-cap="messages" ${t.messages?'checked':''}> عدد الرسائل</label>
+      </div><button type="button" data-supervision="scope-save" data-teacher="${esc(id)}" data-target="${esc(t.teacher_id)}">حفظ صلاحيات هذا المحفظ</button></div>`).join('')||'<p>لا يوجد محفظون نشطون آخرون لتخصيصهم للمشرف.</p>');
+      reveal(host);
+    }catch(err){inlineNotice(host,'تعذر تحميل قائمة الصلاحيات. تأكد من تنفيذ SQL الجديد.');}finally{busy=false;}
+  }
+  async function saveScope(supervisorId,teacherId,row){if(!isOwner)return;
+    const host=inlineHost(row),button=[...(host?.querySelectorAll?.('[data-supervision="scope-save"]')||[])].find(x=>x.dataset.target===teacherId);
+    const container=button?.closest('.supervision-scope-row');if(!container)return;
+    const value={};for(const name of ['students','progress','ratings','messages'])value[name]=Boolean(container.querySelector(`[data-cap="${name}"]`)?.checked);
+    if(value.progress&&!value.students){status('مؤشرات التقدم تتطلب أيضًا صلاحية عرض الطلاب.');return;}
+    busy=true;try{const d=await rpc('app_supervisor_scope_set',{p_supervisor_user_id:supervisorId,p_teacher_user_id:teacherId,p_permissions:value});
+      if(d?.ok!==true)throw Error('UNCONFIRMED');status('تم حفظ صلاحيات المحفظ من الخادم.');button.textContent='✓ تم الحفظ';}
+    catch(err){status('تعذر حفظ الصلاحيات. تأكد من اتصال الإنترنت وصلاحية المالك.');}finally{busy=false;}
   }
   async function grant(id,enabled){if(!isOwner||!teachers.some(t=>t.id===id))return;
-    if(!g.confirm?.(enabled?'منح هذا الحساب صلاحية الإشراف على بيانات الأكاديمية؟':'إلغاء صلاحية الإشراف عن هذا الحساب؟'))return;
-    busy=true;try{const result=await rpc('app_supervisor_assign',{p_user_id:id,p_enabled:enabled});if(!result?.ok)throw Error('FAILED');await reload();}
-    catch(err){status('تعذر حفظ صلاحية المشرف.');}finally{busy=false;}
+    if(!g.confirm?.(enabled?'منح صفة مشرف لهذا الحساب؟ لن يطّلع على أي محفظ قبل أن تحدد نطاقه وصلاحياته.':'إلغاء صلاحية الإشراف؟ ستُحجب بيانات الإدارة فورًا.'))return;
+    busy=true;try{const result=await rpc('app_supervisor_assign',{p_user_id:id,p_enabled:enabled});if(!result?.ok)throw Error('FAILED');await reload();
+      status(enabled?'تم منح صفة المشرف. افتح «صلاحيات ونطاق المشرف» لتحديد المحفظين.':'تم إلغاء صفة المشرف.');}
+    catch(err){status('تعذر تغيير صلاحية المشرف.');}finally{busy=false;}
   }
-  async function audit(){const host=$('supervisorDetail');host.hidden=false;host.textContent='جارٍ تحميل سجل الاطلاع…';
-    try{const result=await rpc('app_supervision_audit_feed');host.innerHTML='<h3>سجل الإشراف</h3>'+(result.events||[]).map(e=>`<div class="supervisor-detail-row">${esc(e.actor||'إدارة')} · ${esc(e.action)} · ${esc(new Date(e.at).toLocaleString('ar-EG'))}</div>`).join('');}
+  async function audit(){if(!isOwner)return;const host=$('supervisorDetail');host.hidden=false;host.textContent='جارٍ تحميل سجل الاطلاع…';
+    try{const result=await rpc('app_supervision_audit_feed');host.innerHTML='<h3>📜 سجل الاطلاع — للمالك فقط</h3>'+(result.events||[]).map(e=>`<div class="supervisor-detail-row">${esc(e.actor||'إدارة')} · ${esc(({dashboard:'فتح لوحة الإشراف',students:'عرض كشف الطلاب',rating_details:'عرض التقييمات',grant:'منح صلاحية',revoke:'إلغاء صلاحية',audit:'سجل الاطلاع',scope_update:'تعديل نطاق المشرف'})[e.action]||e.action)} · ${esc(new Date(e.at).toLocaleString('ar-EG'))}</div>`).join('');reveal(host);}
     catch(err){host.textContent='تعذر تحميل سجل الإشراف.';}
   }
   function ensureShortcut(){
-    // v11.7.2: The v9 Premium home intentionally hides direct children other
-    // than #v9Home. The old shortcut was injected into a hidden legacy
-    // .smart-actions block. Mount a FIRST-LEVEL card before #v9Home instead,
-    // and explicitly exempt only this authorized card from the v9 CSS rule.
-    // Being able to SEE this button does not grant access to private RPCs.
+    // The Premium home intentionally hides legacy direct children; this card
+    // gets an explicit CSS exemption and is placed before #v9Home.
     const isTrustedOwner=Boolean(g.WeLiveQuranAuth?.isOwner?.());
     if(!isTrustedOwner&&!allowed){$('supervisorShortcut')?.remove?.();return;}
     const home=$('pg-home');if(!home)return;
     let button=$('supervisorShortcut');
-    if(!button){
-      button=document.createElement('button');button.type='button';
-      button.className='supervision-home-entry';button.id='supervisorShortcut';
-      button.setAttribute('aria-label','فتح لوحة الإشراف والتقييمات');
-      button.setAttribute('dir','rtl');
-      button.innerHTML='<span class="supervision-home-icon" aria-hidden="true">🛡️</span><span class="supervision-home-copy"><strong>لوحة الإشراف</strong><span>تقييم المحفظين · متابعة الطلاب · الصلاحيات</span><small id="supervisorAccessHint" aria-live="polite"></small></span><span class="supervision-home-arrow" aria-hidden="true">←</span>';
+    if(!button){button=document.createElement('button');button.type='button';button.className='supervision-home-entry';button.id='supervisorShortcut';
+      button.setAttribute('aria-label','فتح لوحة الإشراف والتقييمات');button.setAttribute('dir','rtl');
+      button.innerHTML='<span class="supervision-home-icon" aria-hidden="true">🛡️</span><span class="supervision-home-copy"><strong>لوحة الإشراف</strong><span>المحفظون · الطلاب · التقييمات · الصلاحيات</span><small id="supervisorAccessHint" aria-live="polite"></small></span><span class="supervision-home-arrow" aria-hidden="true">←</span>';
       button.addEventListener('click',open);
     }
-    // Keep the shortcut above the prominent "ابدأ حصة" card, including
-    // after the home dashboard is re-rendered, without touching its contents.
     if(home.firstElementChild!==button)home.insertBefore(button,home.firstChild);
     const hint=$('supervisorAccessHint');if(hint)hint.textContent=accessHint;
   }
-  function clearPrivateView(){
-    const rows=$('supervisorRows'),detail=$('supervisorDetail');
-    if(rows)rows.replaceChildren();
-    if(detail){detail.hidden=true;detail.replaceChildren();}
-    teachers=[];
-  }
-  function accessFailure(err){
-    const text=String(err?.message||'');
-    if(/INTERNET_LOGIN_REQUIRED/i.test(text)||g.navigator?.onLine===false)
-      return 'مطلوب اتصال بالإنترنت وجلسة دخول صالحة';
-    if(/JWT|401|403|auth|session|token/i.test(text))
-      return 'يلزم تجديد جلسة الدخول بجوجل';
+  function clearPrivateView(){requestSeq++;const rows=$('supervisorRows'),detail=$('supervisorDetail');if(rows)rows.replaceChildren();if(detail){detail.hidden=true;detail.replaceChildren();}if($('supervisorOverview'))$('supervisorOverview').replaceChildren();teachers=[];}
+  function accessFailure(err){const text=String(err?.message||'');
+    if(/INTERNET_LOGIN_REQUIRED/i.test(text)||g.navigator?.onLine===false)return 'مطلوب اتصال بالإنترنت وجلسة دخول صالحة';
+    if(/JWT|401|403|auth|session|token/i.test(text))return 'يلزم تجديد جلسة الدخول بجوجل';
     return 'تعذر التحقق، اضغط للمحاولة مجددًا';
   }
-  function verifyAccess(){
-    if(accessCheck)return accessCheck;
+  function verifyAccess(){if(accessCheck)return accessCheck;
     accessHint='جارٍ التحقق من الصلاحية…';ensureShortcut();
     accessCheck=(async()=>{
-      try{
-        const result=await rpc('app_supervision_access');
-        allowed=result?.allowed===true;isOwner=result?.owner===true;
+      try{const result=await rpc('app_supervision_access');allowed=result?.allowed===true;isOwner=result?.owner===true;
         accessHint=allowed?'متاحة للإدارة':(g.WeLiveQuranAuth?.isOwner?.()?'تعذّر تأكيد صلاحية المالك':'غير مصرح');
         if(allowed&&!isOwner){const role=document.querySelector('#wlqUserMenu .wlq-user-pop span');if(role)role.textContent='مشرف';}
-      }catch(err){
-        allowed=false;isOwner=false;accessHint=accessFailure(err);
-        console.warn('[supervision] access verification failed:',err?.message||String(err));
-      }
-      if(!allowed){
-        clearPrivateView();
-        if(!g.WeLiveQuranAuth?.isOwner?.()){
-          $('supervisorShortcut')?.remove?.();close();
-        }
-      }
+      }catch(err){allowed=false;isOwner=false;accessHint=accessFailure(err);console.warn('[supervision access]',err?.message||String(err));}
+      if(!allowed){clearPrivateView();if(!g.WeLiveQuranAuth?.isOwner?.()){$('supervisorShortcut')?.remove?.();close();}}
       ensureShortcut();return allowed;
-    })().finally(()=>{accessCheck=null;});
-    return accessCheck;
+    })().finally(()=>{accessCheck=null;});return accessCheck;
   }
-  async function authorizeAndReload(){
-    status('جارٍ التأكد من صلاحية الإشراف…');
-    const permitted=await verifyAccess();
-    if(!permitted){
-      if($('supervisorRows'))$('supervisorRows').replaceChildren();
-      if($('supervisorDetail')){$('supervisorDetail').hidden=true;$('supervisorDetail').replaceChildren();}
-      status(accessHint+' — لا تُعرض بيانات الإدارة إلا بعد الموافقة من الخادم.');
-      return;
-    }
+  async function authorizeAndReload(){status('جارٍ التأكد من صلاحية الإشراف…');const permitted=await verifyAccess();
+    if(!permitted){clearPrivateView();status(accessHint+' — لا تُعرض بيانات الإدارة إلا بعد موافقة الخادم.');return;}
     await reload();
   }
-  function open(){
-    // A trusted owner may SEE this entry point even when connectivity is down.
-    // No dashboard RPC or private records are displayed without server authorization.
-    if(!g.WeLiveQuranAuth?.isOwner?.()&&!allowed)return;
-    ensure();$('supervisionDialog').hidden=false;
-    document.body.classList.add('supervision-open');authorizeAndReload();
-  }
+  function open(){if(!g.WeLiveQuranAuth?.isOwner?.()&&!allowed)return;ensure();$('supervisionDialog').hidden=false;document.body.classList.add('supervision-open');authorizeAndReload();}
   function close(){if($('supervisionDialog'))$('supervisionDialog').hidden=true;document.body.classList.remove('supervision-open');}
-  async function initialize(){
-    ensureShortcut();
-    if(!g.WeLiveQuranAuth?.isActive?.())return false;
-    return verifyAccess();
+  async function initialize(){ensureShortcut();if(!g.WeLiveQuranAuth?.isActive?.())return false;ensureRosterEntry();return verifyAccess();}
+  function ensureRosterEntry(){const pg=$('pg-students');if(!pg||$('supervisorRosterSync'))return;
+    const entry=document.createElement('div');entry.id='supervisorRosterSync';entry.className='supervision-roster-sync';entry.dir='rtl';
+    entry.innerHTML='<div><b>👥 كشف الطلاب للإدارة</b><small>مزامنة أسماء الطلاب ومستوياتهم وعدد الحضور والغياب فقط. لا تُرسل الهواتف أو المالية أو رموز الدخول.</small><p id="supervisorRosterSyncStatus" role="status"></p></div><button type="button" id="supervisorRosterSyncButton">مزامنة كشف الطلاب للإدارة</button>';
+    pg.insertBefore(entry,pg.firstChild);$('supervisorRosterSyncButton')?.addEventListener('click',syncRoster);
   }
-  // Also initialize when an older, cached auth bootstrap misses its afterAppInit
-  // hook. The normal auth path still calls initialize immediately after login.
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{
-    g.setTimeout?.(initialize,1500);g.setTimeout?.(initialize,6000);
-  },{once:true});
-  else {g.setTimeout?.(initialize,1500);g.setTimeout?.(initialize,6000);}
+  async function syncRoster(){const message=$('supervisorRosterSyncStatus'),button=$('supervisorRosterSyncButton');if(!message||!button)return;
+    if(g.navigator?.onLine===false||!g.WeLiveQuranAuth?.isActive?.()){message.textContent='المزامنة تحتاج اتصالًا بالإنترنت وحساب محفظ نشط.';return;}
+    const state=g.ImamApp?.State||{},students=state.students||g.students||[],sessions=state.sessions||g.sessions||[];
+    if(!Array.isArray(students)||!Array.isArray(sessions)){message.textContent='بيانات الطلاب لم تجهز بعد. أعد المحاولة.';return;}
+    if(students.length===0){message.textContent='لا توجد بيانات طلاب جاهزة، لن تُستبدل المزامنة السابقة بكشف فارغ.';return;}
+    if(students.length>500){message.textContent='تجاوز كشف الطلاب 500 طالب؛ لن يتم إرسال قائمة ناقصة. تواصل مع الإدارة.';return;}
+    const refFn=g.ImamApp?.GuardianPortal?.studentRef;
+    if(typeof refFn!=='function'){message.textContent='خدمة تعريف الطلاب غير جاهزة.';return;}
+    button.disabled=true;message.textContent='جارٍ تجهيز كشف الطلاب ومزامنته…';
+    try{const counts=new Map();for(const s of sessions){const id=String(s?.studentId||'');if(!id)continue;
+      if(!counts.has(id))counts.set(id,{present:0,absent:0});const x=counts.get(id);
+      if(s.status==='حضر')x.present++;else if(s.status==='غاب')x.absent++;
+    }
+      const rows=[];for(const s of students){if(!s?.id||!String(s?.name||'').trim())continue;
+        const c=counts.get(String(s.id))||{present:0,absent:0};
+        rows.push({ref:await refFn(s.id),name:String(s.name).trim().slice(0,120),group:String(s.group||'').slice(0,100),
+          level:String(s.level||'').slice(0,80),present:Math.min(99999,c.present),absent:Math.min(99999,c.absent)});
+      }
+      if(rows.length===0)throw Error('NO_VALID_STUDENTS');
+      const batch=g.crypto?.randomUUID?.();if(!batch)throw Error('CRYPTO_UNAVAILABLE');
+      const result=await rpc('app_teacher_roster_publish',{p_students:rows,p_batch:batch});
+      if(result?.ok!==true)throw Error('NOT_CONFIRMED');
+      message.textContent=`✅ تمت مزامنة كشف ${Number(result.count)||0} طالبًا. يراهم الآن المالك والمشرف المصرح له.`;
+    }catch(err){console.warn('[supervision roster sync]',err?.message||err);message.textContent='لم يتم تأكيد المزامنة. راجع الإنترنت وتحديث قاعدة البيانات ثم أعد المحاولة.';}
+    finally{button.disabled=false;}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{g.setTimeout?.(initialize,1500);g.setTimeout?.(initialize,6000);},{once:true});
+  else{g.setTimeout?.(initialize,1500);g.setTimeout?.(initialize,6000);}
   g.addEventListener?.('online',initialize);
-  g.ImamApp=g.ImamApp||{};g.ImamApp.Supervision={initialize,open,close};
-
+  g.ImamApp=g.ImamApp||{};g.ImamApp.Supervision={initialize,open,close,syncRoster};
 })(globalThis);

@@ -1,0 +1,41 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const read=f=>fs.readFileSync(f,'utf8');
+const sql=read('sql/supervision-roster-permissions.sql');
+const ui=read('js/features/supervisor-dashboard.js');
+const css=read('teacher-rating.css'),sw=read('sw.js'),html=read('index.html');
+new vm.Script(ui,{filename:'supervisor-dashboard.js'});
+for(const name of [
+ 'app_teacher_supervision_roster','app_teacher_supervision_roster_state','app_supervisor_teacher_scope','app_supervisor_scope_audit',
+ 'app_teacher_roster_publish','app_supervisor_scope_get','app_supervisor_scope_set','app_supervision_scope_check','app_supervision_students','app_supervision_dashboard','app_supervision_rating_details','app_supervision_audit_feed'
+])assert.ok(sql.includes(name),'Missing '+name);
+assert.match(sql,/where s\.owner_user_id=p_teacher_id and s\.revoked_at is null/,'Only active published shares');
+assert.match(sql,/join public\.app_teacher_supervision_roster_state st on st\.teacher_user_id=r\.teacher_user_id and st\.batch_id=r\.batch_id/,'Latest full teacher sync only');
+assert.match(sql,/if not public\.app_supervision_scope_check\(v_actor,p_teacher_id,'students'\)/,'Students limited to owner or scoped supervisor');
+assert.match(sql,/if not public\.app_supervision_scope_check\(v_actor,p_teacher_id,'ratings'\)/,'Private ratings require own scope');
+assert.match(sql,/if not public\.app_supervision_owner\(v_actor\) then raise exception 'OWNER_REQUIRED'/,'Owner authority enforced');
+assert.match(sql,/when 'progress' then sc\.view_students and sc\.view_progress/,'Progress needs explicit scope');
+assert.match(sql,/'present',case when v_progress/,'Attendance counts not exposed without progress scope');
+assert.match(sql,/if v_progress and not v_students then raise exception 'STUDENT_PERMISSION_REQUIRED'/);
+assert.match(sql,/if v_count>500 then raise exception 'ROSTER_TOO_LARGE'/);
+assert.match(sql,/if v_actor is null or not exists\(select 1 from public\.app_users where user_id=v_actor and status='active'/,'Teacher can publish only self');
+assert.match(sql,/from public\.app_supervisor_scope_audit/,'Owner audit includes scope changes');
+assert.match(sql,/revoke all on public\.app_teacher_supervision_roster from public,anon,authenticated/);
+assert.match(sql,/revoke all on public\.app_supervisor_teacher_scope from public,anon,authenticated/);
+assert.ok(!/\b(drop|truncate)\b|\bdelete\s+from\b|\balter\s+table\s+public\.app_users\b/i.test(sql),'No destructive changes permitted');
+assert.ok(!/pin_hash|phone_hash|ip_address|user_agent|wa\.me/i.test(sql+ui),'No forbidden metadata');
+assert.match(ui,/data-supervision-detail/,'Details must be inside selected teacher card');
+assert.match(ui,/data-supervision="students"/);
+assert.match(ui,/data-supervision="scope"/);
+assert.match(ui,/app_teacher_roster_publish/);
+assert.match(ui,/students.length===0/,'Blank roster must not overwrite a previous sync');
+assert.match(ui,/app_supervisor_scope_set/);
+assert.match(ui,/s\.name/);
+assert.match(ui,/if\(!isOwner\)return;/,'Only owner may manage scopes');
+assert.match(ui,/!g\.WeLiveQuranAuth\?\.isActive\?\.\(\)/,'No roster upload without session');
+assert.ok(!/phone:\s*|\.phone\s*\|\||pin:\s*|\.pin\s*\|\|/i.test(ui),'No phone or PIN is published with roster');
+assert.match(css,/\.supervisor-inline-detail/);
+assert.match(html,/supervisor-dashboard\.js\?v=11\.7\.3-scoped-oversight/);
+assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.7\.3-scoped-oversight'/);
+assert.match(read('js/core/runtime.js'),/schema:12/);
+console.log('PASS supervision-roster-permissions-stage2: tenant-scoped students, controlled progress/ratings, owner ACL, batch roster, audit, cache, no destructive SQL');
