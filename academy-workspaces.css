@@ -1,0 +1,9 @@
+/* v11.7.4 foundation card: readable RTL, respects existing themes */
+.academy-workspace-foundation{direction:rtl;margin-bottom:18px;border:1px solid var(--bd,#d9e4db);padding:16px;background:var(--card,#fff);color:var(--txt,#15382b)}
+.academy-workspace-head{display:flex;align-items:start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.academy-workspace-head h3{font-size:1.05rem;margin:0 0 7px}.academy-workspace-head p,.academy-workspace-note{font-size:.82rem;line-height:1.7;opacity:.85;margin:4px 0 10px}
+.academy-workspace-head button{border:1px solid var(--bd,#d9e4db);border-radius:10px;background:var(--card,#fff);color:inherit;padding:10px 17px;cursor:pointer}
+#academyWorkspaceStatus{font-size:.88rem;line-height:1.65;min-height:22px}
+.academy-workspace-item{display:flex;flex-direction:column;gap:5px;padding:12px 14px;border-radius:12px;background:var(--bg,#edf4ef);border:1px solid var(--bd,#d9e4db);margin-bottom:10px}
+.academy-workspace-item span,.academy-workspace-item small{font-size:.81rem}
+@media(max-width:560px){.academy-workspace-foundation{padding:12px}.academy-workspace-head{align-items:stretch}.academy-workspace-head button{min-height:44px}}

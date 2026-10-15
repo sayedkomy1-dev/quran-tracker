@@ -1,3 +1,10 @@
+## v11.7.4 — Multi-academy foundation (pilot)
+- Established isolated tenant, membership, branch, bootstrap legacy-link and administration-audit tables behind RLS and authenticated RPCs.
+- Bootstrapped Imam Academy with the existing active owner only; teachers and legacy data remain unchanged until tenant-scoped migration is planned and verified.
+- Added a read-only foundation status card to the owner's settings, with server-verified membership and an explicit legacy migration disclaimer.
+- Prepared groundwork for tenant-aware offline sync; no academy switching, onboarding or live cross-tenant student access in this version.
+- Added a tenant-specific regression test. Local schema remains 12; one additive SQL file, no previous SQL modifications.
+
 ## v11.7.3 — Supervision Stage 2: student rosters and scoped permissions
 - Each teacher's published students can now be expanded **inline under their own card**, with names and last published learning metrics.
 - Added teacher-triggered private administrative roster sync from the Students page; syncs names, group, level and aggregate attendance only (never phone/PIN/finance); no data is deleted, and empty/unloaded rosters are not sent.

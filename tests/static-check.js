@@ -52,14 +52,14 @@ new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='11.7.3','VERSION must be 11.5.1');
+assert(version==='11.7.4','VERSION must be 11.5.1');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
 assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'11.0.0'"),'app.js APP_VERSION must come from ImamApp runtime');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js?v=11.0.0'")&&sw.includes("'./v9.css?v=11.0.0'")&&sw.includes("'./v10.js?v=11.2.0-s1.1'")&&sw.includes("'./v10.css?v=11.0.0'")&&sw.includes("'./js/core/runtime.js?v=11.5.1-s2'")&&sw.includes("'./js/features/v10-data.js?v=11.0.0'")&&sw.includes("'./js/features/quran-engine.js?v=11.0.0'")&&sw.includes("'./js/features/mushaf-offline.js?v=11.0.0'")&&sw.includes("'./quran-engine.css?v=11.0.0'")&&sw.includes("'./auth.js?v=11.7.3-scoped-oversight'")&&sw.includes("'./sync-core.js?v=11.0.0'")&&sw.includes("'./auth.css?v=11.0.0'")&&sw.includes("'./js/features/guardian-communication.js?v=11.0.0'")&&sw.includes("'./js/features/student-progress.js?v=11.0.0'")&&sw.includes("'./js/features/teacher-followup.js?v=11.0.0'")&&sw.includes("'./js/features/circle-analytics.js?v=11.0.0'"),'service worker must cache versioned architecture/v9/v10/auth assets');
+assert(sw.includes("'./v9.js?v=11.0.0'")&&sw.includes("'./v9.css?v=11.0.0'")&&sw.includes("'./v10.js?v=11.2.0-s1.1'")&&sw.includes("'./v10.css?v=11.0.0'")&&sw.includes("'./js/core/runtime.js?v=11.5.1-s2'")&&sw.includes("'./js/features/v10-data.js?v=11.0.0'")&&sw.includes("'./js/features/quran-engine.js?v=11.0.0'")&&sw.includes("'./js/features/mushaf-offline.js?v=11.0.0'")&&sw.includes("'./quran-engine.css?v=11.0.0'")&&sw.includes("'./auth.js?v=11.7.4-foundation'")&&sw.includes("'./sync-core.js?v=11.0.0'")&&sw.includes("'./auth.css?v=11.0.0'")&&sw.includes("'./js/features/guardian-communication.js?v=11.0.0'")&&sw.includes("'./js/features/student-progress.js?v=11.0.0'")&&sw.includes("'./js/features/teacher-followup.js?v=11.0.0'")&&sw.includes("'./js/features/circle-analytics.js?v=11.0.0'"),'service worker must cache versioned architecture/v9/v10/auth assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.
@@ -200,7 +200,7 @@ assert(sw.includes("quran-pwa-v11.2.0-error1"),'service worker cache must match 
 
 
 // v10.1.2 Google Auth and access-control regression guards.
-assert(html.includes('src="auth.js?v=11.7.3-scoped-oversight"')&&auth.includes("SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'"),'Supabase auth bootstrap missing');
+assert(html.includes('src="auth.js?v=11.7.4-foundation"')&&auth.includes("SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'"),'Supabase auth bootstrap missing');
 assert(html.includes('href="auth.css?v=11.0.0"'),'auth stylesheet missing');
 assert(auth.includes("supabaseUrl:'https://svtcntalwfmexthcnvqe.supabase.co'"),'Supabase project URL mismatch');
 assert(auth.includes("publishableKey:'sb_publishable_qYw8VdT1IXQ5WsdB2rhtEA_F6dSAN-j'"),'Supabase publishable key mismatch');
