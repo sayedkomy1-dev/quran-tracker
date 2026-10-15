@@ -7,3 +7,5 @@ html.wlq-auth-locked,html.wlq-auth-locked body{overflow:hidden!important}.wlq-au
 .wlq-legacy-card h2{margin:0 0 8px;font-size:21px}.wlq-legacy-card p{margin:6px 0;color:var(--mut,#66756c);line-height:1.7;font-size:13px}
 .wlq-legacy-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:var(--bg,#f7f7f4);border-radius:16px;padding:12px;margin:16px 0}.wlq-legacy-stats b{font-size:22px;color:var(--gd,#185f3c)}.wlq-legacy-stats span{font-size:11px;color:var(--mut,#66756c);margin-top:-5px}.wlq-legacy-account strong{color:var(--gd,#185f3c)}.wlq-legacy-note{font-size:11px!important}
 .wlq-legacy-primary,.wlq-legacy-secondary{width:100%;border:0;border-radius:14px;padding:13px 16px;font:inherit;font-weight:700;cursor:pointer;margin-top:9px}.wlq-legacy-primary{background:var(--gd,#185f3c);color:#fff}.wlq-legacy-secondary{background:transparent;color:var(--gd,#185f3c);border:1px solid rgba(24,95,60,.25)}
+
+.wlq-guest-link{display:block;color:#145a3a;text-decoration:none;border:1px solid #b6d8c4;background:#f1faf4;border-radius:13px;padding:12px;margin-top:9px;font-weight:800;font-size:13px}

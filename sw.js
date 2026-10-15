@@ -8,14 +8,20 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.7.4-tenant-foundation';
+const CACHE_NAME = 'quran-pwa-v11.7.4.1-guest-role-batch';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
-const APP_VERSION = '11.7.4';
+const APP_VERSION = '11.7.4.1';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
 const APP_SHELL = [
   './',
   './index.html',
+  './guest-practice.html',
+  './guest-practice.css?v=11.7.4.1',
+  './js/features/guest-practice.js?v=11.7.4.1',
+  './js/features/guardian-tahfeez.js?v=11.7.4.1',
+  './role-home.css?v=11.7.4.1',
+  './js/features/role-home.js?v=11.7.4.1',
   './styles.css?v=11.0.0',
   './v11.css?v=11.4.1-profile-ui',
   './app.js?v=11.2.0-s1.1',
@@ -96,6 +102,12 @@ const APP_SHELL = [
 // installed PWA unusable offline. Keep the previous worker active instead.
 const CORE_SHELL = [
   './index.html',
+  './guest-practice.html',
+  './guest-practice.css?v=11.7.4.1',
+  './js/features/guest-practice.js?v=11.7.4.1',
+  './js/features/guardian-tahfeez.js?v=11.7.4.1',
+  './role-home.css?v=11.7.4.1',
+  './js/features/role-home.js?v=11.7.4.1',
   './styles.css?v=11.0.0',
   './v11.css?v=11.4.1-profile-ui',
   './teacher-error-marking.css?v=11.2.0-s3',
@@ -193,7 +205,7 @@ self.addEventListener('install', event => {
       if(!hit)throw new Error(`[SW] refusing incomplete offline shell: ${url}`);
     }
     if(!results.some(Boolean))throw new Error('[SW] no app shell assets available');
-    await self.skipWaiting();
+    // Keep the installed update WAITING until the person taps Update now.
   })());
 });
 
@@ -274,22 +286,14 @@ self.addEventListener('fetch', event => {
       const cache=await caches.open(CACHE_NAME);
       const portalNav=url.pathname.endsWith('/guardian-portal.html');
       const guardianLoginNav=url.pathname.endsWith('/guardian-login.html');
-      const fallback=portalNav?'./guardian-portal.html':guardianLoginNav?'./guardian-login.html':'./index.html';
+      const guestNav=url.pathname.endsWith('/guest-practice.html');
+      const fallback=guestNav?'./guest-practice.html':portalNav?'./guardian-portal.html':guardianLoginNav?'./guardian-login.html':'./index.html';
       const cached=(await matchLocalAsset(cache,req))
         ||(await matchLocalAsset(cache,new Request(absolute(fallback),{credentials:'same-origin'})))
         ||(await matchLocalAsset(cache,new Request(absolute('./index.html'),{credentials:'same-origin'})));
-      if(cached){
-        event.waitUntil((async()=>{
-          try{
-            const res=await fetchWithTimeout(req,1800,{cache:'no-store'});
-            if(res&&res.ok){
-              await cache.put(absolute(fallback),res.clone());
-              await cache.put(canonicalRequest(req),res.clone()).catch(()=>{});
-            }
-          }catch(_){ }
-        })());
-        return cached;
-      }
+      // Keep the currently active shell immutable until the user accepts a
+      // fully installed next Service Worker version. No silent HTML refresh.
+      if(cached)return cached;
       try{
         const preload=await Promise.race([event.preloadResponse,new Promise(r=>setTimeout(()=>r(null),700))]);
         const res=preload||await fetchWithTimeout(req,2200,{cache:'no-store'});
@@ -305,7 +309,7 @@ self.addEventListener('fetch', event => {
     event.respondWith((async()=>{
       const cache=await caches.open(CACHE_NAME);
       const cached=await matchLocalAsset(cache,req);
-      if(cached){event.waitUntil(refreshSameOrigin(cache,req));return cached;}
+      if(cached)return cached; // opt-in update: no silent JS/CSS refresh
       return cacheFirstSameOrigin(req);
     })());
     return;

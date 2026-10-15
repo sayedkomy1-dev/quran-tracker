@@ -1,3 +1,11 @@
+## v11.7.4.1 — Role Home / Opt-in PWA Update / Guest Tahfeez
+- Prominent shortcuts appropriate to owner, scoped supervisor and teacher; no new privileges granted from the UI.
+- Service Worker stays waiting until a user taps تحديث الآن; removed silent activation and dismiss button.
+- Guest Quran practice route without staff or guardian data; local bookmark + last position, isolated playback preferences.
+- Optional Google account for cross-device backup (additive SQL and Supabase OAuth redirect allowlist required); platform-owner-only usage overview of consenting Google guest accounts.
+- No modifications to local student/session schema 12 or legacy tenant tables.
+- Still NOT a full multi-academy data migration, no auto teacher roster sync in this batch.
+
 ## v11.7.4 — Multi-academy foundation (pilot)
 - Established isolated tenant, membership, branch, bootstrap legacy-link and administration-audit tables behind RLS and authenticated RPCs.
 - Bootstrapped Imam Academy with the existing active owner only; teachers and legacy data remain unchanged until tenant-scoped migration is planned and verified.

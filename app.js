@@ -2303,13 +2303,21 @@ async function registerSW(){
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')reg.update().catch(()=>{});});
   }catch(e){console.warn('Service worker registration failed',e);}
 }
+let userApprovedSWUpdate=false;
 function applyUpdate(){
-  if(waitingSW){waitingSW.postMessage('SKIP_WAITING');document.getElementById('update-banner')?.classList.remove('show');}
-  else location.reload();
+  const reg=waitingSW;
+  if(!reg){navigator.serviceWorker?.getRegistration?.().then(r=>{if(r?.waiting){waitingSW=r.waiting;applyUpdate();}});return;}
+  userApprovedSWUpdate=true;
+  document.getElementById('update-banner')?.classList.add('updating');
+  reg.postMessage('SKIP_WAITING');
 }
-function dismissUpdate(){document.getElementById('update-banner')?.classList.remove('show');}
+// Kept only for compatibility with older cached handlers: no dismissing a pending update.
+function dismissUpdate(){document.getElementById('update-banner')?.classList.add('show');}
 let reloadingForSW=false;
-if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('controllerchange',()=>{if(reloadingForSW)return;reloadingForSW=true;location.reload();});
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('controllerchange',()=>{
+  if(!userApprovedSWUpdate||reloadingForSW)return;
+  reloadingForSW=true;location.reload();
+});
 
 // ══════════════════════════════════════
 // URL PARAMS (for shortcuts)

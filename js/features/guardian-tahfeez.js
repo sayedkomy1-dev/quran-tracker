@@ -14,7 +14,7 @@
     ['Alafasy_128kbps','الشيخ مشاري راشد العفاسي'],
     ['MaherAlMuaiqly128kbps','الشيخ ماهر المعيقلي']
   ];
-  const PREF_KEY='imam:guardian-tahfeez:prefs:v1';
+  const PREF_KEY=document.documentElement.dataset.guestPractice==='1'?'wlq:guest:player-prefs:v1':'imam:guardian-tahfeez:prefs:v1';
   const LAST_PREFIX='imam:guardian-tahfeez:last:v2:';
   const TEXT_INDEX='imam:guardian-tahfeez:text-index:v1';
   const TEXT_PREFIX='imam:guardian-tahfeez:text:';
@@ -41,6 +41,7 @@
   function saveLast(){
     if(!state.context)return;const r=currentRange();const x={chapter:r.chapter,from:r.from,to:r.to,ayah:state.selectedAyah,practiceMode:state.practiceMode,updatedAt:Date.now()};
     try{localStorage.setItem(lastKey(),JSON.stringify(x));state.lastState=x;}catch(_){}updateResumeButton();
+    if(document.documentElement.dataset.guestPractice==='1')g.dispatchEvent?.(new CustomEvent('wlq:guest-position',{detail:x}));
   }
   function updateResumeButton(){const b=$('tahfeezResume');if(!b)return;const x=state.lastState||readLast();state.lastState=x;b.hidden=!x;b.textContent=x?`متابعة: ${surahName(clamp(x.chapter,1,114,1))} ${clamp(x.ayah,1,surahAyahs(clamp(x.chapter,1,114,1)),1)}`:'متابعة آخر موضع';}
   function savePrefs(){
@@ -318,7 +319,10 @@
     window.addEventListener('online',()=>{setNet();refreshOfflineStatus();});window.addEventListener('offline',setNet);window.addEventListener('popstate',()=>{if(state.open)close(true);});
     updateLabels();updateLoopState();updateFocus();updateSessionProgress(0);applyTextVisibility();setNet();
   }
-  g.ImamGuardianTahfeez={setContext:configureAssignment,open,close,loadAssignment,loadText,resumeLast,setPracticeMode,openCorrectionRange};
+  function restoreGuestLast(x){if(document.documentElement.dataset.guestPractice!=='1'||!state.context||!x||!x.chapter||!x.ayah)return;
+    try{localStorage.setItem(lastKey(),JSON.stringify(x));state.lastState=x;}catch(_){}updateResumeButton();
+  }
+  g.ImamGuardianTahfeez={setContext:configureAssignment,open,close,loadAssignment,loadText,resumeLast,setPracticeMode,openCorrectionRange,restoreGuestLast};
   g.openGuardianTahfeez=open;g.openGuardianCorrectionRange=openCorrectionRange;g.closeGuardianTahfeez=close;g.tahfeezToggleSettings=toggleSettings;g.tahfeezLoadAssignment=loadAssignment;g.tahfeezResumeLast=resumeLast;g.tahfeezToggleReveal=toggleReveal;g.tahfeezLoadText=loadText;g.tahfeezPlayPause=playPause;g.tahfeezStop=()=>stop();g.tahfeezPreviousAyah=()=>jumpAyah(-1);g.tahfeezNextAyah=()=>jumpAyah(1);g.tahfeezSeekBy=seekBy;g.tahfeezToggleMute=toggleMute;g.tahfeezDownloadRange=downloadRange;g.tahfeezDownloadSurah=downloadSurah;g.tahfeezClearDownloads=clearDownloads;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(globalThis);
