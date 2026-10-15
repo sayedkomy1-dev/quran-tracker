@@ -62,18 +62,26 @@
     catch(err){host.textContent='تعذر تحميل سجل الإشراف.';}
   }
   function ensureShortcut(){
-    // Owner label is used ONLY to show the entry point. Actual data access is
-    // authorized by the Supabase RPC, never by the cached owner label.
-    if(!g.WeLiveQuranAuth?.isOwner?.()&&!allowed)return;
-    const home=$('teacherInboxHomeButton');if(!home)return;
+    // v11.7.2: The v9 Premium home intentionally hides direct children other
+    // than #v9Home. The old shortcut was injected into a hidden legacy
+    // .smart-actions block. Mount a FIRST-LEVEL card before #v9Home instead,
+    // and explicitly exempt only this authorized card from the v9 CSS rule.
+    // Being able to SEE this button does not grant access to private RPCs.
+    const isTrustedOwner=Boolean(g.WeLiveQuranAuth?.isOwner?.());
+    if(!isTrustedOwner&&!allowed){$('supervisorShortcut')?.remove?.();return;}
+    const home=$('pg-home');if(!home)return;
     let button=$('supervisorShortcut');
     if(!button){
       button=document.createElement('button');button.type='button';
-      button.className='quick-action supervision-shortcut';button.id='supervisorShortcut';
-      button.innerHTML='<span aria-hidden="true">🛡️</span><b>لوحة الإشراف</b><small id="supervisorAccessHint" aria-live="polite"></small>';
-      home.parentElement.prepend(button);
+      button.className='supervision-home-entry';button.id='supervisorShortcut';
+      button.setAttribute('aria-label','فتح لوحة الإشراف والتقييمات');
+      button.setAttribute('dir','rtl');
+      button.innerHTML='<span class="supervision-home-icon" aria-hidden="true">🛡️</span><span class="supervision-home-copy"><strong>لوحة الإشراف</strong><span>تقييم المحفظين · متابعة الطلاب · الصلاحيات</span><small id="supervisorAccessHint" aria-live="polite"></small></span><span class="supervision-home-arrow" aria-hidden="true">←</span>';
       button.addEventListener('click',open);
     }
+    // Keep the shortcut above the prominent "ابدأ حصة" card, including
+    // after the home dashboard is re-rendered, without touching its contents.
+    if(home.firstElementChild!==button)home.insertBefore(button,home.firstChild);
     const hint=$('supervisorAccessHint');if(hint)hint.textContent=accessHint;
   }
   function clearPrivateView(){

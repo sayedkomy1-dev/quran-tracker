@@ -1,3 +1,10 @@
+## v11.7.2 — Supervision prominent Home button hotfix (Stage 1)
+- Confirmed prior shortcut was inserted into hidden legacy `.smart-actions`, concealed by the v9 Premium Home CSS.
+- Moved owner/supervisor entry into a separate prominent green-and-gold card BEFORE the Premium Home dashboard. Proper RTL, responsive mobile layout, and readable dark/light themes.
+- Did not weaken authorization: data always requires a successful server-side supervision permission check.
+- Updated application and offline cache versions. No SQL change; local Schema remains 12.
+- Added browser-based visibility and security regression tests. See `QA-REPORT-11.7.2-SUPERVISION-HOME-ENTRY.md`.
+
 ## v11.7.1 — Supervision entry visibility hotfix (Stage 1)
 - Added a prominent 🛡️ supervision shortcut at the top of the teacher home quick actions for the signed-in owner. Supervisors still require confirmed backend access.
 - Permission errors are visible and can be retried instead of silently hiding the shortcut; all private RPCs remain server-authorized.

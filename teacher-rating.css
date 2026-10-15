@@ -32,3 +32,45 @@ html[data-portal-theme="dark"] .portal-rating-form select,html[data-portal-theme
 .supervision-shortcut b{font-size:clamp(12px,1.1vw,15px)}
 .supervision-shortcut small{margin-inline-start:auto;min-width:0;font-size:clamp(10px,.9vw,12px);color:var(--mut,#596e64);line-height:1.5;text-align:left}
 @media(max-width:480px){.supervision-shortcut{flex-wrap:wrap}.supervision-shortcut small{flex-basis:100%;text-align:right;margin-inline-start:0}}
+
+/* v11.7.2 — actual Premium home entry: above the hero, not in hidden legacy actions. */
+#pg-home > #supervisorShortcut.supervision-home-entry,
+#pg-home.v9-home-ready > #supervisorShortcut.supervision-home-entry {
+  display:flex!important;
+  direction:rtl;
+  width:100%;
+  min-width:0;
+  min-height:91px;
+  margin:0 0 14px;
+  padding:15px 18px;
+  box-sizing:border-box;
+  align-items:center;
+  gap:13px;
+  border-radius:21px;
+  border:1px solid rgba(218,181,86,.55);
+  background:linear-gradient(115deg,#0a4934 0%,#126044 100%);
+  box-shadow:0 9px 28px rgba(7,62,39,.16);
+  color:#fff;
+  text-align:right;
+  font:inherit;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+#pg-home #supervisorShortcut .supervision-home-icon {
+  width:54px;height:54px;min-width:54px;display:grid;place-items:center;
+  border-radius:16px;background:rgba(255,255,255,.14);
+  color:#ffdfa0;font-size:30px;
+}
+#pg-home #supervisorShortcut .supervision-home-copy{display:grid;gap:4px;flex:1;min-width:0}
+#pg-home #supervisorShortcut .supervision-home-copy strong{color:#fff;font-size:clamp(19px,2.8vw,24px);font-weight:900;line-height:1.35}
+#pg-home #supervisorShortcut .supervision-home-copy > span{color:#e5f4e9;font-size:clamp(11px,1.2vw,13px);line-height:1.6}
+#pg-home #supervisorShortcut .supervision-home-copy > small{color:#f8d894;font-size:11px;line-height:1.4}
+#pg-home #supervisorShortcut .supervision-home-arrow{font-size:27px;color:#ffdfa0;font-weight:bold}
+#pg-home #supervisorShortcut:focus-visible{outline:3px solid #e1b95b;outline-offset:3px}
+@media(max-width:480px){
+  #pg-home > #supervisorShortcut.supervision-home-entry{min-height:80px;padding:12px;gap:10px;border-radius:17px}
+  #pg-home #supervisorShortcut .supervision-home-icon{width:44px;height:44px;min-width:44px;font-size:24px;border-radius:13px}
+  #pg-home #supervisorShortcut .supervision-home-copy strong{font-size:18px}
+  #pg-home #supervisorShortcut .supervision-home-arrow{font-size:23px}
+}
+@media print {#pg-home > #supervisorShortcut.supervision-home-entry{display:none!important}}
