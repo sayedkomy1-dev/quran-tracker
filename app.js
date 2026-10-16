@@ -531,6 +531,8 @@ function save(){
   idbWriteSnapshot();
   writeOfflineSafetySnapshot();
   queueMicrotask(()=>{try{updateTaskBadge();}catch(_){} });
+  // Read-only admin roster sync is scheduled after saves; never block the local save.
+  queueMicrotask(()=>{try{document.dispatchEvent(new Event('imam:local-save'));}catch(_){} });
 }
 
 // ══════════════════════════════════════

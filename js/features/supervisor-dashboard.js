@@ -1,10 +1,36 @@
 'use strict';
-/* v11.7.3 — owner academy oversight; scoped, read-only supervisor access. */
+/* v11.7.4.4 — owner academy oversight; automatic private teacher roster refresh. */
 (function supervision(g){
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const labels={punctuality:'الالتزام',teaching:'التعليم',followup:'المتابعة',kindness:'التعامل',benefit:'الاستفادة',clarity:'الوضوح'};
   let allowed=false,isOwner=false,teachers=[],busy=false,accessCheck=null,accessHint='جارٍ التحقق من الصلاحية…',requestSeq=0;
+  // Auto-publish is nonblocking, bound to the active account, and NEVER replaces a published roster with empty/partial data.
+  let autoStarted=false,autoTimer=null,autoPoll=null,publishInFlight=null,lastPublishedSignature='',lastPublishedAccount='',retryAfter=0;
+  const AUTO_DELAY=3500,MIN_RETRY_MS=60000;
+  function rosterMessage(value){const el=$('supervisorRosterSyncStatus');if(el)el.textContent=value;}
+  function currentActor(){return String(g.WeLiveQuranAuth?.getAccess?.()?.user_id||'');}
+  function authenticatedTeacher(){
+    const access=g.WeLiveQuranAuth?.getAccess?.();
+    return Boolean(access?.user_id&&access?.status==='active'&&['owner','teacher'].includes(access?.role));
+  }
+  function canAutoSync(){return autoStarted&&authenticatedTeacher()&&g.navigator?.onLine!==false&&Boolean(client());}
+  function scheduleAutoRosterSync(reason='change',delay=AUTO_DELAY){
+    if(!canAutoSync())return;
+    if(autoTimer!==null)g.clearTimeout(autoTimer);
+    const wait=Math.max(delay,retryAfter-Date.now(),0);
+    autoTimer=g.setTimeout(()=>{autoTimer=null;void syncRoster(true);},wait);
+  }
+  function startAutoRosterSync(){
+    if(autoStarted)return;
+    autoStarted=true;
+    g.document?.addEventListener?.('imam:local-save',()=>scheduleAutoRosterSync('save'));
+    g.document?.addEventListener?.('visibilitychange',()=>{if(g.document.visibilityState==='visible')scheduleAutoRosterSync('resume',800);});
+    g.addEventListener?.('online',()=>scheduleAutoRosterSync('online',1200));
+    // Recovery for changes from external modules that do not call the shared save hook.
+    autoPoll=g.setInterval?.(()=>scheduleAutoRosterSync('periodic',700),120000);
+    scheduleAutoRosterSync('ready',2000);
+  }
   function client(){return g.WeLiveQuranAuth?.getClient?.();}
   async function rpc(name,args={}){
     if(g.navigator?.onLine===false||!g.WeLiveQuranAuth?.isActive?.()||!client())throw Error('INTERNET_LOGIN_REQUIRED');
@@ -17,7 +43,7 @@
     const el=document.createElement('section');el.id='supervisionDialog';el.hidden=true;el.className='supervision-overlay';
     el.innerHTML=`<div class="supervision-dialog" role="dialog" aria-modal="true" aria-labelledby="supervisionHeading" dir="rtl">
       <div class="supervision-head"><h2 id="supervisionHeading">🛡️ لوحة الإشراف والأكاديمية</h2><button type="button" data-supervision="close" aria-label="إغلاق">✕</button></div>
-      <p class="supervision-note">المالك يشرف على جميع المحفظين. المشرف يرى فقط المحفظين والأقسام التي منحه إياها المالك. كشف الطلاب يحتاج مزامنة من حساب المحفظ؛ مؤشرات البوابة قد لا تكون لحظية.</p>
+      <p class="supervision-note">المالك يشرف على جميع المحفظين. المشرف يرى فقط المحفظين والأقسام التي منحه إياها المالك. كشف الطلاب يُزامَن تلقائيًا بعد تحميل بيانات المحفظ وعند تعديلها. مؤشرات البوابة قد لا تكون لحظية.</p>
       <div class="supervision-toolbar"><button type="button" data-supervision="verify">↻ التحقق من الصلاحية</button><button type="button" data-supervision="reload">↻ تحديث</button><button id="supervisionAuditButton" type="button" data-supervision="audit" hidden>📜 سجل الاطلاع — للمالك</button></div>
       <p id="supervisorStatus" role="status"></p><div id="supervisorOverview"></div><div id="supervisorRows"></div><div id="supervisorDetail" hidden></div>
     </div>`;
@@ -41,7 +67,7 @@
     const count=Number(t.roster_students)||0,published=Number(t.published_students)||0;
     return t.can_students===false?'الطلاب خارج نطاق صلاحيتك':synced?
       `كشف متزامن: ${count} طالبًا · منشورون لولي الأمر: ${published}`:
-      `منشورون لولي الأمر: ${published} · كشف جميع الطلاب لم يُزامَن بعد`;
+      `منشورون لولي الأمر: ${published} · بانتظار أول مزامنة تلقائية لكشف الطلاب`;
   }
   function render(){const host=$('supervisorRows');if(!host)return;
     const viewable=teachers.filter(t=>t.can_students!==false);
@@ -82,7 +108,7 @@
       <div class="supervisor-student-metrics"><span>الحضور: ${s.present==null?'—':metric(s.present)}</span><span>الغياب: ${s.absent==null?'—':metric(s.absent)}</span><span>الإتقان: ${metric(s.mastery)}</span><span>نسبة الحضور المنشورة: ${metric(s.attendance)}</span><span>الإعادات: ${metric(s.repeats)}</span><span>آيات جديدة: ${metric(s.new_ayat)}</span></div>
       <small>آخر تحديث: ${esc(formatDate(s.updated_at))}</small></article>`).join('');
       host.innerHTML=`<div class="supervision-subhead"><h3>${heading} (${records.length})</h3><button type="button" data-supervision="students-close" aria-label="طي التفاصيل">إغلاق</button></div>
-      <p class="supervision-note">${kind==='students'?(d?.roster_synced_at?'آخر مزامنة لكشف المحفظ: '+esc(formatDate(d.roster_synced_at))+' · مؤشرات ولي الأمر من آخر نسخة منشورة.':'لم يُزامِن المحفظ كشف طلابه بعد؛ ستظهر الأسماء المنشورة فقط. افتح صفحة الطلاب في حساب المحفظ واضغط «مزامنة كشف الطلاب للإدارة».'):'التقييمات خاصة بالمالك أو المشرف المخوّل بهذه الصلاحية.'}</p>
+      <p class="supervision-note">${kind==='students'?(d?.roster_synced_at?'آخر مزامنة لكشف المحفظ: '+esc(formatDate(d.roster_synced_at))+' · مؤشرات ولي الأمر من آخر نسخة منشورة.':'لم يصل كشف الطلاب بعد؛ ستظهر الأسماء المنشورة فقط. تتجدد المزامنة تلقائيًا عند تشغيل حساب المحفظ مع الإنترنت، ويمكنه الضغط على «مزامنة الآن».'):'التقييمات خاصة بالمالك أو المشرف المخوّل بهذه الصلاحية.'}</p>
       ${content||'<p class="supervision-no-data">لا توجد بيانات متاحة. لو عدد الطلاب المنشورين أكبر من صفر، حدّث الصفحة وأعد المحاولة.</p>'}`;
       // Use the SAME teacher card so the user doesn't need to scroll to the end of all teachers.
       reveal(host);
@@ -159,40 +185,78 @@
   }
   function open(){if(!g.WeLiveQuranAuth?.isOwner?.()&&!allowed)return;ensure();$('supervisionDialog').hidden=false;document.body.classList.add('supervision-open');authorizeAndReload();}
   function close(){if($('supervisionDialog'))$('supervisionDialog').hidden=true;document.body.classList.remove('supervision-open');}
-  async function initialize(){ensureShortcut();if(!g.WeLiveQuranAuth?.isActive?.())return false;ensureRosterEntry();return verifyAccess();}
+  async function initialize(){ensureShortcut();if(!g.WeLiveQuranAuth?.isActive?.())return false;ensureRosterEntry();startAutoRosterSync();return verifyAccess();}
   function ensureRosterEntry(){const pg=$('pg-students');if(!pg||$('supervisorRosterSync'))return;
     const entry=document.createElement('div');entry.id='supervisorRosterSync';entry.className='supervision-roster-sync';entry.dir='rtl';
-    entry.innerHTML='<div><b>👥 كشف الطلاب للإدارة</b><small>مزامنة أسماء الطلاب ومستوياتهم وعدد الحضور والغياب فقط. لا تُرسل الهواتف أو المالية أو رموز الدخول.</small><p id="supervisorRosterSyncStatus" role="status"></p></div><button type="button" id="supervisorRosterSyncButton">مزامنة كشف الطلاب للإدارة</button>';
-    pg.insertBefore(entry,pg.firstChild);$('supervisorRosterSyncButton')?.addEventListener('click',syncRoster);
+    entry.innerHTML='<div><b>👥 كشف الطلاب للإدارة — مزامنة تلقائية</b><small>يتحدث الكشف تلقائيًا عند فتح حساب المحفظ وعند تغيير الطلاب أو الحضور مع وجود الإنترنت. لا تُرسل الهواتف أو المالية أو رموز الدخول.</small><p id="supervisorRosterSyncStatus" role="status">ستبدأ المزامنة تلقائيًا عند تجهيز البيانات والاتصال بالإنترنت.</p></div><button type="button" id="supervisorRosterSyncButton">مزامنة الآن</button>';
+    pg.insertBefore(entry,pg.firstChild);$('supervisorRosterSyncButton')?.addEventListener('click',()=>{void syncRoster(false);});
   }
-  async function syncRoster(){const message=$('supervisorRosterSyncStatus'),button=$('supervisorRosterSyncButton');if(!message||!button)return;
-    if(g.navigator?.onLine===false||!g.WeLiveQuranAuth?.isActive?.()){message.textContent='المزامنة تحتاج اتصالًا بالإنترنت وحساب محفظ نشط.';return;}
-    const state=g.ImamApp?.State||{},students=state.students||g.students||[],sessions=state.sessions||g.sessions||[];
-    if(!Array.isArray(students)||!Array.isArray(sessions)){message.textContent='بيانات الطلاب لم تجهز بعد. أعد المحاولة.';return;}
-    if(students.length===0){message.textContent='لا توجد بيانات طلاب جاهزة، لن تُستبدل المزامنة السابقة بكشف فارغ.';return;}
-    if(students.length>500){message.textContent='تجاوز كشف الطلاب 500 طالب؛ لن يتم إرسال قائمة ناقصة. تواصل مع الإدارة.';return;}
-    const refFn=g.ImamApp?.GuardianPortal?.studentRef;
-    if(typeof refFn!=='function'){message.textContent='خدمة تعريف الطلاب غير جاهزة.';return;}
-    button.disabled=true;message.textContent='جارٍ تجهيز كشف الطلاب ومزامنته…';
-    try{const counts=new Map();for(const s of sessions){const id=String(s?.studentId||'');if(!id)continue;
-      if(!counts.has(id))counts.set(id,{present:0,absent:0});const x=counts.get(id);
-      if(s.status==='حضر')x.present++;else if(s.status==='غاب')x.absent++;
+  function getRosterData(){
+    const state=g.ImamApp?.State||{},students=state.students??g.students,sessions=state.sessions??g.sessions;
+    if(!Array.isArray(students)||!Array.isArray(sessions))return {error:'بيانات الطلاب لم تجهز بعد.'};
+    if(students.length===0)return {error:'لا توجد بيانات طلاب جاهزة؛ لن نرسل كشفًا فارغًا أو نمس المزامنة السابقة.'};
+    if(students.length>500)return {error:'كشف الطلاب أكبر من ٥٠٠ طالب؛ لن نرسل قائمة ناقصة.'};
+    const counts=new Map();
+    for(const session of sessions){
+      const id=String(session?.studentId||'');if(!id)continue;
+      if(!counts.has(id))counts.set(id,{present:0,absent:0});
+      const c=counts.get(id);
+      if(session.status==='حضر')c.present++;
+      else if(session.status==='غاب')c.absent++;
     }
-      const rows=[];for(const s of students){if(!s?.id||!String(s?.name||'').trim())continue;
-        const c=counts.get(String(s.id))||{present:0,absent:0};
-        rows.push({ref:await refFn(s.id),name:String(s.name).trim().slice(0,120),group:String(s.group||'').slice(0,100),
-          level:String(s.level||'').slice(0,80),present:Math.min(99999,c.present),absent:Math.min(99999,c.absent)});
-      }
-      if(rows.length===0)throw Error('NO_VALID_STUDENTS');
-      const batch=g.crypto?.randomUUID?.();if(!batch)throw Error('CRYPTO_UNAVAILABLE');
-      const result=await rpc('app_teacher_roster_publish',{p_students:rows,p_batch:batch});
-      if(result?.ok!==true)throw Error('NOT_CONFIRMED');
-      message.textContent=`✅ تمت مزامنة كشف ${Number(result.count)||0} طالبًا. يراهم الآن المالك والمشرف المصرح له.`;
-    }catch(err){console.warn('[supervision roster sync]',err?.message||err);message.textContent='لم يتم تأكيد المزامنة. راجع الإنترنت وتحديث قاعدة البيانات ثم أعد المحاولة.';}
-    finally{button.disabled=false;}
+    const draft=[],seen=new Set();
+    for(const student of students){
+      if(!student?.id||!String(student.name||'').trim())return {error:'بعض ملفات الطلاب غير مكتملة؛ لم نرسل كشفًا جزئيًا.'};
+      const id=String(student.id);if(seen.has(id))return {error:'يوجد تكرار بمعرّفات الطلاب؛ لم نرسل كشفًا جزئيًا.'};seen.add(id);
+      const c=counts.get(id)||{present:0,absent:0};
+      draft.push({id,name:String(student.name).trim().slice(0,120),group:String(student.group||'').slice(0,100),
+        level:String(student.level||'').slice(0,80),present:Math.min(99999,c.present),absent:Math.min(99999,c.absent)});
+    }
+    // Stable order avoids unnecessary publishing on a reordered student list.
+    draft.sort((a,b)=>a.id.localeCompare(b.id));
+    return {draft,signature:JSON.stringify(draft)};
+  }
+  async function syncRoster(automatic=false){
+    if(publishInFlight)return publishInFlight;
+    if(g.navigator?.onLine===false||!authenticatedTeacher()||!client()){
+      if(!automatic)rosterMessage('المزامنة تحتاج اتصالًا بالإنترنت وحساب محفظ نشط.');
+      return false;
+    }
+    const actor=currentActor(),{draft,signature,error}=getRosterData();
+    if(error){if(!automatic)rosterMessage(error);return false;}
+    if(automatic&&actor===lastPublishedAccount&&signature===lastPublishedSignature)return true;
+    if(automatic&&Date.now()<retryAfter){scheduleAutoRosterSync('retry',retryAfter-Date.now());return false;}
+    const refFn=g.ImamApp?.GuardianPortal?.studentRef;
+    if(typeof refFn!=='function'){if(!automatic)rosterMessage('خدمة تعريف الطلاب غير جاهزة.');return false;}
+    const button=$('supervisorRosterSyncButton');if(button)button.disabled=true;
+    rosterMessage(automatic?'جارٍ تحديث كشف الطلاب للإدارة تلقائيًا…':'جارٍ مزامنة كشف الطلاب للإدارة…');
+    publishInFlight=(async()=>{
+      try{
+        const rows=[];
+        for(const {id,...entry} of draft)rows.push({ref:await refFn(id),...entry});
+        // Never publish one account's locally loaded data after switching account.
+        if(actor!==currentActor()||!authenticatedTeacher())throw Error('ACCOUNT_CHANGED');
+        const batch=g.crypto?.randomUUID?.();if(!batch)throw Error('CRYPTO_UNAVAILABLE');
+        const result=await rpc('app_teacher_roster_publish',{p_students:rows,p_batch:batch});
+        if(result?.ok!==true||Number(result.count)!==rows.length)throw Error('NOT_CONFIRMED');
+        lastPublishedAccount=actor;lastPublishedSignature=signature;retryAfter=0;
+        rosterMessage(`✅ مزامنة ${rows.length} طالبًا نجحت ${automatic?'تلقائيًا':'يدويًا'}. آخر تحديث: ${new Date().toLocaleTimeString('ar-EG',{hour:'numeric',minute:'2-digit'})}.`);
+        return true;
+      }catch(err){
+        console.warn('[supervision roster sync]',err?.message||err);
+        if(automatic){retryAfter=Date.now()+MIN_RETRY_MS;rosterMessage('تعذرت المزامنة التلقائية مؤقتًا؛ ستُعاد المحاولة عند توفر الاتصال. بياناتك المحلية محفوظة.');}
+        else rosterMessage('لم يتم تأكيد المزامنة. راجع الإنترنت وتحديث قاعدة البيانات ثم أعد المحاولة.');
+        return false;
+      }finally{if(button)button.disabled=false;}
+    })();
+    try{return await publishInFlight;}finally{
+      publishInFlight=null;
+      // A save that arrived while the request was in flight is checked again.
+      if(automatic&&canAutoSync())scheduleAutoRosterSync('after-request',7000);
+    }
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{g.setTimeout?.(initialize,1500);g.setTimeout?.(initialize,6000);},{once:true});
   else{g.setTimeout?.(initialize,1500);g.setTimeout?.(initialize,6000);}
   g.addEventListener?.('online',initialize);
-  g.ImamApp=g.ImamApp||{};g.ImamApp.Supervision={initialize,open,close,syncRoster};
+  g.ImamApp=g.ImamApp||{};g.ImamApp.Supervision={initialize,open,close,syncRoster,startAutoRosterSync,scheduleAutoRosterSync};
 })(globalThis);

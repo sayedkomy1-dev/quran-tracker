@@ -8,9 +8,9 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.7.4.3-home-nav-visibility';
+const CACHE_NAME = 'quran-pwa-v11.7.4.4-auto-roster';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
-const APP_VERSION = '11.7.4.3';
+const APP_VERSION = '11.7.4.4';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
 const APP_SHELL = [
@@ -26,7 +26,7 @@ const APP_SHELL = [
   './js/features/ux-guidance.js?v=11.7.4.2',
   './styles.css?v=11.0.0',
   './v11.css?v=11.4.1-profile-ui',
-  './app.js?v=11.2.0-s1.1',
+  './app.js?v=11.7.4.4-auto-roster',
   './v8.js?v=11.2.0-s3',
   './v9.js?v=11.0.0',
   './js/features/mushaf-offline.js?v=11.7.4.2',
@@ -41,7 +41,7 @@ const APP_SHELL = [
   './guardian-messages.css?v=11.6.0-s1',
   './teacher-rating.css?v=11.7.3-scoped-oversight',
   './js/features/guardian-ratings.js?v=11.7.0-s1',
-  './js/features/supervisor-dashboard.js?v=11.7.3-scoped-oversight',
+  './js/features/supervisor-dashboard.js?v=11.7.4.4-auto-roster',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './v10.js?v=11.2.0-s1.1',
@@ -70,7 +70,7 @@ const APP_SHELL = [
   './guardian-login.js?v=11.0.0',
   './js/features/quran-engine.js?v=11.0.0',
   './js/features/quran-structure.js?v=11.0.0',
-  './js/core/runtime.js?v=11.5.1-s2',
+  './js/core/runtime.js?v=11.7.4.4-auto-roster',
   './js/core/offline-bootstrap.js?v=11.0.0',
   './js/core/mobile-navigation.js?v=11.0.0',
   './js/features/v10-data.js?v=11.0.0',
@@ -121,7 +121,7 @@ const CORE_SHELL = [
   './guardian-messages.css?v=11.6.0-s1',
   './teacher-rating.css?v=11.7.3-scoped-oversight',
   './js/features/guardian-ratings.js?v=11.7.0-s1',
-  './js/features/supervisor-dashboard.js?v=11.7.3-scoped-oversight',
+  './js/features/supervisor-dashboard.js?v=11.7.4.4-auto-roster',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './js/features/smart-revision.js?v=11.3.0-s1',
@@ -129,9 +129,9 @@ const CORE_SHELL = [
   './js/features/student-finance.js?v=11.5.1-s2',
   './js/features/v11-ui.js?v=11.4.1-profile-ui',
   './js/features/teacher-error-marking.js?v=11.7.4.2',
-  './app.js?v=11.2.0-s1.1',
+  './app.js?v=11.7.4.4-auto-roster',
   './auth.js?v=11.7.4-foundation',
-  './js/core/runtime.js?v=11.5.1-s2',
+  './js/core/runtime.js?v=11.7.4.4-auto-roster',
   './js/core/offline-bootstrap.js?v=11.0.0'
 ];
 

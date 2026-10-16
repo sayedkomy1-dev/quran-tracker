@@ -836,3 +836,10 @@
 - تقسيم بطاقات التصحيح الطويلة إلى ملفات PNG أقصر بدقة مزدوجة (2160 بكسل)، ومعاينة بالصفحات، ودعم مشاركة البطاقة الحالية أو جميع البطاقات عند دعم الجهاز.
 - إبقاء زر «حفظ وإرسال لولي الأمر» برسالته النصية المباشرة، والصورة في مسار مشاركة منفصل.
 - لا تغييرات SQL أو Local Schema أو بيانات الطلاب والحصص؛ لا تغيير في سياسة تحديث الـPWA اليدوية.
+
+## v11.7.4.4 — Automatic teacher roster synchronization
+- Teacher/owner roster snapshots publish automatically after local student data has loaded, and after saved changes to students or attendance.
+- Debounced, signature-based uploads avoid duplicate writes; safe reconnect/foreground checks and retry when Supabase cannot be reached.
+- Empty, partial, over-limit, or unauthorized lists are never published. No student phone, PIN, guardian credentials, financial data, or WhatsApp messages are transmitted.
+- The teacher retains a manual “مزامنة الآن” option and sees the result/last update in the students page.
+- Existing per-teacher and per-supervisor access is enforced by the previously-deployed RPC; no SQL changes and Local Schema remains 12.
