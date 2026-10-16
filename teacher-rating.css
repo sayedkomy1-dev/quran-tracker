@@ -107,3 +107,16 @@ html[data-portal-theme="dark"] .portal-rating-form select,html[data-portal-theme
 .supervision-roster-sync button{background:#13583f;border:0;color:white;padding:11px 14px;border-radius:12px;font:inherit;font-size:.83rem;font-weight:750;cursor:pointer}
 .supervision-roster-sync button:disabled{opacity:.6;cursor:wait}
 @media(max-width:600px){.supervisor-overview{grid-template-columns:repeat(2,minmax(0,1fr))}.supervision-roster-sync{flex-direction:column;align-items:stretch}.supervision-roster-sync button{width:100%}.supervisor-inline-detail{padding:10px}}
+
+/* 11.7.4.5 — academy roster freshness indicators */
+.supervision-sync-health{margin:13px 0;border:1px solid #bbd3c6;border-radius:14px;padding:14px;background:#f8fbf7;color:#123e2c}
+.supervision-sync-health h3{margin:0 0 4px;font-size:17px}
+.supervision-sync-health p{font-size:12px;margin:3px 0 10px}
+.supervision-sync-counters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.supervision-sync-counters b{padding:7px 12px;border-radius:9px;background:#e2ede6;font-size:12px}
+.supervision-sync-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.supervision-sync-entry{border:1px solid #d2e0d6;border-radius:10px;background:white;padding:9px;display:flex;flex-direction:column;gap:2px}
+.supervision-sync-entry span{font-size:12px;font-weight:700}.supervision-sync-entry small{font-size:11px;color:#65796e}
+.supervision-sync-entry.stale,.supervision-sync-entry.missing{border-color:#e9c7a0;background:#fffbf5}
+.supervision-sync-entry.stale span,.supervision-sync-entry.missing span{color:#a45021}
+.supervision-sync-entry.delayed{border-color:#e8dfac;background:#fffdf3}

@@ -284,15 +284,27 @@
     for(const ph of ['new','recitation','review']){
       const category=all.filter(x=>phase(x.mode)===ph).sort((a,b)=>(Number(a.resolved)-Number(b.resolved))||(Number(a.surahId)-Number(b.surahId))||(Number(a.ayah)-Number(b.ayah))||(Number(a.wordIndex)-Number(b.wordIndex)));
       if(!category.length)continue;
-      const rows=category.slice(0,15),lines=rows.map(e=>`${e.resolved?'✓':'•'} سورة ${e.surah||'—'} ${e.ayah||''} — «${e.word||'—'}»${rowIsChar(e)?` — الحرف «${e.charText||''}»`:''}: ${e.type}`);
-      if(category.length>rows.length)lines.push(`… و${category.length-rows.length} أخطاء أخرى محفوظة في سجل هذه المرحلة`);
+      // Never truncate the parent's text report. All recorded corrections, even
+      // multiple marks on one word/letter, belong in the WhatsApp message.
+      const lines=category.map(e=>`${e.resolved?'✓':'•'} سورة ${e.surah||'—'} ${e.ayah||''} — «${e.word||'—'}»${rowIsChar(e)?` — الحرف «${e.charText||''}»`:''}: ${e.type}${e.resolved?' (تم التصحيح)':''}`);
       sections.push(`*${phaseLabel(ph)} (${category.length})*\n${lines.join('\n')}`);
     }
     return `\n\n🪶 *مواضع التصحيح على النص*\n${sections.join('\n\n')}`;
   }
   function appendCorrectionDetails(msg,ses){
     const base=String(msg||''),details=correctionDetailsText(ses);if(!base||!details||base.includes('🪶 *مواضع التصحيح على النص*'))return base;
-    for(const marker of ['\n\n📖 *التكليف للحصة القادمة*','\n\n📖 *القادم*','\n\n📝 *ملاحظات المحفظ*'])if(base.includes(marker))return base.replace(marker,details+marker);
+    // V10 detailed reports use a separator before the assignment/closing lines.
+    // Insert corrections before that separator, never after the academy footer.
+    for(const marker of [
+      '\n\n━━━━━━━━━━\n📖 *التكليف للحصة القادمة*',
+      '\n\n━━━━━━━━━━\n📖 *القادم*',
+      '\n\n━━━━━━━━━━\nبارك الله',
+      '\n\n📖 *التكليف للحصة القادمة*',
+      '\n\n📖 *القادم*',
+      '\n\n📝 *ملاحظات المحفظ*',
+      '\n\nبارك الله',
+      '\n\nأكاديمية الإمام'
+    ])if(base.includes(marker))return base.replace(marker,details+marker);
     return base+details;
   }
   function installReportBridge(){

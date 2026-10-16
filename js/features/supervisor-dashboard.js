@@ -62,6 +62,19 @@
     });
     document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!el.hidden)close();});
   }
+  const ROSTER_FRESH_MS=24*60*60*1000;
+  const ROSTER_STALE_MS=72*60*60*1000;
+  function rosterSyncState(t,clock=Date.now()){
+    if(t.can_students===false)return {kind:'hidden',label:'كشف الطلاب خارج نطاق الصلاحية'};
+    if(!t.roster_synced_at)return {kind:'missing',label:'لم يصل كشف الطلاب بعد'};
+    const timestamp=new Date(t.roster_synced_at).getTime();
+    if(!Number.isFinite(timestamp))return {kind:'missing',label:'تاريخ مزامنة غير صالح'};
+    const age=Math.max(0,clock-timestamp);
+    return age>=ROSTER_STALE_MS?{kind:'stale',label:'مزامنة متأخرة أكثر من ٣ أيام'}:
+      age>=ROSTER_FRESH_MS?{kind:'delayed',label:'آخر مزامنة منذ أكثر من يوم'}:
+      {kind:'fresh',label:'الكشف محدّث خلال آخر يوم'};
+  }
+  function dateTime(value){if(!value)return 'لم يُزامَن';const dt=new Date(value);return Number.isFinite(dt.getTime())?dt.toLocaleString('ar-EG',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}):'غير معروف';}
   function teacherSummary(t){
     const synced=t.roster_synced_at!=null;
     const count=Number(t.roster_students)||0,published=Number(t.published_students)||0;
@@ -77,10 +90,21 @@
       <div><strong>${rosterSum}</strong><small>طلاب في الكشوف المتزامنة</small></div>
       <div><strong>${viewable.filter(t=>t.roster_synced_at).length} / ${viewable.length}</strong><small>محفظون زامنوا كشف الطلاب</small></div>
     </div>${isOwner?'<p class="supervision-note">المالك: يمكنك إدارة نطاق كل مشرف، ومراجعة التقييمات الخاصة، والاطلاع على سجل الإشراف. لا يمكن فتح بيانات محلية لم يزامنها المحفظ.</p>':''}`;
+    if(overview&&isOwner){
+      const missing=teachers.filter(t=>rosterSyncState(t).kind==='missing');
+      const late=teachers.filter(t=>['delayed','stale'].includes(rosterSyncState(t).kind));
+      overview.insertAdjacentHTML('beforeend',`<section class="supervision-sync-health" aria-label="حالة مزامنة الأكاديمية">
+        <h3>🛰️ حالة مزامنة الأكاديمية</h3>
+        <p>آخر كشف طلاب وصل من كل محفظ. الرقم صفر لا يعني أن المحفظ ليس لديه طلاب إذا لم يصل كشفه.</p>
+        <div class="supervision-sync-counters"><b>لم يصل كشف: ${missing.length}</b><b>بيانات متأخرة: ${late.length}</b><b>كشف حديث: ${teachers.filter(t=>rosterSyncState(t).kind==='fresh').length}</b></div>
+        <div class="supervision-sync-list">${teachers.map(t=>{const state=rosterSyncState(t);return `<div class="supervision-sync-entry ${state.kind}"><strong>${esc(t.name||'محفظ')}</strong><span>${esc(state.label)}</span><small>آخر مزامنة: ${esc(dateTime(t.roster_synced_at))}</small><small>عدد الطلاب المتزامنين: ${t.roster_synced_at?metric(t.roster_students):'غير معروف'}</small></div>`;}).join('')}</div>
+        <small>إذا لم يكن جهاز المحفظ متصلًا بالإنترنت، فلا يمكن سحب بياناته المحلية عن بُعد. يُعاد النشر عند فتح التطبيق واتصال الحساب.</small>
+      </section>`);
+    }
     const auditButton=$('supervisionAuditButton');if(auditButton)auditButton.hidden=!isOwner;
     host.innerHTML=teachers.map(t=>`<article class="supervisor-row" data-supervision-row="${esc(t.id)}">
       <div class="supervisor-row-title"><b>${esc(t.name||'محفظ')}</b>${t.supervisor?'<small>مشرف مفعّل</small>':(t.role==='owner'?'<small>المالك</small>':'')}</div>
-      <p class="supervision-roster-hint">${esc(teacherSummary(t))}</p>
+      <p class="supervision-roster-hint">${esc(teacherSummary(t))} · ${esc(rosterSyncState(t).label)} · آخر كشف: ${esc(dateTime(t.roster_synced_at))}</p>
       <div class="supervisor-stats"><span>طلاب منشورون <b>${metric(t.published_students)}</b></span><span>كشف الطلاب <b>${t.roster_synced_at==null?'لم يُزامَن':metric(t.roster_students)}</b></span><span>رسائل <b>${metric(t.messages)}</b></span><span>تقييمات <b>${metric(t.rated_guardians)}</b></span><span>متوسط التقييم <b>${t.rating_average==null?'—':esc(t.rating_average)+' / 5'}</b></span></div>
       <div class="supervision-buttons">${t.can_students!==false?`<button data-supervision="students" data-teacher="${esc(t.id)}">👥 عرض أسماء الطلاب</button>`:''}
       ${t.can_ratings!==false?`<button data-supervision="ratings" data-teacher="${esc(t.id)}">⭐ التقييمات الخاصة</button>`:''}
