@@ -1,3 +1,8 @@
+## 11.7.4.3 — إصلاح عرض التبويبات ومساحة المحفظ
+- إصلاح ظهور الرئيسية ومساحة المحفظ داخل بقية التبويبات؛ لم تعد تنسيقات الموبايل والكمبيوتر تتجاوز حالة الصفحة النشطة.
+- نقل زر «إضافة طالب جديد» إلى داخل صفحة الطلاب بدل زر عائم يحجب التنقل السفلي.
+- الحفاظ على صلاحيات المالك والمشرف والمحفظ، وتحديث كاش تطبيق الويب يدويًا دون تغيير البيانات أو SQL أو Schema 12.
+
 ## v11.7.4.1 — Role Home / Opt-in PWA Update / Guest Tahfeez
 - Prominent shortcuts appropriate to owner, scoped supervisor and teacher; no new privileges granted from the UI.
 - Service Worker stays waiting until a user taps تحديث الآن; removed silent activation and dismiss button.

@@ -14,8 +14,8 @@
 #pg-home.v92-home-ready{max-width:1320px!important;width:100%;box-sizing:border-box}
 #pg-home.v92-home-ready #roleHomeHub{width:100%;margin:0 0 18px!important}
 #pg-home.v92-home-ready #v9Home{max-width:100%;min-width:0}
-@media(min-width:1050px){#pg-home.v92-home-ready{display:grid!important;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:20px;align-items:start}#pg-home.v92-home-ready #roleHomeHub{grid-column:1}#pg-home.v92-home-ready #v9Home{grid-column:2}#pg-home.v92-home-ready .role-home-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:1049px){#pg-home.v92-home-ready{display:block!important}}
+@media(min-width:1050px){#pg-home.v92-home-ready.on{display:grid!important;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:20px;align-items:start}#pg-home.v92-home-ready #roleHomeHub{grid-column:1}#pg-home.v92-home-ready #v9Home{grid-column:2}#pg-home.v92-home-ready .role-home-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1049px){#pg-home.v92-home-ready.on{display:block!important}}
 .role-home-hub{background:var(--v11-card,var(--wh,#fff));border-color:var(--v11-line,var(--bdr,#dbe8df));color:var(--v11-ink,var(--txt,#173827));box-shadow:0 10px 35px rgba(7,54,37,.07)}
 .role-home-action{background:var(--v11-card,var(--wh,#fff));border-color:var(--v11-line,var(--bdr,#dbe8df));color:var(--v11-ink,var(--txt,#173827));transition:border-color .16s,transform .16s,box-shadow .16s}
 .role-home-action:hover,.role-home-action:focus-visible{background:var(--v11-soft,var(--gp,#e8f4ec));border-color:var(--v11-primary,#176442);transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.06)}
@@ -43,3 +43,11 @@
 [data-theme="dark"] #roleHomeHub .role-home-tag,[data-theme="dark"] #roleHomeHub .role-home-action .role-icon{background:#283c33;color:#ecf5ee}
 
 @media(min-width:1050px){#pg-home.v92-home-ready > #supervisorShortcut.supervision-home-entry{grid-column:1/-1;width:100%;margin-bottom:2px}}
+
+/* 11.7.4.3: route visibility is controlled exclusively by the .on page class.
+   The legacy v9 layout must never force Home visible on other tabs. */
+#pg-home.v92-home-ready:not(.on){display:none!important}
+
+/* Student add action is inline above the list, not a fixed FAB over bottom tabs. */
+#pg-students .st-add-inline{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;margin:0 0 14px;padding:10px 18px;border-radius:14px;position:static;max-width:100%;width:auto;transform:none;white-space:normal}
+@media(max-width:600px){#pg-students .st-add-inline{width:100%}}

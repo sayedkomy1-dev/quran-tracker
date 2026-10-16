@@ -8,9 +8,9 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.7.4.2-ui-errors-batch';
+const CACHE_NAME = 'quran-pwa-v11.7.4.3-home-nav-visibility';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
-const APP_VERSION = '11.7.4.2';
+const APP_VERSION = '11.7.4.3';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
 const APP_SHELL = [
@@ -20,7 +20,7 @@ const APP_SHELL = [
   './guest-practice.css?v=11.7.4.2',
   './js/features/guest-practice.js?v=11.7.4.2',
   './js/features/guardian-tahfeez.js?v=11.7.4.2',
-  './role-home.css?v=11.7.4.2',
+  './role-home.css?v=11.7.4.3',
   './ux-guidance.css?v=11.7.4.2',
   './js/features/role-home.js?v=11.7.4.2',
   './js/features/ux-guidance.js?v=11.7.4.2',
@@ -108,7 +108,7 @@ const CORE_SHELL = [
   './guest-practice.css?v=11.7.4.2',
   './js/features/guest-practice.js?v=11.7.4.2',
   './js/features/guardian-tahfeez.js?v=11.7.4.2',
-  './role-home.css?v=11.7.4.2',
+  './role-home.css?v=11.7.4.3',
   './ux-guidance.css?v=11.7.4.2',
   './js/features/role-home.js?v=11.7.4.2',
   './js/features/ux-guidance.js?v=11.7.4.2',
