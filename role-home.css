@@ -9,3 +9,37 @@
 @media print{#roleHomeHub{display:none!important}}
 
 .role-report-modal{position:fixed;inset:0;background:#10291eb0;z-index:16000;display:grid;place-items:center;padding:16px}.role-report-modal[hidden]{display:none!important}.role-report-card{direction:rtl;background:#fff;color:#1c3828;border-radius:22px;padding:20px;width:min(520px,100%);max-height:85vh;overflow:auto}.role-report-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.role-report-top h2{font-size:19px}.role-report-top button{border:1px solid #bed7c8;border-radius:10px;padding:10px;background:#eef8f1;color:#185237}.role-report-card p{font-size:12px;line-height:1.8;color:#65786b}.role-report-card .role-report-person{border-bottom:1px solid #e1e9e3;padding-bottom:8px;overflow-wrap:anywhere}
+
+/* Professional workspace composition: single dashboard, legacy data still accessible */
+#pg-home.v92-home-ready{max-width:1320px!important;width:100%;box-sizing:border-box}
+#pg-home.v92-home-ready #roleHomeHub{width:100%;margin:0 0 18px!important}
+#pg-home.v92-home-ready #v9Home{max-width:100%;min-width:0}
+@media(min-width:1050px){#pg-home.v92-home-ready{display:grid!important;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);gap:20px;align-items:start}#pg-home.v92-home-ready #roleHomeHub{grid-column:1}#pg-home.v92-home-ready #v9Home{grid-column:2}#pg-home.v92-home-ready .role-home-actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1049px){#pg-home.v92-home-ready{display:block!important}}
+.role-home-hub{background:var(--v11-card,var(--wh,#fff));border-color:var(--v11-line,var(--bdr,#dbe8df));color:var(--v11-ink,var(--txt,#173827));box-shadow:0 10px 35px rgba(7,54,37,.07)}
+.role-home-action{background:var(--v11-card,var(--wh,#fff));border-color:var(--v11-line,var(--bdr,#dbe8df));color:var(--v11-ink,var(--txt,#173827));transition:border-color .16s,transform .16s,box-shadow .16s}
+.role-home-action:hover,.role-home-action:focus-visible{background:var(--v11-soft,var(--gp,#e8f4ec));border-color:var(--v11-primary,#176442);transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.06)}
+.role-home-action .role-icon{background:var(--v11-soft,var(--gp,#e7f3eb))}
+.role-home-action small,.role-home-head small,.role-home-footnote{color:var(--v11-muted,var(--mut,#66786d))}
+.role-home-tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+.role-help-toggle,.role-workspace-toggle{border:1px solid var(--v11-line,var(--bdr,#ceded2));background:var(--v11-card,var(--wh,#fff));color:var(--v11-primary,#196b47);border-radius:12px;padding:7px 10px;cursor:pointer;font-size:11px;font-weight:700}
+.role-home-footnote{font-size:11px;line-height:1.7;margin:12px 3px 0}
+/* Repeated 'attendance / students' buttons from the historical compact home. Keep unique add-student and mushaf actions. */
+#pg-home[data-workspace-role="teacher"] #v9Home .v92-actions button:first-child,#pg-home[data-workspace-role="teacher"] #v9Home .v92-actions button:nth-child(2),#pg-home[data-workspace-role="teacher"] #v9Home .v92-actions button:nth-child(3),#pg-home[data-workspace-role="teacher"] #v9Home .v92-actions button:nth-child(4){display:none!important}
+#pg-home[data-workspace-role="teacher"] #v9Home .v92-actions{display:none!important}
+#pg-home[data-workspace-role="owner"] #v9Home .v92-actions,#pg-home[data-workspace-role="supervisor"] #v9Home .v92-actions{display:none!important}
+[data-theme="dark"] .role-home-hub,[data-theme="dark"] .role-home-action,[data-theme="dark"] .role-workspace-toggle,[data-theme="dark"] .role-help-toggle{background:#17291f;color:#ecf4ee;border-color:#365346}
+[data-theme="dark"] .role-home-action:hover{background:#21392b}[data-theme="dark"] .role-home-action small,[data-theme="dark"] .role-home-head small{color:#b1c9ba}
+[data-theme="dark"] .role-home-tag,[data-theme="dark"] .role-home-action .role-icon{background:#274333;color:#d6eede}
+@media(max-width:680px){.role-home-tools{justify-content:flex-start}.role-home-action{min-height:72px}.role-home-head{align-items:flex-start;flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.role-home-action{transition:none}}
+/* Distinct premium visual identities while honoring the existing light/dark palette. */
+#pg-home[data-workspace-role="owner"] #roleHomeHub{--role-accent:#b28a39;--role-tint:#fbf5e8}
+#pg-home[data-workspace-role="supervisor"] #roleHomeHub{--role-accent:#2f6986;--role-tint:#ebf4f8}
+#pg-home[data-workspace-role="teacher"] #roleHomeHub{--role-accent:#198157;--role-tint:#eaf6ee}
+#roleHomeHub{border-top:4px solid var(--role-accent,#198157)}
+#roleHomeHub .role-home-tag{background:var(--role-tint,#e9f4ed);color:#26432f}
+#roleHomeHub .role-home-action .role-icon{background:var(--role-tint,#e9f4ed)}
+[data-theme="dark"] #roleHomeHub .role-home-tag,[data-theme="dark"] #roleHomeHub .role-home-action .role-icon{background:#283c33;color:#ecf5ee}
+
+@media(min-width:1050px){#pg-home.v92-home-ready > #supervisorShortcut.supervision-home-entry{grid-column:1/-1;width:100%;margin-bottom:2px}}

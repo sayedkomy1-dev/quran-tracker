@@ -10,6 +10,6 @@ ok(!teacher.includes("(g.students||[]).find"),'teacher feature still incorrectly
 ok(teacher.includes('function findStudent(id)')&&teacher.includes('const st=findStudent(ses.studentId)'),'guardian lookup bridge missing');
 ok(teacher.includes('function safeOpenWhatsApp')&&teacher.includes("toast('تم حفظ الحصة وفتح رسالة ولي الأمر'"),'fail-safe WhatsApp handoff missing');
 ok(teacher.includes('buildSnapshotCanvas')&&teacher.includes('canvasFile')&&teacher.includes('navigator.share')&&teacher.includes('downloadFile(file)'),'PNG create/share/download pipeline missing');
-ok(index.includes('js/features/teacher-error-marking.js?v=11.2.0-s2'),'teacher hotfix cache-buster missing');
-ok(sw.includes("quran-pwa-v11.2.0-error2")&&sw.includes("uiStage:'11.2-error-marking-2'")&&sw.includes('teacher-error-marking.js?v=11.2.0-s2'),'service-worker Stage 1.3 cache version missing');
+ok(index.includes('js/features/teacher-error-marking.js?v=11.7.4.2'),'teacher hotfix cache-buster missing');
+ok(sw.includes("quran-pwa-v11.2.0-error2")&&sw.includes("uiStage:'11.2-error-marking-2'")&&sw.includes('teacher-error-marking.js?v=11.7.4.2'),'service-worker Stage 1.3 cache version missing');
 console.log('Interactive error marking Stage 1.3 share/WhatsApp hotfix checks passed');

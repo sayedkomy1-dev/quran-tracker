@@ -52,14 +52,14 @@ new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='11.7.4.1','VERSION must be 11.5.1');
+assert(version==='11.7.4.2','VERSION must be 11.5.1');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
 assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'11.0.0'"),'app.js APP_VERSION must come from ImamApp runtime');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js?v=11.0.0'")&&sw.includes("'./v9.css?v=11.0.0'")&&sw.includes("'./v10.js?v=11.2.0-s1.1'")&&sw.includes("'./v10.css?v=11.0.0'")&&sw.includes("'./js/core/runtime.js?v=11.5.1-s2'")&&sw.includes("'./js/features/v10-data.js?v=11.0.0'")&&sw.includes("'./js/features/quran-engine.js?v=11.0.0'")&&sw.includes("'./js/features/mushaf-offline.js?v=11.0.0'")&&sw.includes("'./quran-engine.css?v=11.0.0'")&&sw.includes("'./auth.js?v=11.7.4-foundation'")&&sw.includes("'./sync-core.js?v=11.0.0'")&&sw.includes("'./auth.css?v=11.0.0'")&&sw.includes("'./js/features/guardian-communication.js?v=11.0.0'")&&sw.includes("'./js/features/student-progress.js?v=11.0.0'")&&sw.includes("'./js/features/teacher-followup.js?v=11.0.0'")&&sw.includes("'./js/features/circle-analytics.js?v=11.0.0'"),'service worker must cache versioned architecture/v9/v10/auth assets');
+assert(sw.includes("'./v9.js?v=11.0.0'")&&sw.includes("'./v9.css?v=11.0.0'")&&sw.includes("'./v10.js?v=11.2.0-s1.1'")&&sw.includes("'./v10.css?v=11.0.0'")&&sw.includes("'./js/core/runtime.js?v=11.5.1-s2'")&&sw.includes("'./js/features/v10-data.js?v=11.0.0'")&&sw.includes("'./js/features/quran-engine.js?v=11.0.0'")&&sw.includes("'./js/features/mushaf-offline.js?v=11.7.4.2'")&&sw.includes("'./quran-engine.css?v=11.0.0'")&&sw.includes("'./auth.js?v=11.7.4-foundation'")&&sw.includes("'./sync-core.js?v=11.0.0'")&&sw.includes("'./auth.css?v=11.0.0'")&&sw.includes("'./js/features/guardian-communication.js?v=11.0.0'")&&sw.includes("'./js/features/student-progress.js?v=11.0.0'")&&sw.includes("'./js/features/teacher-followup.js?v=11.0.0'")&&sw.includes("'./js/features/circle-analytics.js?v=11.0.0'"),'service worker must cache versioned architecture/v9/v10/auth assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.
@@ -339,7 +339,7 @@ assert(circleAnalytics.includes('v109ExportCSV')&&circleAnalytics.includes('v109
 assert(css10.includes('.v109-kpis')&&css10.includes('.v109-table')&&css10.includes('.v109-weak-list'),'circle analytics responsive styles missing');
 
 // v11.0.0 runtime/cache bridge guards.
-assert(html.includes('js/features/mushaf-offline.js?v=11.0.0'),'Mushaf feature must be cache-busted in HTML');
+assert(html.includes('js/features/mushaf-offline.js?v=11.7.4.2'),'Mushaf feature must be cache-busted in HTML');
 assert(sw.includes('isCodeAsset')&&sw.includes('cacheFirstSameOrigin')&&sw.includes('refreshSameOrigin'),'service worker must use cache-first for code assets with background refresh');
 assert(v9.includes('ImamApp?.MushafOffline?.render')&&v9.includes('ImamApp?.MushafOffline?.openCurrent'),'v9 must explicitly bridge to the new Mushaf runtime');
 assert(mushafOffline.includes('render:renderPrimaryUI')&&mushafOffline.includes('openCurrent:currentMushafPage'),'Mushaf runtime must export explicit render/openCurrent entry points');
@@ -347,7 +347,7 @@ assert(mushafOffline.includes('قارئ 11.0.0'),'Mushaf UI field verification m
 
 // v10.4 lightweight Mushaf offline page-pack regression guards.
 assert(html.indexOf('v9.js')<html.indexOf('js/features/mushaf-offline.js'),'Mushaf offline layer must load after v9');
-assert(sw.includes("'./js/features/mushaf-offline.js?v=11.0.0'"),'service worker must cache versioned Mushaf offline feature');
+assert(sw.includes("'./js/features/mushaf-offline.js?v=11.7.4.2'"),'service worker must cache versioned Mushaf offline feature');
 assert(mushafOffline.includes('cdn.quran.ws/svg/pages')&&mushafOffline.includes('hafs-kfqc'),'versioned SVG Mushaf CDN missing');
 assert(mushafOffline.includes("PAGE_COUNT=604")&&mushafOffline.includes("PAGE_PREFIX='mushaf:kfgqpc:v1057:page:'")&&mushafOffline.includes('BUNDLED_OPENING_PAGES=2'),'604-page KFGQPC composite offline pack keys missing');
 assert(mushafOffline.includes('downloadRange(1,PAGE_COUNT)'),'full lightweight Mushaf download action missing');

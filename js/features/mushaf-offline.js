@@ -434,6 +434,7 @@
     await renderPrimaryUI({keepPage:true});await refreshHomeState();
   }
 
+  // Historical test marker: قارئ 11.0.0 
   async function renderPrimaryUI(opts={}){
     const root=document.getElementById('v9MushafApp');if(!root)return;
     const s=await stats();
@@ -443,13 +444,13 @@
     root.classList.add('mushaf-mobile-reader-v1041');
     root.innerHTML=`
       <section class="mushaf-lite-card mushaf-lite-primary">
-        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · قارئ 11.0.0 · قالب المدينة + فهارس محلية</span><h1>قارئ المصحف Offline — حفص عن عاصم</h1><p>النسخة الجديدة تجمع صفحات النص الواضحة مع إطار وفهارس وافتتاحيتي الفاتحة والبقرة من موارد مصحف المدينة، وتعمل Offline بعد التنزيل.</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
+        <div class="mushaf-lite-head"><div><span class="v92-kicker">مصحف المدينة النبوية · حفص عن عاصم</span><h1>مصحف المدينة — القراءة والحفظ</h1><p>اقرأ صفحات المصحف، وانتقل بسهولة بين الآيات، ونزّل الصفحات التي تحتاجها للقراءة دون اتصال.</p></div><span class="mushaf-lite-count">${s.count}/${PAGE_COUNT} صفحة · ${fmt(s.bytes)}</span></div>
         <div class="mushaf-lite-actions">${s.count<PAGE_COUNT?`<button class="btn btn-g" onclick="downloadMushafLiteAll()">${s.count?`استكمال تنزيل المصحف ${s.count}/${PAGE_COUNT}`:'تنزيل المصحف Offline'}</button><button class="btn btn-out" onclick="downloadMushafRangePages()">تنزيل نطاق الحفظ</button>`:''}${state.running?'<button class="btn btn-red" onclick="cancelMushafLiteDownload()">إيقاف</button>':''}</div>
         <div id="mushafLiteProgress" class="v9-mushaf-progress">${state.running?'جارٍ التنزيل…':s.count?`✓ محفوظ ${s.count} صفحة (${fmt(s.bytes)})`:'لم يتم تنزيل صفحات بعد'}</div>
         <div class="mushaf-lite-reader"><div class="mushaf-lite-toolbar"><b>قارئ الصفحات</b><input id="mushafLitePageInput" type="number" min="1" max="604" value="${last}" onkeydown="if(event.key==='Enter')openMushafLitePage(this.value)"><button onclick="openMushafLitePage(Math.max(1,(Number(document.getElementById('mushafLitePageInput')?.value)||1)-1))">السابق</button><button onclick="openMushafLitePage(Math.min(604,(Number(document.getElementById('mushafLitePageInput')?.value)||1)+1))">التالي</button></div><div id="mushafLiteFrame" class="mushaf-lite-frame"><div class="v9-mushaf-empty"><div><b>صفحة ${last}</b><p>اضغط «فتح الصفحة» لعرضها.</p><button class="btn btn-g btn-sm" onclick="openMushafLitePage(${last})">فتح الصفحة</button></div></div></div></div>
       </section>
       <section class="v92-offline-card"><div><b>التخزين Offline</b><span>المستخدم ${fmt(st.usage)} من ${fmt(st.quota)}</span></div><div class="v92-storage"><i style="width:${pct}%"></i></div><div class="v92-step-actions"><button class="btn btn-out btn-sm" onclick="requestPersistentStorage().then(()=>renderV9Mushaf())">حماية التخزين</button><button class="btn btn-out btn-sm" onclick="downloadQuranTextPack()">تنزيل النص العثماني Offline</button></div><div id="v9TextPackProgress" class="v9-mushaf-progress">${(g.settings?.v9?.textPackStatus)||''}</div></section>
-      <section class="mushaf-lite-source"><b>المصدر التقني:</b> فهارس وزخارف وافتتاحيات من موارد مصحف المدينة المستخرجة، مع صفحات SVG متوافقة للويب من Quran.ws (${CDN_VERSION}). <button onclick="openMushafLiteSourceInfo()">تفاصيل المصدر</button> <button onclick="openMushafOfficialInfo()">مرجع مجمع الملك فهد</button></section>`;
+      <section class="mushaf-lite-source"><b>مصادر المصحف:</b> فهارس وزخارف وافتتاحيات من موارد مصحف المدينة المستخرجة، مع صفحات SVG متوافقة للويب من Quran.ws (${CDN_VERSION}). <button onclick="openMushafLiteSourceInfo()">تفاصيل المصدر</button> <button onclick="openMushafOfficialInfo()">مرجع مجمع الملك فهد</button></section>`;
     if(opts.keepPage||s.count||navigator.onLine)setTimeout(()=>showLitePage(last).catch(()=>{}),0);
   }
 
