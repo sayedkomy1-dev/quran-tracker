@@ -38,7 +38,7 @@ assert(cm.buildBatchChanges({...req,rows:[{...row,rec:{...row.rec,to:9}}]}).erro
 assert(cm.buildBatchChanges({...req,rows:[{studentId:'c',status:'حضر'}]}).errors.some(x=>x.includes('خارج')),'no cross-group write');
 assert(cm.buildBatchChanges({...req,rows:[{studentId:'b',status:'غاب',excused:true,excuseReason:''}]}).errors.some(x=>x.includes('عذر')));
 assert(cm.buildBatchChanges({...req,rows:[{studentId:'a',status:'حضر'}]}).updates[0].next.completed===false,'attendance-only not full session');
-for(const asset of ['circle-management-1110.css?v=11.11.0','js/features/circle-management-1110.js?v=11.11.0']){
+for(const asset of ['circle-management-1110.css?v=11.11.1','js/features/circle-management-1110.js?v=11.11.1']){
  assert(file('index.html').includes(asset),'feature asset loaded in page');assert(file('sw.js').includes("'./"+asset+"'"),'feature asset cached offline');
 }
 assert(file('index.html').includes('id="cmNavTab"')&&file('index.html').includes('id="pg-circle-manager"'),'fixed navigation entry and page');

@@ -1,5 +1,5 @@
 'use strict';
-/* Imam Academy 11.11.0: locally recorded, human-verified Quran examinations,
+/* Imam Academy 11.11.1: locally recorded, human-verified Quran examinations,
  * internal ijazah tracking, performance analysis and manual guardian contact.
  * Student-owned additive records; no automatic religious authorization. */
 (function(g){
@@ -85,6 +85,10 @@
     const jan4=new Date(Date.UTC(year,0,4));const jan4Day=(jan4.getUTCDay()+6)%7;
     const monday=new Date(Date.UTC(year,0,4-jan4Day+(week-1)*7));
     const sunday=new Date(monday);sunday.setUTCDate(sunday.getUTCDate()+6);
+    // Reject week 53 in years with only 52 ISO weeks (rather than silently
+    // accepting an entire week in the following year).
+    const thursday=new Date(monday);thursday.setUTCDate(thursday.getUTCDate()+3);
+    if(thursday.getUTCFullYear()!==year)return null;
     return [monday.toISOString().slice(0,10),sunday.toISOString().slice(0,10)];
   }
   function currentWeek(){const d=new Date(),current=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));current.setUTCDate(current.getUTCDate()+4-(current.getUTCDay()||7));const year=current.getUTCFullYear();const yearStart=new Date(Date.UTC(year,0,1));return `${year}-W${String(Math.ceil((((current-yearStart)/86400000)+1)/7)).padStart(2,'0')}`;}
@@ -107,6 +111,8 @@
   }
   function contactMessage(st,month){const x=summary(st.id,month);if(!x)return '';return `السلام عليكم ورحمة الله وبركاته\n\nمتابعة الطالب: ${st.name}\nالفترة: ${month}\nأيام الحضور المسجلة: ${x.presentDays}\nالغياب المؤكد دون عذر: ${x.absentDays}\nأيام العذر/الإجازة: ${x.excusedDays}\nالاختبارات المسجلة: ${x.tests} (اجتاز: ${x.passed}، يحتاج إعادة أو متابعة: ${x.repeat})\nأخطاء التسميع المسجلة: ${x.errors}\n\nهذا الملخص من السجلات التي دوّنها المحفظ، ولا يُعد غياب تسجيل الحصة دليلًا على الغياب.\nجزاكم الله خيرًا.`;}
   function contactEvent(st,month,status){
+    if(!st||!String(st.id||''))return {ok:false,error:'اختر طالبًا صحيحًا'};
+    if(!/^\d{4}-\d{2}$/.test(month)&&!weekBounds(month))return {ok:false,error:'فترة المتابعة غير صحيحة'};
     if(!['open_attempted','confirmed_sent','not_sent'].includes(status))return {ok:false,error:'حالة التواصل غير صحيحة'};
     const record={id:id(),studentId:st.id,month,status,actorId:userId()||null,at:new Date().toISOString(),channel:'whatsapp',proof:'user-declaration'};
     return saveStudentRecord(st,'guardianContact1111',record,'guardian-contact-'+status);

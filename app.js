@@ -2257,6 +2257,23 @@ function sanitizeBackupData(d){
     const oldId=String(raw.id==null?'':raw.id),id=safeImportedId(oldId,'st',usedStudents);idMap.set(oldId,id);
     return {
       id,name:cleanText(raw.name,160),parent:cleanText(raw.parent,160),phone:cleanText(raw.phone,30),
+      // Keep deliberately archived/paused students in the same status on restore.
+      // An omitted status keeps historical active-by-default semantics.
+      ...(typeof raw.studentStatus==='string'&&['active','archived','paused','inactive'].includes(raw.studentStatus)
+        ?{studentStatus:raw.studentStatus}:{}),
+      // Certificates are teacher-issued, student-owned history. Earlier imports
+      // dropped this field altogether even though exports included it.
+      ...(Array.isArray(raw.achievementCertificates)?{achievementCertificates:raw.achievementCertificates.slice(-1500)
+        .filter(x=>x&&typeof x==='object'&&!Array.isArray(x)&&typeof x.id==='string'&&x.id.length>0&&x.id.length<=140&&
+          ['surah','juz','five','ten','half','full','attendance','tajweed','exam'].includes(x.kind)&&typeof x.issuedAt==='string')
+        .map(x=>({id:cleanText(x.id,140),studentName:cleanText(x.studentName,160),kind:x.kind,
+          subject:cleanText(x.subject,150),title:cleanText(x.title,200),label:cleanText(x.label,300),
+          evidence:cleanText(x.evidence,1500),note:cleanText(x.note,500),issuedAt:cleanText(x.issuedAt,40),
+          teacher:cleanText(x.teacher,160),academy:cleanText(x.academy,200),
+          version:Number.isInteger(Number(x.version))?Math.min(10,Math.max(1,Number(x.version))):1,
+          approvedByTeacher:x.approvedByTeacher===true,proofMode:cleanText(x.proofMode,60),
+          proofCount:Number.isFinite(Number(x.proofCount))?Math.min(6236,Math.max(0,Number(x.proofCount))):0,
+          ...(x.voided===true?{voided:true}:{})}))}:{}),
       startDate:/^\d{4}-\d{2}-\d{2}$/.test(String(raw.startDate||''))?String(raw.startDate):'',
       level:['مبتدئ','متوسط','متقدم'].includes(raw.level)?raw.level:'مبتدئ',group:cleanText(raw.group,120),
       scheduleDays:Array.isArray(raw.scheduleDays)?[...new Set(raw.scheduleDays.map(Number).filter(x=>Number.isInteger(x)&&x>=0&&x<=6))]:[],

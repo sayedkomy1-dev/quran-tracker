@@ -36,7 +36,7 @@ assert.equal(exams.createLicense(st,khatm.record.id,{narration:'حفص',sanad:''
 assert.equal(exams.contactEvent(st,'2026-10','open_attempted').ok,true);assert.equal(st.guardianContact1111.at(-1).status,'open_attempted','open attempt is not sent');
 assert.equal(exams.contactEvent(st,'2026-10','confirmed_sent').ok,true);assert.equal(st.guardianContact1111.at(-1).proof,'user-declaration');
 const html=read('index.html'),sw=read('sw.js'),app=read('app.js');
-for(const asset of ['academic-exams-1111.css?v=11.11.0','js/features/academic-exams-1111.js?v=11.11.0','progress-bridge-1111.css?v=11.11.0','js/features/progress-bridge-1111.js?v=11.11.0']){
+for(const asset of ['academic-exams-1111.css?v=11.11.1','js/features/academic-exams-1111.js?v=11.11.1','progress-bridge-1111.css?v=11.11.1','js/features/progress-bridge-1111.js?v=11.11.1']){
  assert(html.includes(asset));assert(sw.includes("'./"+asset+"'"),'offline precache '+asset);
 }
 assert(html.includes('id="ac1111Nav"')&&html.includes('id="pg-academic-exams"'),'static navigation');
