@@ -2220,7 +2220,22 @@ function sanitizeBackupData(d){
       scheduleDays:Array.isArray(raw.scheduleDays)?[...new Set(raw.scheduleDays.map(Number).filter(x=>Number.isInteger(x)&&x>=0&&x<=6))]:[],
       scheduleTime:/^\d{2}:\d{2}$/.test(String(raw.scheduleTime||''))?String(raw.scheduleTime):'',
       sessionDuration:Math.min(180,Math.max(15,parseInt(raw.sessionDuration)||30)),notes:cleanText(raw.notes,5000),
-      createdAt:cleanText(raw.createdAt,40),updatedAt:cleanText(raw.updatedAt,40)
+      createdAt:cleanText(raw.createdAt,40),updatedAt:cleanText(raw.updatedAt,40),
+      // v11.9.1: preserve placement history in sanitized backup imports.
+      ...(raw.priorMemorization&&typeof raw.priorMemorization==='object'?{priorMemorization:{
+        status:['unknown','beginner','previous','completed'].includes(raw.priorMemorization.status)?raw.priorMemorization.status:'unknown',
+        declared:cleanText(raw.priorMemorization.declared,2000),updatedAt:cleanText(raw.priorMemorization.updatedAt,40)
+      }}:{}),
+      ...(Array.isArray(raw.placementAssessments)?{placementAssessments:raw.placementAssessments.slice(0,1200).filter(x=>{
+        return x&&typeof x==='object'&&/^(surah:(?:[1-9]|[1-9][0-9]|1(?:0[0-9]|1[0-4]))|quarter:(?:[1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-3][0-9]|240)|hizb:(?:[1-9]|[1-5][0-9]|60)|juz:(?:[1-9]|[12][0-9]|30))$/.test(String(x.unitKey||''));
+      }).map(x=>({
+        id:cleanText(x.id,120),unitKey:cleanText(x.unitKey,30),category:['surah','quarter','hizb','juz'].includes(x.category)?x.category:'surah',
+        label:cleanText(x.label,100),grade:['ممتاز','جيد جداً','جيد','ضعيف','إعادة'].includes(x.grade)?x.grade:'',
+        status:['completed','repeat','not_heard'].includes(x.status)?x.status:'not_heard',
+        score:x.score===null||x.score===undefined||x.score===''?null:(Number.isFinite(Number(x.score))?Math.min(100,Math.max(0,Number(x.score))):null),
+        note:cleanText(x.note,500),date:cleanText(x.date,30),at:cleanText(x.at,40),teacherId:cleanText(x.teacherId,120),
+        ranges:Array.isArray(x.ranges)?x.ranges.slice(0,114).filter(r=>Number(r.from)>=1&&Number(r.to)>=Number(r.from)&&Number(r.surahId)>=1&&Number(r.surahId)<=114).map(r=>({surah:cleanText(r.surah,60),surahId:Number(r.surahId),from:Number(r.from),to:Number(r.to)})):[]
+      }))}:{}),
     };
   });
   const safeSessions=[];
@@ -2255,7 +2270,22 @@ function sanitizeBackupData(d){
       id:safeImportedId(raw.id,'task',usedTasks),studentId:sid,title:cleanText(raw.title,240),notes:cleanText(raw.notes,4000),
       dueDate:/^\d{4}-\d{2}-\d{2}$/.test(String(raw.dueDate||''))?String(raw.dueDate):'',
       priority:['normal','high'].includes(raw.priority)?raw.priority:'normal',done:!!raw.done,
-      createdAt:cleanText(raw.createdAt,40),updatedAt:cleanText(raw.updatedAt,40)
+      createdAt:cleanText(raw.createdAt,40),updatedAt:cleanText(raw.updatedAt,40),
+      // v11.9.1: preserve placement history in sanitized backup imports.
+      ...(raw.priorMemorization&&typeof raw.priorMemorization==='object'?{priorMemorization:{
+        status:['unknown','beginner','previous','completed'].includes(raw.priorMemorization.status)?raw.priorMemorization.status:'unknown',
+        declared:cleanText(raw.priorMemorization.declared,2000),updatedAt:cleanText(raw.priorMemorization.updatedAt,40)
+      }}:{}),
+      ...(Array.isArray(raw.placementAssessments)?{placementAssessments:raw.placementAssessments.slice(0,1200).filter(x=>{
+        return x&&typeof x==='object'&&/^(surah:(?:[1-9]|[1-9][0-9]|1(?:0[0-9]|1[0-4]))|quarter:(?:[1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-3][0-9]|240)|hizb:(?:[1-9]|[1-5][0-9]|60)|juz:(?:[1-9]|[12][0-9]|30))$/.test(String(x.unitKey||''));
+      }).map(x=>({
+        id:cleanText(x.id,120),unitKey:cleanText(x.unitKey,30),category:['surah','quarter','hizb','juz'].includes(x.category)?x.category:'surah',
+        label:cleanText(x.label,100),grade:['ممتاز','جيد جداً','جيد','ضعيف','إعادة'].includes(x.grade)?x.grade:'',
+        status:['completed','repeat','not_heard'].includes(x.status)?x.status:'not_heard',
+        score:x.score===null||x.score===undefined||x.score===''?null:(Number.isFinite(Number(x.score))?Math.min(100,Math.max(0,Number(x.score))):null),
+        note:cleanText(x.note,500),date:cleanText(x.date,30),at:cleanText(x.at,40),teacherId:cleanText(x.teacherId,120),
+        ranges:Array.isArray(x.ranges)?x.ranges.slice(0,114).filter(r=>Number(r.from)>=1&&Number(r.to)>=Number(r.from)&&Number(r.surahId)>=1&&Number(r.surahId)<=114).map(r=>({surah:cleanText(r.surah,60),surahId:Number(r.surahId),from:Number(r.from),to:Number(r.to)})):[]
+      }))}:{}),
     };
   }).filter(x=>x.title);
   return{students:safeStudents,sessions:safeSessions,tasks:safeTasks};

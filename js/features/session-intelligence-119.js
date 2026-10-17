@@ -11,6 +11,30 @@
   const ACTION_TYPES={new:'حفظ جديد',rec:'مراجعة قريبة',far:'مراجعة بعيدة',placement:'اختبار تحديد مستوى',exam:'اختبار قرآني'};
   const DECISIONS={mastered:'أتقن',stabilize:'يحتاج تثبيت',repeat:'أخطأ مرة أخرى'};
   const state={extra:[],skip:{},decisions:{},skipReason:'',kind:'auto',bypass:false,lastSessionKey:'',warning:false};
+  // Audible warning uses Web Audio from a user-initiated click, not autoplay.
+  // No external sound assets or permissions. Can be disabled in the session UI.
+  const AUDIO_PREF='imam:teacher:guardian-send-audio:v1';
+  function audioEnabled(){try{return localStorage.getItem(AUDIO_PREF)!=='off';}catch(_){return true;}}
+  function playGuardianWarning(incomplete){
+    if(!audioEnabled())return false;
+    try{
+      const Context=g.AudioContext||g.webkitAudioContext;
+      if(!Context){g.navigator?.vibrate?.(incomplete?[100,70,150]:[90]);return false;}
+      const ctx=new Context(),origin=ctx.currentTime;
+      const tones=incomplete?[690,490,690]:[660,840];
+      tones.forEach((freq,i)=>{
+        const oscillator=ctx.createOscillator(),gain=ctx.createGain(),begin=origin+i*.19;
+        oscillator.type='sine';oscillator.frequency.value=freq;
+        gain.gain.setValueAtTime(.0001,begin);
+        gain.gain.exponentialRampToValueAtTime(.17,begin+.022);
+        gain.gain.exponentialRampToValueAtTime(.0001,begin+.145);
+        oscillator.connect(gain).connect(ctx.destination);oscillator.start(begin);oscillator.stop(begin+.15);
+      });
+      setTimeout(()=>ctx.close().catch(()=>{}),tones.length*190+250);
+      return true;
+    }catch(_){try{g.navigator?.vibrate?.([90,40,110]);}catch(__){}return false;}
+  }
+
   const options=(v,labels)=>Object.entries(labels).map(([key,title])=>`<option value="${escape(key)}" ${String(v)===key?'selected':''}>${escape(title)}</option>`).join('');
   const uniqueId=()=>root.Utils?.makeId?.('range119')||`range119-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const positive=n=>Number.isInteger(Number(n))&&Number(n)>0;
@@ -86,7 +110,9 @@
   function initSessionUi(){
     if(by('im119Completion')||!by('pg-session'))return;
     const head=by('pg-session');const target=by('sessionJourneyCard')||head.firstElementChild;
-    target.insertAdjacentHTML('beforebegin',`<section class="card im119-card" id="im119Completion" dir="rtl" aria-label="مؤشر اكتمال الحصة"><div class="im119-top"><div><b>🛡️ فحص اكتمال الحصة</b><small id="im119State" role="status">جارٍ مراجعة البيانات</small></div><strong id="im119Percent">—</strong></div><div class="im119-track"><div id="im119Fill"></div></div><div id="im119SaveState" class="im119-save-state" role="status" aria-live="polite"></div><details><summary>عرض قائمة التحقق والنواقص</summary><div id="im119Requirements"></div></details><div class="im119-row"><label>نوع الحصة<select id="im119Kind">${options('auto',TYPES)}</select></label><button type="button" id="im119AddRange" class="btn btn-out btn-sm">📖 إضافة موضع تسميع</button></div><div class="im119-row"><label><input type="checkbox" id="im119SkipNew"> لم يُنفذ حفظ جديد</label><label><input type="checkbox" id="im119SkipRec"> لم تُنفذ مراجعة</label></div><div class="im119-row"><label>تقييم المراجعة القريبة<select id="im119DecisionRec">${options('',{'':'لم يُحدد',...DECISIONS})}</select></label><label>تقييم المراجعة البعيدة<select id="im119DecisionFar">${options('',{'':'لم يُحدد',...DECISIONS})}</select></label></div><div class="im119-row"><label>سبب عدم تنفيذ الحفظ أو المراجعة (عند الحاجة)<input id="im119NoRecitation" type="text" maxlength="250" placeholder="مثل: مراجعة شفوية دون تكليف جديد"></label></div><div id="im119ExtraList"></div><small class="im119-small">نسبة الاكتمال تخص بيانات الحصة، وليست نسبة إتقان الطالب. حالة الحفظ والمزامنة مستقلة عنها.</small></section>`);
+    target.insertAdjacentHTML('beforebegin',`<section class="card im119-card" id="im119Completion" dir="rtl" aria-label="مؤشر اكتمال الحصة"><div class="im119-top"><div><b>🛡️ فحص اكتمال الحصة</b><small id="im119State" role="status">جارٍ مراجعة البيانات</small></div><strong id="im119Percent">—</strong></div><div class="im119-track"><div id="im119Fill"></div></div><div id="im119SaveState" class="im119-save-state" role="status" aria-live="polite"></div><details><summary>عرض قائمة التحقق والنواقص</summary><div id="im119Requirements"></div></details><div class="im119-row"><label>نوع الحصة<select id="im119Kind">${options('auto',TYPES)}</select></label><button type="button" id="im119AddRange" class="btn btn-out btn-sm">📖 إضافة موضع تسميع</button></div><div class="im119-row"><label><input type="checkbox" id="im119SkipNew"> لم يُنفذ حفظ جديد</label><label><input type="checkbox" id="im119SkipRec"> لم تُنفذ مراجعة</label></div><div class="im119-row"><label>تقييم المراجعة القريبة<select id="im119DecisionRec">${options('',{'':'لم يُحدد',...DECISIONS})}</select></label><label>تقييم المراجعة البعيدة<select id="im119DecisionFar">${options('',{'':'لم يُحدد',...DECISIONS})}</select></label></div><div class="im119-row"><label>سبب عدم تنفيذ الحفظ أو المراجعة (عند الحاجة)<input id="im119NoRecitation" type="text" maxlength="250" placeholder="مثل: مراجعة شفوية دون تكليف جديد"></label></div><div id="im119ExtraList"></div><label class="im119-audio-toggle"><input type="checkbox" id="im119AudioEnabled"> 🔔 تشغيل تنبيه صوتي قبل فتح رسالة ولي الأمر على واتساب</label><small class="im119-small">نسبة الاكتمال تخص بيانات الحصة، وليست نسبة إتقان الطالب. حالة الحفظ والمزامنة مستقلة عنها.</small></section>`);
+    by('im119AudioEnabled').checked=audioEnabled();
+    by('im119AudioEnabled').addEventListener('change',e=>{try{localStorage.setItem(AUDIO_PREF,e.target.checked?'on':'off');}catch(_){} });
     by('im119Kind').addEventListener('change',e=>{state.kind=e.target.value;touchDraft();render();});
     by('im119SkipNew').addEventListener('change',e=>{state.skip.new=e.target.checked;touchDraft();render();});
     by('im119SkipRec').addEventListener('change',e=>{state.skip.rec=e.target.checked;state.skip.far=e.target.checked;touchDraft();render();});
@@ -166,7 +192,13 @@
       else g.saveSession?.();
     }finally{state.bypass=false;state.overrideReason='';state.overrideIssues=[];}
   }
-  function tryAction(action){const e=validateCurrent();if(!e.outstanding.length)return execute(action);showWarning(e,action);}
+  function tryAction(action){
+    const e=validateCurrent();
+    // Play synchronously within the click gesture, even if the report is complete.
+    // A stronger sequence alerts the teacher when the report is incomplete.
+    if(['send','short','detailed'].includes(action))playGuardianWarning(e.outstanding.length>0);
+    if(!e.outstanding.length)return execute(action);showWarning(e,action);
+  }
   function installBridges(){
     const legacy=root.Legacy;if(!legacy)return;
     const closeQuran=g.closeQuranTextModal; if(typeof closeQuran==='function')legacy.override('closeQuranTextModal',function(...a){const out=closeQuran.apply(this,a);if(state.resumeRangeModal){state.resumeRangeModal=false;by('im119RangeModal')?.classList.add('open');}return out;},'v11.9-range-preview');
@@ -224,7 +256,7 @@
     },true);
   }
   function install(){g.addEventListener?.('online',render);g.addEventListener?.('offline',render);initSessionUi();installStudentForm();installProfileAction();installBridges();installActions();loadSessionMetadata();}
-  root.SessionIntelligence={evaluate,rangeValid,normalizedRange,DECISIONS,TYPES,openRange,addRange,render,getState:()=>state};
+  root.SessionIntelligence={evaluate,rangeValid,normalizedRange,DECISIONS,TYPES,openRange,addRange,render,playGuardianWarning,getState:()=>state};
   if(typeof module!=='undefined'&&module.exports)module.exports={evaluate,rangeValid,normalizedRange,DECISIONS,TYPES};
   if(typeof document!=='undefined'){
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,180),{once:true});else setTimeout(install,180);

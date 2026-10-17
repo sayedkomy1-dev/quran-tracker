@@ -34,10 +34,10 @@ assert.equal(check({...base,status:'غاب'}).percent,100,'absent students do no
 assert.equal(api.normalizedRange({...placement,id:'a'}).surahId,2);
 assert.equal(api.normalizedRange({...placement,score:null}).score,null,'unknown score is not zero');
 const html=read('index.html'),sw=read('sw.js'),runtime=read('js/core/runtime.js'),app=read('app.js');
-assert(html.includes('session-intelligence-119.js?v=11.9.0'));
-assert(sw.includes("'./js/features/session-intelligence-119.js?v=11.9.0'"));
-assert(sw.includes("'./session-intelligence-119.css?v=11.9.0'"));
-assert(runtime.includes("version:'11.9.0',schema:12"));
+assert(html.includes('session-intelligence-119.js?v=11.9.1'));
+assert(sw.includes("'./js/features/session-intelligence-119.js?v=11.9.1'"));
+assert(sw.includes("'./session-intelligence-119.css?v=11.9.1'"));
+assert(runtime.includes("version:'11.9.1',schema:12"));
 assert(app.includes("if(save()===false)"),'failure-aware session save must exist');
 assert(read('js/features/achievement-certificates.js').includes("g.save?.()===false"),'certificate must reject failed local write');
 assert(!read('tests/complete-corrections-sync-health-check.js').includes('/mnt/data/work_v11745/'),'tests must be portable');

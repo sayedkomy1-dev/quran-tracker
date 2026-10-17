@@ -45,6 +45,23 @@
         if(!latest.has(id)||d>=latest.get(id).day)latest.set(id,{...range,type,decision,day:d});
       }
     });
+    // Only actual teacher-tested placement results enter the revision queue.
+    // Declared prior memorization never creates a revision achievement.
+    const st=students().find(x=>String(x.id)===String(studentId));
+    const placementLatest=new Map();
+    for(const attempt of (st?.placementAssessments||[])){
+      if(!attempt?.unitKey||!['ممتاز','جيد جداً','جيد','ضعيف','إعادة'].includes(attempt.grade))continue;
+      const old=placementLatest.get(attempt.unitKey);
+      if(!old||String(attempt.at||'')>=String(old.at||''))placementLatest.set(attempt.unitKey,attempt);
+    }
+    for(const item of placementLatest.values()){
+      for(const range of (item.ranges||[])){
+        if(!range?.surah||!Number.isInteger(Number(range.from))||!Number.isInteger(Number(range.to)))continue;
+        const decision=['ممتاز','جيد جداً','جيد'].includes(item.grade)?'mastered':item.grade==='ضعيف'?'stabilize':'repeat';
+        const id=`placement-center|${item.unitKey}|${range.surahId}|${range.from}|${range.to}`;
+        latest.set(id,{...range,type:'placement',decision,score:item.score,day:item.date||dayKey(item.at||nowValue)});
+      }
+    }
     const today=dayStart(nowValue);
     return [...latest.values()].map(x=>{
       const interval=x.decision==='mastered'?14:x.decision==='stabilize'?3:1;
