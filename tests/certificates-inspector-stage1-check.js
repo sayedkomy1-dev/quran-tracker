@@ -6,7 +6,7 @@ const qmark=fs.readFileSync(path.join(root,'js/features/teacher-error-marking.js
 const css=fs.readFileSync(path.join(root,'teacher-error-marking.css'),'utf8');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');
-for(const asset of ['achievement-certificates.css?v=11.8.0','js/features/achievement-certificates.js?v=11.8.0','teacher-error-marking.css?v=11.8.0']){
+for(const asset of ['achievement-certificates.css?v=11.8.0','js/features/achievement-certificates.js?v=11.9.0','teacher-error-marking.css?v=11.8.0']){
   assert(html.includes(asset),'missing HTML asset: '+asset);
   assert(sw.includes('./'+asset),'not in offline app shell: '+asset);
 }

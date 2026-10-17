@@ -39,5 +39,7 @@ assert(rendered.includes('الإعادة التلقائية المقترحة'));
 assert(!rendered.includes('<script>alert(1)</script>'),'User text must be HTML-escaped');
 assert(rendered.includes('dir="rtl"')&&rendered.includes('@page{size:A4'));
 assert(!rendered.includes('fonts.googleapis.com')&&!rendered.includes('http://'));
-fs.writeFileSync('/mnt/data/work_v11745/report-example.html',rendered);
+const tempDir=fs.mkdtempSync(require('node:path').join(require('node:os').tmpdir(),'imam-report-'));
+fs.writeFileSync(require('node:path').join(tempDir,'report-example.html'),rendered);
+fs.rmSync(tempDir,{recursive:true,force:true});
 console.log('PASS complete-corrections-sync-health: 22/22 WhatsApp+HTML, review grades, XSS escape, RTL vector print and owner state');

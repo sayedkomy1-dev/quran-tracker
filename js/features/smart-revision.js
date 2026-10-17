@@ -26,6 +26,40 @@
     return `${sid}|${surah}|${ayah}|${wi}|${char}`;
   }
   function contextLabel(v){return ({new_read:'حفظ جديد',talaqqin:'تلقين',recitation:'تسميع',review:'مراجعة'})[v]||'تسميع';}
+  // 11.9: include teacher-verified placement and review assessments without
+  // counting students' declared prior memorization as academy achievements.
+  function assessedRanges(studentId,nowValue=Date.now()){
+    const latest=new Map();
+    sessions().filter(s=>s.studentId===studentId&&s.status==='حضر').forEach(s=>{
+      const d=dayKey(s.sessionDate||s.date||s.updatedAt||nowValue);
+      const meta=s.teacher119||{},extras=Array.isArray(meta.extra)?meta.extra:[];
+      for(const e of extras){
+        if(!['placement','rec','far','exam'].includes(e.type)||!['mastered','stabilize','repeat'].includes(e.decision))continue;
+        const id=`${e.surahId||e.surah}|${e.from}|${e.to}|${e.type}`;
+        if(!latest.has(id)||d>=latest.get(id).day)latest.set(id,{...e,day:d});
+      }
+      for(const type of ['rec','far']){
+        const decision=meta.decisions?.[type],range=s.actualRecitation?.[type]||s[type];
+        if(!['mastered','stabilize','repeat'].includes(decision)||!range?.surah)continue;
+        const id=`${range.surahId||range.surah}|${range.from}|${range.to}|${type}`;
+        if(!latest.has(id)||d>=latest.get(id).day)latest.set(id,{...range,type,decision,day:d});
+      }
+    });
+    const today=dayStart(nowValue);
+    return [...latest.values()].map(x=>{
+      const interval=x.decision==='mastered'?14:x.decision==='stabilize'?3:1;
+      const due=addDays(x.day,interval),delta=Math.floor((due-today)/DAY);
+      const label=delta<0?`متأخر ${Math.abs(delta)} يوم`:delta===0?'اليوم':delta===1?'غدًا':`بعد ${delta} أيام`;
+      return {source:'teacher-assessment',key:`assessed|${x.surah}|${x.from}|${x.to}|${x.type}`,
+        surahId:Number(x.surahId)||0,surah:String(x.surah||''),ayah:Number(x.from)||1,toAyah:Number(x.to)||Number(x.from)||1,
+        word:`الآيات ${x.from}–${x.to}`,targetLevel:'range',types:[x.type==='placement'?'تحديد مستوى':'مراجعة'],
+        events:[{date:x.day,resolved:x.decision==='mastered'}],groups:[],contexts:[],occurrences:1,lastDate:x.day,
+        lastResolved:x.decision==='mastered',resolvedStreak:x.decision==='mastered'?1:0,
+        dueDate:dayKey(due),daysUntil:delta,dueLabel:label,status:delta<0?'overdue':delta===0?'today':'scheduled',
+        repeated:false,unresolved:x.decision!=='mastered',priority:(x.decision==='repeat'?65:x.decision==='stabilize'?35:10)+(delta<0?Math.min(25,Math.abs(delta)*3):0),
+        context:x.type==='placement'?'اختبار تحديد مستوى':'تقييم المحفظ',decision:x.decision,score:x.score};
+    });
+  }
   function buildNotebook(studentId,nowValue=Date.now()){
     const rows=sessions().filter(s=>s.studentId===studentId&&s.status==='حضر'&&quranRows(s).length).slice().sort((a,b)=>dateValue(a)-dateValue(b));
     const map=new Map();
@@ -57,7 +91,7 @@
       let dueLabel=overdue?`متأخر ${Math.abs(delta)} يوم`:dueToday?'اليوم':delta===1?'غدًا':`بعد ${delta} أيام`;
       let status=overdue?'overdue':dueToday?'today':unresolved?'pending':'scheduled';
       return {...item,events:ev,types:[...item.types],groups:[...item.groups],contexts:[...item.contexts],occurrences:ev.length,lastDate:latest?.date||'',lastResolved:!!latest?.resolved,resolvedStreak:streak,dueDate:dayKey(due),daysUntil:delta,dueLabel,status,repeated,unresolved,priority,context:contextLabel(latest?.context)};
-    }).sort((a,b)=>b.priority-a.priority||a.daysUntil-b.daysUntil||b.occurrences-a.occurrences||a.surahId-b.surahId||a.ayah-b.ayah);
+    }).concat(assessedRanges(studentId,nowValue)).sort((a,b)=>b.priority-a.priority||a.daysUntil-b.daysUntil||b.occurrences-a.occurrences||a.surahId-b.surahId||a.ayah-b.ayah);
   }
   function summary(studentId,nowValue=Date.now()){
     const notebook=buildNotebook(studentId,nowValue),today=notebook.filter(x=>x.daysUntil<=0),upcoming=notebook.filter(x=>x.daysUntil>0),overdue=today.filter(x=>x.daysUntil<0),repeated=notebook.filter(x=>x.repeated),unresolved=notebook.filter(x=>x.unresolved);
@@ -69,7 +103,7 @@
   }
   function openItem(studentId,key){
     const item=buildNotebook(studentId).find(x=>x.key===key);if(!item)return;
-    if(typeof g.openQuranRangeText==='function')g.openQuranRangeText({surah:item.surah,from:item.ayah,to:item.ayah});
+    if(typeof g.openQuranRangeText==='function')g.openQuranRangeText({surah:item.surah,from:item.ayah,to:item.toAyah||item.ayah});
   }
   function ensureProfileCard(){
     if(document.getElementById('smartRevisionCard'))return document.getElementById('smartRevisionCard');
@@ -117,6 +151,6 @@
   }
   g.smartRevisionOpen=openItem;
   g.ImamApp=g.ImamApp||{};
-  g.ImamApp.SmartRevision={buildNotebook,summary,buildGuardian:guardianData,renderProfile,renderHome,openItem};
+  g.ImamApp.SmartRevision={buildNotebook,assessedRanges,summary,buildGuardian:guardianData,renderProfile,renderHome,openItem};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{installHooks();setTimeout(renderHome,0);},{once:true});else{installHooks();setTimeout(renderHome,0);}
 })(globalThis);

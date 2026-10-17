@@ -13,3 +13,15 @@
  body.cert-print #cert118PaperHost{width:100%!important}
  body.cert-print .cert-v118-paper{width:100%!important;max-width:100%!important;margin:0 auto!important}
 }
+
+/* 11.9 — Academy identity and refined certificate layout; same eligibility rules. */
+.cert-v118-paper{position:relative;overflow:hidden;border:5px double #b89546!important;
+ background:linear-gradient(140deg,#fffefa,#fff7e6 48%,#fffefa)!important;
+ box-shadow:inset 0 0 0 7px #fffaf0,inset 0 0 0 8px #dbc88e,0 6px 30px #162b1b16;
+ padding:25px 22px!important;gap:6px!important}
+.cert-v118-paper:before,.cert-v118-paper:after{content:'✦';position:absolute;color:#caa656;font-size:29px;opacity:.7}
+.cert-v118-paper:before{top:14px;right:19px}.cert-v118-paper:after{bottom:12px;left:19px}
+.cert-v118-seal img{max-width:78px;max-height:78px;display:block;margin:auto;object-fit:contain}
+.cert-v118-paper .cert-name{max-width:96%;overflow-wrap:anywhere;line-height:1.35;border-block:1px solid #ba984c;padding:10px 16px}
+.cert-v118-bottom{border-top:1px solid #dfcb96;padding-top:12px}
+@media print{body.cert-print .cert-v118-paper{box-shadow:inset 0 0 0 6px #fff8e8,inset 0 0 0 7px #d5bd76!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}

@@ -569,12 +569,14 @@ function save(){
     stamp=nextSnapshotStamp();
     localStorage.setItem(accountLocalKey('savedAt'),String(stamp));
     if(snapshotHasData({students,sessions,tasks}))localStorage.removeItem(accountLocalKey('explicitEmptyAt'));
-  }catch(e){console.warn('تعذر حفظ نسخة localStorage الخاصة بالحساب',e);}
+  }catch(e){console.warn('تعذر حفظ نسخة localStorage الخاصة بالحساب',e); try{globalThis.ImamApp.SaveHealth={ok:false,error:String(e?.name||'StorageError'),at:Date.now()};}catch(_){};return false;}
+  globalThis.ImamApp.SaveHealth={ok:true,medium:'localStorage',at:stamp};
   idbWriteSnapshot(stamp);
   writeOfflineSafetySnapshot();
   queueMicrotask(()=>{try{updateTaskBadge();}catch(_){} });
   // Read-only admin roster sync is scheduled after saves; never block the local save.
   queueMicrotask(()=>{try{document.dispatchEvent(new Event('imam:local-save'));}catch(_){} });
+  return true;
 }
 
 // ══════════════════════════════════════
@@ -1015,16 +1017,19 @@ ${lines}
 
 هل تريد الحفظ رغم ذلك؟`))return;
   }
+  const studentBackup=students.slice();
+  let successMessage='';
   if(editId){
     const i=students.findIndex(st=>st.id===editId);
     if(i<0)return;
     students[i]={...students[i],...d};
-    toast(conflicts.length?'تم التحديث مع وجود تعارض في الجدول':'تم تحديث البيانات','success');
+    successMessage=conflicts.length?'تم التحديث مع وجود تعارض في الجدول':'تم تحديث البيانات';
   }else{
     d.id=makeId('st');d.createdAt=now;students.push(d);
-    toast(conflicts.length?'تمت الإضافة مع وجود تعارض في الجدول':'تم إضافة الطالب','success');vibrate([50,25,100]);
+    successMessage=conflicts.length?'تمت الإضافة مع وجود تعارض في الجدول':'تم إضافة الطالب';
   }
-  save();closeMo();renderSt();renderHome();
+  if(save()===false){students=studentBackup;toast('تعذر حفظ بيانات الطالب على الجهاز، حاول مجددًا','error');return;}
+  closeMo();renderSt();renderHome();toast(successMessage,'success');
 }
 function normPhone(p){
   p=p.replace(/\D/g,'');
@@ -2748,7 +2753,9 @@ function saveSession(opts={}){
   if(sesStatus==='حضر'){const err=validateSessionSections();if(err){toast(err,'error');return null;}}
   const data=sesStatus==='حضر'?buildSesData():{},now=new Date().toISOString(),existing=(editingSessionId&&sessions.find(x=>x.id===editingSessionId))||findDailySession(sid,dateKey);
   const core={id:existing?.id||makeId('ses'),studentId:sid,sessionDate:dateKey,date:existing?.date||makeSessionISO(dateKey),status:sesStatus,createdAt:existing?.createdAt||now,updatedAt:now,source:'session',completed:true,...data};core.summary=buildSumText(core);
-  if(existing){const idx=sessions.findIndex(x=>x.id===existing.id);sessions[idx]=core;}else sessions.push(core);editingSessionId=core.id;save();clearDraft();const btn=document.getElementById('saveSessionBtn');if(btn)btn.textContent='💾 تحديث الحصة';setDraftState('تم حفظ الحصة ✓','saved');
+  if(existing){const idx=sessions.findIndex(x=>x.id===existing.id);sessions[idx]=core;}else sessions.push(core);editingSessionId=core.id;
+  if(save()===false){if(existing){const idx=sessions.findIndex(x=>x.id===core.id);if(idx>=0)sessions[idx]=existing;}else sessions=sessions.filter(x=>x.id!==core.id);editingSessionId=existing?.id||null;toast('تعذر حفظ الحصة على الجهاز، احتفظ ببيانات المسودة وحاول مرة أخرى','error');return null;}
+  clearDraft();const btn=document.getElementById('saveSessionBtn');if(btn)btn.textContent='💾 تحديث الحصة';setDraftState('تم حفظ الحصة ✓','saved');
   if(!opts.silent){vibrate([50,25,100]);toast(existing?'تم تحديث الحصة بنجاح ✓':'تم حفظ الحصة بنجاح ✓','success');}if(sesStatus==='حضر'&&data.juz&&grades.juz==='ممتاز'&&!opts.noCelebrate)setTimeout(celebrate,350);renderHome();return core;
 }
 function fillFromLast(){

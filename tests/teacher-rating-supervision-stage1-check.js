@@ -25,7 +25,7 @@ assert.match(rating,/guardian_teacher_rating_submit/);assert.match(rating,/guard
 assert.match(supervisor,/app_supervision_access/);assert.match(supervisor,/if\(!g.WeLiveQuranAuth\?\.isOwner\?\.\(\)\&\&!allowed\)return/);assert.match(supervisor,/app_supervisor_assign/);
 assert.match(auth,/ImamApp\?\.Supervision\?\.initialize/);
 for(const file of ['./teacher-rating.css?v=11.7.4.5-sync-health','./js/features/guardian-ratings.js?v=11.7.0-s1','./js/features/supervisor-dashboard.js?v=11.7.4.5-sync-health'])assert.ok(sw.includes(file),'Missing offline asset '+file);
-assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.8\.1-revision-text-data-boot'/);
+assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.9\.0-integrated-teaching'/);
 assert.match(read('js/core/runtime.js'),/schema:12/);
 assert.ok(!/navigator\.share|wa\.me/.test(rating+supervisor),'Do not touch WhatsApp behavior');
 // Interactive test: rating hidden for public mode, loaded for verified context, send not permitted without token.
