@@ -843,3 +843,10 @@
 - Empty, partial, over-limit, or unauthorized lists are never published. No student phone, PIN, guardian credentials, financial data, or WhatsApp messages are transmitted.
 - The teacher retains a manual “مزامنة الآن” option and sees the result/last update in the students page.
 - Existing per-teacher and per-supervisor access is enforced by the previously-deployed RPC; no SQL changes and Local Schema remains 12.
+
+## 11.8.1 — Quran text across teacher reviews + account snapshot boot safety
+- Added direct Quran text for near/far reviews, Surah reviews and Juz/rub' review items (including review assessment).
+- Accurate multi-surah rub' segmentation with in-reader Surah navigation, preserving word-level inspection.
+- Resolved stale range-response races on quick reader navigation.
+- Hardened account-local snapshot boot when IndexedDB is stale/empty; preserve last-good snapshot on transient empty boot, and respect explicit reset/import.
+- Refreshed offline app shell without SQL or local schema changes. Certificates 11.8.0 preserved.

@@ -348,13 +348,23 @@ function readOfflineSafetySnapshot(){
     return{students:Array.isArray(snap.students)?snap.students:[],sessions:Array.isArray(snap.sessions)?snap.sessions:[],tasks:Array.isArray(snap.tasks)?snap.tasks:[],settings:snap.settings&&typeof snap.settings==='object'?snap.settings:{}};
   }catch(_){return null;}
 }
+function clearAccountSafetyOnExplicitReset(){
+  // Only an explicitly confirmed account reset/empty import may discard the
+  // recovery copy. A transient empty startup can never invoke this path.
+  try{
+    const box=JSON.parse(localStorage.getItem(WLQ_OFFLINE_SAFETY_KEY)||'null');
+    if(box?.userId===storageScopeUserId)localStorage.removeItem(WLQ_OFFLINE_SAFETY_KEY);
+    localStorage.setItem(accountLocalKey('explicitEmptyAt'),String(Date.now()));
+  }catch(_){}
+}
 function writeOfflineSafetySnapshot(){
   try{
     if(!storageScopeUserId)return;
     const next={students,sessions,tasks,settings};
     const prior=readOfflineSafetySnapshot();
-    // Never let a transient empty offline boot erase a previously good snapshot.
-    if(!snapshotHasData(next)&&snapshotHasData(prior)&&navigator.onLine===false)return;
+    // Never replace last-good data with a transient empty state, online OR offline.
+    // Explicit user deletion still uses tombstones in scoped account storage.
+    if(!snapshotHasData(next)&&snapshotHasData(prior))return;
     localStorage.setItem(WLQ_OFFLINE_SAFETY_KEY,JSON.stringify({userId:storageScopeUserId,email:storageScopeEmail,savedAt:new Date().toISOString(),snapshot:next}));
   }catch(e){console.warn('تعذر حفظ نسخة الأوفلاين الاحتياطية',e);}
 }
@@ -437,7 +447,26 @@ function idbGetAll(database){
   });
 }
 
-function idbWriteSnapshot(){
+// Stage 11.8.1 — monotonic snapshot stamps keep an older IndexedDB transaction
+// from replacing a newer and complete localStorage mirror on the next boot.
+let lastSnapshotStamp=0;
+function nextSnapshotStamp(){lastSnapshotStamp=Math.max(Date.now(),lastSnapshotStamp+1);return lastSnapshotStamp;}
+function chooseAccountBootSnapshot(idbSnapshot,localSnapshot,idbStamp=0,localStamp=0,explicitEmptyAt=0){
+  if(!idbSnapshot)return localSnapshot;
+  if(!localSnapshot)return idbSnapshot;
+  // An empty/partial IDB boot must never erase a sound account-local copy.
+  if(!snapshotHasData(idbSnapshot)&&snapshotHasData(localSnapshot))return localSnapshot;
+  if(!snapshotHasData(localSnapshot)&&snapshotHasData(idbSnapshot)){
+    // A deliberate, confirmed empty import/reset is the only exception to
+    // last-good protection; never resurrect explicitly deleted data.
+    if(explicitEmptyAt>0&&localStamp>=explicitEmptyAt&&localStamp>idbStamp)return localSnapshot;
+    return idbSnapshot;
+  }
+  // Only compare timestamps when both were written with the newer protocol.
+  if(localStamp>0&&localStamp>idbStamp)return localSnapshot;
+  return idbSnapshot;
+}
+function idbWriteSnapshot(stamp=0){
   if(!db||!db.objectStoreNames.contains('kv')||!storageScopeUserId) return;
   try{
     const tx=db.transaction('kv','readwrite'),store=tx.objectStore('kv');
@@ -445,6 +474,8 @@ function idbWriteSnapshot(){
     store.put({key:accountIdbKey('sessions'),val:JSON.stringify(sessions)});
     store.put({key:accountIdbKey('tasks'),val:JSON.stringify(tasks)});
     store.put({key:accountIdbKey('settings'),val:JSON.stringify(settings)});
+    // Stamp is written in the SAME transaction as the account data.
+    store.put({key:accountIdbKey('savedAt'),val:String(stamp||Number(localStorage.getItem(accountLocalKey('savedAt')))||0)});
     tx.onerror=()=>console.warn('تعذر حفظ نسخة IndexedDB للحساب',tx.error);
   }catch(e){console.warn('تعذر الكتابة إلى IndexedDB للحساب',e);}
 }
@@ -466,7 +497,12 @@ async function initDB(){
     db=await wlqTimeout(openQuranDB(),1400,'IDB_OPEN_TIMEOUT');
     rows=await wlqTimeout(idbGetAll(db),1400,'IDB_READ_TIMEOUT');
     rows.forEach(r=>{if(r&&r.key!=null)map[r.key]=r.val;});
-    accountSnapshot=snapshotFromMap(map,`acct:${storageScopeUserId}:`)||accountSnapshotFromLocalStorage();
+    const idbSnapshot=snapshotFromMap(map,`acct:${storageScopeUserId}:`);
+    const localSnapshot=accountSnapshotFromLocalStorage();
+    accountSnapshot=chooseAccountBootSnapshot(idbSnapshot,localSnapshot,
+      Number(map[accountIdbKey('savedAt')])||0,
+      Number(localStorage.getItem(accountLocalKey('savedAt')))||0,
+      Number(localStorage.getItem(accountLocalKey('explicitEmptyAt')))||0);
     legacySnapshot=snapshotFromMap(map,'')||legacySnapshotFromLocalStorage();
   }catch(e){
     console.warn('IndexedDB غير متاح؛ سيتم استخدام النسخة المحلية الخاصة بالحساب',e);
@@ -477,9 +513,11 @@ async function initDB(){
 
   const offlineSafety=readOfflineSafetySnapshot();
   if(accountSnapshot){
-    if(navigator.onLine===false&&!snapshotHasData(accountSnapshot)&&snapshotHasData(offlineSafety)) applySnapshot(offlineSafety,'offline-safety');
-    else applySnapshot(accountSnapshot,'account');
-  }else if(navigator.onLine===false&&snapshotHasData(offlineSafety)){
+    if(!snapshotHasData(accountSnapshot)&&snapshotHasData(offlineSafety)){
+      applySnapshot(offlineSafety,'account-last-good');
+      accountMigrationNotice={type:'offline-safety',counts:snapshotCounts(offlineSafety)};
+    }else applySnapshot(accountSnapshot,'account');
+  }else if(snapshotHasData(offlineSafety)){
     applySnapshot(offlineSafety,'offline-safety');
     accountMigrationNotice={type:'offline-safety',counts:snapshotCounts(offlineSafety)};
   }else if(snapshotHasData(legacySnapshot)){
@@ -522,13 +560,17 @@ function showAccountMigrationNotice(){
 }
 function save(){
   // كل حساب يملك نسخة محلية منفصلة. مفاتيح v10.1.4 القديمة لا تُكتب بعد الآن.
+  let stamp=0;
   try{
     localStorage.setItem(accountLocalKey('students'),JSON.stringify(students));
     localStorage.setItem(accountLocalKey('sessions'),JSON.stringify(sessions));
     localStorage.setItem(accountLocalKey('tasks'),JSON.stringify(tasks));
     localStorage.setItem(accountLocalKey('settings'),JSON.stringify(settings));
+    stamp=nextSnapshotStamp();
+    localStorage.setItem(accountLocalKey('savedAt'),String(stamp));
+    if(snapshotHasData({students,sessions,tasks}))localStorage.removeItem(accountLocalKey('explicitEmptyAt'));
   }catch(e){console.warn('تعذر حفظ نسخة localStorage الخاصة بالحساب',e);}
-  idbWriteSnapshot();
+  idbWriteSnapshot(stamp);
   writeOfflineSafetySnapshot();
   queueMicrotask(()=>{try{updateTaskBadge();}catch(_){} });
   // Read-only admin roster sync is scheduled after saves; never block the local save.
@@ -2225,7 +2267,9 @@ function importData(e){
         students=safe.students;sessions=importedSessions;tasks=safe.tasks||[];
         const cfg=d.settings&&typeof d.settings==='object'?d.settings:{};
         settings={...settings,name:cleanText(cfg.name,160),circle:cleanText(cfg.circle,200),theme:['light','dark'].includes(cfg.theme)?cfg.theme:'light',fontSize:['md','lg','xl'].includes(cfg.fontSize)?cfg.fontSize:'md',notifEnabled:!!cfg.notifEnabled,waTemplate:cleanText(cfg.waTemplate,8000),schemaVersion:SCHEMA_VERSION};
-        migrateData();save();applyTheme();applyFontSize();toast('تم استيراد البيانات وفحصها وترقيتها بنجاح','success');goPage('home');
+        migrateData();
+        if(!snapshotHasData({students,sessions,tasks}))clearAccountSafetyOnExplicitReset();
+        save();applyTheme();applyFontSize();toast('تم استيراد البيانات وفحصها وترقيتها بنجاح','success');goPage('home');
       }catch(inner){students=old.students;sessions=old.sessions;tasks=old.tasks;settings=old.settings;save();throw inner;}
     }catch(err){toast(`ملف غير صالح: ${err.message||'تعذر القراءة'}`,'error');}
     finally{e.target.value='';}
@@ -2234,7 +2278,7 @@ function importData(e){
 function clearAll(){
   if(!confirm('⚠️ هذا سيحذف جميع الطلاب والحصص من هذا الجهاز. هل أنت متأكد؟'))return;
   if(!confirm('تأكيد أخير: احذف كل البيانات المحلية؟'))return;
-  students=[];sessions=[];tasks=[];Object.keys(localStorage).filter(isCurrentAccountDraftKey).forEach(k=>localStorage.removeItem(k));save();toast('تم مسح بيانات هذا الحساب من الجهاز','success');goPage('home');
+  students=[];sessions=[];tasks=[];clearAccountSafetyOnExplicitReset();Object.keys(localStorage).filter(isCurrentAccountDraftKey).forEach(k=>localStorage.removeItem(k));save();toast('تم مسح بيانات هذا الحساب من الجهاز','success');goPage('home');
 }
 
 // ══════════════════════════════════════
@@ -3101,7 +3145,7 @@ function toggleReviewSurah(i,checked){if(!S[i])return;const chip='سورة '+S[i
 function selectJuzAmmaSurahs(){S.slice(77).forEach(x=>{const c='سورة '+x.n;if(!surahReviewChips.includes(c))surahReviewChips.push(c);});renderSurahReviewChips();renderSurahChecklist();toast('تم تحديد سور جزء عمّ','success');scheduleDraftSave();}
 function clearSelectedSurahs(){surahReviewChips=[];renderSurahReviewChips();renderSurahChecklist();scheduleDraftSave();}
 function syncSurahReviewCount(){const el=document.getElementById('surah-review-count');if(el)el.textContent=`${surahReviewChips.length} سورة محددة`;}
-function renderSurahReviewChips(){const el=document.getElementById('surah-review-chips');if(el)el.innerHTML=surahReviewChips.map((c,i)=>`<span class="chip">${esc(c)}<span class="chip-x" onclick="rmSurahReviewChip(${i})">✕</span></span>`).join('');syncSurahReviewCount();}
+function renderSurahReviewChips(){const el=document.getElementById('surah-review-chips');if(el)el.innerHTML=surahReviewChips.map((c,i)=>`<span class="chip">${esc(c)}<button type="button" class="v1181-chip-text" onclick="v1181OpenSurahReviewChip(${i})">📖 النص</button><span class="chip-x" onclick="rmSurahReviewChip(${i})">✕</span></span>`).join('');syncSurahReviewCount();}
 function rmSurahReviewChip(i){surahReviewChips.splice(i,1);renderSurahReviewChips();renderSurahChecklist();scheduleDraftSave();}
 function renderChips(){renderJuzChips();renderSurahReviewChips();}
 function readSection(k){

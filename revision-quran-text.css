@@ -1,0 +1,9 @@
+/* Full text for new, near, far, surah, juz and quarter review — mobile safe */
+.v1181-chip-text{border:1px solid #accaba;border-radius:8px;background:var(--wh,#fff);color:var(--gd,#145a3b);padding:4px 8px;font-size:12px;font-weight:800;margin-inline:7px;cursor:pointer}
+.v1181-range-parts{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:10px 0;padding:9px;border:1px solid #d3e6dc;border-radius:12px;background:#edf7f1;color:#214e35}
+.v1181-range-parts[hidden]{display:none!important}
+.v1181-range-parts>span{font-size:12px;font-weight:800;flex-basis:100%}
+.v1181-range-parts button{background:#fff;color:#20523a;border:1px solid #c7dfd0;border-radius:9px;padding:7px 12px;min-height:38px;font-weight:700;cursor:pointer}
+.v1181-range-parts button.active{background:#125638;color:#fff;border-color:#125638}
+#bod-juz .v1059-structure-chip,#bod-surahReview .chip{white-space:normal;display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px}
+@media(max-width:600px){.v1181-range-parts{max-height:130px;overflow-y:auto}.v1181-range-parts button{font-size:12px}.session-badge-actions{flex-wrap:wrap}}

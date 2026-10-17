@@ -115,7 +115,7 @@ function v1051AddJuz(){
 function v10SurahItem(name,status='not_heard'){const n=String(name||'').replace(/^سورة\s+/,'').trim(),idx=S.findIndex(s=>s.n===n);if(idx<0)return null;return{id:`surah-${idx+1}`,type:'surah',surahId:idx+1,surahName:S[idx].n,label:`سورة ${S[idx].n}`,status,evaluation:'',grade:'',errors:[],notes:''};}
 function v1059RenderJuzChips(){
   const el=document.getElementById('juz-chips');if(!el)return;
-  el.innerHTML=juzChips.map((raw,i)=>{const parsed=V1051_CARRY.parseJuzChip(raw,JZ);let label=String(raw||'');if(parsed){const j=JZ.indexOf(parsed.juzName)+1;label=parsed.quarter?`${parsed.juzName} (${j}) — ${V1052_STRUCTURE.quarterLabel(j,parsed.quarter)}`:`${parsed.juzName} (${j}) — حزبان · 8 أرباع`;}return `<span class="chip v1059-structure-chip" title="${v10Esc(label)}">${v10Esc(label)}<span class="chip-x" onclick="rmJuzChip(${i})">✕</span></span>`;}).join('');
+  el.innerHTML=juzChips.map((raw,i)=>{const parsed=V1051_CARRY.parseJuzChip(raw,JZ);let label=String(raw||'');if(parsed){const j=JZ.indexOf(parsed.juzName)+1;label=parsed.quarter?`${parsed.juzName} (${j}) — ${V1052_STRUCTURE.quarterLabel(j,parsed.quarter)}`:`${parsed.juzName} (${j}) — حزبان · 8 أرباع`;}return `<span class="chip v1059-structure-chip" title="${v10Esc(label)}">${v10Esc(label)}<button type="button" class="v1181-chip-text" onclick="v1181OpenJuzChipText(${i})">📖 النص</button><span class="chip-x" onclick="rmJuzChip(${i})">✕</span></span>`;}).join('');
 }
 function v1051QuarterItem(juzName,quarter,status='not_heard'){const idx=JZ.indexOf(juzName);if(idx<0||quarter<1||quarter>8)return null;return{id:`juz-${idx+1}-q${quarter}`,type:'juz_quarter',juzIndex:idx+1,juzName,quarter,label:V1051_CARRY.quarterChip(juzName,quarter),status,evaluation:'',grade:'',errors:[],notes:''};}
 function v10ExpandJuz(chip){const parsed=V1051_CARRY.parseJuzChip(chip,JZ);if(!parsed)return[];if(parsed.quarter)return[v1051QuarterItem(parsed.juzName,parsed.quarter)].filter(Boolean);return[1,2,3,4,5,6,7,8].map(q=>v1051QuarterItem(parsed.juzName,q)).filter(Boolean);}
@@ -148,7 +148,25 @@ function toggleV10Accordion(id){const el=document.getElementById(id);if(!el)retu
 function enhanceSessionAccordions(){const card=document.getElementById('sessionErrorsCard');if(card&&!card.dataset.v10){card.dataset.v10='1';card.classList.add('v10-accordion');card.id='v10ErrorsAccordion';const children=[...card.children];card.innerHTML=`<button type="button" aria-expanded="false" onclick="toggleV10Accordion('v10ErrorsAccordion')"><span>سجل أخطاء التسميع <small class="txt-mut" id="errorCountLabel">0 خطأ</small></span><span class="v10-chevron">⌄</span></button><div class="v10-accordion-body"></div>`;const body=card.querySelector('.v10-accordion-body');children.forEach(c=>{if(c.querySelector?.('#errorCountLabel'))c.remove();else body.appendChild(c);});}
  const target=document.querySelector('#prevCard');if(target&&!document.getElementById('v10SuggestionAccordion'))target.insertAdjacentHTML('afterend',v10Accordion('v10SuggestionAccordion','ما سيُعاد تلقائيًا','<div id="v10SuggestionBody" class="v10-empty">سيظهر هنا تلقائيًا ما يحتاج إعادة أو لم يُسمع، مع بقاء القرار النهائي للمحفظ.</div>',false));}
 function v10Prev(){const dateKey=document.getElementById('sesDate')?.value||localDateKey();return curStId?getPreviousPresentSession(curStId,dateKey,editingSessionId||''):null;}
-function openQuranRangeText(sec){if(!sec?.surah)return toast('لا يوجد نطاق نص متاح','error');const idx=S.findIndex(s=>s.n===sec.surah);if(idx<0)return;V8.quranRange={chapter:idx+1,surah:sec.surah,from:Number(sec.from)||1,to:Number(sec.to)||S[idx].a,max:S[idx].a};document.getElementById('quranModalTitle').textContent=`📖 سورة ${sec.surah} — الآيات ${V8.quranRange.from} إلى ${V8.quranRange.to}`;document.getElementById('quranTextModal').classList.add('open');const content=document.getElementById('quranVerseContent');content.innerHTML='<div class="quran-load">جارٍ تحميل النص العثماني…</div>';fetchQpcHafsChapter(idx+1).then(all=>{V8.quranVerses=all.filter(v=>v.ayah>=V8.quranRange.from&&v.ayah<=V8.quranRange.to);content.innerHTML=V8.quranVerses.map(v=>`<span class="quran-ayah" data-ayah="${v.ayah}">${v10Esc(v.text)} <span class="quran-ayah-num">${v.ayah}</span></span>`).join(' ');setQuranPane?.('text');}).catch(()=>content.innerHTML='<div class="empty"><p>تعذر تحميل النص الآن، وإن كان محفوظًا Offline فسيُستخدم تلقائيًا عند توفره.</p></div>');}
+function openQuranRangeText(sec){
+  if(!sec?.surah)return toast('لا يوجد نطاق نص متاح','error');
+  const idx=S.findIndex(s=>s.n===sec.surah);if(idx<0)return;
+  const max=S[idx].a,from=Math.max(1,Math.min(max,Number(sec.from)||1)),to=Math.max(from,Math.min(max,Number(sec.to)||max));
+  V8.quranRange={chapter:idx+1,surah:sec.surah,from,to,max};
+  const requestId=V10.quranRequestId=(V10.quranRequestId||0)+1;
+  const oldQuarterNav=document.getElementById('v1181RangeParts');if(oldQuarterNav)oldQuarterNav.hidden=true;
+  document.getElementById('quranModalTitle').textContent=`📖 سورة ${sec.surah} — الآيات ${from} إلى ${to}`;
+  document.getElementById('quranTextModal').classList.add('open');
+  const content=document.getElementById('quranVerseContent');
+  content.innerHTML='<div class="quran-load">جارٍ تحميل النص العثماني…</div>';
+  fetchQpcHafsChapter(idx+1).then(all=>{
+    if(V10.quranRequestId!==requestId)return;
+    V8.quranVerses=all.filter(v=>v.ayah>=from&&v.ayah<=to);
+    content.innerHTML=V8.quranVerses.map(v=>`<span class="quran-ayah" data-ayah="${v.ayah}">${v10Esc(v.text)} <span class="quran-ayah-num">${v.ayah}</span></span>`).join(' ');
+    if(typeof setQuranPane==='function')setQuranPane('text');
+    document.dispatchEvent(new Event('imam:quran-range-ready'));
+  }).catch(()=>{if(V10.quranRequestId===requestId)content.innerHTML='<div class="empty"><p>تعذر تحميل النص الآن. جرّب بعد عودة الاتصال أو تنزيل النص Offline.</p></div>';});
+}
 function openPrevQuranText(key){const p=v10Prev();if(p?.[key])openQuranRangeText(p[key]);}
 function repeatPrevAssignment(key){const p=v10Prev(),x=p?.[key];if(!x)return;if(['new','rec','far'].includes(key)){secOn[key]=true;updateTogs();document.getElementById(key+'-s').value=x.surah;fillAyah(key);document.getElementById(key+'-full').checked=!!x.full;toggleFull(key);if(!x.full){document.getElementById(key+'-f').value=x.from;document.getElementById(key+'-t').value=x.to;}document.getElementById(key+'-s').dataset.userTouched='1';}scheduleDraftSave();toast('تمت إضافة نفس التكليف للحصة القادمة — يمكنك تعديله قبل الحفظ','success');}
 function setReviewItemGrade(groupId,itemId,grade){
@@ -165,7 +183,7 @@ function v10ReviewGroupHTML(a){
   const result=V10.reviewResults[a.id]||{};
   return `<div class="v10-review-group"><h4>${v10Esc(a.groupName)}</h4><div class="v10-review-note">قيّم كل عنصر سمعه الطالب. أي عنصر تتركه بلا تقييم سيُسجل «لم يُسمع» ويُرحّل تلقائيًا للحصة القادمة.</div>${(a.items||[]).map(it=>{
     const r=result[it.id]||{},grade=V1051_CARRY.normalizeGrade(r.grade||r.evaluation||''),repeat=!grade&&(r.status==='repeat'||r.status==='not_heard');
-    const textBtn=it.type==='surah'?`<button class="v10-text-btn" onclick="openQuranRangeText({surah:'${v10Esc(it.surahName)}',from:1,to:${S[it.surahId-1]?.a||1}})">📖 النص</button>`:'';
+    const textBtn=it.type==='surah'?`<button type="button" class="v10-text-btn" onclick="openQuranRangeText({surah:'${v10Esc(it.surahName)}',from:1,to:${S[it.surahId-1]?.a||1}})">📖 النص</button>`:it.type==='juz_quarter'?`<button type="button" class="v10-text-btn" onclick="v1181OpenQuarterText(${Number(it.juzIndex)||JZ.indexOf(it.juzName)+1},${Number(it.quarter)||1})">📖 النص</button>`:'';
     return `<div class="v10-review-item" data-review-group="${v10Esc(a.id)}" data-review-item="${v10Esc(it.id)}"><div class="v10-review-name"><span>${v10Esc(v1051ItemDisplay(it))}</span>${textBtn}</div>${v10511ReviewGradeGrid(a.id,it.id,grade,repeat)}${v1061ReviewScoreInput(a.id,it.id,r.score)}</div>`;
   }).join('')}</div>`;
 }

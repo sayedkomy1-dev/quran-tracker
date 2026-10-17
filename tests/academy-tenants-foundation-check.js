@@ -36,8 +36,8 @@ assert.match(script,/لم تنتقل بعد/,'Status must disclaim legacy data i
 assert.match(html,/academy-workspaces\.css\?v=11\.7\.4-foundation/);
 assert.match(html,/academy-workspaces\.js\?v=11\.7\.4-foundation/);
 assert.match(auth,/ImamApp\?\.AcademyTenancy\?\.initialize/);
-assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.8\.0-certificates-inspector'/);
-assert.match(read('js/core/runtime.js'),/version:'11\.8\.0',schema:12/);
+assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.8\.1-revision-text-data-boot'/);
+assert.match(read('js/core/runtime.js'),/version:'11\.8\.1',schema:12/);
 // Behavioral smoke test with a minimal owner context; does not contact Supabase.
 const nodes={};const settings={prepend(n){nodes[n.id]=n;}};
 function element(id){return nodes[id]||null;}

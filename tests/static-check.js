@@ -52,14 +52,14 @@ new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='11.8.0','VERSION must be 11.5.1');
+assert(version==='11.8.1','VERSION must be 11.5.1');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
 assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'11.0.0'"),'app.js APP_VERSION must come from ImamApp runtime');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js?v=11.0.0'")&&sw.includes("'./v9.css?v=11.0.0'")&&sw.includes("'./v10.js?v=11.2.0-s1.1'")&&sw.includes("'./v10.css?v=11.0.0'")&&sw.includes("'./js/core/runtime.js?v=11.7.4.5-full-corrections'")&&sw.includes("'./js/features/v10-data.js?v=11.0.0'")&&sw.includes("'./js/features/quran-engine.js?v=11.0.0'")&&sw.includes("'./js/features/mushaf-offline.js?v=11.7.4.2'")&&sw.includes("'./quran-engine.css?v=11.0.0'")&&sw.includes("'./auth.js?v=11.7.4-foundation'")&&sw.includes("'./sync-core.js?v=11.0.0'")&&sw.includes("'./auth.css?v=11.0.0'")&&sw.includes("'./js/features/guardian-communication.js?v=11.0.0'")&&sw.includes("'./js/features/student-progress.js?v=11.0.0'")&&sw.includes("'./js/features/teacher-followup.js?v=11.0.0'")&&sw.includes("'./js/features/circle-analytics.js?v=11.0.0'"),'service worker must cache versioned architecture/v9/v10/auth assets');
+assert(sw.includes("'./v9.js?v=11.0.0'")&&sw.includes("'./v9.css?v=11.0.0'")&&sw.includes("'./v10.js?v=11.8.1'")&&sw.includes("'./v10.css?v=11.0.0'")&&sw.includes("'./js/core/runtime.js?v=11.7.4.5-full-corrections'")&&sw.includes("'./js/features/v10-data.js?v=11.0.0'")&&sw.includes("'./js/features/quran-engine.js?v=11.0.0'")&&sw.includes("'./js/features/mushaf-offline.js?v=11.7.4.2'")&&sw.includes("'./quran-engine.css?v=11.0.0'")&&sw.includes("'./auth.js?v=11.7.4-foundation'")&&sw.includes("'./sync-core.js?v=11.0.0'")&&sw.includes("'./auth.css?v=11.0.0'")&&sw.includes("'./js/features/guardian-communication.js?v=11.0.0'")&&sw.includes("'./js/features/student-progress.js?v=11.0.0'")&&sw.includes("'./js/features/teacher-followup.js?v=11.0.0'")&&sw.includes("'./js/features/circle-analytics.js?v=11.0.0'"),'service worker must cache versioned architecture/v9/v10/auth assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.
@@ -112,9 +112,11 @@ assert(v9.includes("setAttribute('aria-current','step')"),'guided session steppe
 assert(fs.statSync(file('branding/academy-badge-source.png')).size>1000000,'branding source asset appears incomplete');
 
 // All inline handlers must resolve to an application function or browser builtin.
-const js=runtime+'\n'+v10Data+'\n'+quranStructure+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+mushafOffline+'\n'+quranEngine+'\n'+v10+'\n'+guardianCommunication+'\n'+studentProgress+'\n'+teacherFollowup+'\n'+circleAnalytics+'\n'+guardianPortalShare;
+const revisionText=fs.readFileSync(file('js/features/revision-quran-text.js'),'utf8');
+const js=revisionText+'\n'+runtime+'\n'+v10Data+'\n'+quranStructure+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+mushafOffline+'\n'+quranEngine+'\n'+v10+'\n'+guardianCommunication+'\n'+studentProgress+'\n'+teacherFollowup+'\n'+circleAnalytics+'\n'+guardianPortalShare;
 const defs=new Set([...js.matchAll(/\b(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]));
 for(const m of v10.matchAll(/\b([A-Za-z_$][\w$]*)\s*:\s*v10[A-Za-z_$][\w$]*/g))defs.add(m[1]);
+for(const m of revisionText.matchAll(/g\.(v1181\w+)\s*=\s*\w+/g))defs.add(m[1]);
 const builtins=new Set(['if','for','while','switch','confirm','prompt','alert','setTimeout','setInterval','clearTimeout','clearInterval','parseInt','parseFloat','Number','String','Boolean','Date','Math','JSON','encodeURIComponent','decodeURIComponent']);
 for(const hm of html.matchAll(/\bon(?:click|change|input|submit|contextmenu|keydown|keyup|blur|focus)=["']([^"']+)["']/gi)){
   for(const fm of hm[1].matchAll(/(?<![.\w])([A-Za-z_$][\w$]*)\s*\(/g)){
