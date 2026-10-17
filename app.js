@@ -145,6 +145,8 @@ function getScheduleConflicts(candidate,ignoreId=null){
   const end=start+(Number(candidate.sessionDuration)||30),out=[];
   students.forEach(st=>{
     if(st.id===ignoreId)return;
+    // Pupils in the same named circle are intentionally scheduled together.
+    if(String(candidate?.group||'').trim()&&String(st.group||'').trim()===String(candidate.group||'').trim())return;
     if(st.studentStatus&&st.studentStatus!=='active')return;
     const stStart=timeToMinutes(st.scheduleTime);if(stStart==null)return;
     const shared=days.filter(d=>(st.scheduleDays||[]).includes(d));if(!shared.length)return;
@@ -663,9 +665,10 @@ function goPage(p){
   document.querySelectorAll('.nav-t').forEach(x=>x.classList.remove('on'));
   const pEl=document.getElementById('pg-'+p);
   if(pEl) pEl.classList.add('on');
-  const navMap={home:0,students:1,checkin:2,session:3,reports:4,settings:5};
-  const navTabs=document.querySelectorAll('.nav-t');
-  if(navMap[p]!==undefined) navTabs[navMap[p]].classList.add('on');
+  // Resolve active tabs by their actual target, not by numeric positions.
+  // Placement and circle-management add new navigation entries.
+  const matchedTab=[...document.querySelectorAll('#mainNav .nav-t')].find(el=>el.getAttribute('onclick')===`goPage('${p}')`);
+  matchedTab?.classList.add('on');
   const isExtra=p==='profile'||p==='compare';
   const showBack=isExtra||p==='tasks';
   document.getElementById('mainNav').style.display=isExtra?'none':'flex';
@@ -2209,6 +2212,45 @@ function cleanImportedSection(sec){
   const grade=cleanText(sec.grade,20);if(GRADE_MAP[grade])cleaned.grade=grade;
   return cleaned;
 }
+// v11.10: preserve validated circle, error and teacher-review metadata in backups.
+function sanitizeTeacherSessionMeta(raw){
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
+  const kinds=['auto','new','review','mixed','placement','exam','followup'];
+  const extra=Array.isArray(raw.extra)?raw.extra.slice(0,150).flatMap(x=>{
+    if(!x||!['new','rec','far','placement','exam'].includes(x.type))return [];
+    const sec=cleanImportedSection(x);if(!sec||!Number.isInteger(Number(x.from))||!Number.isInteger(Number(x.to)))return [];
+    return [{id:cleanText(x.id,120),type:x.type,surah:sec.surah,surahId:S.findIndex(t=>t.n===sec.surah)+1,from:sec.from,to:sec.to,
+      grade:['ممتاز','جيد جداً','جيد','ضعيف','إعادة'].includes(x.grade)?x.grade:'',
+      score:x.score==null||x.score===''?null:(Number.isFinite(Number(x.score))?Math.max(0,Math.min(100,Number(x.score))):null),
+      decision:['mastered','stabilize','repeat'].includes(x.decision)?x.decision:'',
+      notes:cleanText(x.notes,500),fromGroupBatch:!!x.fromGroupBatch}];
+  }):[];
+  const decisions={};for(const k of ['rec','far'])if(['mastered','stabilize','repeat'].includes(raw.decisions?.[k]))decisions[k]=raw.decisions[k];
+  const notPerformed={};for(const k of ['new','rec','far'])if(raw.notPerformed?.[k]===true)notPerformed[k]=true;
+  return {kind:kinds.includes(raw.kind)?raw.kind:'auto',extra,decisions,notPerformed,skipReason:cleanText(raw.skipReason,250),
+    ...(raw.overrideReason?{overrideReason:cleanText(raw.overrideReason,250),overrideAt:cleanText(raw.overrideAt,40),overrideIssues:Array.isArray(raw.overrideIssues)?raw.overrideIssues.slice(0,50).map(x=>cleanText(x,80)):[]}:{} )};
+}
+function sanitizeCircleDiscipline(raw){
+  return (Array.isArray(raw)?raw:[]).slice(-250).filter(x=>x&&typeof x==='object').map(x=>({
+    id:cleanText(x.id,120),date:cleanText(x.date,12),at:cleanText(x.at,40),
+    grade:['لا يوجد إنذار','تنبيه','إنذار أول','إنذار نهائي','مراجعة إدارية'].includes(x.grade)?x.grade:'',
+    confirmedAbsences:Math.min(365,Math.max(0,Number(x.confirmedAbsences)||0)),
+    unknownDays:Math.min(365,Math.max(0,Number(x.unknownDays)||0)),
+    notes:cleanText(x.notes,500),actorId:cleanText(x.actorId,120)
+  }));
+}
+function sanitizeRecitationErrors(raw){
+  // Retain Quran correction evidence on reimport, bounded and with safe keys.
+  // Do not execute or treat imported markup as trusted HTML.
+  const allowed=['id','source','group','type','mode','word','ayah','ayahText','surah','surahId','wordIndex','charIndex','charText','targetLevel','resolved','resolvedAt','at','attempt','notes','createdAt','updatedAt','studentId','text','correct','wrong','correction','context'];
+  return (Array.isArray(raw)?raw:[]).slice(0,5000).filter(x=>x&&typeof x==='object'&&!Array.isArray(x)).map(x=>{
+    const clean={};for(const key of allowed)if(Object.prototype.hasOwnProperty.call(x,key)){
+      const v=x[key];if(typeof v==='string')clean[key]=cleanText(v,2000);
+      else if(typeof v==='number'&&Number.isFinite(v))clean[key]=v;
+      else if(typeof v==='boolean')clean[key]=v;
+    }return clean;
+  });
+}
 function sanitizeBackupData(d){
   const usedStudents=new Set(),usedSessions=new Set(),idMap=new Map();
   const safeStudents=d.students.map(raw=>{
@@ -2221,6 +2263,7 @@ function sanitizeBackupData(d){
       scheduleTime:/^\d{2}:\d{2}$/.test(String(raw.scheduleTime||''))?String(raw.scheduleTime):'',
       sessionDuration:Math.min(180,Math.max(15,parseInt(raw.sessionDuration)||30)),notes:cleanText(raw.notes,5000),
       createdAt:cleanText(raw.createdAt,40),updatedAt:cleanText(raw.updatedAt,40),
+      ...(Array.isArray(raw.circleDisciplineHistory)?{circleDisciplineHistory:sanitizeCircleDiscipline(raw.circleDisciplineHistory)}:{}),
       // v11.9.1: preserve placement history in sanitized backup imports.
       ...(raw.priorMemorization&&typeof raw.priorMemorization==='object'?{priorMemorization:{
         status:['unknown','beginner','previous','completed'].includes(raw.priorMemorization.status)?raw.priorMemorization.status:'unknown',
@@ -2247,7 +2290,11 @@ function sanitizeBackupData(d){
       id:safeImportedId(raw.id,'ses',usedSessions),studentId:mapped,status,
       sessionDate:/^\d{4}-\d{2}-\d{2}$/.test(String(raw.sessionDate||''))?String(raw.sessionDate):'',
       date:cleanText(raw.date,40),createdAt:cleanText(raw.createdAt,40),updatedAt:cleanText(raw.updatedAt,40),
-      notes:cleanText(raw.notes,8000),prevGrades:pg,source:cleanText(raw.source,30),completed:!!raw.completed
+      notes:cleanText(raw.notes,8000),prevGrades:pg,source:cleanText(raw.source,30),completed:!!raw.completed,
+      ...(raw.groupBatchId?{groupBatchId:cleanText(raw.groupBatchId,120)}:{}),
+      absenceExcused:raw.absenceExcused===true,excuseReason:cleanText(raw.excuseReason,300),
+      ...(raw.teacher119?{teacher119:sanitizeTeacherSessionMeta(raw.teacher119)}:{}),
+      ...(Array.isArray(raw.recitationErrors)?{recitationErrors:sanitizeRecitationErrors(raw.recitationErrors)}:{})
     };
     ['new','rec','far'].forEach(k=>{const x=cleanImportedSection(raw[k]);if(x)ses[k]=x;});
     const actual={};['new','rec','far'].forEach(k=>{const x=cleanImportedSection(raw.actualRecitation?.[k]);if(x)actual[k]=x;});if(Object.keys(actual).length)ses.actualRecitation=actual;
@@ -2301,10 +2348,12 @@ function importData(e){
       try{
         students=safe.students;sessions=importedSessions;tasks=safe.tasks||[];
         const cfg=d.settings&&typeof d.settings==='object'?d.settings:{};
-        settings={...settings,name:cleanText(cfg.name,160),circle:cleanText(cfg.circle,200),theme:['light','dark'].includes(cfg.theme)?cfg.theme:'light',fontSize:['md','lg','xl'].includes(cfg.fontSize)?cfg.fontSize:'md',notifEnabled:!!cfg.notifEnabled,waTemplate:cleanText(cfg.waTemplate,8000),schemaVersion:SCHEMA_VERSION};
+        settings={...settings,name:cleanText(cfg.name,160),circle:cleanText(cfg.circle,200),theme:['light','dark'].includes(cfg.theme)?cfg.theme:'light',fontSize:['md','lg','xl'].includes(cfg.fontSize)?cfg.fontSize:'md',notifEnabled:!!cfg.notifEnabled,waTemplate:cleanText(cfg.waTemplate,8000),
+          circleDiscipline:{thresholds:(()=>{const t=cfg.circleDiscipline?.thresholds;return Array.isArray(t)&&t.length===4&&t.every((v,i)=>Number.isInteger(v)&&v>0&&(i===0||v>t[i-1]))?t:[2,4,6,8];})()},schemaVersion:SCHEMA_VERSION};
         migrateData();
         if(!snapshotHasData({students,sessions,tasks}))clearAccountSafetyOnExplicitReset();
-        save();applyTheme();applyFontSize();toast('تم استيراد البيانات وفحصها وترقيتها بنجاح','success');goPage('home');
+        if(save()===false)throw new Error('تعذر تأكيد حفظ البيانات المستوردة');
+        applyTheme();applyFontSize();toast('تم استيراد البيانات وفحصها وترقيتها بنجاح','success');goPage('home');
       }catch(inner){students=old.students;sessions=old.sessions;tasks=old.tasks;settings=old.settings;save();throw inner;}
     }catch(err){toast(`ملف غير صالح: ${err.message||'تعذر القراءة'}`,'error');}
     finally{e.target.value='';}

@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="11.9.2">
+<meta name="application-version" content="11.10.0">
 <link rel="manifest" href="manifest.json?v=11.0.0">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -94,6 +94,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
   <div class="nav-t" onclick="goPage('students')"><span class="ni">👥</span>الطلاب</div>
   <!-- Accessible, static placement entry: not lost if an optional feature script loads late. -->
   <div class="nav-t pc-nav" id="pcNavTab" role="button" tabindex="0" onclick="if (window.ImamApp?.PlacementCenter?.open) { window.ImamApp.PlacementCenter.open(); } else if (typeof toast === 'function') { toast('تبويب تحديد المستوى لم يكتمل تحميله. حدّث التطبيق ثم أعد المحاولة.','error'); }" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="ni">📋</span>تحديد المستوى</div>
+  <div class="nav-t" id="cmNavTab" onclick="if(window.ImamApp?.CircleManager?.open){window.ImamApp.CircleManager.open()}else if(typeof toast==='function'){toast('إدارة الحلقات لم تكتمل تحميلها. حدّث التطبيق ثم أعد المحاولة.','error')}" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="ni">🏫</span>إدارة الحلقات</div>
   <div class="nav-t" onclick="goPage('checkin')"><span class="ni">✅</span>الحضور</div>
   <div class="nav-t" onclick="goPage('session')"><span class="ni">📖</span>الحصة</div>
   <div class="nav-t" onclick="goPage('reports')"><span class="ni">📊</span>التقارير</div>
@@ -197,6 +198,22 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
   <div id="ciList"></div>
   <button class="btn btn-wa mt8" onclick="sendAllWA()">📤 إرسال تقارير لجميع الحاضرين</button>
   <div style="height:20px"></div>
+</div>
+
+<!-- ══════════════ CIRCLE MANAGEMENT ══════════════ -->
+<div class="pg" id="pg-circle-manager" dir="rtl">
+  <div class="cm-header"><h2>🏫 إدارة الحلقات</h2><p>التسميع الجماعي · الحضور · متابعة الانضباط · الجداول</p></div>
+  <div class="cm-tabs" id="cmTabs" role="group" aria-label="أقسام إدارة الحلقات">
+    <button type="button" data-tab="group">📖 التسميع الجماعي</button>
+    <button type="button" data-tab="attendance">✅ كشف الحضور</button>
+    <button type="button" data-tab="discipline">🔔 الانضباط</button>
+    <button type="button" data-tab="schedule">📅 الجداول</button>
+  </div>
+  <div class="cm-toolbar">
+    <label>الحلقة / المجموعة<select id="cmGroup" aria-label="الحلقة"></select></label>
+    <label>تاريخ الحصة<input id="cmDate" type="date" aria-label="تاريخ الحصة"></label>
+  </div>
+  <div id="cmPanel" aria-live="polite"></div>
 </div>
 
 <!-- ══════════════ STUDENTS ══════════════ -->
@@ -1016,7 +1033,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <script src="js/features/ux-guidance.js?v=11.7.4.2" defer></script>
 <script src="js/features/academy-workspaces.js?v=11.7.4-foundation" defer></script>
 <script src="sync-core.js?v=11.0.0" defer></script>
-<script src="app.js?v=11.9.2" defer></script>
+<script src="app.js?v=11.10.0" defer></script>
 <script src="v8.js?v=11.2.0-s3" defer></script>
 <script src="v9.js?v=11.0.0" defer></script>
 <script src="js/features/mushaf-offline.js?v=11.7.4.2" defer></script>
@@ -1046,5 +1063,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <script src="js/features/session-intelligence-119.js?v=11.9.2" defer></script>
 <link rel="stylesheet" href="placement-center-1191.css?v=11.9.2">
 <script src="js/features/placement-center-1191.js?v=11.9.2" defer></script>
+<link rel="stylesheet" href="circle-management-1110.css?v=11.10.0">
+<script src="js/features/circle-management-1110.js?v=11.10.0" defer></script>
 </body>
 </html>

@@ -1,0 +1,21 @@
+/* Academy circle-management v11.10.0: compact RTL mobile-first teacher tools. */
+#pg-circle-manager{direction:rtl;max-width:960px;margin-inline:auto}
+.cm-header,.cm-explainer,.cm-policy,.cm-schedule,.cm-warning,.cm-ok{padding:14px;border-radius:13px;background:var(--wh,#fff);border:1px solid var(--bdr,#dce6df);margin:12px 0}
+.cm-header h2{font-size:1.15rem;margin:0 0 4px}.cm-header p,.cm-hint{color:var(--mut,#64746c);font-size:.85rem;margin:4px 0}
+.cm-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.cm-tabs button{flex:1 1 125px;min-height:42px;padding:10px;border:1px solid var(--bdr,#dce6df);border-radius:10px;background:var(--wh,#fff);color:var(--txt,#152820);font:inherit;font-weight:700}.cm-tabs button.selected{background:var(--gp,#e1f4e7);border-color:var(--g,#28754a)}
+.cm-toolbar,.cm-row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.cm-toolbar{padding:12px;background:var(--wh,#fff);border-radius:12px}.cm-toolbar label,.cm-row label,.cm-student label{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1;font-size:.82rem;font-weight:600}
+.cm-toolbar input,.cm-toolbar select,.cm-row input,.cm-row select,.cm-student select,.cm-student input{width:100%;min-width:0;min-height:38px;padding:6px;border-radius:8px;border:1px solid var(--bdr,#dce6df);background:var(--wh,#fff);color:var(--txt,#152820);font:inherit}
+.cm-students,.cm-att-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:10px;margin:12px 0}
+.cm-student,.cm-att-grid>div{background:var(--wh,#fff);border:1px solid var(--bdr,#dce6df);border-radius:12px;padding:13px;min-width:0}
+.cm-student header,.cm-att-grid>div{display:flex;flex-direction:column;gap:7px}.cm-student header{margin-bottom:10px}.cm-student small,.cm-att-grid small,.cm-meta{color:var(--mut,#667770);font-size:.77rem}
+.cm-student-detail{display:grid;gap:9px;margin-top:10px}.cm-student-detail>label:has([type=checkbox]){display:flex;align-items:center;flex-direction:row}.cm-student-detail input[type=checkbox]{width:auto;min-height:0}
+.cm-student details{border-top:1px solid var(--bdr,#dce6df);padding-top:9px}.cm-student summary{cursor:pointer;font-weight:700}.cm-range{margin:9px 0;padding:10px;background:var(--bg,#f5f8f4);border-radius:9px}.cm-range .cm-row{margin:7px 0;align-items:start}.cm-range .cm-row label{flex:1 1 110px}
+.cm-locked{padding:9px;border-radius:9px;background:var(--goldp,#fff4d7);font-size:.86rem}
+.cm-primary{min-height:47px;width:100%;margin:12px 0}.cm-card-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.cm-warning{border-color:#bc7a29}.cm-ok{border-color:#3d8b65}.cm-empty{padding:20px;text-align:center}.cm-daypick{display:flex;flex-wrap:wrap;gap:10px;padding:10px 0}.cm-daypick label{display:inline-flex;align-items:center;gap:5px;font-size:.85rem}.cm-schedule .cm-row{margin:10px 0}.cm-policy .cm-row{margin:10px 0}.cm-policy .cm-row label{flex:1 1 100px}
+@media(max-width:520px){.cm-toolbar label{flex:1 1 140px}.cm-row label{flex:1 1 135px}.cm-range .cm-row label{flex:1 1 45%}.cm-att-grid{grid-template-columns:1fr}}
+
+/* Eight navigation destinations must remain usable on narrow phones. */
+@media(max-width:760px){
+  #mainNav.nav{overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;justify-content:flex-start;overscroll-behavior-inline:contain}
+  #mainNav .nav-t{flex:0 0 70px;min-width:70px;font-size:9px;white-space:normal;line-height:1.2}
+}

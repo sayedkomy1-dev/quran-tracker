@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict');const fs=require('node:fs');const vm=require('node:vm');
+const app=fs.readFileSync(require('node:path').join(__dirname,'..','app.js'),'utf8');
+const from=app.indexOf('function sanitizeTeacherSessionMeta('),to=app.indexOf('function sanitizeBackupData(',from);
+assert(from>0&&to>from,'backup helper source available');
+const sandbox={S:[{n:'الفاتحة',a:7}],cleanText:(s,max)=>String(s??'').slice(0,max),cleanImportedSection:x=>x?.surah==='الفاتحة'&&x.from>=1&&x.to<=7?x:null};
+vm.runInNewContext(`${app.slice(from,to)}\nglobalThis.backupTests={sanitizeTeacherSessionMeta,sanitizeCircleDiscipline,sanitizeRecitationErrors};`,sandbox);
+const api=sandbox.backupTests;
+const meta=api.sanitizeTeacherSessionMeta({kind:'review',extra:[{id:'rec1',type:'rec',surah:'الفاتحة',from:1,to:7,grade:'جيد',decision:'mastered',fromGroupBatch:true}],decisions:{rec:'stabilize'},skipReason:'عذر'});
+assert.equal(meta.extra.length,1);assert.equal(meta.extra[0].fromGroupBatch,true);
+assert.equal(meta.extra[0].decision,'mastered');assert.equal(meta.decisions.rec,'stabilize');
+const hist=api.sanitizeCircleDiscipline([{id:'x',grade:'إنذار أول',confirmedAbsences:4,unknownDays:2,notes:'تم التواصل'}]);
+assert.equal(hist.length,1);assert.equal(hist[0].grade,'إنذار أول');assert.equal(hist[0].unknownDays,2);
+const errs=api.sanitizeRecitationErrors([{id:'e',source:'quran-word',word:'الرحمن',ayah:3,at:'2026-10-17',resolvedAt:'2026-10-18',resolved:true,unsupported:{sensitive:true}}]);
+assert.equal(errs[0].word,'الرحمن');assert.equal(errs[0].resolvedAt,'2026-10-18');
+assert.equal('unsupported' in errs[0],false,'untrusted nested data not imported');
+assert(app.includes('if(save()===false)throw new Error(\'تعذر تأكيد حفظ البيانات المستوردة\')'),'import cannot report false success');
+console.log('PASS 11.10 backup restores validated guardian warnings, reviews, Quran corrections and detects failed save');
