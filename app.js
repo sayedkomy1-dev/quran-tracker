@@ -2264,6 +2264,31 @@ function sanitizeBackupData(d){
       sessionDuration:Math.min(180,Math.max(15,parseInt(raw.sessionDuration)||30)),notes:cleanText(raw.notes,5000),
       createdAt:cleanText(raw.createdAt,40),updatedAt:cleanText(raw.updatedAt,40),
       ...(Array.isArray(raw.circleDisciplineHistory)?{circleDisciplineHistory:sanitizeCircleDiscipline(raw.circleDisciplineHistory)}:{}),
+      ...(Array.isArray(raw.academicExams1111)?{academicExams1111:raw.academicExams1111.slice(-1000).filter(x=>x&&typeof x==='object'&&['surah','juz','khatm','tajweed'].includes(x.kind)&&['passed','repeat','not_passed'].includes(x.status)).map(x=>({
+        id:cleanText(x.id,120),kind:x.kind,studentId:id,date:cleanText(x.date,12),
+        surahId:Math.min(114,Math.max(0,Number(x.surahId)||0)),from:Math.max(0,Number(x.from)||0),to:Math.max(0,Number(x.to)||0),
+        juz:Math.min(30,Math.max(0,Number(x.juz)||0)),grade:cleanText(x.grade,30),status:x.status,
+        score:x.score===null||x.score===undefined?null:Math.min(100,Math.max(0,Number(x.score)||0)),
+        committee:(Array.isArray(x.committee)?x.committee:[]).slice(0,8).map(y=>cleanText(y,100)),
+        evidence:cleanText(x.evidence,2000),notes:cleanText(x.notes,1000),sessionId:cleanText(x.sessionId,120),
+        approvedBy:cleanText(x.approvedBy,120),approvedAt:cleanText(x.approvedAt,40),
+        source:'human-exam',createdAt:cleanText(x.createdAt,40)
+      }))}:{}),
+      ...(Array.isArray(raw.academicLicenses1111)?{academicLicenses1111:raw.academicLicenses1111.slice(-300).filter(x=>x&&x.status==='internal-approved').map(x=>({
+        id:cleanText(x.id,120),studentId:id,examId:cleanText(x.examId,120),narration:cleanText(x.narration,200),
+        sanad:cleanText(x.sanad,2000),issuer:cleanText(x.issuer,160),note:cleanText(x.note,500),
+        approvedBy:cleanText(x.approvedBy,120),approvedAt:cleanText(x.approvedAt,40),
+        status:'internal-approved',label:'سجل إجازة داخلي — غير قابل للتحقق العام',createdAt:cleanText(x.createdAt,40)
+      }))}:{}),
+      ...(Array.isArray(raw.guardianContact1111)?{guardianContact1111:raw.guardianContact1111.slice(-500).filter(x=>x&&['open_attempted','confirmed_sent','not_sent'].includes(x.status)).map(x=>({
+        id:cleanText(x.id,120),studentId:id,month:cleanText(x.month,12),status:x.status,
+        actorId:cleanText(x.actorId,120),at:cleanText(x.at,40),channel:'whatsapp',proof:'user-declaration'
+      }))}:{}),
+      ...(Array.isArray(raw.academicAudit1111)?{academicAudit1111:raw.academicAudit1111.slice(-500).filter(x=>x&&typeof x==='object').map(x=>({
+        id:cleanText(x.id,120),action:cleanText(x.action,80),recordId:cleanText(x.recordId,120),
+        studentId:id,actorId:cleanText(x.actorId,120),at:cleanText(x.at,40)
+      }))}:{}),
+
       // v11.9.1: preserve placement history in sanitized backup imports.
       ...(raw.priorMemorization&&typeof raw.priorMemorization==='object'?{priorMemorization:{
         status:['unknown','beginner','previous','completed'].includes(raw.priorMemorization.status)?raw.priorMemorization.status:'unknown',

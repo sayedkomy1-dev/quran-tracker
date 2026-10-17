@@ -1,0 +1,45 @@
+'use strict';
+const assert=require('node:assert/strict');const fs=require('node:fs');const vm=require('node:vm');const path=require('node:path');
+const root=path.join(__dirname,'..');const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const src=read('js/features/academic-exams-1111.js');new vm.Script(src);
+const st={id:'student1',name:'طالب تجريبي',group:'الفاتحة',academicExams1111:[]};
+const sessions=[{id:'day1',studentId:'student1',sessionDate:'2026-10-12',status:'حضر',prevGrades:{new:'ممتاز'},recitationErrors:[{word:'الله'}]},{id:'day2',studentId:'student1',sessionDate:'2026-10-13',status:'غاب',absenceExcused:true},{id:'day3',studentId:'student1',sessionDate:'2026-10-14',status:'غاب'}];
+const quran=[{n:'الفاتحة',a:7},{n:'البقرة',a:286}];
+let allowSave=true;let role='teacher';
+const context={console,Date,Math,Set,Map,save:()=>allowSave,WeLiveQuranAuth:{getAccess:()=>({role,user_id:'actor'}),isOwner:()=>role==='owner'},ImamApp:{Utils:{escapeHtml:String,makeId:prefix=>`${prefix}-${Math.random()}`},State:{students:[st],sessions}}};context.globalThis=context;
+vm.runInNewContext('const S='+JSON.stringify(quran)+';',context); // classic-script lexical binding, not window.S
+vm.runInNewContext(src,context);const exams=context.ImamApp.AcademicExams;
+assert(exams,'module exposed');
+const valid={studentId:'student1',kind:'surah',surahId:1,from:1,to:7,grade:'ممتاز',score:95,date:'2026-10-17',committee:['الشيخ الممتحن'],evidence:'أُجري التسميع'};
+assert.equal(exams.validateExam(valid,quran).length,0);
+assert(exams.validateExam({...valid,from:8,to:10},quran).length>0,'invalid Quran range rejected');
+assert(exams.validateExam({...valid,committee:[]},quran).length>0,'committee required');
+assert(exams.validateExam({...valid,score:105},quran).length>0,'score bounded');
+assert(exams.validateExam({...valid,kind:'khatm',evidence:''},quran).length>0,'no unevidenced khatm');
+assert(exams.validateExam({...valid,grade:'غير معروف'},quran).length>0,'grade must match review scale');
+assert.equal(exams.gradeMap['ممتاز'],'passed');assert.equal(exams.gradeMap['إعادة'],'repeat');assert.equal(exams.gradeMap['ضعيف'],'not_passed');
+const ok=exams.createExam(st,valid);assert.equal(ok.ok,true);assert.equal(st.academicExams1111.length,1);assert.equal(st.academicExams1111[0].status,'passed');
+assert.equal(exams.createExam(st,{...valid,kind:'tajweed',evidence:'اختبار التجويد',grade:'إعادة'}).record.status,'repeat');
+const prev=st.academicExams1111.length;allowSave=false;
+assert.equal(exams.createExam(st,valid).ok,false);assert.equal(st.academicExams1111.length,prev,'failed save rolls back');allowSave=true;
+const summary=exams.summary('student1','2026-10',sessions,[st]);
+assert.equal(exams.summary('student1','2026-W42',sessions,[st]).presentDays,1,'weekly reporting across day boundaries');
+assert.equal(exams.summary('student1','2026-W42',sessions,[st]).absentDays,1);
+assert.equal(summary.presentDays,1);assert.equal(summary.absentDays,1);assert.equal(summary.excusedDays,1);assert.equal(summary.errors,1);assert.equal(summary.graded,1);
+assert.equal(exams.summarizeGroup('الفاتحة','2026-10',[st],sessions).confirmedAbsences,1);
+assert.match(exams.contactMessage(st,'2026-10'),/الغياب المؤكد/);
+assert.equal(exams.createLicense(st,ok.record.id,{narration:'حفص',sanad:'سند مسجل',issuer:'الشيخ الحقيقي',confirmed:true}).ok,false,'teacher not allowed to authorize ijazah');
+role='owner';assert.equal(exams.createLicense(st,ok.record.id,{narration:'حفص',sanad:'سند مسجل',issuer:'الشيخ الحقيقي',confirmed:true}).ok,false,'surah test insufficient for ijazah');
+const khatm=exams.createExam(st,{...valid,kind:'khatm',evidence:'محضر تسميع الختم'});assert.equal(khatm.ok,true);
+const license=exams.createLicense(st,khatm.record.id,{narration:'حفص عن عاصم',sanad:'تفاصيل السند',issuer:'شيخ مسجل',confirmed:true});assert.equal(license.ok,true);assert.equal(license.record.status,'internal-approved');
+assert.equal(exams.createLicense(st,khatm.record.id,{narration:'حفص',sanad:'',issuer:'',confirmed:true}).ok,false,'no missing sanad/issuer');
+assert.equal(exams.contactEvent(st,'2026-10','open_attempted').ok,true);assert.equal(st.guardianContact1111.at(-1).status,'open_attempted','open attempt is not sent');
+assert.equal(exams.contactEvent(st,'2026-10','confirmed_sent').ok,true);assert.equal(st.guardianContact1111.at(-1).proof,'user-declaration');
+const html=read('index.html'),sw=read('sw.js'),app=read('app.js');
+for(const asset of ['academic-exams-1111.css?v=11.11.0','js/features/academic-exams-1111.js?v=11.11.0','progress-bridge-1111.css?v=11.11.0','js/features/progress-bridge-1111.js?v=11.11.0']){
+ assert(html.includes(asset));assert(sw.includes("'./"+asset+"'"),'offline precache '+asset);
+}
+assert(html.includes('id="ac1111Nav"')&&html.includes('id="pg-academic-exams"'),'static navigation');
+assert(app.includes('academicExams1111')&&app.includes('academicLicenses1111')&&app.includes('guardianContact1111'),'backup import preserves new data');
+assert(read('js/features/circle-management-1110.js').includes('openDetailedCorrection'),'group individual correction link');
+console.log('PASS 11.11 exam evidence, committee, repeat/fail, owner-only internal ijazah, audits, guardian summary, backup, offline and correction links');

@@ -56,6 +56,7 @@
       if(action==='audit')return audit();
       if(action==='students-close'){const h=inlineHost(btn.closest('.supervisor-row'));if(h)h.hidden=true;return;}
       if(action==='students'||action==='ratings')return detail(id,action,btn.closest('.supervisor-row'));
+      if(action==='progress')return g.ImamApp?.ProgressBridge?.detail?.(id,btn.closest('.supervisor-row'));
       if(action==='scope')return scopes(id,btn.closest('.supervisor-row'));
       if(action==='scope-save')return saveScope(id,btn.dataset.target,btn.closest('.supervisor-row'));
       if(action==='grant'||action==='revoke')return grant(id,action==='grant');
@@ -107,6 +108,7 @@
       <p class="supervision-roster-hint">${esc(teacherSummary(t))} · ${esc(rosterSyncState(t).label)} · آخر كشف: ${esc(dateTime(t.roster_synced_at))}</p>
       <div class="supervisor-stats"><span>طلاب منشورون <b>${metric(t.published_students)}</b></span><span>كشف الطلاب <b>${t.roster_synced_at==null?'لم يُزامَن':metric(t.roster_students)}</b></span><span>رسائل <b>${metric(t.messages)}</b></span><span>تقييمات <b>${metric(t.rated_guardians)}</b></span><span>متوسط التقييم <b>${t.rating_average==null?'—':esc(t.rating_average)+' / 5'}</b></span></div>
       <div class="supervision-buttons">${t.can_students!==false?`<button data-supervision="students" data-teacher="${esc(t.id)}">👥 عرض أسماء الطلاب</button>`:''}
+      ${t.can_progress===true?`<button data-supervision="progress" data-teacher="${esc(t.id)}">📈 نتائج التسميع المنشورة</button>`:''}
       ${t.can_ratings!==false?`<button data-supervision="ratings" data-teacher="${esc(t.id)}">⭐ التقييمات الخاصة</button>`:''}
       ${isOwner&&t.role!=='owner'?`<button data-supervision="${t.supervisor?'revoke':'grant'}" data-teacher="${esc(t.id)}">${t.supervisor?'إلغاء صفة المشرف':'منح صفة المشرف'}</button>${t.supervisor?`<button data-supervision="scope" data-teacher="${esc(t.id)}">⚙️ صلاحيات ونطاق المشرف</button>`:''}`:''}</div>
       <div class="supervisor-inline-detail" data-supervision-detail hidden></div>

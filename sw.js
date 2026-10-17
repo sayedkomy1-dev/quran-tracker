@@ -8,9 +8,9 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.10.0-circle-management-beta1';
+const CACHE_NAME = 'quran-pwa-v11.11.0-academic-exams-beta1';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
-const APP_VERSION = '11.10.0';
+const APP_VERSION = '11.11.0';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
 const APP_SHELL = [
@@ -26,7 +26,7 @@ const APP_SHELL = [
   './js/features/ux-guidance.js?v=11.7.4.2',
   './styles.css?v=11.0.0',
   './v11.css?v=11.4.1-profile-ui',
-  './app.js?v=11.10.0',
+  './app.js?v=11.11.0',
   './v8.js?v=11.2.0-s3',
   './v9.js?v=11.0.0',
   './js/features/mushaf-offline.js?v=11.7.4.2',
@@ -34,8 +34,12 @@ const APP_SHELL = [
   './v10.css?v=11.0.0',
   './quran-engine.css?v=11.0.0',
   './session-intelligence-119.css?v=11.9.2',
-  './circle-management-1110.css?v=11.10.0',
-  './js/features/circle-management-1110.js?v=11.10.0',
+  './circle-management-1110.css?v=11.11.0',
+  './academic-exams-1111.css?v=11.11.0',
+  './js/features/academic-exams-1111.js?v=11.11.0',
+  './progress-bridge-1111.css?v=11.11.0',
+  './js/features/progress-bridge-1111.js?v=11.11.0',
+  './js/features/circle-management-1110.js?v=11.11.0',
   './placement-center-1191.css?v=11.9.2',
   './js/features/placement-center-1191.js?v=11.9.2',
   './js/features/session-intelligence-119.js?v=11.9.2',
@@ -127,8 +131,8 @@ const CORE_SHELL = [
   './styles.css?v=11.0.0',
   './v11.css?v=11.4.1-profile-ui',
   './session-intelligence-119.css?v=11.9.2',
-  './circle-management-1110.css?v=11.10.0',
-  './js/features/circle-management-1110.js?v=11.10.0',
+  './circle-management-1110.css?v=11.11.0',
+  './js/features/circle-management-1110.js?v=11.11.0',
   './placement-center-1191.css?v=11.9.2',
   './js/features/placement-center-1191.js?v=11.9.2',
   './js/features/session-intelligence-119.js?v=11.9.2',
@@ -149,7 +153,7 @@ const CORE_SHELL = [
   './js/features/v11-ui.js?v=11.4.1-profile-ui',
   './js/features/teacher-error-marking.js?v=11.8.0',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
-  './app.js?v=11.10.0',
+  './app.js?v=11.11.0',
   './revision-quran-text.css?v=11.8.1',
   './js/features/revision-quran-text.js?v=11.8.1',
   './auth.js?v=11.7.4-foundation',

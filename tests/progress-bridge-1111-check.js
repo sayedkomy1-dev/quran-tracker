@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const src=read('js/features/progress-bridge-1111.js');new vm.Script(src);
+const g={console,Date,Math,Set,Map,ImamApp:{State:{students:[],sessions:[]}}};g.globalThis=g;vm.runInNewContext(src,g);
+const x=g.ImamApp.ProgressBridge;
+const st=[{id:'s1',name:'one'},{id:'s2',name:'two'}];
+const recent={id:'x1',studentId:'s1',sessionDate:'2026-10-17',status:'حضر'};
+assert.equal(x.safelyPublishable([recent,{...recent,studentId:'other'},{...recent,status:'unknown'}],st).length,1,'no outside roster/unrecognized status');
+const sql=read('sql/academic-progress-1111-OPTIONAL.sql');
+assert(sql.includes('auth.uid()')&&sql.includes("app_supervision_scope_check(v_actor,p_teacher_id,'progress')"),'scope enforced server-side');
+assert(sql.includes('enable row level security')&&sql.includes('revoke all on table public.app_teacher_academic_progress'),'direct table access blocked');
+assert(!sql.includes('grant select on public.app_teacher_academic_progress to authenticated'),'no direct read grants');
+assert(read('js/features/supervisor-dashboard.js').includes('data-supervision="progress"'),'scoped control in supervision');
+console.log('PASS 11.11 scoped progress bridge: roster filtering, server grants, audit visibility integration');

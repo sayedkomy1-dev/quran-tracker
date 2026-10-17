@@ -150,7 +150,7 @@
     const oldCount=list.filter(s=>locked(entry(s.id,ui.date))).length;
     return `<div class="cm-explainer">سجّل حضور وتسميع طلاب الحلقة في عملية حفظ واحدة. لا يُستبدل أي تسميع معتمد، وتظل لكل طالب حصة مستقلة.</div><div class="cm-meta">عدد الطلاب: ${list.length} · حصص معتمدة مسبقًا: ${oldCount} · غير المحدد لا يُسجل غائبًا</div><div class="cm-students">${list.map(st=>{
       const old=entry(st.id,ui.date),saved=locked(old);const draft=ui.batchDraft.get(st.id)||{};
-      return `<article class="cm-student" data-student="${esc(st.id)}"><header><b>${esc(st.name)}</b><small>${old?`مسجل: ${esc(old.status)}${saved?' — حصة معتمدة':''}`:'لا يوجد تسجيل بعد'}</small></header>${saved?'<div class="cm-locked">تم اعتماد حصة هذا الطالب؛ تعديلها من شاشة الحصة الفردية حفاظًا على التصحيحات السابقة.</div>':`<label>الحالة <select data-field="status">${options([['','— لا تغيير —'],['حضر','حضر'],['غاب','غاب'],['إجازة','إجازة']],draft.status||'')}</select></label><div class="cm-student-detail"><label><input type="checkbox" data-field="excused" ${draft.excused?'checked':''}> غياب بعذر</label><label>سبب العذر<input data-field="excuseReason" maxlength="300" value="${esc(draft.excuseReason||'')}" placeholder="يُطلب عند تحديد غياب بعذر"></label><details><summary>📖 مواضع التسميع والتقييم (اختياري إذا سجّلت حضورًا فقط)</summary>${Object.entries(TYPES).map(([k,title])=>{const r=draft[k]||{};return `<div class="cm-range" data-range="${k}"><b>${title}</b><div class="cm-row"><label>السورة<select data-field="${k}-surahId">${surahOptions(r.surahId||0)}</select></label><label>من آية<input data-field="${k}-from" type="number" min="1" value="${esc(r.from||1)}"></label><label>إلى آية<input data-field="${k}-to" type="number" min="1" value="${esc(r.to||1)}"></label><label>التقدير<select data-field="${k}-grade">${gradeOptions(r.grade||'')}</select></label></div><button type="button" class="btn btn-out btn-sm" data-action="view-range">📖 عرض النص القرآني</button></div>`;}).join('')}<label>ملاحظة الحصة<input data-field="notes" maxlength="500" value="${esc(draft.notes||'')}"></label></details></div>`}</article>`;
+      return `<article class="cm-student" data-student="${esc(st.id)}"><header><b>${esc(st.name)}</b><small>${old?`مسجل: ${esc(old.status)}${saved?' — حصة معتمدة':''}`:'لا يوجد تسجيل بعد'}</small><button type="button" class="btn btn-out btn-sm" data-action="detail" data-student="${esc(st.id)}">✍️ التصحيح التفصيلي للكلمات والحروف</button></header>${saved?'<div class="cm-locked">تم اعتماد حصة هذا الطالب؛ تعديلها من شاشة الحصة الفردية حفاظًا على التصحيحات السابقة.</div>':`<label>الحالة <select data-field="status">${options([['','— لا تغيير —'],['حضر','حضر'],['غاب','غاب'],['إجازة','إجازة']],draft.status||'')}</select></label><div class="cm-student-detail"><label><input type="checkbox" data-field="excused" ${draft.excused?'checked':''}> غياب بعذر</label><label>سبب العذر<input data-field="excuseReason" maxlength="300" value="${esc(draft.excuseReason||'')}" placeholder="يُطلب عند تحديد غياب بعذر"></label><details><summary>📖 مواضع التسميع والتقييم (اختياري إذا سجّلت حضورًا فقط)</summary>${Object.entries(TYPES).map(([k,title])=>{const r=draft[k]||{};return `<div class="cm-range" data-range="${k}"><b>${title}</b><div class="cm-row"><label>السورة<select data-field="${k}-surahId">${surahOptions(r.surahId||0)}</select></label><label>من آية<input data-field="${k}-from" type="number" min="1" value="${esc(r.from||1)}"></label><label>إلى آية<input data-field="${k}-to" type="number" min="1" value="${esc(r.to||1)}"></label><label>التقدير<select data-field="${k}-grade">${gradeOptions(r.grade||'')}</select></label></div><button type="button" class="btn btn-out btn-sm" data-action="view-range">📖 عرض النص القرآني</button></div>`;}).join('')}<label>ملاحظة الحصة<input data-field="notes" maxlength="500" value="${esc(draft.notes||'')}"></label></details></div>`}</article>`;
     }).join('')}</div><button type="button" class="btn btn-g cm-primary" data-action="save-group">💾 حفظ تسميع الحلقة وحضورها</button><p class="cm-hint">يُظهر التطبيق رسالة نجاح فقط بعد تأكيد حفظ السجلات محليًا. إرسال رسائل ولي الأمر خطوة منفصلة وتحتاج مراجعة.</p>`;
   }
   function viewRange(button){
@@ -221,11 +221,23 @@
     if(!g.confirm?.(`معاينة رسالة ولي الأمر:\n\n${msg}\n\nهل ترغب في فتح واتساب الآن؟ (لن نعتبر الرسالة مرسلة)`))return;
     root.SessionIntelligence?.playGuardianWarning?.(false);g.openWhatsApp?.(st,msg);
   }
+  function openDetailedCorrection(studentId){
+    const st=students().find(x=>String(x.id)===String(studentId));
+    if(!st)return showToast('الطالب غير موجود','error');
+    if(!canManage())return showToast('لا توجد صلاحية للتصحيح','error');
+    // One existing session editor: do not create a second correction ledger.
+    g.goPage?.('session');
+    const student=$('sesSt'),date=$('sesDate');
+    if(student)student.value=st.id;
+    if(date)date.value=ui.date;
+    if(typeof g.onSesSt==='function')g.onSesSt();
+    else showToast('تعذر تحميل محرر التصحيح الحالي','error');
+  }
   function bindEvents(){const host=$('pg-circle-manager');if(!host||host.dataset.bound)return;host.dataset.bound='1';
     host.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;
       if(b.dataset.tab){readDraft();ui.tab=b.dataset.tab;draw();return;}
       const action=b.dataset.action;
-      if(action==='view-range')viewRange(b);if(action==='save-group')saveGroup();if(action==='save-schedule')saveSchedule();if(action==='save-policy')savePolicy();if(action==='warn')createWarning(b.dataset.student);if(action==='contact')contact(b.dataset.student);
+      if(action==='detail')openDetailedCorrection(b.dataset.student);if(action==='view-range')viewRange(b);if(action==='save-group')saveGroup();if(action==='save-schedule')saveSchedule();if(action==='save-policy')savePolicy();if(action==='warn')createWarning(b.dataset.student);if(action==='contact')contact(b.dataset.student);
     });
     host.addEventListener('change',ev=>{
       if(ev.target.id==='cmGroup'){readDraft();ui.group=ev.target.value;ui.batchDraft.clear();draw();return;}
@@ -238,7 +250,7 @@
   function install(){bindEvents();const legacy=root.Legacy,go=g.goPage;
     if(legacy&&typeof go==='function')legacy.override('goPage',function(page,...args){if(page==='circle-manager'&&!canManage())return showToast('ليس لديك صلاحية لإدارة الحلقات','error');const out=go.call(this,page,...args);if(page==='circle-manager'){$('cmNavTab')?.classList.add('on');const title=$('hdrTitle');if(title)title.textContent='إدارة الحلقات';draw();}return out;},'v11.10-circle-manager');
   }
-  root.CircleManager={open,draw,groups,roster,entry,scheduled,absencesFor,policy,disciplineLevel,previewPolicy,conflictPairs,collectRecitation,buildBatchChanges,canManage};
+  root.CircleManager={open,draw,groups,roster,entry,scheduled,absencesFor,policy,disciplineLevel,previewPolicy,conflictPairs,collectRecitation,buildBatchChanges,canManage,openDetailedCorrection};
   if(typeof module!=='undefined'&&module.exports)module.exports={scheduled,absencesFor,policy,disciplineLevel,conflictPairs,collectRecitation,buildBatchChanges,validDay,groupName};
   if(typeof document!=='undefined'){
     const boot=()=>{try{if(!root.Legacy||typeof g.goPage!=='function'){setTimeout(boot,200);return;}install();}catch(err){console.error('[CircleManager] failed:',err);}};

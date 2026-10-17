@@ -1,0 +1,29 @@
+/* Arabic assessment centre. No overlay above Quran correction. */
+#ac1111Nav{white-space:nowrap}
+#pg-academic-exams{direction:rtl;max-width:1100px;margin:auto}
+.ac1111-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap}
+.ac1111-head h2{margin:0 0 8px;color:var(--txt)}
+.ac1111-head p{color:var(--mut);margin:0}
+.ac1111-head label{min-width:190px;flex:1;max-width:300px}
+.ac1111-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.ac1111-tabs button{border:1px solid var(--bdr);background:var(--wh);color:var(--txt);padding:10px 14px;border-radius:12px;cursor:pointer;font:inherit}
+.ac1111-tabs button.active{background:var(--g);color:#fff}
+.ac1111-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+#pg-academic-exams .card{padding:18px;margin-bottom:12px;min-width:0}
+#pg-academic-exams label{display:flex;flex-direction:column;gap:6px;margin:12px 0;font-size:13px}
+#pg-academic-exams input,#pg-academic-exams select,#pg-academic-exams textarea{max-width:100%;width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bdr);border-radius:9px;background:var(--wh);color:var(--txt);font:inherit}
+#pg-academic-exams .ac1111-check{flex-direction:row;align-items:start}
+#pg-academic-exams .ac1111-check input{width:20px;min-width:20px}
+.ac1111-row{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+.ac1111-row label{flex:1;min-width:85px}
+.ac1111-record{display:flex;flex-direction:column;gap:4px;border-bottom:1px solid var(--bdr);padding:10px 0}
+.ac1111-record span{color:var(--g)}
+.ac1111-record small,.ac1111-hint{color:var(--mut);line-height:1.8}
+.ac1111-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:12px}
+.ac1111-metrics>div{padding:14px;text-align:center;border:1px solid var(--bdr);border-radius:12px;background:var(--wh)}
+.ac1111-metrics b{display:block;font-size:24px;color:var(--g)}
+.ac1111-metrics small{display:block;color:var(--mut)}
+.ac1111-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ac1111-empty{padding:30px;text-align:center;color:var(--mut)}
+@media(max-width:760px){.ac1111-layout{grid-template-columns:1fr}.ac1111-head label{max-width:none}.ac1111-tabs button{flex:1 1 44%}}
+@media print{#pg-academic-exams .ac1111-form,.ac1111-tabs,.ac1111-buttons{display:none}}

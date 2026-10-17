@@ -12,7 +12,7 @@
   const getStudent=id=>(app().students||[]).find(s=>String(s.id)===String(id));
   const sessionsFor=id=>(app().sessions||[]).filter(s=>String(s.studentId)===String(id));
   const surahs=()=>{try{return Array.isArray(S)?S:[]}catch(_){return[]}};
-  const kinds=[['surah','إتمام حفظ سورة'],['juz','إتمام حفظ جزء'],['five','إتمام خمسة أجزاء'],['ten','إتمام عشرة أجزاء'],['half','إتمام نصف القرآن'],['full','ختم حفظ القرآن'],['attendance','شهادة الانتظام'],['tajweed','إتقان التجويد — باعتماد المحفظ']];
+  const kinds=[['surah','إتمام حفظ سورة'],['juz','إتمام حفظ جزء'],['five','إتمام خمسة أجزاء'],['ten','إتمام عشرة أجزاء'],['half','إتمام نصف القرآن'],['full','ختم حفظ القرآن'],['attendance','شهادة الانتظام'],['tajweed','إتقان التجويد — باعتماد المحفظ'],['exam','اجتياز اختبار قرآني معتمد داخليًا']];
   let showing=null;
   let activeId='';
   function verified(id){return gp()?.completedKeys?.(id)||new Set();}
@@ -27,6 +27,13 @@
     return{keys,juz:completeJuz,attendance};
   }
   function eligibility(id,kind,subject,manual=false){
+    if(kind==='exam'){
+      const st=getStudent(id),exam=(st?.academicExams1111||[]).find(x=>String(x.id)===String(subject));
+      if(!exam||exam.status!=='passed')return {ok:false,label:'اختر اختبارًا ناجحًا معتمدًا'};
+      const kinds={surah:'سورة',juz:'جزء',khatm:'ختم القرآن',tajweed:'تجويد'};
+      if(!kinds[exam.kind]||!Array.isArray(exam.committee)||!exam.committee.length)return {ok:false,label:'سجل الاختبار غير مكتمل'};
+      return {ok:true,label:`اجتياز اختبار ${kinds[exam.kind]} — ${exam.grade}`,evidence:`تاريخ الاختبار: ${exam.date} · اللجنة: ${exam.committee.join('، ')} · مرجع الاختبار: ${exam.id}`};
+    }
     const data=counts(id);
     if(kind==='surah'){
       const i=Number(subject);if(!i||!surahs()[i-1])return{ok:false,label:'اختر السورة'};
@@ -57,7 +64,7 @@
     const st=currentStudent();if(!st)return;activeId=String(st.id);
     const history=records(st).slice().reverse();
     el('certContent').innerHTML=`<section class="cert118-editor"><div class="cert118-intro"><b>🏅 شهادات الإنجاز</b><small>لا تُصدر شهادات الحفظ إلا بعد اجتياز الآيات الموثقة، والتجويد يحتاج اعتماد المحفظ</small></div><div class="cert118-fields"><label>نوع الشهادة<select id="cert118Type">${kinds.map(([k,t])=>`<option value="${k}">${escape(t)}</option>`).join('')}</select></label><label id="cert118SubjectWrap">السورة<select id="cert118Subject">${surahs().map((s,i)=>`<option value="${i+1}">سورة ${escape(s.n)}</option>`).join('')}</select></label><label class="cert118-manual" id="cert118ManualWrap" hidden><input type="checkbox" id="cert118Manual"> أؤكد بصفتي المحفظ أن الطالب اجتاز اختبار التجويد</label><label class="cert118-note">ملاحظة على الشهادة (اختياري)<input id="cert118Note" maxlength="240" placeholder="توصية أو عبارة تهنئة قصيرة"></label></div><p id="cert118Status" class="cert118-status" role="status"></p><div class="cert118-actions"><button type="button" id="cert118Preview">معاينة</button><button type="button" id="cert118Issue" class="cert118-primary">إصدار الشهادة بعد التحقق</button><button type="button" id="cert118Html">حفظ ملف الشهادة</button><button type="button" id="cert118Share">مشاركة ملف الشهادة</button></div><div class="cert118-history"><b>سجل الشهادات (${history.length})</b>${history.length?history.map(c=>`<button type="button" data-cert-id="${escape(c.id||'')}"><span>${escape(c.title||c.label)} · ${htmlDate(c.issuedAt)}</span><small>${escape(c.id||'')}</small></button>`).join(''):'<small>لم تُصدر شهادات لهذا الطالب بعد.</small>'}</div></section><div id="cert118PaperHost"></div>`;
-    el('cert118Type').addEventListener('change',()=>{const f=el('cert118Type').value;el('cert118SubjectWrap').hidden=!['surah','juz'].includes(f);el('cert118ManualWrap').hidden=f!=='tajweed';if(f==='juz')el('cert118SubjectWrap').querySelector('select').innerHTML=Array.from({length:30},(_,i)=>`<option value="${i+1}">الجزء ${i+1}</option>`).join('');else if(f==='surah')el('cert118SubjectWrap').querySelector('select').innerHTML=surahs().map((s,i)=>`<option value="${i+1}">سورة ${escape(s.n)}</option>`).join('');updateStatus();});
+    el('cert118Type').addEventListener('change',()=>{const f=el('cert118Type').value;el('cert118SubjectWrap').hidden=!['surah','juz','exam'].includes(f);el('cert118ManualWrap').hidden=f!=='tajweed';if(f==='exam')el('cert118SubjectWrap').querySelector('select').innerHTML=(currentStudent()?.academicExams1111||[]).filter(x=>x.status==='passed').map(x=>`<option value="${escape(x.id)}">${escape(x.date)} — ${escape(x.kind)} — ${escape(x.grade)}</option>`).join('')||'<option value="">لا يوجد اختبار ناجح</option>';else if(f==='juz')el('cert118SubjectWrap').querySelector('select').innerHTML=Array.from({length:30},(_,i)=>`<option value="${i+1}">الجزء ${i+1}</option>`).join('');else if(f==='surah')el('cert118SubjectWrap').querySelector('select').innerHTML=surahs().map((s,i)=>`<option value="${i+1}">سورة ${escape(s.n)}</option>`).join('');updateStatus();});
     ['cert118Subject','cert118Manual'].forEach(id=>el(id).addEventListener('change',updateStatus));
     el('cert118Preview').addEventListener('click',()=>preview(false));
     el('cert118Issue').addEventListener('click',issue);
@@ -72,7 +79,7 @@
   function preview(){const p=selectedPreview();if(!p)return;showing=null;showPaper(p.certificate,p.student,true);}
   function issue(){const st=currentStudent(),p=selectedPreview();if(!st||!p?.evidence.ok){updateStatus();return;}
     const f=currentFields(),history=records(st);if(history.some(c=>c.kind===f.kind&&String(c.subject||'')===String(f.subject||'')&&!c.voided)){try{toast('هذه الشهادة موجودة بالفعل في سجل الطالب','info');}catch(_){}return;}
-    const c={...p.certificate,id:idFor(st),issuedAt:iso(),version:1,approvedByTeacher:true,proofMode:f.kind==='tajweed'?'teacher-attestation':'verified-recitation',proofCount:f.kind==='attendance'?counts(st.id).attendance:verified(st.id).size};
+    const c={...p.certificate,id:idFor(st),issuedAt:iso(),version:1,approvedByTeacher:true,proofMode:f.kind==='exam'?'committee-exam':f.kind==='tajweed'?'teacher-attestation':'verified-recitation',proofCount:f.kind==='attendance'?counts(st.id).attendance:verified(st.id).size};
     if(!Array.isArray(st.achievementCertificates))st.achievementCertificates=[];st.achievementCertificates.push(c);
     try{if(g.save?.()===false)throw new Error('LOCAL_SAVE_FAILED');}catch(err){st.achievementCertificates.pop();try{toast('تعذر حفظ الشهادة؛ لم يتم اعتماد الإصدار','error');}catch(_){}return;}
     showing=c;renderEditor();try{toast('تم إصدار الشهادة وحفظها في ملف الطالب','success');}catch(_){}
