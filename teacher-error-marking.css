@@ -76,3 +76,35 @@
 .qmark-phase-summary{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}.qmark-phase-summary span{display:inline-flex;gap:6px;align-items:center;padding:7px 11px;background:var(--v11-soft,var(--gp,#ebf4ee));border:1px solid var(--v11-line,var(--bdr,#dce6e0));color:var(--v11-ink,var(--txt,#163827));border-radius:11px;font-size:12px}.qmark-phase-summary b{font-size:15px;color:var(--v11-primary,#176d49)}
 .qmark-preview-pages{display:flex;justify-content:center;align-items:center;gap:15px;margin:8px 0}.qmark-preview-pages button{border:1px solid var(--v11-line,var(--bdr,#ccdfd1));border-radius:10px;background:var(--v11-card,var(--wh,#fff));color:var(--v11-ink,var(--txt,#173b27));padding:9px 14px}.qmark-preview-pages button:disabled{opacity:.35}.qmark-preview-pages span{font-weight:700;font-size:13px;color:var(--v11-ink,var(--txt,#173b27))}
 .qmark-preview-scroll img{max-height:none;object-fit:contain;width:min(100%,680px);height:auto}
+
+/* v11.8 Stage 1 — unobstructed Quran reading with a nonmodal error inspector. */
+.qmark-sheet{pointer-events:none;background:transparent!important;z-index:22000;}
+.qmark-sheet .qmark-sheet-backdrop{display:none!important;}
+.qmark-sheet-card{pointer-events:auto;box-sizing:border-box;position:fixed;left:10px;bottom:10px;right:auto;width:min(360px,calc(100vw - 20px));max-height:calc(100dvh - 26px);border-radius:18px!important;box-shadow:0 8px 34px rgba(0,0,0,.18)!important;transform:translateX(-12px)!important;transition:transform .16s,opacity .16s!important;padding:11px!important;}
+.qmark-sheet.open .qmark-sheet-card{transform:none!important;}
+.qmark-sheet-head{position:sticky;top:-11px;z-index:2;padding:4px 2px 8px;background:var(--card,#fff);}
+.qmark-sheet-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.qmark-sheet-head .qmark-sheet-actions button{width:auto;min-width:38px;padding:8px;font:800 11px Arial,Tahoma,sans-serif;white-space:nowrap;}
+.qmark-sheet.minimized .qmark-sheet-card{height:58px;max-height:58px;overflow:hidden;padding:8px 10px!important;}
+.qmark-sheet.minimized .qmark-sheet-head{padding:0;position:static;}
+.qmark-sheet.minimized .qmark-sheet-head b{font-size:18px;}
+.qmark-sheet.minimized .qmark-sheet-context,.qmark-sheet.minimized .qmark-char-section,.qmark-sheet.minimized .qmark-types,.qmark-sheet.minimized .qmark-custom-entry,.qmark-sheet.minimized .qmark-custom-types,.qmark-sheet.minimized .qmark-current{display:none!important;}
+@media(min-width:820px){
+  #quranTextModal.open.qmark-inspecting{justify-content:flex-start;align-items:center;padding:10px 16px 10px 0;box-sizing:border-box;}
+  #quranTextModal.open.qmark-inspecting .quran-box{width:calc(100vw - 420px)!important;max-width:900px!important;max-height:calc(100dvh - 20px)!important;height:calc(100dvh - 20px)!important;box-sizing:border-box;display:flex;flex-direction:column;}
+  #quranTextModal.open.qmark-inspecting .quran-box .quran-verse-content{min-height:0;flex:1;overflow:auto;}
+  #quranTextModal.open.qmark-minimized .quran-box{width:calc(100vw - 110px)!important;max-width:1000px!important;}
+}
+@media(max-width:819px){
+  #quranTextModal.open.qmark-inspecting{align-items:flex-start;justify-content:center;box-sizing:border-box;padding:6px 0 0!important;}
+  #quranTextModal.open.qmark-inspecting .quran-box{width:100%!important;max-width:none!important;height:calc(58dvh - 10px)!important;max-height:calc(58dvh - 10px)!important;overflow:auto!important;box-sizing:border-box;display:flex;flex-direction:column;}
+  #quranTextModal.open.qmark-inspecting .quran-verse-content{min-height:0;flex:1;overflow:auto;}
+  .qmark-sheet-card{width:calc(100vw - 12px)!important;left:6px!important;bottom:calc(4px + env(safe-area-inset-bottom))!important;max-height:calc(42dvh - 12px)!important;border-radius:15px!important;transform:translateY(12px)!important;padding:9px!important;}
+  .qmark-sheet.minimized .qmark-sheet-card{height:58px!important;max-height:58px!important;}
+  #quranTextModal.open.qmark-minimized .quran-box{height:calc(100dvh - 86px)!important;max-height:calc(100dvh - 86px)!important;}
+  .qmark-types{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;}
+  .qmark-type{padding:8px 4px;font-size:10px;}
+  .qmark-char-section{padding:7px;margin:6px 0;}
+  .qmark-char-section p{display:none;}
+  .qmark-sheet-head b{font-size:20px;}
+}

@@ -6,7 +6,7 @@ const html=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const role=fs.readFileSync('js/features/role-home.js','utf8');
 const manifest=JSON.parse(fs.readFileSync('package.json','utf8'));
-assert.equal(manifest.version,'11.7.4.5');
+assert.equal(manifest.version,'11.8.0');
 assert(css.includes('#pg-home.v92-home-ready.on{display:grid!important;'),'desktop Home forced display must require active route');
 assert(css.includes('#pg-home.v92-home-ready.on{display:block!important}'),'mobile Home forced display must require active route');
 assert(css.includes('#pg-home.v92-home-ready:not(.on){display:none!important}'),'inactive Home must stay hidden regardless of viewport');
@@ -17,6 +17,6 @@ assert(html.includes('id="pg-students"')&&html.includes('class="btn btn-g st-add
 assert(!html.includes('class="fab" onclick="openAddSt()"'),'floating add student button still exists');
 assert(css.includes('#pg-students .st-add-inline')&&css.includes('position:static'),'add-student inline style missing');
 assert(html.includes('role-home.css?v=11.7.4.3')&&sw.includes("'./role-home.css?v=11.7.4.3'"),'new styles must be cache-busted in HTML and Offline Shell');
-assert(sw.includes('quran-pwa-v11.7.4.5-full-corrections'),'offline cache must be refreshed');
+assert(sw.includes('quran-pwa-v11.8.0-certificates-inspector'),'offline cache must be refreshed');
 assert(!/\b(?:DROP|TRUNCATE)\b/i.test(css),'stylesheet should not carry SQL');
 console.log('PASS role-home-tab-visibility-hotfix: home-only workspace, active route, no floating add collision, cache refresh');

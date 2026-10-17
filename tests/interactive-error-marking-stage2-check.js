@@ -24,6 +24,6 @@ ok(teacher.includes('🪶 *مواضع التصحيح على النص*')&&teacher
 ok(share.includes('function portalCorrections')&&share.includes('corrections:ses.status'), 'guardian snapshot correction details missing');
 ok(view.includes('portal-corrections')&&view.includes('الحرف «'), 'guardian correction rendering missing');
 ok(portalCss.includes('.portal-corrections')&&portalCss.includes('.portal-correction.resolved'),'guardian correction styling missing');
-ok(html.includes('teacher-error-marking.js?v=11.7.4.5')&&html.includes('v8.js?v=11.2.0-s2'),'Stage 2 cache-busting refs missing');
+ok(html.includes('teacher-error-marking.js?v=11.8.0')&&html.includes('v8.js?v=11.2.0-s2'),'Stage 2 cache-busting refs missing');
 ok(sw.includes("quran-pwa-v11.2.0-error2")&&sw.includes("uiStage:'11.2-error-marking-2'"),'Stage 2 service worker generation missing');
 console.log('PASS interactive-error-marking-stage2-check');

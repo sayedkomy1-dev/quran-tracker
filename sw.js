@@ -8,9 +8,9 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.7.4.5-full-corrections';
+const CACHE_NAME = 'quran-pwa-v11.8.0-certificates-inspector';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
-const APP_VERSION = '11.7.4.5';
+const APP_VERSION = '11.8.0';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 
 const APP_SHELL = [
@@ -33,7 +33,7 @@ const APP_SHELL = [
   './v9.css?v=11.0.0',
   './v10.css?v=11.0.0',
   './quran-engine.css?v=11.0.0',
-  './teacher-error-marking.css?v=11.7.4.2',
+  './teacher-error-marking.css?v=11.8.0',
   './correction-document.css?v=11.7.4.5',
   './smart-revision.css?v=11.3.0-s1',
   './goal-planning.css?v=11.4.2-s2',
@@ -46,7 +46,7 @@ const APP_SHELL = [
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './v10.js?v=11.2.0-s1.1',
-  './js/features/teacher-error-marking.js?v=11.7.4.5',
+  './js/features/teacher-error-marking.js?v=11.8.0',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './js/features/guardian-communication.js?v=11.0.0',
   './js/features/student-progress.js?v=11.0.0',
@@ -59,6 +59,8 @@ const APP_SHELL = [
   './js/features/quran-audio-export.js?v=11.2.0-s4',
   './js/features/assignment-audio-share.js?v=11.2.0-s4',
   './js/features/v11-ui.js?v=11.4.1-profile-ui',
+  './achievement-certificates.css?v=11.8.0',
+  './js/features/achievement-certificates.js?v=11.8.0',
   './guardian-portal.html',
   './guardian-portal.css?v=11.2.0-s4.1',
   './guardian-tahfeez.css?v=11.2.0-s4.1',
@@ -116,7 +118,7 @@ const CORE_SHELL = [
   './js/features/ux-guidance.js?v=11.7.4.2',
   './styles.css?v=11.0.0',
   './v11.css?v=11.4.1-profile-ui',
-  './teacher-error-marking.css?v=11.7.4.2',
+  './teacher-error-marking.css?v=11.8.0',
   './correction-document.css?v=11.7.4.5',
   './smart-revision.css?v=11.3.0-s1',
   './goal-planning.css?v=11.4.2-s2',
@@ -131,7 +133,7 @@ const CORE_SHELL = [
   './js/features/goal-planning.js?v=11.4.2-s2',
   './js/features/student-finance.js?v=11.5.1-s2',
   './js/features/v11-ui.js?v=11.4.1-profile-ui',
-  './js/features/teacher-error-marking.js?v=11.7.4.5',
+  './js/features/teacher-error-marking.js?v=11.8.0',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './app.js?v=11.7.4.5-full-corrections',
   './auth.js?v=11.7.4-foundation',
