@@ -34,7 +34,9 @@ const st={placementAssessments:[{id:'a',unitKey:'surah:1',grade:'ضعيف',at:'2
 assert.equal(api.latestResults(st).get('surah:1').grade,'جيد جداً','Latest attempt should win without deleting prior history');
 assert.equal(api.summaryFor({key:'surah:2',category:'surah'},api.latestResults(st)).status,'not_heard');
 const html=read('index.html'),sw=read('sw.js');
-for(const asset of ['placement-center-1191.js?v=11.9.1','placement-center-1191.css?v=11.9.1']){
+assert.match(html, /id="pcNavTab"/, 'Placement tab should be present directly in the static main navigation');
+assert.match(html, /PlacementCenter\?\.open|PlacementCenter\.open/, 'Placement entry should open the center');
+for(const asset of ['placement-center-1191.js?v=11.9.2','placement-center-1191.css?v=11.9.2']){
   assert(html.includes(asset));assert(sw.includes(`'./${asset.startsWith('placement-center-1191.js')?'js/features/':''}${asset}'`));
 }
 assert(read('js/features/session-intelligence-119.js').includes('playGuardianWarning(e.outstanding.length>0)'));

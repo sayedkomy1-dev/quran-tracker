@@ -83,8 +83,11 @@
     <div class="pc-columns"><section class="card"><h3>المواضع ونتائجها</h3><div id="pcItems" class="pc-items"></div></section><section class="card"><div id="pcEditor" class="pc-editor"></div></section></div>
     <section class="card"><h3>سجل المحاولات والتقييمات السابقة</h3><div id="pcHistory"></div></section>`;
     const studentsPage=q('pg-students');(studentsPage?.parentNode||document.body).insertBefore(page,studentsPage||null);
-    const nav=q('mainNav');if(nav&&!q('pcNavTab')){
-      const b=document.createElement('div');b.className='nav-t pc-nav';b.id='pcNavTab';b.setAttribute('role','button');b.tabIndex=0;b.innerHTML='<span class="ni">📋</span>تحديد المستوى';b.onclick=()=>g.goPage?.('placement');b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();b.click();}};nav.appendChild(b);
+    const nav=q('mainNav');if(nav){
+      let b=q('pcNavTab');
+      if(!b){b=document.createElement('div');b.className='nav-t pc-nav';b.id='pcNavTab';b.setAttribute('role','button');b.tabIndex=0;b.innerHTML='<span class="ni">📋</span>تحديد المستوى';nav.insertBefore(b,nav.querySelector('[onclick="goPage(\'checkin\')"]')||null);}
+      b.onclick=()=>open();
+      b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();b.click();}};
     }
     page.addEventListener('click',clickPage);
     q('pcStudent').addEventListener('change',e=>{state.studentId=e.target.value;draw();});
@@ -168,5 +171,14 @@
   }
   root.PlacementCenter={open,items,allFor,latestResults,summaryFor,statusFor,normalizedSegments,gradePass,isOpen,draw};
   if(typeof module!=='undefined'&&module.exports)module.exports={items,allFor,latestResults,summaryFor,statusFor,normalizedSegments,gradePass};
-  if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,240),{once:true});else setTimeout(init,240);}
+  if(typeof document!=='undefined'){
+    const boot=()=>{
+      try{
+        if(!q('mainNav')||typeof g.goPage!=='function'||!root.Legacy){setTimeout(boot,300);return;}
+        init();
+      }catch(error){console.error('[PlacementCenter] initialization failed:',error);}
+    };
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
+    else boot();
+  }
 })(typeof globalThis!=='undefined'?globalThis:this);

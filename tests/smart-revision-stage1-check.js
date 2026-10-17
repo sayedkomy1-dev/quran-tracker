@@ -8,12 +8,12 @@ const portal=fs.readFileSync(path.join(root,'guardian-portal.html'),'utf8');
 const share=fs.readFileSync(path.join(root,'js/features/guardian-portal-share.js'),'utf8');
 const view=fs.readFileSync(path.join(root,'js/features/guardian-portal-view.js'),'utf8');
 const sw=fs.readFileSync(path.join(root,'sw.js'),'utf8');
-ok(index.includes('js/features/smart-revision.js?v=11.9.1'),'teacher shell loads Smart Revision');
+ok(index.includes('js/features/smart-revision.js?v=11.9.2'),'teacher shell loads Smart Revision');
 ok(index.includes('smart-revision.css?v=11.3.0-s1'),'teacher shell loads Smart Revision CSS');
 ok(portal.includes('id="portalSmartRevision"')&&portal.includes('smart-revision.css?v=11.3.0-s1'),'guardian portal has Smart Revision card');
 ok(share.includes('smartRevision:')&&share.includes('SmartRevision?.buildGuardian'),'guardian snapshot contains smart revision data');
 ok(view.includes('renderSmartRevision(data)')&&view.includes("origin:'smart_revision'"),'guardian renderer exposes smart-review practice bridge');
-ok(sw.includes("quran-pwa-v11.3.0-smart-revision1")&&sw.includes("'./js/features/smart-revision.js?v=11.9.1'")&&sw.includes("'./smart-revision.css?v=11.3.0-s1'"),'service worker caches Smart Revision assets');
+ok(sw.includes("quran-pwa-v11.3.0-smart-revision1")&&sw.includes("'./js/features/smart-revision.js?v=11.9.2'")&&sw.includes("'./smart-revision.css?v=11.3.0-s1'"),'service worker caches Smart Revision assets');
 const sessions=[
  {studentId:'s1',status:'حضر',sessionDate:'2026-10-10',recitationErrors:[{source:'quran-word',surahId:6,surah:'الأنعام',ayah:35,wordIndex:1,word:'اعتراضهم',type:'نطق حرف',group:'pronunciation',resolved:false,mode:'recitation'}]},
  {studentId:'s1',status:'حضر',sessionDate:'2026-10-11',recitationErrors:[{source:'quran-word',surahId:6,surah:'الأنعام',ayah:35,wordIndex:1,word:'اعتراضهم',type:'نطق حرف',group:'pronunciation',resolved:true,mode:'review'}]},
