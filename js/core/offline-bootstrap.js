@@ -1,3 +1,4 @@
+// WLQ_RELEASE_11.11.2 — Register update scripts without stale HTTP caching.
 'use strict';
 /* We Live Quran v10.10.0 — Stage 5 offline bootstrap.
    Registers the service worker before authentication/network libraries so a
@@ -15,7 +16,7 @@
     addEventListener('offline',updateNetworkFlag);
     if(!('serviceWorker' in navigator))return null;
     try{
-      state.registration=await navigator.serviceWorker.register('./sw.js');
+      state.registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
       return state.registration;
     }catch(err){
       state.error=err;

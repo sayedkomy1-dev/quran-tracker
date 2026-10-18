@@ -8,10 +8,19 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.11.1-academic-exams-beta1';
+const CACHE_NAME = 'quran-pwa-v11.11.2-consistent-owner-upgrade';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
-const APP_VERSION = '11.11.1';
+const APP_VERSION = '11.11.2';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+// Never populate a new release's essential code from an old offline cache.
+// A temporarily unreachable deployment must leave the previous worker active.
+const CRITICAL_FRESH_SHELL = [
+  './index.html',
+  './app.js?v=11.11.2',
+  './js/core/runtime.js?v=11.11.2',
+  './js/core/offline-bootstrap.js?v=11.11.2'
+];
+
 
 const APP_SHELL = [
   './',
@@ -26,7 +35,7 @@ const APP_SHELL = [
   './js/features/ux-guidance.js?v=11.7.4.2',
   './styles.css?v=11.0.0',
   './v11.css?v=11.4.1-profile-ui',
-  './app.js?v=11.11.1',
+  './app.js?v=11.11.2',
   './v8.js?v=11.2.0-s3',
   './v9.js?v=11.0.0',
   './js/features/mushaf-offline.js?v=11.7.4.2',
@@ -86,8 +95,8 @@ const APP_SHELL = [
   './guardian-login.js?v=11.0.0',
   './js/features/quran-engine.js?v=11.0.0',
   './js/features/quran-structure.js?v=11.0.0',
-  './js/core/runtime.js?v=11.7.4.5-full-corrections',
-  './js/core/offline-bootstrap.js?v=11.0.0',
+  './js/core/runtime.js?v=11.11.2',
+  './js/core/offline-bootstrap.js?v=11.11.2',
   './js/core/mobile-navigation.js?v=11.0.0',
   './js/features/v10-data.js?v=11.0.0',
   './js/features/recitation-carry.js?v=11.0.0',
@@ -153,12 +162,12 @@ const CORE_SHELL = [
   './js/features/v11-ui.js?v=11.4.1-profile-ui',
   './js/features/teacher-error-marking.js?v=11.8.0',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
-  './app.js?v=11.11.1',
+  './app.js?v=11.11.2',
   './revision-quran-text.css?v=11.8.1',
   './js/features/revision-quran-text.js?v=11.8.1',
   './auth.js?v=11.7.4-foundation',
-  './js/core/runtime.js?v=11.7.4.5-full-corrections',
-  './js/core/offline-bootstrap.js?v=11.0.0'
+  './js/core/runtime.js?v=11.11.2',
+  './js/core/offline-bootstrap.js?v=11.11.2'
 ];
 
 function absolute(url){return new URL(url,self.location.href).href;}
@@ -190,6 +199,27 @@ async function matchLocalAsset(cache,request){
       ||null;
   }catch(_){return null;}
 }
+async function cacheVerifiedCurrentShell(cache,url){
+  const request=new Request(absolute(url),{cache:'no-store',credentials:'same-origin'});
+  const response=await fetchWithTimeout(request,8000,{cache:'no-store'});
+  if(!response||!response.ok)throw new Error(`[SW] new release not available: ${url}`);
+  // Reject stale edge/CDN HTML and runtime even if the server replied HTTP 200.
+  const body=await response.clone().text();
+  if(url==='./index.html' &&
+     (!body.includes(`name="application-version" content="${APP_VERSION}"`)
+      ||!body.includes(`app.js?v=${APP_VERSION}`)
+      ||!body.includes(`runtime.js?v=${APP_VERSION}`)))
+    throw new Error('[SW] index.html is an older release');
+  if(url.startsWith('./js/core/runtime.js') && !body.includes(`version:'${APP_VERSION}'`))
+    throw new Error('[SW] runtime.js is an older release');
+  if(url.startsWith('./app.js') && !body.includes(`WLQ_RELEASE_${APP_VERSION}`))
+    throw new Error('[SW] app.js is an older release');
+  if(url.startsWith('./js/core/offline-bootstrap.js') && !body.includes(`WLQ_RELEASE_${APP_VERSION}`))
+    throw new Error('[SW] offline bootstrap is an older release');
+  await cache.put(request,response.clone());
+  await cache.put(canonicalRequest(request),response.clone());
+}
+
 async function cacheSameOrigin(cache,url){
   const request=new Request(absolute(url),{cache:'reload',credentials:'same-origin'});
   try{
@@ -226,7 +256,17 @@ async function cacheExternal(cache,url){
 self.addEventListener('install', event => {
   event.waitUntil((async()=>{
     const cache=await caches.open(CACHE_NAME);
-    const results=await Promise.all(APP_SHELL.map(url=>cacheSameOrigin(cache,url)));
+    // Install the exact current app HTML/runtime first. No old-cache fallback
+    // is allowed for these files: otherwise a new worker may report v11.11.2
+    // while actually serving an older account's v11.9 application shell.
+    for(const url of CRITICAL_FRESH_SHELL)await cacheVerifiedCurrentShell(cache,url);
+    const optionalShell=APP_SHELL.filter(url=>url!=='./'&&!CRITICAL_FRESH_SHELL.includes(url));
+    const results=await Promise.all(optionalShell.map(url=>cacheSameOrigin(cache,url)));
+    // Both '/' and '/index.html' must point at the SAME verified current HTML.
+    // A separately cached './' response from an old release caused stale boots.
+    const latestHTML=await cache.match(absolute('./index.html'));
+    if(!latestHTML)throw new Error('[SW] current HTML missing after install');
+    await cache.put(absolute('./'),latestHTML.clone());
     // The Supabase browser client is optional for trusted offline startup, but
     // caching it removes the last CDN dependency on normal offline launches.
     await cacheExternal(cache,SUPABASE_CDN);

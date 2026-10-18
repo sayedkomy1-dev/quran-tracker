@@ -1,3 +1,4 @@
+// WLQ_RELEASE_11.11.2 — Account-independent app version and safe upgrade hotfix.
 
 'use strict';
 
@@ -2464,7 +2465,7 @@ async function registerSW(){
   try{
     // Stage 5 starts registration in <head>, before auth/CDN dependencies.
     // Reuse that registration here so the existing update UX stays intact.
-    const reg=await (globalThis.WLQOfflineBootstrap?.ready||navigator.serviceWorker.register('./sw.js'));
+    const reg=await (globalThis.WLQOfflineBootstrap?.ready||navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}));
     if(!reg)return;
     if(reg.waiting){waitingSW=reg.waiting;document.getElementById('update-banner')?.classList.add('show');}
     reg.addEventListener('updatefound',()=>{
