@@ -10,13 +10,13 @@ const html=read('index.html');
 const runtime=read('js/core/runtime.js');
 const app=read('app.js');
 const bootstrap=read('js/core/offline-bootstrap.js');
-const version='11.11.2';
+const version='11.12.0';
 assert(html.includes(`name="application-version" content="${version}"`));
 assert(html.includes(`app.js?v=${version}`));
 assert(html.includes(`runtime.js?v=${version}`));
 assert(html.includes(`offline-bootstrap.js?v=${version}`));
 assert(sw.includes(`const APP_VERSION = '${version}'`));
-assert(sw.includes(`const CACHE_NAME = 'quran-pwa-v${version}-consistent-owner-upgrade'`));
+assert(sw.includes(`const CACHE_NAME = 'quran-pwa-v${version}-academy-analytics1'`));
 assert(sw.includes("const CRITICAL_FRESH_SHELL = ["));
 assert(sw.includes('await cache.put(absolute(\'./\'),latestHTML.clone())'));
 assert(read('VERSION').trim()===version);
@@ -70,16 +70,16 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
    return;
  }
  await installation;
- const newCache=await cachesMock.open('quran-pwa-v11.11.2-consistent-owner-upgrade');
+ const newCache=await cachesMock.open('quran-pwa-v11.12.0-academy-analytics1');
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
  assert(currentRoot && currentHtml,'both root and index paths must have current HTML');
- assert((await currentRoot.text()).includes('name="application-version" content="11.11.2"'),'root may not serve stale HTML');
- assert((await currentHtml.text()).includes('app.js?v=11.11.2'),'index may not serve old app.js');
+ assert((await currentRoot.text()).includes('name="application-version" content="11.12.0"'),'root may not serve stale HTML');
+ assert((await currentHtml.text()).includes('app.js?v=11.12.0'),'index may not serve old app.js');
 }
 (async()=>{
  await testWorker({staleIndex:true});
  await testWorker({offlineRuntime:true});
  await testWorker({});
- console.log('PASS 11.11.2 owner upgrade: reject stale shell, preserve offline cache, verified current root/index and core scripts');
+ console.log('PASS 11.12.0 owner upgrade: reject stale shell, preserve offline cache, verified current root/index and core scripts');
 })().catch(e=>{console.error(e);process.exitCode=1;});

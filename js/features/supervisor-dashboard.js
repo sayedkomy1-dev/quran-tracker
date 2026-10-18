@@ -44,7 +44,7 @@
     el.innerHTML=`<div class="supervision-dialog" role="dialog" aria-modal="true" aria-labelledby="supervisionHeading" dir="rtl">
       <div class="supervision-head"><h2 id="supervisionHeading">🛡️ لوحة الإشراف والأكاديمية</h2><button type="button" data-supervision="close" aria-label="إغلاق">✕</button></div>
       <p class="supervision-note">المالك يشرف على جميع المحفظين. المشرف يرى فقط المحفظين والأقسام التي منحه إياها المالك. كشف الطلاب يُزامَن تلقائيًا بعد تحميل بيانات المحفظ وعند تعديلها. مؤشرات البوابة قد لا تكون لحظية.</p>
-      <div class="supervision-toolbar"><button type="button" data-supervision="verify">↻ التحقق من الصلاحية</button><button type="button" data-supervision="reload">↻ تحديث</button><button id="supervisionAuditButton" type="button" data-supervision="audit" hidden>📜 سجل الاطلاع — للمالك</button></div>
+      <div class="supervision-toolbar"><button type="button" data-supervision="verify">↻ التحقق من الصلاحية</button><button type="button" data-supervision="reload">↻ تحديث</button><button type="button" data-supervision="analytics">📊 التحليلات المتقدمة</button><button id="supervisionAuditButton" type="button" data-supervision="audit" hidden>📜 سجل الاطلاع — للمالك</button></div>
       <p id="supervisorStatus" role="status"></p><div id="supervisorOverview"></div><div id="supervisorRows"></div><div id="supervisorDetail" hidden></div>
     </div>`;
     document.body.appendChild(el);
@@ -54,6 +54,7 @@
       const action=btn.dataset.supervision,id=btn.dataset.teacher;
       if(action==='verify'||action==='reload')return authorizeAndReload();
       if(action==='audit')return audit();
+      if(action==='analytics')return g.ImamApp?.AcademyAnalytics?.open?.();
       if(action==='students-close'){const h=inlineHost(btn.closest('.supervisor-row'));if(h)h.hidden=true;return;}
       if(action==='students'||action==='ratings')return detail(id,action,btn.closest('.supervisor-row'));
       if(action==='progress')return g.ImamApp?.ProgressBridge?.detail?.(id,btn.closest('.supervisor-row'));

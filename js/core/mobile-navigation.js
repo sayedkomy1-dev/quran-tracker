@@ -65,6 +65,8 @@
       if(drawer)return {kind:'mushaf-drawer',el:drawer};
     }
 
+    const analytics=d.getElementById('academyAnalytics112');
+    if(visible(analytics))return {kind:'academy-analytics',el:analytics};
     const modals=[...d.querySelectorAll('.mo.open')].filter(visible);
     if(modals.length)return {kind:'modal',el:modals[modals.length-1]};
     if(reader?.classList.contains('open')&&visible(reader))return {kind:'mushaf-reader',el:reader};
@@ -73,6 +75,7 @@
   function closeClosable(item){
     if(!item?.el)return false;
     const el=item.el,id=String(el.id||'');
+    if(item.kind==='academy-analytics'){g.ImamApp?.AcademyAnalytics?.close?.();return true;}
     if(item.kind==='account-pop'){el.hidden=true;return true;}
     if(item.kind==='dropdown'){
       el.classList.remove('open','open-up');

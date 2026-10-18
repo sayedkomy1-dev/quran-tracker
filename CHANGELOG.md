@@ -1,3 +1,9 @@
+## v11.12.0 — Advanced Academy Analytics (Stage 1)
+- Added read-only academy → authorized teacher → synced group → student drill-down.
+- Preserved server-enforced owner/supervisor scopes, and made unknown/stale data explicit.
+- No SQL changes, no local schema migration; Android back and release cache consistency preserved.
+- Real-device authorization and layout verification remains pending.
+
 ## 11.11.2 — إصلاح آمن لاتساق إصدار المالك والمحفظ
 - معالجة احتمال تثبيت إصدار جديد يحتوي على ملفات قديمة من ذاكرة التطبيق دون إنترنت.
 - التحقق من HTML وملفات التطبيق الأساسية الحالية عبر الشبكة قبل اعتماد Service Worker جديد.
