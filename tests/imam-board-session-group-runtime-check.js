@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const source=fs.readFileSync(path.join(__dirname,'../js/features/imam-smart-board.js'),'utf8');
+const values=new Map();const alerts=[];let saves=0,owner='teacher-a';
+const elems={'ib-native-status':{textContent:''},sesSt:{value:'student-a'}};
+const ctx={Date,Math,JSON,console,setTimeout,clearTimeout,setInterval,clearInterval,URL,crypto:{randomUUID:()=>Math.random().toString(36).slice(2)},ImamApp:{State:{students:[{id:'student-a',name:'الأول'},{id:'student-b',name:'الثاني'}],sessions:[],settings:{}}},WeLiveQuranAuth:{getAccess:()=>({user_id:owner,role:'teacher',status:'active'})},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},__IMAM_BASE__:{save:()=>true},document:{getElementById:id=>elems[id]||null,querySelectorAll:()=>[]},toast:(msg,type)=>alerts.push({msg,type}),saveSession:()=>{saves++;return{studentId:'student-a'}}};ctx.globalThis=ctx;
+const inst=source.replace('root.SmartBoard=Object.freeze(',`root.__RuntimeTest={start:()=>{active=true;sessionUser=currentUser();b.sessionId=newId();},setStudent:(id)=>{b.studentId=id;},setNative:(id)=>{nativeEditor={};nativeEditorStudent=id;},saveNativeSession,flush,readStore,group:(group)=>{b.groupFilter=group;return visibleStudents();},setNote:v=>{b.privateNote=v;b.dirty=true;},changeId:()=>{b.sessionId=newId();},getStatus:()=>({sessionId:b.sessionId,studentId:b.studentId,notes:b.privateNote})};\nroot.SmartBoard=Object.freeze(`);
+vm.runInNewContext(inst,ctx);
+const t=ctx.ImamApp.__RuntimeTest;t.start();t.setStudent('student-a');t.setNote('محفوظ للطالب الأول');assert.equal(t.flush(),true);const first=t.getStatus().sessionId;t.flush();assert.equal(t.readStore().sessions.length,1,'Repeated save must update same session');
+t.setNative('student-a');assert.equal(saves,0,'Opening editor must not create session');t.saveNativeSession();assert.equal(saves,1,'Save must call original official save exactly once');
+elems.sesSt.value='student-b';t.saveNativeSession();assert.equal(saves,1,'Mismatched editor student must never be saved');
+t.setStudent('student-b');t.changeId();t.setNote('مسودة الطالب الثاني');t.flush();assert.equal(t.readStore().sessions.length,2,'Each student must have an independent session');assert.equal(t.readStore().sessions.find(x=>x.id===first).privateNote,'محفوظ للطالب الأول');
+owner='teacher-b';assert.equal((t.readStore().sessions||[]).length,0,'Different teacher must never see local drafts');
+console.log('PASS board runtime: idempotent local save, two students isolated, teacher isolation, native official save explicit, mismatch blocked');

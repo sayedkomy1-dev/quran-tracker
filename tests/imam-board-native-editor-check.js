@@ -1,0 +1,38 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
+const root=path.resolve(__dirname,'..');
+const source=fs.readFileSync(path.join(root,'js/features/imam-smart-board.js'),'utf8');
+const css=fs.readFileSync(path.join(root,'imam-smart-board.css'),'utf8');
+const values=new Map();let role='teacher',owner='t-a',status='active';
+const ctx={Date,Math,JSON,console,clearInterval,clearTimeout,setTimeout,setInterval,ImamApp:{State:{students:[],sessions:[],settings:{}}},WeLiveQuranAuth:{getAccess:()=>({user_id:owner,role,status})},localStorage:{getItem:k=>values.get(k)||null,setItem:(k,v)=>values.set(k,v)},__IMAM_BASE__:{save:()=>true},document:{getElementById:()=>null},toast:()=>{},crypto:{randomUUID:()=>String(Math.random())}};
+ctx.globalThis=ctx;
+const instrumented=source.replace('root.SmartBoard=Object.freeze(',`root.__BoardSafety={readStore,writeStore,assertUser,canTeach,ownerKey,visibleStudents,completedToday,absentToday,setGroup:x=>b.groupFilter=x};\nroot.SmartBoard=Object.freeze(`);
+vm.runInNewContext(instrumented,ctx,{filename:'imam-smart-board.js'});
+const check=ctx.ImamApp.__BoardSafety;
+assert.equal(check.canTeach(),true);
+ctx.ImamApp.State.settings.imamSmartBoardData={owner:'t-a',data:{updatedAt:100,preps:[{id:'old'}]}};
+values.set('imam:board:v1:t-a',JSON.stringify({updatedAt:200,preps:[{id:'latest'}]}));
+assert.equal(check.readStore().preps[0].id,'latest','Newer local draft must not be hidden by stale settings snapshot');
+ctx.ImamApp.State.settings.imamSmartBoardData.data.updatedAt=300;
+assert.equal(check.readStore().preps[0].id,'old','Newer authenticated settings snapshot must win');
+owner='t-b';assert.equal(check.readStore().preps,undefined,'Do not leak previous account draft');
+role='guest';assert.equal(check.canTeach(),false);assert.throws(()=>check.assertUser(),/للمحفظ/);
+role='teacher';status='pending';assert.equal(check.canTeach(),false);assert.throws(()=>check.writeStore({sessions:[]}),/للمحفظ/);
+status='active';assert.equal(check.canTeach(),true);
+ctx.ImamApp.State.students=[{id:'a',group:'مجموعة أولى'},{id:'b',group:'مجموعة ثانية'},{id:'c',group:'مجموعة أولى',archived:true}];
+const day=new Date();const date=`${day.getFullYear()}-${String(day.getMonth()+1).padStart(2,'0')}-${String(day.getDate()).padStart(2,'0')}`;
+ctx.ImamApp.State.sessions=[{studentId:'a',sessionDate:date,status:'حضر',completed:true},{studentId:'b',sessionDate:date,status:'غاب'}];
+check.setGroup('مجموعة أولى');assert.equal(check.visibleStudents().length,1);assert.equal(check.completedToday('a'),true);
+check.setGroup('مجموعة ثانية');assert.equal(check.visibleStudents()[0].id,'b');assert.equal(check.absentToday('b'),true);
+check.setGroup('');assert.equal(check.visibleStudents().length,2);
+
+// Official session editor and Quran word corrections are reused; no parallel grades.
+assert(source.includes('mount.appendChild(page);nativeEditor=page'));
+assert(source.includes('placeholder.replaceWith(page)'));
+assert(source.includes('g.openQuranRangeText({surah,from:b.from,to:b.to})'));
+assert(source.includes('const row=g.saveSession()'));
+assert(!source.includes('g.goPage(\'session\');'),'Entering the dock must not automatically reinitialize or reset a draft');
+assert(source.includes('if(!nativeEditor||nativeEditorStudent!==String(b.studentId)'));
+assert(source.includes('closeNativeEditor();active=false;clearInterval(accountWatch)'));
+assert(css.includes('.ib-native-overlay[hidden]')&&css.includes('#quranErrorSheet'));
+console.log('PASS board beta.3: account-scoped newest snapshot, denied guest/pending roles, unchanged original session editor, explicit official save and Quran corrections');

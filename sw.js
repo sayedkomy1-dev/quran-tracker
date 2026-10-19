@@ -8,48 +8,52 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.12.1-academy-analytics1';
+const CACHE_NAME = 'quran-pwa-v11.12.1-beta.6-imam-board';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
-const APP_VERSION = '11.12.1';
+const APP_VERSION = '11.12.1-beta.6';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
   './index.html',
-  './app.js?v=11.12.1',
-  './js/core/runtime.js?v=11.12.1',
-  './js/core/offline-bootstrap.js?v=11.12.1',
-  './js/features/role-home.js?v=11.12.1',
-  './js/features/supervisor-dashboard.js?v=11.12.1',
-  './js/features/academy-analytics-1112.js?v=11.12.1',
-  './academy-analytics-1112.css?v=11.12.1',
-  './imam-smart-board.css?v=11.12.1',
-  './js/features/imam-smart-board.js?v=11.12.1',
+  './app.js?v=11.12.1-beta.6',
+  './js/core/runtime.js?v=11.12.1-beta.6',
+  './js/core/offline-bootstrap.js?v=11.12.1-beta.6',
+  './js/features/role-home.js?v=11.12.1-beta.6',
+  './js/features/supervisor-dashboard.js?v=11.12.1-beta.6',
+  './js/features/academy-analytics-1112.js?v=11.12.1-beta.6',
+  './academy-analytics-1112.css?v=11.12.1-beta.6',
+  './imam-smart-board.css?v=11.12.1-beta.6',
+  './js/features/imam-board-tafsir.js?v=11.12.1-beta.6',
+  './js/features/imam-board-corpus.js?v=11.12.1-beta.6',
+  './js/features/imam-smart-board.js?v=11.12.1-beta.6',
   './imam-board-display.html',
-  './imam-board-display.js?v=11.12.1'
+  './imam-board-display.js?v=11.12.1-beta.6'
 ];
 
 
 const APP_SHELL = [
   './',
   './index.html',
-  './imam-smart-board.css?v=11.12.1',
-  './js/features/imam-smart-board.js?v=11.12.1',
+  './imam-smart-board.css?v=11.12.1-beta.6',
+  './js/features/imam-board-tafsir.js?v=11.12.1-beta.6',
+  './js/features/imam-board-corpus.js?v=11.12.1-beta.6',
+  './js/features/imam-smart-board.js?v=11.12.1-beta.6',
   './imam-board-display.html',
-  './imam-board-display.js?v=11.12.1',
+  './imam-board-display.js?v=11.12.1-beta.6',
   './guest-practice.html',
   './guest-practice.css?v=11.7.4.2',
   './js/features/guest-practice.js?v=11.7.4.2',
   './js/features/guardian-tahfeez.js?v=11.7.4.2',
   './role-home.css?v=11.7.4.3',
   './ux-guidance.css?v=11.7.4.2',
-  './js/features/role-home.js?v=11.12.1',
-  './js/features/academy-analytics-1112.js?v=11.12.1',
-  './academy-analytics-1112.css?v=11.12.1',
+  './js/features/role-home.js?v=11.12.1-beta.6',
+  './js/features/academy-analytics-1112.js?v=11.12.1-beta.6',
+  './academy-analytics-1112.css?v=11.12.1-beta.6',
   './js/features/ux-guidance.js?v=11.7.4.2',
   './styles.css?v=11.0.0',
   './v11.css?v=11.4.1-profile-ui',
-  './app.js?v=11.12.1',
+  './app.js?v=11.12.1-beta.6',
   './v8.js?v=11.2.0-s3',
   './v9.js?v=11.0.0',
   './js/features/mushaf-offline.js?v=11.7.4.2',
@@ -61,8 +65,8 @@ const APP_SHELL = [
   './academic-exams-1111.css?v=11.11.1',
   './js/features/academic-exams-1111.js?v=11.11.1',
   './progress-bridge-1111.css?v=11.11.1',
-  './academy-analytics-1112.css?v=11.12.1',
-  './js/features/academy-analytics-1112.js?v=11.12.1',
+  './academy-analytics-1112.css?v=11.12.1-beta.6',
+  './js/features/academy-analytics-1112.js?v=11.12.1-beta.6',
   './js/features/progress-bridge-1111.js?v=11.11.1',
   './js/features/circle-management-1110.js?v=11.11.1',
   './placement-center-1191.css?v=11.9.2',
@@ -77,7 +81,7 @@ const APP_SHELL = [
   './guardian-messages.css?v=11.6.0-s1',
   './teacher-rating.css?v=11.7.4.5-sync-health',
   './js/features/guardian-ratings.js?v=11.7.0-s1',
-  './js/features/supervisor-dashboard.js?v=11.12.1',
+  './js/features/supervisor-dashboard.js?v=11.12.1-beta.6',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './v10.js?v=11.9.0',
@@ -111,9 +115,9 @@ const APP_SHELL = [
   './guardian-login.js?v=11.0.0',
   './js/features/quran-engine.js?v=11.0.0',
   './js/features/quran-structure.js?v=11.0.0',
-  './js/core/runtime.js?v=11.12.1',
-  './js/core/offline-bootstrap.js?v=11.12.1',
-  './js/core/mobile-navigation.js?v=11.12.1',
+  './js/core/runtime.js?v=11.12.1-beta.6',
+  './js/core/offline-bootstrap.js?v=11.12.1-beta.6',
+  './js/core/mobile-navigation.js?v=11.12.1-beta.6',
   './js/features/v10-data.js?v=11.0.0',
   './js/features/recitation-carry.js?v=11.0.0',
   './auth.js?v=11.7.4-foundation',
@@ -123,7 +127,7 @@ const APP_SHELL = [
   './js/features/academy-workspaces.js?v=11.7.4-foundation',
   './privacy.html',
   './terms.html',
-  './manifest.json?v=11.12.1',
+  './manifest.json?v=11.12.1-beta.6',
   './guardian-manifest.json?v=11.2.0-s4.1',
   './favicon.png',
   './icon-96.png',
@@ -151,7 +155,7 @@ const CORE_SHELL = [
   './js/features/guardian-tahfeez.js?v=11.7.4.2',
   './role-home.css?v=11.7.4.3',
   './ux-guidance.css?v=11.7.4.2',
-  './js/features/role-home.js?v=11.12.1',
+  './js/features/role-home.js?v=11.12.1-beta.6',
   './js/features/ux-guidance.js?v=11.7.4.2',
   './styles.css?v=11.0.0',
   './v11.css?v=11.4.1-profile-ui',
@@ -169,7 +173,7 @@ const CORE_SHELL = [
   './guardian-messages.css?v=11.6.0-s1',
   './teacher-rating.css?v=11.7.4.5-sync-health',
   './js/features/guardian-ratings.js?v=11.7.0-s1',
-  './js/features/supervisor-dashboard.js?v=11.12.1',
+  './js/features/supervisor-dashboard.js?v=11.12.1-beta.6',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './js/features/smart-revision.js?v=11.9.2',
@@ -178,12 +182,12 @@ const CORE_SHELL = [
   './js/features/v11-ui.js?v=11.4.1-profile-ui',
   './js/features/teacher-error-marking.js?v=11.8.0',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
-  './app.js?v=11.12.1',
+  './app.js?v=11.12.1-beta.6',
   './revision-quran-text.css?v=11.8.1',
   './js/features/revision-quran-text.js?v=11.8.1',
   './auth.js?v=11.7.4-foundation',
-  './js/core/runtime.js?v=11.12.1',
-  './js/core/offline-bootstrap.js?v=11.12.1'
+  './js/core/runtime.js?v=11.12.1-beta.6',
+  './js/core/offline-bootstrap.js?v=11.12.1-beta.6'
 ];
 
 function absolute(url){return new URL(url,self.location.href).href;}
@@ -273,7 +277,7 @@ self.addEventListener('install', event => {
   event.waitUntil((async()=>{
     const cache=await caches.open(CACHE_NAME);
     // Install the exact current app HTML/runtime first. No old-cache fallback
-    // is allowed for these files: otherwise a new worker may report v11.12.1
+    // is allowed for these files: otherwise a new worker may report v11.12.1-beta.6
     // while actually serving an older account's v11.9 application shell.
     for(const url of CRITICAL_FRESH_SHELL)await cacheVerifiedCurrentShell(cache,url);
     const optionalShell=APP_SHELL.filter(url=>url!=='./'&&!CRITICAL_FRESH_SHELL.includes(url));

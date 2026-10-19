@@ -5,10 +5,10 @@ const index=read('index.html'),sw=read('sw.js'),board=read('js/features/imam-sma
 new vm.Script(board);new vm.Script(display);
 assert(index.includes('id="imamSmartBoardTab"'));
 assert(index.includes('سبورة التفاعلية')||index.includes('السبورة التفاعلية'));
-assert(index.includes('imam-smart-board.js?v=11.12.1'));
-assert(index.includes('imam-smart-board.css?v=11.12.1'));
+assert(index.includes('imam-smart-board.js?v=11.12.1-beta.6'));
+assert(index.includes('imam-smart-board.css?v=11.12.1-beta.6'));
 assert(sw.includes('imam-board-display.html'));
-assert(sw.includes('imam-board-display.js?v=11.12.1'));
+assert(sw.includes('imam-board-display.js?v=11.12.1-beta.6'));
 assert(board.includes('readStore')&&board.includes('writeStore')&&board.includes('flush()'));
 assert(board.includes('currentUser()'));
 assert(board.includes('بصفة')===false || true);

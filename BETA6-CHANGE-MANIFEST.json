@@ -1,0 +1,228 @@
+{
+  "release": "11.12.1-beta.6",
+  "baseline": "11.12.1-beta.5",
+  "classification": "development-preview-not-approved-for-deployment",
+  "reference_archive_sha256": "ba4ef40692783f8fafb3b7104cc4a1a06385d96bfaa02e5acd283b2791f9d424",
+  "checked_utc": "2026-10-19",
+  "baseline_files": 585,
+  "original_files_deleted": [],
+  "old_sql_files_unchanged": 19,
+  "automated_test_commands_passed": 75,
+  "syntax_checked_files": 138,
+  "changed": {
+    "QA-IMAM-SMART-BOARD-11.12.1-BETA6.md": {
+      "status": "new",
+      "sha256": "d6f98484ec7bfb4f2ee0c23f9d3796a46c632ed12fd1d4c72838831053ba3ff2",
+      "size_bytes": 9704
+    },
+    "docs/GUIDE-IMAM-BOARD-BETA6.md": {
+      "status": "new",
+      "sha256": "b8a48a1bdf51783454891954fb88936c86c3c8d28d70f35d8e335eee34382f19",
+      "size_bytes": 7723
+    },
+    "docs/IMAM-BOARD-REQUIREMENTS-APPENDIX.md": {
+      "status": "new",
+      "sha256": "5214e07e111a5cdf3f0650099412da076be4cdcdb137bfb68e9856b6c0b8dc65",
+      "size_bytes": 24115
+    },
+    "docs/IMAM-BOARD-REQUIREMENTS-ORIGINAL.md": {
+      "status": "new",
+      "sha256": "f9761745a24db64250b790de89dfaaf6100c384b57d3d3828af678a8ef6d557f",
+      "size_bytes": 73289
+    },
+    "docs/IMAM-BOARD-SCIENTIFIC-SOURCES-BETA6.md": {
+      "status": "new",
+      "sha256": "7e623cb8344d7ec553ced1b20dabe0ac1e6fd31439e627768bbaa529d061a908",
+      "size_bytes": 3627
+    },
+    "docs/QA-IMAM-BOARD-BETA6-ACCEPTANCE-125.md": {
+      "status": "new",
+      "sha256": "0d5fcda7fa3aac3be3721919ed4d6f3c0f3e4e1ce22bde54edda2f9a3859dd48",
+      "size_bytes": 18196
+    },
+    "js/features/imam-board-corpus.js": {
+      "status": "new",
+      "sha256": "199b325fc45d38d9aace9d3809d1b4294cf33b7ba5d3a8e242e28db3c1e55b56",
+      "size_bytes": 10266
+    },
+    "scripts/pack-imam-tafsir.mjs": {
+      "status": "new",
+      "sha256": "478a04a2ae18f5509bf7df40a729f0abdbb3d8bf9c2cbf56706aab11b553e9a7",
+      "size_bytes": 4156
+    },
+    "tests/imam-board-beta6-corpus-check.js": {
+      "status": "new",
+      "sha256": "d66df48bd4ff515d079e6e1a3398bfcd6e761f172ffda82756d0d610845aa94f",
+      "size_bytes": 3962
+    },
+    "VERSION": {
+      "status": "modified",
+      "sha256": "c5c71c64b1d3be80813c6203211d4484358065edb9cf206fad162b514f3ab061",
+      "size_bytes": 15
+    },
+    "app.js": {
+      "status": "modified",
+      "sha256": "6e0998876a0ae0a6a510b76d77e27548fee73d47b3b613456cc65ba02d476434",
+      "size_bytes": 252025
+    },
+    "imam-board-display.html": {
+      "status": "modified",
+      "sha256": "1b7b0b7bc6439903816c961a619ab1063ef1e8c37455fb0878b06c5c844398ba",
+      "size_bytes": 660
+    },
+    "imam-smart-board.css": {
+      "status": "modified",
+      "sha256": "259b84107385da782442d100f808827491a7ea55b28638ab64fb19903ee12d59",
+      "size_bytes": 14206
+    },
+    "index.html": {
+      "status": "modified",
+      "sha256": "ee7a7f779f1de0b2de75c91381a9a5a42f5376dbe41d2513683529ff10e73cd3",
+      "size_bytes": 78153
+    },
+    "js/core/offline-bootstrap.js": {
+      "status": "modified",
+      "sha256": "d7facf03dfbced86039cb559eb595c294fb58e218b80353d1ca8b70df0d853df",
+      "size_bytes": 1232
+    },
+    "js/core/runtime.js": {
+      "status": "modified",
+      "sha256": "809150920b669cfecb084b1454396f9a490aea97bc943cf41f5359957ca163d7",
+      "size_bytes": 1485
+    },
+    "js/features/imam-smart-board.js": {
+      "status": "modified",
+      "sha256": "88c2c7836fec773a0cb9eeb0194f739c563b7a9a616a2285a5327d522651c018",
+      "size_bytes": 81675
+    },
+    "manifest.json": {
+      "status": "modified",
+      "sha256": "ebaa22d1a78ee94dc3c46ab4557e7d29600fd16f2be0786661b3e1095c7c7aa2",
+      "size_bytes": 2553
+    },
+    "package.json": {
+      "status": "modified",
+      "sha256": "7051afe0a4422982aaac60465831c755cac191948c243b57cb735e9889d23acd",
+      "size_bytes": 3780
+    },
+    "sw.js": {
+      "status": "modified",
+      "sha256": "745062416717bc67ed739591b90aa14b62d0d297eaee8acec3f177ed0a3a8984",
+      "size_bytes": 19723
+    },
+    "tests/academy-tenants-foundation-check.js": {
+      "status": "modified",
+      "sha256": "be602d46c6f64faa6b0e794f461377c94b3b6c160bcc2d72d95d3ff057bfa614",
+      "size_bytes": 4201
+    },
+    "tests/advanced-analytics-stage1-check.js": {
+      "status": "modified",
+      "sha256": "e96aab7833d6e80a01a97fa9d436acfb299a61efa2082db875ed71b8b003b583",
+      "size_bytes": 5346
+    },
+    "tests/automatic-roster-sync-check.js": {
+      "status": "modified",
+      "sha256": "3a2bdf39376a3eb3a8a050fa881bf1204abe921633c3485f87d453eb9d67ba17",
+      "size_bytes": 4855
+    },
+    "tests/circle-analytics-check.js": {
+      "status": "modified",
+      "sha256": "e5f057bf7b726c839cc4e366b1cfb42d3e11389b7fe0a50dbe8d1cc2773917bc",
+      "size_bytes": 4658
+    },
+    "tests/followup-center-check.js": {
+      "status": "modified",
+      "sha256": "05e0b789b9195128399a72a81e01dde0eab2b4a59b99caae142671ebf462bbb0",
+      "size_bytes": 3199
+    },
+    "tests/guardian-messages-stage1-check.js": {
+      "status": "modified",
+      "sha256": "3b3e60081ade9276d5b512e936ead771d4c506f95a2efe217e5c1a11003ad513",
+      "size_bytes": 2842
+    },
+    "tests/guardian-portal-check.js": {
+      "status": "modified",
+      "sha256": "b6cd927e3d011f525931360bdef3ee2618760408d47c3b8ab6db09db053842c7",
+      "size_bytes": 7670
+    },
+    "tests/guardian-tahfeez-check.js": {
+      "status": "modified",
+      "sha256": "13219291369f0dc65afd3ff2bdab8e4e46bcea0d1fda512437ffcf374d77e4ef",
+      "size_bytes": 2307
+    },
+    "tests/guest-role-update-batch-check.js": {
+      "status": "modified",
+      "sha256": "11639a417682b67e56eb97674cea664baf208a160e5deb999ac1470786d55c68",
+      "size_bytes": 5614
+    },
+    "tests/imam-board-official-science-source-check.js": {
+      "status": "modified",
+      "sha256": "33213c87391838507cf82ff58e7d4a95f0ca84331ee7b658768dd50a70f4cfea",
+      "size_bytes": 2476
+    },
+    "tests/imam-smart-board-check.js": {
+      "status": "modified",
+      "sha256": "bfed4cfb56980c8561a0e043ef8fc400e10ecf562ab53d23433c8b18eade3fa1",
+      "size_bytes": 1828
+    },
+    "tests/mobile-navigation-check.js": {
+      "status": "modified",
+      "sha256": "11222b869f88bd91fa47957e2487f8eb7e7df257cd4f4f7fefc470d022908b43",
+      "size_bytes": 1314
+    },
+    "tests/offline-reliability-check.js": {
+      "status": "modified",
+      "sha256": "81534492573f9ba92c500b4b76280bbb9c67a60f4f6fb8cdb4cdea2148f7cf7a",
+      "size_bytes": 2184
+    },
+    "tests/owner-upgrade-consistency-check.js": {
+      "status": "modified",
+      "sha256": "cd56e24908b487ba332076ebc0c0d71df585afd3fb12926143dc8cbf1701535f",
+      "size_bytes": 4060
+    },
+    "tests/role-home-tab-visibility-hotfix-check.js": {
+      "status": "modified",
+      "sha256": "300fc64c481bb4ee2dae930ced3dc0bdd7cbd578d11ee4d43966c0cdc4854179",
+      "size_bytes": 1972
+    },
+    "tests/role-ux-errors-batch-check.js": {
+      "status": "modified",
+      "sha256": "660f75dc018d799b195f136330ddd04bc29e1c6ed473c59dbdb604fbb2c2a02b",
+      "size_bytes": 5304
+    },
+    "tests/session-intelligence-119-check.js": {
+      "status": "modified",
+      "sha256": "62bfe1fb696531582c9122eec71d4c0becf96b2d5804e0ad31180846372ad73b",
+      "size_bytes": 4604
+    },
+    "tests/static-check.js": {
+      "status": "modified",
+      "sha256": "823b9dd639b4aca8f74fd5ae4f7ceb3a00406039939aac213954966e65177ed8",
+      "size_bytes": 41068
+    },
+    "tests/supervision-roster-permissions-stage2-check.js": {
+      "status": "modified",
+      "sha256": "1cf9011360046761bdf7093cb76c9de82c4c2194995cf046c2816dc111cd5241",
+      "size_bytes": 3729
+    },
+    "tests/teacher-rating-supervision-stage1-check.js": {
+      "status": "modified",
+      "sha256": "1d2c622ebfb590941158090203a727885bd791abbff9056f2fcc77c71b39a57c",
+      "size_bytes": 5196
+    },
+    "tests/v11-premium-ui-check.js": {
+      "status": "modified",
+      "sha256": "6dfa073fbc359aac07715e21bf29d795ae74ed7e830c45f516b6c9536b1f6856",
+      "size_bytes": 1746
+    },
+    "tests/v11-premium-ui-stage2-check.js": {
+      "status": "modified",
+      "sha256": "ebce025a8273eb3d5eae634185c55d11ca7f57f1360495b1cf83c47d5a4d2e63",
+      "size_bytes": 1848
+    }
+  },
+  "rights": "no third-party tafsir or word-meaning texts embedded; rights still to be verified",
+  "browser": "synthetic layout smoke only; integrated browser blocked by environment policy",
+  "git": "source ZIP contained no .git; remote production branch not compared; no push",
+  "sql": "none"
+}

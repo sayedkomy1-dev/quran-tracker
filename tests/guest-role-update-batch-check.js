@@ -13,7 +13,7 @@ assert.match(role,/owner:\[/);assert.match(role,/supervisor:\[/);assert.match(ro
 assert.match(role,/app_supervision_access/);assert.match(role,/data\?\.allowed===true/);
 assert.match(role,/quran_guest_usage_overview/);assert.match(role,/if\(!g\.WeLiveQuranAuth\?\.isOwner\?\.\(\)\)return/);
 assert.match(read('role-home.css'),/#pg-home\.v9-home-ready > #roleHomeHub/);
-assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.12\.1-academy-analytics1'/);
+assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.12\.1-beta\.6-imam-board'/);
 const install=sw.slice(sw.indexOf("self.addEventListener('install'"),sw.indexOf("self.addEventListener('activate'"));
 assert.ok(!install.includes('self.skipWaiting()'),'No silent worker activation');
 assert.match(sw,/if\(event\.data==='SKIP_WAITING'\)self\.skipWaiting\(\)/);

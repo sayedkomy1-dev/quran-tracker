@@ -4,3 +4,90 @@
 @media(max-width:850px){.imam-board-root{overflow:auto}.ib-shell{min-height:100%;height:auto}.ib-header{position:sticky;top:0;z-index:8;padding:9px}.ib-workspace{display:flex;flex-direction:column;overflow:visible}.ib-workspace aside{max-height:240px}.ib-main{min-height:580px}.ib-board-area{min-height:300px}.ib-activities{width:100%}.ib-toolbox{max-height:125px;overflow:auto}.ib-students{order:0}.ib-main{order:1}.ib-science{order:2}.ib-header button{font-size:12px}.ib-display-quran{padding:18px}}
 @media(prefers-reduced-motion:reduce){.ib-effects span{animation:none;display:none}}
 .ib-expanded .ib-students,.ib-expanded .ib-science{display:none}.ib-expanded .ib-workspace{grid-template-columns:minmax(0,1fr)}.ib-expanded .ib-verses{max-width:1350px;margin:auto}
+/* Preparations and timeline remain teacher-only; not emitted to the student window. */
+.ib-timeline{margin-block:8px;padding:10px;border:1px solid #d6e0d6;border-radius:12px;background:#f6f9f6;display:flex;gap:5px;flex-wrap:wrap;font-size:12px;line-height:1.6}
+.ib-timeline>div{flex-basis:100%;font-weight:700}.ib-timeline button{padding:4px 7px;font-size:12px;min-height:32px}.ib-timeline button.on{background:#0d573e;color:#fff;border-color:#0d573e}
+.ib-prep-overlay{position:absolute;inset:0;z-index:12;background:#001b17ba;display:grid;place-items:center;padding:12px;overflow:auto}
+.ib-prep-dialog{background:#fafffa;color:#17382a;border-radius:18px;box-shadow:0 24px 90px #0004;width:min(1080px,100%);max-height:min(95vh,850px);overflow:auto;padding:20px;direction:rtl}
+.ib-prep-dialog header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #d6e3d9;padding-bottom:12px}
+.ib-prep-dialog header h2{margin:0}.ib-prep-dialog header p{color:#607669;flex:1;min-width:170px;font-size:13px}
+.ib-prep-fields,.ib-prep-stage-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.ib-prep-fields label,.ib-prep-stage-fields label{font-size:13px;font-weight:650;display:flex;flex-direction:column;gap:5px}
+.ib-prep-fields label input,.ib-prep-stage-fields label input,.ib-prep-stage-fields select{box-sizing:border-box;width:100%;min-width:0}
+.ib-prep-fields textarea{min-height:65px}
+.ib-prep-stage{border:1px solid #d4e2d9;padding:12px;border-radius:15px;margin-block:9px;background:#fff}
+.ib-prep-stage-title{display:flex;align-items:center;gap:8px}.ib-prep-stage-title strong{flex:1}.ib-prep-stage-fields .ib-prep-wide{grid-column:span 2}
+.ib-prep-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:15px}
+.ib-prep-dialog footer{display:flex;gap:8px;flex-wrap:wrap;position:sticky;bottom:0;padding:12px 0;background:#fafffa;border-top:1px solid #d4e2d9;margin-top:12px}
+.ib-prep-dialog footer button:first-child{background:#0e553e;color:white}
+@media(max-width:850px){.ib-prep-dialog{max-height:94dvh;padding:12px}.ib-prep-fields,.ib-prep-stage-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.ib-prep-stage-fields .ib-prep-wide{grid-column:span 2}.ib-prep-dialog footer button{flex:1 1 40%}}
+@media(max-width:460px){.ib-prep-fields{grid-template-columns:1fr}.ib-prep-dialog header h2{font-size:18px}}
+
+.ib-display-prompt{padding:16px 30px;text-align:center;background:#fff2ce;font-size:24px;font-weight:bold;color:#163b2e}.ib-display-word{font-family:inherit}
+/* Give the immutable Quran canvas priority over ancillary controls. */
+@media(min-width:851px){
+ .ib-header{flex-wrap:nowrap;min-height:70px;box-sizing:border-box}
+ .ib-header .ib-buttons{min-width:0;max-width:78%;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+ .ib-header .ib-buttons button{flex-shrink:0;white-space:nowrap}
+ .ib-toolbox,.ib-tools-bottom,.ib-encourage{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+ .ib-toolbox button,.ib-tools-bottom button,.ib-encourage button{flex-shrink:0;white-space:nowrap}
+ .ib-toolbox{min-height:54px;box-sizing:border-box}.ib-board-area{min-height:310px}
+}
+@media(max-width:850px){
+ .ib-header{display:block;position:sticky;top:0}
+ .ib-header>div:first-child{display:flex;align-items:baseline;gap:8px;justify-content:space-between}
+ .ib-header .ib-buttons{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;gap:5px;padding-top:8px}
+ .ib-header .ib-buttons button{white-space:nowrap;flex-shrink:0}
+ .ib-students{max-height:145px!important;min-height:100px;scrollbar-width:thin}
+ .ib-activities,.ib-range,.ib-toolbox,.ib-tools-bottom,.ib-encourage{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}
+ .ib-range label,.ib-activities button,.ib-toolbox button,.ib-tools-bottom button,.ib-encourage button{flex-shrink:0;white-space:nowrap}
+ .ib-toolbox{max-height:none;min-height:55px}
+ .ib-main{min-height:680px}
+ .ib-board-area{min-height:440px}
+}
+
+/* beta.3 — existing official session editor docked in the same teaching workspace. */
+.ib-native-overlay[hidden]{display:none!important}
+.ib-native-overlay{position:absolute;inset:0;z-index:20;background:#092e24e8;display:flex;justify-content:center;align-items:stretch;padding:14px;box-sizing:border-box;direction:rtl}
+.ib-native-panel{width:min(1300px,100%);background:#f7faf8;border-radius:18px;min-height:0;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 25px 75px #0006}
+.ib-native-panel>header{background:#0d513c;color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ib-native-panel>header strong{font-size:19px}.ib-native-panel>header p{font-size:13px;margin:4px 0 0;color:#def2e5}
+.ib-native-actions{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#e4f1e9;flex-wrap:wrap}
+.ib-native-actions span{font-size:13px;color:#315945}
+.ib-native-mount{overflow:auto;flex:1;min-height:0;padding:12px 16px}
+/* The original session page is moved, not cloned, preserving all handlers and unsaved editor fields. */
+.ib-native-mount #pg-session{display:block!important;position:static!important;max-width:none!important;padding:0!important;margin:0!important;visibility:visible!important}
+/* Existing Quran/correction overlays must sit above the board's isolated viewport. */
+body.ib-native-open #quranTextModal,body.ib-native-open #quranErrorSheet{z-index:2147483100!important}
+@media(max-width:650px){.ib-native-overlay{padding:0}.ib-native-panel{border-radius:0}.ib-native-panel>header{padding:10px}.ib-native-mount{padding:7px}.ib-native-actions button{flex:1}}
+
+/* Use the original app warning and add-range dialogs above the dock, not behind it. */
+body.ib-native-open > .mo.open,body.ib-native-open #im119Warning,body.ib-native-open #im119RangeModal{z-index:2147483100!important}
+/* beta.4 — sourced, teacher-entered scientific reference cards. */
+.ib-science-controls{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.ib-science-controls button{flex:1 1 125px}
+.ib-science-caption{font-size:12px;color:#577365;background:#eef6ef;padding:8px;border-radius:9px}
+#ib-science-content{line-height:1.85;overflow-wrap:anywhere}
+#ib-science-content > p{white-space:pre-wrap}
+#ib-science-content > strong{color:#0d583c}
+#ib-science-content > small{display:block;color:#546f60;margin-block:10px}
+#ib-science-content > a{display:inline-flex;margin-block:6px;color:#145c44}
+.ib-science-editor{display:flex;flex-direction:column;gap:9px;background:#f5f9f3;border:1px solid #d4e5d8;border-radius:12px;padding:12px;margin:12px 0}
+.ib-science-editor h4{margin:0}.ib-science-editor p,.ib-science-editor small{font-size:12px;color:#597369;margin:0}
+.ib-science-editor label{display:flex;flex-direction:column;gap:4px;margin:0!important}
+.ib-science-editor label.ib-science-consent{display:flex;flex-direction:row;align-items:flex-start;gap:9px;line-height:1.6}
+.ib-science-editor input[type=checkbox]{width:auto;margin-top:4px;flex-shrink:0}
+.ib-science-editor textarea{min-height:110px}
+.ib-science-actions{display:flex;gap:8px}
+.ib-science-actions button:first-child{background:#0a553b;color:white}
+
+/* Scientific sources remain on a separate visual layer from Quran text. */
+.ib-official-science{border:1px solid #c6ddce;border-radius:14px;padding:12px;margin-block:12px;line-height:1.85;background:#f8fcf7;color:#15382b}.ib-official-science>div+div{border-top:1px solid #e0e7df;margin-top:10px;padding-top:10px}.ib-official-science p{white-space:pre-wrap;line-height:2}.ib-official-science small{display:block;color:#566d5c}.ib-official-science button{width:100%;margin-top:9px}.ib-science-editor input[type=file]{max-width:100%;direction:rtl}
+
+/* beta.6 — scientific side panel remains alongside the Quran, not over it. */
+.ib-book-picker{display:flex;flex-direction:column;gap:5px;padding:8px;background:#f1f7f1;border-radius:10px;font-size:13px}
+.ib-book-picker select{min-width:0;width:100%;font:inherit;padding:8px;border:1px solid #b6d6be;border-radius:8px;background:white}
+#ib-multi-progress{white-space:pre-wrap;line-height:1.7}
+.ib-official-science{max-height:55vh;overflow-y:auto}
+@media (max-width:850px){.ib-science{max-width:100%;min-width:0;overflow-wrap:anywhere}.ib-science-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ib-book-picker select{font-size:16px}}
+@media (prefers-reduced-motion:reduce){.imam-board-root .ib-effects *{animation:none!important;transition:none!important}}

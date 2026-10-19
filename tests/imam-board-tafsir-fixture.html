@@ -1,0 +1,21 @@
+<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><title>اختبار مكتبة التفسير</title><body><pre id="result">RUNNING</pre>
+<script>const S=[{n:'الفاتحة',a:7},{n:'البقرة',a:286}];</script>
+<script src="../js/features/imam-board-tafsir.js"></script>
+<script>(async()=>{
+const t=window.ImamApp.BoardTafsir;
+const fail=reason=>{document.getElementById('result').textContent='FAIL '+reason;};
+try{
+ const a=t.canonical({sura_no:1,aya_no:2,aya_tafseer:'شرح قرآني تجريبي لا يُنسب للمجمع'},'verse');if(a.key!=='t:1:2')throw Error('mapping');
+ const word=t.canonical({sura_name:'الفاتحة',aya_no:2,quranic_words:'الرَّحْمَٰنِ',explanation:'شرح للكلمة تجريبي'},'word');if(word.key!=='w:1:2:الرحمن')throw Error('word normalization');
+ const data=t.parseCSV('sura_no,aya_no,aya_tafseer\n1,2,"مثال، شرح"\n');if(data[0].aya_tafseer!=='مثال، شرح')throw Error('CSV parsing');
+ const file=new File([JSON.stringify([{sura_no:1,aya_no:2,aya_tafseer:'شرح تدريبي لأغراض الاختبار'}])],'tafsir.json',{type:'application/json'});
+ try{await t.importFile(file,'verse',false);throw Error('missing provenance accepted');}catch(e){if(e.message==='missing provenance accepted')throw e;}
+ const result=await t.importFile(file,'verse',true);if(result.count!==1||result.verified!==false)throw Error('incorrect import metadata');
+ const fetched=await t.getVerse(1,2);if(fetched.content!=='شرح تدريبي لأغراض الاختبار')throw Error('read-back failed');
+ const invalid=new File([JSON.stringify([{invalid:'true'}])],'invalid.json',{type:'application/json'});
+ try{await t.importFile(invalid,'verse',true);throw Error('invalid data accepted');}catch(e){if(e.message==='invalid data accepted')throw e;}
+ const again=await t.getVerse(1,2);if(again.content!==fetched.content)throw Error('failed import clobbered data');
+ const stats=await t.status();if(stats.verse.count!==1)throw Error('status missing');
+ document.getElementById('result').textContent='PASS browser IndexedDB import/read/reject/preserve/metadata/normalization';
+}catch(e){fail(e.stack||e.message||String(e));}
+})();</script></body></html>

@@ -1,0 +1,50 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+let source=fs.readFileSync(path.join(root,'js/features/imam-smart-board.js'),'utf8');
+const display=fs.readFileSync(path.join(root,'imam-board-display.js'),'utf8');
+const css=fs.readFileSync(path.join(root,'imam-smart-board.css'),'utf8');
+const cache=new Map();
+let current='teacher-A';
+const settings={};
+const app={State:{students:[{id:'s1',name:'أحمد'},{id:'s2',name:'مريم'}],sessions:[],settings}};
+const ctx={console,Date,Math,setTimeout,clearTimeout,setInterval,clearInterval,crypto:{randomUUID:()=>Math.random().toString(36).slice(2)},S:[{n:'الفاتحة',a:7},{n:'البقرة',a:286}],ImamApp:app,WeLiveQuranAuth:{getAccess:()=>({user_id:current,role:'teacher',status:'active'})},localStorage:{getItem:k=>cache.get(k)||null,setItem:(k,v)=>cache.set(k,v),removeItem:k=>cache.delete(k)},__IMAM_BASE__:{save:()=>true},toast:()=>{},document:{getElementById:()=>null}};
+ctx.globalThis=ctx;
+source=source.replace('root.SmartBoard=Object.freeze(',`root.__BoardTest={stageTemplate,validRange,normalizeStage,prepareDraft,persistPreparation,readStore,writeStore,getEditing:()=>prepEditing,setEditing:x=>{prepEditing=x;},setBoard:x=>Object.assign(b,x),user:currentUser,studentName,canShow};\nroot.SmartBoard=Object.freeze(`);
+vm.runInNewContext(source,ctx,{filename:'imam-smart-board.js'});
+const t=ctx.ImamApp.__BoardTest;
+assert.equal(t.validRange(1,1,7),true);assert.equal(t.validRange(1,1,8),false);assert.equal(t.validRange(999,1,2),false);
+const first=t.prepareDraft({title:'تجهيز الفاتحة',studentId:'s1',lesson:[{type:'تسميع',title:'تسميع الآيات',chapter:1,from:1,to:7,minutes:5}]});
+assert.equal(first.lesson.length,1);assert.equal(first.lesson[0].type,'تسميع');
+assert.equal(first.lesson[0].minutes,5);assert.equal(t.normalizeStage({type:'غير معروف',chapter:1,from:1,to:7}).type,'شرح');
+t.setEditing(first);
+assert.equal(t.persistPreparation('ready'),true);
+assert.equal(t.readStore().preps.length,1);
+assert.equal(t.readStore().preps[0].status,'ready');
+assert.equal(t.readStore().preps[0].studentId,'s1');
+// Do not mutate a stored template when running/editing a lesson in a session.
+const copied=t.prepareDraft(t.readStore().preps[0]);
+copied.lesson[0].title='نشاط تغير فقط داخل الحصة';
+assert.equal(t.readStore().preps[0].lesson[0].title,'تسميع الآيات');
+// Invalid ayah range must not replace the saved preparation.
+copied.lesson[0].chapter=1;copied.lesson[0].to=200;
+t.setEditing(copied);
+assert.equal(t.persistPreparation(),false);
+assert.equal(t.readStore().preps[0].lesson[0].to,7);
+// Local account separation must hold even if the previous account's settings persist.
+current='teacher-B';
+assert.equal((t.readStore().preps||[]).length,0);
+const newPrep=t.prepareDraft({title:'المعلمة الأخرى',studentId:'s2'});
+t.setEditing(newPrep);assert.equal(t.persistPreparation(),true);
+assert.equal(t.readStore().preps[0].title,'المعلمة الأخرى');
+current='teacher-A';
+assert.equal(t.readStore().preps[0].title,'تجهيز الفاتحة');
+// Window payload must not accidentally include private teacher notes or a full roster.
+assert(source.includes("publicPrompt:cleanText(b.game,650)"));
+assert(!/privateNote\s*:\s*b\.privateNote/.test(source.slice(source.indexOf('function outgoing(){'),source.indexOf('function broadcast(){'))));
+assert(display.includes('event.origin!==location.origin')&&display.includes('event.source!==window.opener'));
+assert(display.includes('textContent=String(data.publicPrompt)'));
+assert(source.includes('closeStudentDisplay();shutdownAudio();quranRequest++;resetView();'));
+assert(source.includes('setInterval(()=>{if(!accountStillValid()'));
+assert(css.includes('ib-prep-overlay')&&css.includes('ib-timeline'));
+console.log('PASS board prep: stage validation, save/read, template immutability, account isolation, display whitelist and heartbeat');

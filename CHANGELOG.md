@@ -1,3 +1,11 @@
+# 11.12.1-beta.4 — سبورة الإمام الذكية: البطاقات العلمية والمؤقت والمشاركة (تجريبي)
+
+- بطاقات علمية مرتبطة بالآية/الكلمة، بمصدر معلن وحقوق استعمال يقرّ بها المحفظ؛ لا تُعامل باعتبارها تفسيرًا معتمدًا.
+- تحسين ظهور أشكال الرسم ونطاقاتها في نافذة الطالب.
+- مؤقت تصاعدي وتنازلي مع إيقاف واستئناف، ومكتبة 30 عبارة للنطق الآلي وتحكم بالصوت.
+- اختبار جديد لعزل البطاقات وصلاحية الروابط وحقوق الإدخال، مع الحفاظ على محرر الحصة الرسمي.
+- لا SQL جديد، الإصدار التجريبي غير معتمد للإنتاج.
+
 ## v11.12.0 — Advanced Academy Analytics (Stage 1)
 - Added read-only academy → authorized teacher → synced group → student drill-down.
 - Preserved server-enforced owner/supervisor scopes, and made unknown/stale data explicit.
@@ -864,3 +872,11 @@
 - Resolved stale range-response races on quick reader navigation.
 - Hardened account-local snapshot boot when IndexedDB is stale/empty; preserve last-good snapshot on transient empty boot, and respect explicit reset/import.
 - Refreshed offline app shell without SQL or local schema changes. Certificates 11.8.0 preserved.
+
+## 11.12.1-beta.3 — سبورة الإمام الذكية (تطوير داخلي، غير منشور)
+
+- دمج محرر الحصة الرسمي داخل واجهة السبورة دون إنشاء محرك تصحيح أو درجات موازٍ.
+- إضافة أزرار فتح أخطاء النص وحفظ الحصة عبر منطق الأكاديمية الحالي والعودة إلى السبورة دون تهيئة جديدة.
+- تأمين مسودات السبورة بين الحسابات، وحجب الأدوار غير النشطة أو غير المخولة، وتحسين استعادة أحدث نسخة محفوظة.
+- إصلاح الخروج من المعاينة والاحتفاظ بالبيانات عند الانتقال بين السبورة ومحرر الحصة.
+- إضافة فحوصات وملاحظات اعتماد؛ لا يوجد SQL جديد ولا تغيير للمخطط المحلي 12.
