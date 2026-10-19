@@ -17,6 +17,6 @@ assert(html.includes('id="pg-students"')&&html.includes('class="btn btn-g st-add
 assert(!html.includes('class="fab" onclick="openAddSt()"'),'floating add student button still exists');
 assert(css.includes('#pg-students .st-add-inline')&&css.includes('position:static'),'add-student inline style missing');
 assert(html.includes('role-home.css?v=11.7.4.3')&&sw.includes("'./role-home.css?v=11.7.4.3'"),'new styles must be cache-busted in HTML and Offline Shell');
-assert(sw.includes('quran-pwa-v11.12.1-beta.6-imam-board'),'offline cache must be refreshed');
+assert(sw.includes('quran-pwa-v11.12.1-beta.6-imam-board-mobile-nav-hotfix1'),'offline cache must be refreshed');
 assert(!/\b(?:DROP|TRUNCATE)\b/i.test(css),'stylesheet should not carry SQL');
 console.log('PASS role-home-tab-visibility-hotfix: home-only workspace, active route, no floating add collision, cache refresh');

@@ -8,7 +8,7 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.12.1-beta.6-imam-board';
+const CACHE_NAME = 'quran-pwa-v11.12.1-beta.6-imam-board-mobile-nav-hotfix1';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.6';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -16,6 +16,7 @@ const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
   './index.html',
+  './v9.js?v=11.12.1-beta.6-mobile-nav-hotfix1',
   './app.js?v=11.12.1-beta.6',
   './js/core/runtime.js?v=11.12.1-beta.6',
   './js/core/offline-bootstrap.js?v=11.12.1-beta.6',
@@ -55,7 +56,7 @@ const APP_SHELL = [
   './v11.css?v=11.4.1-profile-ui',
   './app.js?v=11.12.1-beta.6',
   './v8.js?v=11.2.0-s3',
-  './v9.js?v=11.0.0',
+  './v9.js?v=11.12.1-beta.6-mobile-nav-hotfix1',
   './js/features/mushaf-offline.js?v=11.7.4.2',
   './v9.css?v=11.0.0',
   './v10.css?v=11.0.0',

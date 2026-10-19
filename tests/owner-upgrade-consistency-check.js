@@ -16,7 +16,7 @@ assert(html.includes(`app.js?v=${version}`));
 assert(html.includes(`runtime.js?v=${version}`));
 assert(html.includes(`offline-bootstrap.js?v=${version}`));
 assert(sw.includes(`const APP_VERSION = '${version}'`));
-assert(sw.includes(`const CACHE_NAME = 'quran-pwa-v${version}-imam-board'`));
+assert(sw.includes(`const CACHE_NAME = 'quran-pwa-v${version}-imam-board-mobile-nav-hotfix1'`));
 assert(sw.includes("const CRITICAL_FRESH_SHELL = ["));
 assert(sw.includes('await cache.put(absolute(\'./\'),latestHTML.clone())'));
 assert(read('VERSION').trim()===version);
@@ -70,7 +70,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
    return;
  }
  await installation;
- const newCache=await cachesMock.open('quran-pwa-v11.12.1-beta.6-imam-board');
+ const newCache=await cachesMock.open('quran-pwa-v11.12.1-beta.6-imam-board-mobile-nav-hotfix1');
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
  assert(currentRoot && currentHtml,'both root and index paths must have current HTML');

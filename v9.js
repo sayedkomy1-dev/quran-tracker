@@ -119,8 +119,37 @@ function injectV9Navigation(){
     g.insertAdjacentHTML('beforeend',`<button class="v9-more-item" data-v1010-portal-more="1" onclick="closeV9More();v1010OpenPortalPicker()">${v9Icon('group')}<b>بوابة ولي الأمر</b><small>دخول برقم الهاتف + PIN وتقارير قراءة فقط</small></button>`);
   }
   document.body.classList.add('v9-shell-ready');
+  syncV9SmartBoardEntry();
 }
-function openV9More(){const m=document.getElementById('v9MoreSheet');if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}}
+// The responsive shell replaces #mainNav with #v9Nav. Keep the board in More,
+// but never expose teacher controls to a guardian, student, or inactive account.
+function v9CanOpenSmartBoard(){
+  const a=globalThis.WeLiveQuranAuth?.getAccess?.()||globalThis.WeLiveQuranAuth?.getProfile?.();
+  return a?.status==='active'&&['owner','teacher','supervisor'].includes(a.role);
+}
+function syncV9SmartBoardEntry(){
+  const grid=document.getElementById('v9MoreGrid');if(!grid)return;
+  let button=grid.querySelector('[data-v9-smart-board="1"]');
+  if(!v9CanOpenSmartBoard()){button?.remove();return;}
+  if(button)return;
+  button=document.createElement('button');
+  button.type='button';
+  button.className='v9-more-item';
+  button.setAttribute('data-v9-smart-board','1');
+  button.setAttribute('aria-label','السبورة التفاعلية');
+  button.innerHTML=`${v9Icon('book')}<b>السبورة التفاعلية</b><small>سبورة الإمام الذكية وتحضير الحصة</small>`;
+  button.addEventListener('click',()=>{
+    closeV9More();
+    if(typeof globalThis.ImamApp?.SmartBoard?.open==='function')globalThis.ImamApp.SmartBoard.open();
+    else if(typeof toast==='function')toast('السبورة لم تكتمل تحميلها. أعد فتح التطبيق بعد تحديثه.','error');
+  });
+  grid.appendChild(button);
+}
+function openV9More(){
+  syncV9SmartBoardEntry();
+  const m=document.getElementById('v9MoreSheet');
+  if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}
+}
 function closeV9More(){const m=document.getElementById('v9MoreSheet');if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');}}
 function updateV9Nav(p){document.querySelectorAll('#v9Nav .v9-nav-btn').forEach(b=>b.classList.toggle('on',b.dataset.page===p||(b.dataset.page==='more'&&['checkin','tasks','settings','mushaf'].includes(p))));}
 function goPage(p){
