@@ -36,7 +36,8 @@
       if(id===current)return;
       current=id;
       text.textContent=pageNames[id] || (active.querySelector('h1,h2,.page-title,.ch')?.textContent||'مساحة العمل').trim().slice(0,65);
-      strip.hidden=false;
+      // Home already owns a role-aware title and live context. Do not duplicate it.
+      strip.hidden=(id==='home');
     }
     sync();
     if(typeof MutationObserver==='function'){

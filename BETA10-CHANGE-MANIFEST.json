@@ -1,0 +1,279 @@
+{
+  "release": "11.12.1-beta.10",
+  "base": "11.12.1-beta.9",
+  "classification": "phone-home-screenshot-repair-development-preview",
+  "comparison": "SHA256 compared to actual beta9 FULL zip bytes",
+  "original_files": 627,
+  "updated_files": 630,
+  "new_files": 3,
+  "modified_files": 50,
+  "original_files_removed": [],
+  "sql_files_changed": [],
+  "changed": [
+    {
+      "path": "GUIDE-BETA9-REAL-ACCEPTANCE.md",
+      "status": "modified",
+      "sha256": "9d7447c432c6411533c41f5d72b4ab75c98ecb9d7fcd386cf13561d58755f26b"
+    },
+    {
+      "path": "QA-REPORT-BETA9.md",
+      "status": "modified",
+      "sha256": "26a6fb0aa3eb7e77713e239b31be3b0e8bb0b6688dc99bd5de2d4b76f2adf1be"
+    },
+    {
+      "path": "VERSION",
+      "status": "modified",
+      "sha256": "d05a61d30795d4c7331c724773040fbbed735f0a2e964d24eacdc4309cb53ffd"
+    },
+    {
+      "path": "app.js",
+      "status": "modified",
+      "sha256": "fc96de460dad133111f63bf818cee02bb7eb6458ffc2264f1b0402594fbde4b7"
+    },
+    {
+      "path": "css/platform/components.css",
+      "status": "modified",
+      "sha256": "721764493d3e635a64d736c11b03694bcda6f5879f13cf326a32ab00c2ca6fe3"
+    },
+    {
+      "path": "css/platform/responsive.css",
+      "status": "modified",
+      "sha256": "b32ad3fde6454274dc5cec7cd2649bc73afc9ca1b3902af0880b86cfa10ee364"
+    },
+    {
+      "path": "css/platform/tokens.css",
+      "status": "modified",
+      "sha256": "499f6b8b951e00cd2a3b1610d7931f61bde2169bebb93b6fe037b64c27573c5f"
+    },
+    {
+      "path": "docs/QA-BETA10-PHONE-HOME.md",
+      "status": "new",
+      "sha256": "49152019056cd150fba0486e17702745d50088e578e27cba43952f80c3206148"
+    },
+    {
+      "path": "docs/REVOLUTIONARY-UX-MASTER-PROMPT.md",
+      "status": "modified",
+      "sha256": "0b855ba0b8383c162b03f4033fde5644fe3e6a4fcf7b819df3ac735570e478df"
+    },
+    {
+      "path": "docs/TEST-BETA10-PHONE-HOME.md",
+      "status": "new",
+      "sha256": "271318a13dbc6538f4129f4b38081a24105d94d711f8d7d9f446bcee665eb983"
+    },
+    {
+      "path": "guardian-login.html",
+      "status": "modified",
+      "sha256": "12aace51e3f03ec2cb275064d0eb2fb3866eac814bb87dbad7a03c3a78474ce6"
+    },
+    {
+      "path": "guardian-portal.html",
+      "status": "modified",
+      "sha256": "7bd451788266550c7c0943574445bc36e0ab6bd8c670a5f40a6c487439c62322"
+    },
+    {
+      "path": "guest-practice.html",
+      "status": "modified",
+      "sha256": "a5c7314beef87ec3a01aa21d362e6206256d0465cff2d5d33b854376ae44c6f9"
+    },
+    {
+      "path": "imam-board-display.html",
+      "status": "modified",
+      "sha256": "ec92d4b06cdf06e80762595d9ce2b55886918a2003dd0ef4629b77d4aae02971"
+    },
+    {
+      "path": "index.html",
+      "status": "modified",
+      "sha256": "b80b0b04de8610f54bb8846c270573ed494a793ebe3cdb98575eca935ec53d08"
+    },
+    {
+      "path": "js/core/offline-bootstrap.js",
+      "status": "modified",
+      "sha256": "6d129aa0c946e7189b9ae2997bcbb5165dc0f858796e64cba39287729f8cef6b"
+    },
+    {
+      "path": "js/core/runtime.js",
+      "status": "modified",
+      "sha256": "9e3c5058dd9dba4b4f3e0e87def46f78c009cbbca2ae249e2e22d0444ee23096"
+    },
+    {
+      "path": "js/features/platform-ux.js",
+      "status": "modified",
+      "sha256": "79254d6f8583638540b106150a3afc4cb5163f1fe241cf75f83660d35fceca4c"
+    },
+    {
+      "path": "js/features/platform-workflow.js",
+      "status": "modified",
+      "sha256": "f9968a78d9fdb751a4ee0c9a0f737c770e8c99e8a3380644d8bb65e12f2ab7e3"
+    },
+    {
+      "path": "js/features/role-home.js",
+      "status": "modified",
+      "sha256": "c2c3b5383f1bb451fe7e8cd707e36a2445a4f00cabf33792477fce0df6355d1b"
+    },
+    {
+      "path": "manifest.json",
+      "status": "modified",
+      "sha256": "06e11fa124fc1e903964c222348241663b8b5ef546bec08a8bcc775b8a43e9f8"
+    },
+    {
+      "path": "package.json",
+      "status": "modified",
+      "sha256": "9706ebad7e4a9b3d25eb1a523597397cf56559e5dd378b76c5f9a03792d60f18"
+    },
+    {
+      "path": "role-home.css",
+      "status": "modified",
+      "sha256": "1fd3b06951d71fe04df1a577170aa096921b9cae02058f3b6f0c84db9ddae423"
+    },
+    {
+      "path": "sw.js",
+      "status": "modified",
+      "sha256": "478444e64f1cb9eac7468872931b25597f4fc378193b278d1403654f28ce28c7"
+    },
+    {
+      "path": "tests/academy-tenants-foundation-check.js",
+      "status": "modified",
+      "sha256": "ebd9603147993cb1a3cf9dcad976209326f6ade18a384f25dbc1b0d8780178a8"
+    },
+    {
+      "path": "tests/advanced-analytics-stage1-check.js",
+      "status": "modified",
+      "sha256": "2833e445c4dcd307666896f7156b06065006dcbd9db821f0c8cadecd84ba3423"
+    },
+    {
+      "path": "tests/automatic-roster-sync-check.js",
+      "status": "modified",
+      "sha256": "9c2afda5325a294cf2147bdfbdae06bb5c2b93140c0d79808ff8598039a199c5"
+    },
+    {
+      "path": "tests/circle-analytics-check.js",
+      "status": "modified",
+      "sha256": "693f353650e83a5154a5d73a527f99e10e8029049be0af01c5c0bfa15a6b67e7"
+    },
+    {
+      "path": "tests/followup-center-check.js",
+      "status": "modified",
+      "sha256": "d9e1fe36856a2f3b3de5ba1fec95883e41ec18994d9ed4d86351ec901e623af4"
+    },
+    {
+      "path": "tests/goal-planning-mobile-hotfix-check.js",
+      "status": "modified",
+      "sha256": "4f79092d5f6c4a49b02aae576b5b65dbf0a807a5a62dfbde5126487d687aa121"
+    },
+    {
+      "path": "tests/guardian-messages-stage1-check.js",
+      "status": "modified",
+      "sha256": "600ef4e815a1aaec3dd0cb33c90a066c795b4aec83094a3f87414795ec776c07"
+    },
+    {
+      "path": "tests/guardian-portal-check.js",
+      "status": "modified",
+      "sha256": "4ffc6330dfdb07676e8827b547dca8d1248183cbe045b4d3d38d8e628757428a"
+    },
+    {
+      "path": "tests/guardian-tahfeez-check.js",
+      "status": "modified",
+      "sha256": "9b111532576b826db6e4b5c4bb24ccf1ec98f35e0a42f2a8b5e97c7080bb286b"
+    },
+    {
+      "path": "tests/guest-role-update-batch-check.js",
+      "status": "modified",
+      "sha256": "fee78c295c5abee8918b6a5be9c6107cab355941d475678c8cb0ee252711c0e5"
+    },
+    {
+      "path": "tests/imam-board-beta6-corpus-check.js",
+      "status": "modified",
+      "sha256": "8b7483524f083d1ee10a30c4b61c505f312071cfa880a9ac1207c99cc6fdab7a"
+    },
+    {
+      "path": "tests/imam-board-mobile-entry-check.js",
+      "status": "modified",
+      "sha256": "b9687c9da385fc959c40fdc17a24583203e236c8edd07bf328f4d99bd37e6357"
+    },
+    {
+      "path": "tests/imam-board-official-science-source-check.js",
+      "status": "modified",
+      "sha256": "71f5687aad39d114d052a85628eb166cb8190db1e4339734a7679d22ff4aefad"
+    },
+    {
+      "path": "tests/imam-smart-board-check.js",
+      "status": "modified",
+      "sha256": "45b24e2cb4f229f78d426fd81a5cb2c4f0fbc2f5fa24115009a276913b9d3c30"
+    },
+    {
+      "path": "tests/mobile-home-beta10-check.js",
+      "status": "new",
+      "sha256": "99a22fe78760f766e62df7f64ece22591efaa2e4d60538bfa43bf9a02ddbdb76"
+    },
+    {
+      "path": "tests/mobile-navigation-check.js",
+      "status": "modified",
+      "sha256": "487efd1786b94e0a390f8d189ded7956183daa1e32fcaf90188fcc70376dec96"
+    },
+    {
+      "path": "tests/offline-reliability-check.js",
+      "status": "modified",
+      "sha256": "bf2069525d64dd3dd445aa3c5969c83c8a11fb0a95f9bdfefcccd8b5d0199012"
+    },
+    {
+      "path": "tests/owner-upgrade-consistency-check.js",
+      "status": "modified",
+      "sha256": "78adc4e020d4216225869c0cd12bcce7bd2baca59044239a16b0f28f579e0127"
+    },
+    {
+      "path": "tests/platform-design-system-check.js",
+      "status": "modified",
+      "sha256": "57ad7494e79f4bb3537f45c9be821f9a8d2b2374c15ee998bc4bcd043afab995"
+    },
+    {
+      "path": "tests/platform-visual-refresh-check.js",
+      "status": "modified",
+      "sha256": "5bf0b11d4aac42edcabfee54544b71f5476f9bbaa1748107e892679b0b9da137"
+    },
+    {
+      "path": "tests/platform-workflow-beta9-check.js",
+      "status": "modified",
+      "sha256": "aa2536b53dc1b9b8896ca986a2c604fd0dc81eb2e2889e16f54dce3dd25decc5"
+    },
+    {
+      "path": "tests/role-home-tab-visibility-hotfix-check.js",
+      "status": "modified",
+      "sha256": "8a3648c8f9697f8993b64ff83e316aef39cf571d4e23bcdeb1c8029101fe7181"
+    },
+    {
+      "path": "tests/role-ux-errors-batch-check.js",
+      "status": "modified",
+      "sha256": "1caeb665f1a0557ecf3488a92671762ac18804d1db5a14c099c1e16bf3afa936"
+    },
+    {
+      "path": "tests/session-intelligence-119-check.js",
+      "status": "modified",
+      "sha256": "558da557a22a6cd9b6feedbbcaab47aec98e39b1a8df335773ada113ed36514a"
+    },
+    {
+      "path": "tests/static-check.js",
+      "status": "modified",
+      "sha256": "97075c60eaef526ac07f2aaf79b562c316d210a93f25bd0a35e64edf7a4ac2fe"
+    },
+    {
+      "path": "tests/supervision-roster-permissions-stage2-check.js",
+      "status": "modified",
+      "sha256": "e7293651e821975ca8e4da5ce937e1f6d7728005e205da1ba780d7e147a7c8e6"
+    },
+    {
+      "path": "tests/teacher-rating-supervision-stage1-check.js",
+      "status": "modified",
+      "sha256": "cc955f0b5fb9158039a723d08f73d04f76246f8bf784e589bfe81cef95c0e3b7"
+    },
+    {
+      "path": "tests/v11-premium-ui-check.js",
+      "status": "modified",
+      "sha256": "c1dccd644c2cfafa3f29795466318ec7d3fc0bf04b61b5a6d6580e81569c56b0"
+    },
+    {
+      "path": "tests/v11-premium-ui-stage2-check.js",
+      "status": "modified",
+      "sha256": "84e030f6eb4e8620234ae10674b18a0e71d34b121e22d9a74ad8f3438086739b"
+    }
+  ]
+}

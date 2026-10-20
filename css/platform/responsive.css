@@ -81,3 +81,13 @@
  .ui-session-action-buttons .btn{font-size:11px;letter-spacing:-.1px}
  .ui-session-section-link{font-size:12px;padding-inline:12px}
 }
+
+/* Phone dock must be slimmer than the content and leave a guaranteed scroll end. */
+@media(max-width:799px){
+ body.v9-shell-ready{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+ body.v9-shell-ready .pg{padding-bottom:calc(144px + env(safe-area-inset-bottom))}
+ body.v9-shell-ready .v9-nav{min-height:64px;max-height:74px;padding:5px 7px;border-radius:18px;gap:4px}
+ body.v9-shell-ready .v9-nav-btn{min-height:52px;font-size:11px}
+ body.v9-shell-ready .v9-nav-btn.session-primary{height:59px;max-width:62px;width:62px;transform:translateY(-7px)}
+ :where(.pg,.role-home-hub) :is(button,input,select,textarea,[tabindex]){scroll-margin-bottom:calc(140px + env(safe-area-inset-bottom))}
+}

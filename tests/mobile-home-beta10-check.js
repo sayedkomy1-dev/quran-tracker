@@ -1,0 +1,32 @@
+'use strict';
+// Screenshot-led regression contract for the administrative phone home.
+// This is structural verification; it is NOT a browser screenshot assertion.
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+const read = path => fs.readFileSync(path, 'utf8');
+const css = read('css/platform/components.css');
+const responsive = read('css/platform/responsive.css');
+const roleStyles = read('role-home.css');
+const role = read('js/features/role-home.js');
+const strip = read('js/features/platform-ux.js');
+const nav = read('js/core/mobile-navigation.js');
+const html = read('index.html');
+const sw = read('sw.js');
+assert.match(css, /\.toast\{position:fixed/,'toast must be removed from document flow');
+assert.match(css, /z-index:1500;display:none/,'toast stays hidden unless activated');
+assert.match(css, /\.toast\.show\{display:block\}/,'toast can be shown by original timer');
+assert.match(nav, /notify\('اضغط رجوع مرة أخرى للخروج'\)/,'original Android back action remains intact');
+assert.match(roleStyles, /#pg-home\[data-workspace-role\] > #supervisorShortcut\{display:none!important\}/,'duplicate supervisor launcher hidden, retained in DOM');
+assert.match(roleStyles, /#pg-home\[data-workspace-role="supervisor"\] #v9Home/,'supervisor does not stack the teaching home underneath');
+assert.match(roleStyles, /#pg-home\[data-workspace-role="owner"\] #v9Home/,'owner has a focused admin dashboard');
+assert.match(role, /if\(code==='supervision'\)return g\.ImamApp\?\.Supervision\?\.open\?\.\(\)/,'existing scoped supervision action remains authoritative');
+assert.match(role, /supervisor:\['/,'supervisor shortcut remains in role model');
+assert.ok(role.includes("supervisor:['فتح لوحة الإشراف','supervision']"),'primary supervisor CTA opens original supervisor panel');
+assert.match(role, /role-workspace-toggle/,'switch back to teaching workspace must remain available');
+assert.match(strip, /strip\.hidden=\(id==='home'\)/,'do not duplicate the homepage breadcrumb title');
+assert.match(responsive, /body\.v9-shell-ready \.pg\{padding-bottom:calc\(144px/,'reserve scroll space below fixed phone navigation');
+assert.match(responsive, /body\.v9-shell-ready \.v9-nav\{min-height:64px/,'compact phone nav');
+assert.match(roleStyles, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,'two-column action cards');
+assert(html.includes('role-home.css?v=11.12.1-beta.10') && sw.includes("'./role-home.css?v=11.12.1-beta.10'"),'client and offline resource versions match');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.10');
+console.log('PASS beta10 phone homepage screenshot regression: toast, duplicate role title, contextual actions, accessible original routes, nav safe area');
