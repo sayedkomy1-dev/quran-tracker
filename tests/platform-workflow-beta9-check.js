@@ -1,0 +1,26 @@
+'use strict';
+const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
+const read=p=>fs.readFileSync(p,'utf8');
+const html=read('index.html'),ui=read('js/features/platform-workflow.js'),component=read('css/platform/components.css'),responsive=read('css/platform/responsive.css'),worker=read('sw.js'),roles=read('js/features/role-home.js');
+assert.equal((html.match(/id="saveSessionBtn"/g)||[]).length,1,'single official save control');
+assert.equal((html.match(/id="saveSendSessionBtn"/g)||[]).length,1,'single official share control');
+for(const pattern of ['id="sesSt"','id="sesDate"','id="sesNotes"','id="draftState"','onclick="saveSession()"','onclick="saveAndSendWA()"'])assert(html.includes(pattern),'original form contract '+pattern);
+assert(ui.includes('actions.append(save,send)')&&ui.includes('d.body.append(dock)'), 'must relocate original controls outside transformed page animation');
+assert(!ui.includes('g.saveSession(')&&!ui.includes('g.saveAndSendWA('),'view must not create official records');
+assert(ui.includes('MutationObserver(sync)')&&ui.includes('draft.textContent'),'save message must reflect original state');
+assert(ui.includes("d.body.classList.toggle('ui-session-active',key==='session')"),'dock page visibility');
+assert(ui.includes('el.addEventListener(\'keydown\''),'icon-only toggle keyboard use');
+assert(ui.includes('onlineIndicator()')&&ui.includes('navigator?.onLine'),'offline warning');
+assert(component.includes('ui-workspace-heading')&&component.includes('ui-session-action-dock'),'common workspace and session dock');
+assert(responsive.includes('ui-session-keyboard')&&responsive.includes('bottom:calc(88px'),'mobile keyboard/navigation safe area');
+assert(html.includes('platform-workflow.js?v=11.12.1-beta.9')&&worker.includes("'./js/features/platform-workflow.js?v=11.12.1-beta.9'"),'refresh UI on version bump and offline shell');
+assert(roles.includes('role-hero-next')&&roles.includes('role-action-featured'),'role next action and hierarchy');
+const v8=read('v8.js');const fn=v8.match(/^function save\(\)\{[^\n]+/m)?.[0];assert(fn,'v8 effective save missing');
+function runSave(result){let backup=0,push=0;const context={V8:{syncing:false},settings:{sync:{auto:true}},stampLocalSyncChanges(){},__IMAM_BASE__:{save(){return result}},scheduleAutoBackup(){backup++},scheduleCloudPush(){push++}};vm.runInNewContext(fn+';this._save=save;',context);return {stored:context._save(),backup,push};}
+assert.deepEqual(runSave(false),{stored:false,backup:0,push:0},'failed write must propagate and not schedule sync');
+assert.deepEqual(runSave(true),{stored:true,backup:1,push:1},'successful write still schedules backups/sync');
+const a=worker.indexOf('async function trimRuntimeCache('),b=worker.indexOf('async function refreshSameOrigin(',a);assert(a>=0&&b>a);
+const pinned=['https://example.test/app/index.html','https://example.test/app/js/main.js'];const runtime=['https://example.test/app/runtime1','https://example.test/app/runtime2','https://example.test/app/runtime3'];
+let deleted=[];const context={URL,APP_SHELL:['./index.html','./js/main.js'],CORE_SHELL:[],CRITICAL_FRESH_SHELL:['./index.html'],absolute:x=>new URL(x,'https://example.test/app/').href};vm.runInNewContext(worker.slice(a,b)+';this.trim=trimRuntimeCache;',context);
+const cache={async keys(){return [...pinned,...runtime].map(url=>({url}));},async delete(key){deleted.push(key.url);return true;}};
+(async()=>{await context.trim(cache,2);assert.deepEqual(deleted,runtime,'eviction must preserve every essential shell file');console.log('PASS beta9 workspace: official save parity, safe keyboard/mobile dock, role actions, offline cache pinning');})().catch(e=>{console.error(e);process.exitCode=1;});

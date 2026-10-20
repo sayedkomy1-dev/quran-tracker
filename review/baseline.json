@@ -1,0 +1,30 @@
+{
+  "mode": "static code inspection, no browser computed CSS",
+  "css_links": 25,
+  "css_total_bytes": 346165,
+  "css_important": 686,
+  "css_color_tokens_total": 1647,
+  "css_hex_distinct": 1024,
+  "css_font_sizes_distinct": 91,
+  "css_radius_distinct": 54,
+  "css_z_index_distinct": 49,
+  "inline_styles": 79,
+  "inline_onclick": 179,
+  "buttons_in_index": 172,
+  "buttons_without_class": 41,
+  "pages_static": 14,
+  "duplicate_ids": [],
+  "pg-session": {
+    "buttons": 52,
+    "inputs": 19
+  },
+  "pg-settings": {
+    "buttons": 26,
+    "inputs": 12
+  },
+  "pg-compare": {
+    "buttons": 0,
+    "inputs": 0
+  },
+  "source": "/mnt/data/OP-Quran-Tracker-v11.12.1-beta.8-FULL-DEVELOPMENT-PREVIEW.zip"
+}

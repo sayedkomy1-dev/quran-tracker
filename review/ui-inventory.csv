@@ -1,0 +1,251 @@
+﻿page,tag,id,text_or_label,class,handler,role_estimate,aria_label,has_inline_style
+shared,button,,تحديث الآن,,applyUpdate(),secondary,,0
+shared,button,,تثبيت,btn btn-g btn-sm,installPWA(),primary,,1
+shared,button,,✕,,dismissInstall(),secondary,,1
+shared,button,,بحث سريع,hdr-btn hdr-search,openQuickSearch(),secondary,بحث سريع,0
+shared,button,,0,hdr-btn v108-followup-head,goPage('followup'),secondary,مركز متابعة الطلاب,0
+shared,button,,0,hdr-btn hdr-task,goPage('tasks'),secondary,المهام والمتابعة,0
+shared,button,themeBtn,🌙,hdr-btn,toggleTheme(),secondary,تبديل المظهر,0
+shared,button,backBtn,→ رجوع,back-btn,goBack(),secondary,,0
+pg-home,button,,تعديل,btn btn-out btn-xs,"goPage('settings');setTimeout(()=>document.getElementById('goalNewAyat')?.focus(),80)",secondary,,0
+pg-home,button,,✅ الحضور,quick-action,goPage('checkin'),secondary,,0
+pg-home,button,,📖 بدء حصة,quick-action,goPage('session'),secondary,,0
+pg-home,button,,➕ طالب جديد,quick-action,openAddSt(),secondary,,0
+pg-home,button,,🔎 بحث سريع,quick-action,openQuickSearch(),secondary,,0
+pg-home,button,teacherInboxHomeButton,💬 رسائل أولياء الأمور,quick-action,,secondary,,0
+pg-home,select,quickSt,— اختر الطالب —,,quickPick(),secondary,,0
+pg-home,button,,ابدأ الحصة 📖,btn btn-g mt8,goToSession(),primary,,1
+pg-home,button,,💬 مركز التواصل,btn btn-out mt8,openBroadcastComposer(),secondary,,1
+pg-checkin,button,,📤 إرسال تقارير لجميع الحاضرين,btn btn-wa mt8,sendAllWA(),secondary,,0
+pg-circle-manager,button,,📖 التسميع الجماعي,,,secondary,,0
+pg-circle-manager,button,,✅ كشف الحضور,,,secondary,,0
+pg-circle-manager,button,,🔔 الانضباط,,,secondary,,0
+pg-circle-manager,button,,📅 الجداول,,,secondary,,0
+pg-circle-manager,select,cmGroup,الحلقة,,,secondary,الحلقة,0
+pg-circle-manager,input,cmDate,تاريخ الحصة,,,secondary,تاريخ الحصة,0
+pg-academic-exams,select,ac1111Student,,,,secondary,,0
+pg-academic-exams,button,,الاختبارات,active,,secondary,,0
+pg-academic-exams,button,,الإجازات والأسانيد,,,secondary,,0
+pg-academic-exams,button,,التحليلات,,,secondary,,0
+pg-academic-exams,button,,التواصل مع ولي الأمر,,,secondary,,0
+pg-academic-exams,input,ac1111Month,,,,secondary,,0
+pg-students,input,searchIn,ابحث عن طالب...,,filterSt(),secondary,,1
+pg-students,select,filterLevel,كل المستويات مبتدئ متوسط متقدم,student-filter,filterSt(),secondary,,0
+pg-students,select,filterGroup,كل المجموعات,student-filter,filterSt(),secondary,,0
+pg-students,button,,💬 مركز التواصل مع أولياء الأمور,btn btn-wa mb8,openBroadcastComposer(),secondary,,0
+pg-students,button,,➕ إضافة طالب جديد,btn btn-g st-add-inline,openAddSt(),primary,إضافة طالب جديد,0
+pg-session,select,sesSt,— اختر الطالب —,,onSesSt(),secondary,,0
+pg-session,input,sesDate,,,onSesDateChange(),secondary,,0
+pg-session,button,sb-h,✅ حضر,st-btn sel-h,setStatus('حضر'),secondary,,0
+pg-session,button,sb-a,❌ غاب,st-btn,setStatus('غاب'),secondary,,0
+pg-session,button,sb-v,🌙 إجازة,st-btn,setStatus('إجازة'),secondary,,0
+pg-session,button,v1059StopToggle,عرض التفاصيل ＋,v10510-insight-button,toggleV1059SessionPanel('stop'),secondary,,0
+pg-session,button,,♻️ تحميل نفس التكليف السابق,btn btn-out btn-sm,fillFromLast(),secondary,,0
+pg-session,button,v1059ReviewToggle,عرض الاقتراحات ＋,v10510-insight-button,toggleV1059SessionPanel('review'),secondary,,0
+pg-session,button,,📲 إبلاغ ولي الأمر بالغياب,btn btn-wa mb8,sendAbsenceWA(),secondary,,0
+pg-session,button,,🧠 حفظ,,addRecitationError('حفظ'),secondary,,0
+pg-session,button,,⏸️ تردد,,addRecitationError('تردد'),secondary,,0
+pg-session,button,,💬 تلقين,,addRecitationError('تلقين'),secondary,,0
+pg-session,button,,🎙️ تجويد,,addRecitationError('تجويد'),secondary,,0
+pg-session,button,,🔤 تشكيل,,addRecitationError('تشكيل'),secondary,,0
+pg-session,button,,↩️ نسيان آية,,addRecitationError('نسيان آية'),secondary,,0
+pg-session,button,,📖 النص,btn btn-out btn-xs quran-text-btn,openQuranTextModal(),secondary,,0
+pg-session,input,new-s,اكتب للبحث أو اختر السورة,,fillAyah('new'),secondary,,0
+pg-session,button,,⌄,surah-drop-btn,toggleSurahDropdown('new'),secondary,فتح قائمة السور,0
+pg-session,button,vb-new,🎙️,voice-btn,startVoice('new'),secondary,,0
+pg-session,input,new-full,,,toggleFull('new'),secondary,,0
+pg-session,input,new-f,من,,,secondary,,1
+pg-session,input,new-t,إلى,,,secondary,,1
+pg-session,button,dir-new-up,↑,direction-btn,"setDirection('new',-1)",secondary,,0
+pg-session,button,dir-new-down,↓,direction-btn,"setDirection('new',1)",secondary,,0
+pg-session,button,,✓ تمت السورة,btn btn-out btn-xs,markSectionComplete('new'),secondary,,0
+pg-session,button,,♻️ كرر نفس التكليف,btn btn-out btn-xs,repeatSectionOnly('new'),secondary,,0
+pg-session,button,,📖 النص,btn btn-out btn-xs quran-text-btn,v1181OpenCurrentSection('rec'),secondary,,0
+pg-session,input,rec-s,اكتب للبحث أو اختر السورة,,fillAyah('rec'),secondary,,0
+pg-session,button,,⌄,surah-drop-btn,toggleSurahDropdown('rec'),secondary,فتح قائمة السور,0
+pg-session,button,vb-rec,🎙️,voice-btn,startVoice('rec'),secondary,,0
+pg-session,input,rec-full,,,toggleFull('rec'),secondary,,0
+pg-session,input,rec-f,من,,,secondary,,1
+pg-session,input,rec-t,إلى,,,secondary,,1
+pg-session,button,dir-rec-up,↑,direction-btn,"setDirection('rec',-1)",secondary,,0
+pg-session,button,dir-rec-down,↓,direction-btn,"setDirection('rec',1)",secondary,,0
+pg-session,button,,✓ تمت السورة,btn btn-out btn-xs,markSectionComplete('rec'),secondary,,0
+pg-session,button,,♻️ كرر نفس التكليف,btn btn-out btn-xs,repeatSectionOnly('rec'),secondary,,0
+pg-session,button,,📖 النص,btn btn-out btn-xs quran-text-btn,v1181OpenCurrentSection('far'),secondary,,0
+pg-session,input,far-s,اكتب للبحث أو اختر السورة,,fillAyah('far'),secondary,,0
+pg-session,button,,⌄,surah-drop-btn,toggleSurahDropdown('far'),secondary,فتح قائمة السور,0
+pg-session,button,vb-far,🎙️,voice-btn,startVoice('far'),secondary,,0
+pg-session,input,far-full,,,toggleFull('far'),secondary,,0
+pg-session,input,far-f,من,,,secondary,,1
+pg-session,input,far-t,إلى,,,secondary,,1
+pg-session,button,dir-far-up,↑,direction-btn,"setDirection('far',-1)",secondary,,0
+pg-session,button,dir-far-down,↓,direction-btn,"setDirection('far',1)",secondary,,0
+pg-session,button,,✓ تمت السورة,btn btn-out btn-xs,markSectionComplete('far'),secondary,,0
+pg-session,button,,♻️ كرر نفس التكليف,btn btn-out btn-xs,repeatSectionOnly('far'),secondary,,0
+pg-session,select,juz-j,— اختر الجزء باسمه —,,v1052OnJuzChanged(),secondary,,0
+pg-session,select,v1051-juz-quarter,الجزء كاملًا — حزبان — 8 أرباع الحزب الأول — 4 أرباع الحزب الثاني — 4 أرباع الربع الأول 1/8 الربع ال,,,secondary,,0
+pg-session,button,,+ إضافة للمراجعة,btn btn-g btn-sm v1051-add-juz,addJuz(),primary,,0
+pg-session,button,dir-juz-up,↑,direction-btn,"setDirection('juz',-1)",secondary,,0
+pg-session,button,dir-juz-down,↓,direction-btn,"setDirection('juz',1)",secondary,,0
+pg-session,input,surah-review-search,اكتب اسم السورة للبحث...,,renderSurahChecklist(),secondary,,0
+pg-session,button,,✓ سور جزء عم,btn btn-out btn-xs,selectJuzAmmaSurahs(),secondary,,0
+pg-session,button,,مسح التحديد,btn btn-out btn-xs,clearSelectedSurahs(),danger,,0
+pg-session,button,dir-surahReview-up,↑,direction-btn,"setDirection('surahReview',-1)",secondary,,0
+pg-session,button,dir-surahReview-down,↓,direction-btn,"setDirection('surahReview',1)",secondary,,0
+pg-session,button,,الحفظ يحتاج تثبيت,,appendNoteTemplate('الحفظ جيد ويحتاج تثبيت.'),secondary,,0
+pg-session,button,,راجع المتشابهات,,appendNoteTemplate('يرجى مراجعة المتشابهات قبل الحصة القادمة.'),secondary,,0
+pg-session,button,,لم يراجع المطلوب,,appendNoteTemplate('الطالب لم يراجع المطلوب كاملًا.'),secondary,,0
+pg-session,button,,أداء ممتاز,,appendNoteTemplate('أداء ممتاز اليوم، بارك الله فيه.'),secondary,,0
+pg-session,textarea,sesNotes,توجيهات، ملاحظات، نصائح...,,,secondary,,0
+pg-session,button,voiceNoteBtn,🎤 تسجيل ملاحظة صوتية,btn btn-out btn-sm,toggleVoiceNoteRecording(),secondary,,0
+pg-session,button,voiceNoteDeleteBtn,حذف,btn btn-red btn-xs,deletePendingVoiceNote(),danger,,1
+pg-session,button,saveSessionBtn,💾 حفظ الحصة,btn btn-g mb8,saveSession(),primary,,0
+pg-session,button,saveSendSessionBtn,📲 حفظ وإرسال لولي الأمر,btn btn-wa,saveAndSendWA(),secondary,,0
+pg-session,select,teacherAssignmentAudioReciter,مشاري العفاسي الحصري المعيقلي,,,secondary,قارئ صوت التكليف,0
+pg-session,button,teacherAssignmentAudioBtn,🎧 مشاركة صوت الحفظ الجديد,btn btn-out,shareCurrentAssignmentAudio(),secondary,,0
+pg-session,button,,رسالة مختصرة,btn btn-out btn-sm,saveAndSendWAMode('short'),secondary,,0
+pg-session,button,,رسالة تفصيلية,btn btn-out btn-sm,saveAndSendWAMode('detailed'),secondary,,0
+pg-reports,button,,فتح تحليلات الحلقة,btn btn-g,goPage('analytics'),primary,,0
+pg-reports,select,repSt,— اختر الطالب —,,renderReport(),secondary,,0
+pg-reports,select,repMonth,,,renderReport(),secondary,,0
+pg-reports,button,,📥 CSV,btn btn-out btn-sm,exportCSV(),secondary,,0
+pg-reports,button,,🖨️ طباعة,btn btn-out btn-sm,printReport(),secondary,,0
+pg-reports,button,,🏅 مقارنة,btn btn-out btn-sm,goPage('compare'),secondary,,0
+pg-settings,input,setName,الشيخ / الأستاذ...,,saveSettings(),secondary,,0
+pg-settings,input,setCircle,مسجد / مكان...,,saveSettings(),secondary,,0
+pg-settings,button,fsmd,أ صغير,fsize-btn active,setFontSize('md'),secondary,,1
+pg-settings,button,fslg,أ متوسط,fsize-btn,setFontSize('lg'),secondary,,1
+pg-settings,button,fsxl,أ كبير,fsize-btn,setFontSize('xl'),secondary,,1
+pg-settings,button,,⬇️ تثبيت التطبيق,btn btn-g btn-sm,installPWA(),primary,,0
+pg-settings,button,,🛡️ حماية التخزين المحلي,btn btn-out btn-sm,requestPersistentStorage(),secondary,,0
+pg-settings,button,notifBtn,🔔 تفعيل تذكير المتابعة,btn btn-out,requestNotif(),secondary,,0
+pg-settings,select,trackSt,— اختر الطالب —,,renderTrack(),secondary,,0
+pg-settings,button,,{{اسم_الطالب}},tmpl-var,insertVar('{{اسم_الطالب}}'),secondary,,0
+pg-settings,button,,{{التاريخ}},tmpl-var,insertVar('{{التاريخ}}'),secondary,,0
+pg-settings,button,,{{الحفظ_الجديد}},tmpl-var,insertVar('{{الحفظ_الجديد}}'),secondary,,0
+pg-settings,button,,{{المراجعة_القريبة}},tmpl-var,insertVar('{{المراجعة_القريبة}}'),secondary,,0
+pg-settings,button,,{{المراجعة_البعيدة}},tmpl-var,insertVar('{{المراجعة_البعيدة}}'),secondary,,0
+pg-settings,button,,{{الملاحظات}},tmpl-var,insertVar('{{الملاحظات}}'),secondary,,0
+pg-settings,button,,{{اسم_المحفظ}},tmpl-var,insertVar('{{اسم_المحفظ}}'),secondary,,0
+pg-settings,button,,{{مستوى_التسميع}},tmpl-var,insertVar('{{مستوى_التسميع}}'),secondary,,0
+pg-settings,button,,{{إجمالي_الآيات}},tmpl-var,insertVar('{{إجمالي_الآيات}}'),secondary,,0
+pg-settings,textarea,waTmpl,اتركه فارغاً لاستخدام القالب الافتراضي...,,saveSettings(),secondary,,0
+pg-settings,button,,↺ إعادة ضبط القالب الافتراضي,btn btn-out btn-sm,resetTemplate(),secondary,,0
+pg-settings,input,goalNewAyat,,,saveV8Settings(),secondary,,0
+pg-settings,input,goalReviews,,,saveV8Settings(),secondary,,0
+pg-settings,input,goalSessions,,,saveV8Settings(),secondary,,0
+pg-settings,input,goalAttendance,,,saveV8Settings(),secondary,,0
+pg-settings,button,,تعيين / تغيير PIN,btn btn-g btn-sm,setupPinLock(),primary,,0
+pg-settings,button,,إلغاء القفل,btn btn-out btn-sm,disablePinLock(),secondary,,0
+pg-settings,button,,بصمة / Windows Hello,btn btn-out btn-sm,setupDeviceBiometric(),secondary,,0
+pg-settings,input,syncAccount,,,,secondary,,0
+pg-settings,input,syncPassphrase,8 أحرف على الأقل — احتفظ بها لاستعادة البيانات على جهاز جديد,,saveV8Settings(),secondary,,0
+pg-settings,input,syncAuto,,,saveV8Settings(),secondary,,0
+pg-settings,button,,⬆️ رفع نسخة مشفرة,btn btn-g btn-sm,pushCloudSync(),primary,,0
+pg-settings,button,,⬇️ تنزيل ودمج,btn btn-out btn-sm,pullCloudSync(),secondary,,0
+pg-settings,button,,📤 تنزيل نسخة JSON,btn btn-g mb8,exportData(),primary,,0
+pg-settings,button,,📲 مشاركة نسخة احتياطية,btn btn-out mb8,shareBackup(),secondary,,0
+pg-settings,button,,↩️ استعادة نسخة تلقائية,btn btn-out btn-sm mb8,restoreAutoBackup(),secondary,,0
+pg-settings,input,importFile,,,importData(event),secondary,,1
+pg-settings,button,,فحص سلامة البيانات,btn btn-out mt8,runDataHealthCheck(),secondary,,0
+pg-settings,button,,🗑️ حذف جميع البيانات,btn btn-red,clearAll(),danger,,0
+pg-tasks,button,,+ مهمة جديدة,btn btn-g btn-sm,openTaskModal(),primary,,0
+pg-tasks,button,,0 مفتوحة,task-stat,setTaskFilter('open'),secondary,,0
+pg-tasks,button,,0 متأخرة,task-stat overdue,setTaskFilter('overdue'),secondary,,0
+pg-tasks,button,,0 اليوم,task-stat,setTaskFilter('today'),secondary,,0
+pg-tasks,button,,0 مكتملة,task-stat,setTaskFilter('done'),secondary,,0
+pg-tasks,button,,المفتوحة,on,setTaskFilter('open'),secondary,,0
+pg-tasks,button,,اليوم,,setTaskFilter('today'),secondary,,0
+pg-tasks,button,,المتأخرة,,setTaskFilter('overdue'),secondary,,0
+pg-tasks,button,,المكتملة,,setTaskFilter('done'),secondary,,0
+pg-tasks,button,,الكل,,setTaskFilter('all'),secondary,,0
+pg-tasks,input,taskSearch,ابحث في المهام...,,renderTasks(),secondary,,0
+pg-followup,button,,0 أولوية عالية,,v108SetFilter('urgent'),secondary,,0
+pg-followup,button,,0 يحتاجون متابعة,,v108SetFilter('all'),secondary,,0
+pg-followup,button,,0 حضور منخفض,,v108SetFilter('attendance'),secondary,,0
+pg-followup,button,,0 متابعة متأخرة,,v108SetFilter('overdue'),secondary,,0
+pg-followup,button,,الكل,on,v108SetFilter('all'),secondary,,0
+pg-followup,button,,أولوية عالية,,v108SetFilter('urgent'),secondary,,0
+pg-followup,button,,إتقان منخفض,,v108SetFilter('mastery'),secondary,,0
+pg-followup,button,,إعادات,,v108SetFilter('repeats'),secondary,,0
+pg-followup,button,,حضور,,v108SetFilter('attendance'),secondary,,0
+pg-followup,button,,متأخر,,v108SetFilter('overdue'),secondary,,0
+pg-followup,button,,بدون نسب,,v108SetFilter('unscored'),secondary,,0
+pg-followup,input,v108Search,ابحث باسم الطالب أو ولي الأمر...,,v108SetQuery(this.value),secondary,,0
+pg-followup,select,v108Group,كل الحلقات,,v108SetGroup(this.value),secondary,فلترة حسب الحلقة,0
+pg-analytics,select,v109Range,آخر 7 أيام آخر 30 يومًا آخر 90 يومًا كل الفترة,,v109SetRange(this.value),secondary,,0
+pg-analytics,select,v109Group,كل الحلقات,,v109SetGroup(this.value),secondary,,0
+pg-analytics,button,,📥 CSV,btn btn-out btn-sm,v109ExportCSV(),secondary,,0
+pg-analytics,button,,📋 نسخ الملخص,btn btn-out btn-sm,v109CopySummary(),secondary,,0
+pg-analytics,button,,📤 مشاركة,btn btn-out btn-sm,v109ShareSummary(),secondary,,0
+pg-analytics,button,,🖨️ طباعة / PDF,btn btn-g btn-sm,v109Print(),primary,,0
+pg-profile,select,v107Range,آخر 30 يومًا آخر 90 يومًا كل الفترة,,renderV107Progress(curStId),secondary,فترة لوحة التقدم,0
+pg-profile,button,,👨‍👩‍👧 بوابة ولي الأمر,btn btn-wa btn-sm,v1010OpenPortalPicker(curStId),secondary,,0
+pg-profile,button,,☑️ إضافة مهمة,btn btn-g btn-sm,openTaskModal(curStId),primary,,0
+pg-profile,button,,✏️ تعديل,btn btn-out btn-sm,editSt(),secondary,,0
+pg-profile,button,,🎓 شهادة,btn btn-out btn-sm,openCert(),secondary,,0
+pg-profile,button,,🗑️ حذف,btn btn-red btn-sm,deleteSt(),danger,,0
+shared,button,,✕,mo-x,closeMo(),secondary,,0
+shared,input,m-name,الاسم الكامل,,,secondary,,0
+shared,input,m-par,اسم الأب أو الأم,,,secondary,,0
+shared,input,m-phone,01xxxxxxxxx,,,secondary,,0
+shared,input,m-date,,,,secondary,,0
+shared,select,m-level,مبتدئ متوسط متقدم,,,secondary,,0
+shared,select,m-plan,متوازنة — حفظ ومراجعة مبتدئ — جرعات صغيرة حفظ مكثف مراجعة فقط ختمة تثبيت قصار السور,,,secondary,,0
+shared,select,m-next-mode,ابدأ من آخر آية تم تسميعها للربط ابدأ من الآية التالية,,,primary,,0
+shared,input,m-group,مثال: مجموعة السبت — المستوى الأول,,,secondary,,0
+shared,input,,,m-day,,secondary,,0
+shared,input,,,m-day,,secondary,,0
+shared,input,,,m-day,,secondary,,0
+shared,input,,,m-day,,secondary,,0
+shared,input,,,m-day,,secondary,,0
+shared,input,,,m-day,,secondary,,0
+shared,input,,,m-day,,secondary,,0
+shared,input,m-time,,,,secondary,,0
+shared,select,m-duration,30 دقيقة 45 دقيقة 60 دقيقة 90 دقيقة,,,secondary,,0
+shared,textarea,m-notes,أي معلومات...,,,secondary,,0
+shared,button,,💾 حفظ,btn btn-g,saveSt(),primary,,0
+shared,button,,إلغاء,btn btn-out,closeMo(),secondary,,0
+shared,button,,✕,mo-x,closeTaskModal(),secondary,,0
+shared,input,taskTitle,مثال: مراجعة سورة الملك,,,secondary,,0
+shared,select,taskStudent,— مهمة عامة —,,,secondary,,0
+shared,input,taskDue,,,,secondary,,0
+shared,select,taskPriority,عادية عالية,,,secondary,,0
+shared,textarea,taskNotes,تفاصيل مختصرة...,,,secondary,,0
+shared,button,,💾 حفظ المهمة,btn btn-g,saveTask(),primary,,0
+shared,input,quickSearchInput,ابحث عن طالب أو مهمة أو اكتب: حصة، تقرير...,,renderQuickSearch(),secondary,,0
+shared,button,,✕,mo-x,closeQuranTextModal(),secondary,,0
+shared,select,quranReciter,الشيخ محمود خليل الحصري الشيخ مشاري راشد العفاسي,,,secondary,,0
+shared,button,quranPlayAllBtn,▶ تشغيل الآيات,btn btn-g btn-sm,playQuranRange(),primary,,0
+shared,button,,■ إيقاف,btn btn-out btn-sm,stopQuranAudio(),secondary,,0
+shared,input,lockPinInput,••••,,,secondary,,0
+shared,button,,فتح,btn btn-g,unlockWithPin(),primary,,0
+shared,button,biometricUnlockBtn,استخدام البصمة / Windows Hello,btn btn-out,unlockWithBiometric(),secondary,,1
+shared,button,,✕,mo-x,closeV9More(),secondary,إغلاق,0
+shared,button,,✕,mo-x,document.getElementById('bulkModal').classList.remove('open'),secondary,,0
+shared,button,,✕,mo-x,closeBroadcastComposer(),secondary,,0
+shared,button,,📋 تقرير آخر حصة التقييم + التكليف + ملاحظات المحفظ,,setGuardianMode('session'),secondary,,0
+shared,button,,❌ إبلاغ بالغياب غياب اليوم + المطلوب للمتابعة,,setGuardianMode('absence'),secondary,,0
+shared,button,,📌 تذكير بالتكليف آخر تكليف مسجل للطالب,,setGuardianMode('assignment'),secondary,,0
+shared,button,,✍️ رسالة مخصصة قالب عام قابل للتعديل,,setGuardianMode('custom'),secondary,,0
+shared,button,,طلاب اليوم,,setBroadcastRecipients('today'),secondary,,0
+shared,button,,غائبو اليوم,,setBroadcastRecipients('absent'),secondary,,0
+shared,button,,كل الطلاب,,setBroadcastRecipients('all'),secondary,,0
+shared,button,,إلغاء التحديد,,setBroadcastRecipients('none'),secondary,,0
+shared,select,guardianGroup,اختر مجموعة...,,guardianGroupChanged(),secondary,,0
+shared,button,,اختيار المجموعة,btn btn-out btn-sm,setBroadcastRecipients('group'),secondary,,0
+shared,input,broadcastSearch,ابحث باسم الطالب أو ولي الأمر أو المجموعة...,,renderBroadcastRecipients(),secondary,,0
+shared,select,broadcastPreset,رسالة عامة تغيير موعد حصة إجازة / تعليق الحصص تهنئة بمناسبة تذكير مهم,,applyBroadcastPreset(),secondary,,0
+shared,textarea,broadcastText,,,updateBroadcastPreview(),secondary,,0
+shared,button,,{{اسم_الطالب}},tmpl-var,insertBroadcastVar('{{اسم_الطالب}}'),secondary,,0
+shared,button,,{{اسم_ولي_الأمر}},tmpl-var,insertBroadcastVar('{{اسم_ولي_الأمر}}'),secondary,,0
+shared,button,,{{اسم_المحفظ}},tmpl-var,insertBroadcastVar('{{اسم_المحفظ}}'),secondary,,0
+shared,button,,{{اسم_الأكاديمية}},tmpl-var,insertBroadcastVar('{{اسم_الأكاديمية}}'),secondary,,0
+shared,select,guardianPreviewStudent,,,guardianSelectPreview(),secondary,,0
+shared,button,,📲 بدء الإرسال عبر WhatsApp,btn btn-wa,startBroadcastQueue(),secondary,,0
+shared,button,,📋 نسخ المعاينة,btn btn-out,copyBroadcastMessage(),secondary,,0
+shared,button,,☎️ مراجعة الأرقام,btn btn-out guardian-review-phone,guardianOpenInvalidStudents(),secondary,,0
+shared,button,,🌐 بوابة الطالب,btn btn-out,v1010OpenSelectedGuardianPortal(),secondary,,0
+shared,button,,✕,mo-x,document.getElementById('certModal').classList.remove('open'),secondary,,0
+shared,button,,🖨️ طباعة / حفظ PDF,btn btn-g mb8,printCertificate(),primary,,0
+shared,button,,إغلاق,btn btn-out,document.getElementById('certModal').classList.remove('open'),secondary,,0

@@ -475,7 +475,7 @@ function stampLocalSyncChanges(){
   for(const list of [students,sessions,tasks])for(const item of list){if(item&&itemTimestamp(item)>=since)item.updatedByDevice=deviceId;}
   settings.sync.lastLocalSaveAt=v8Now();
 }
-function save(){if(!V8.syncing)stampLocalSyncChanges();__IMAM_BASE__.save();scheduleAutoBackup();if(settings.sync?.auto&&!V8.syncing)scheduleCloudPush();}
+function save(){if(!V8.syncing)stampLocalSyncChanges();const stored=__IMAM_BASE__.save();if(stored===false)return false;scheduleAutoBackup();if(settings.sync?.auto&&!V8.syncing)scheduleCloudPush();return stored!==false;}
 
 // ──────────────────────────────────────
 // Account-owned encrypted Supabase sync

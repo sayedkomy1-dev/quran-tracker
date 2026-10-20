@@ -8,67 +8,69 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.12.1-beta.8-visual-workspaces';
+const CACHE_NAME = 'quran-pwa-v11.12.1-beta.9-workspace-workflow';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
-const APP_VERSION = '11.12.1-beta.8';
+const APP_VERSION = '11.12.1-beta.9';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
   './index.html',
-  './css/platform/tokens.css?v=11.12.1-beta.8',
-  './css/platform/legacy-features.css?v=11.12.1-beta.8',
-  './css/platform/components.css?v=11.12.1-beta.8',
-  './css/platform/responsive.css?v=11.12.1-beta.8',
-  './js/features/platform-ux.js?v=11.12.1-beta.8',
-  './v9.js?v=11.12.1-beta.8-mobile-nav-hotfix1',
-  './app.js?v=11.12.1-beta.8',
-  './js/core/runtime.js?v=11.12.1-beta.8',
-  './js/core/offline-bootstrap.js?v=11.12.1-beta.8',
-  './js/features/role-home.js?v=11.12.1-beta.8',
-  './js/features/supervisor-dashboard.js?v=11.12.1-beta.8',
-  './js/features/academy-analytics-1112.js?v=11.12.1-beta.8',
-  './academy-analytics-1112.css?v=11.12.1-beta.8',
-  './imam-smart-board.css?v=11.12.1-beta.8',
-  './js/features/imam-board-tafsir.js?v=11.12.1-beta.8',
-  './js/features/imam-board-corpus.js?v=11.12.1-beta.8',
-  './js/features/imam-smart-board.js?v=11.12.1-beta.8',
+  './css/platform/tokens.css?v=11.12.1-beta.9',
+  './css/platform/legacy-features.css?v=11.12.1-beta.9',
+  './css/platform/components.css?v=11.12.1-beta.9',
+  './css/platform/responsive.css?v=11.12.1-beta.9',
+  './js/features/platform-ux.js?v=11.12.1-beta.9',
+  './js/features/platform-workflow.js?v=11.12.1-beta.9',
+  './v9.js?v=11.12.1-beta.9-mobile-nav-hotfix1',
+  './app.js?v=11.12.1-beta.9',
+  './js/core/runtime.js?v=11.12.1-beta.9',
+  './js/core/offline-bootstrap.js?v=11.12.1-beta.9',
+  './js/features/role-home.js?v=11.12.1-beta.9',
+  './js/features/supervisor-dashboard.js?v=11.12.1-beta.9',
+  './js/features/academy-analytics-1112.js?v=11.12.1-beta.9',
+  './academy-analytics-1112.css?v=11.12.1-beta.9',
+  './imam-smart-board.css?v=11.12.1-beta.9',
+  './js/features/imam-board-tafsir.js?v=11.12.1-beta.9',
+  './js/features/imam-board-corpus.js?v=11.12.1-beta.9',
+  './js/features/imam-smart-board.js?v=11.12.1-beta.9',
   './imam-board-display.html',
-  './imam-board-display.js?v=11.12.1-beta.8'
+  './imam-board-display.js?v=11.12.1-beta.9'
 ];
 
 
 const APP_SHELL = [
-  './css/platform/tokens.css?v=11.12.1-beta.8',
-  './css/platform/legacy-features.css?v=11.12.1-beta.8',
-  './css/platform/components.css?v=11.12.1-beta.8',
-  './css/platform/responsive.css?v=11.12.1-beta.8',
-  './css/platform/public-experience.css?v=11.12.1-beta.8',
-  './css/platform/student-display.css?v=11.12.1-beta.8',
-  './js/features/platform-ux.js?v=11.12.1-beta.8',
+  './css/platform/tokens.css?v=11.12.1-beta.9',
+  './css/platform/legacy-features.css?v=11.12.1-beta.9',
+  './css/platform/components.css?v=11.12.1-beta.9',
+  './css/platform/responsive.css?v=11.12.1-beta.9',
+  './css/platform/public-experience.css?v=11.12.1-beta.9',
+  './css/platform/student-display.css?v=11.12.1-beta.9',
+  './js/features/platform-ux.js?v=11.12.1-beta.9',
+  './js/features/platform-workflow.js?v=11.12.1-beta.9',
   './',
   './index.html',
-  './imam-smart-board.css?v=11.12.1-beta.8',
-  './js/features/imam-board-tafsir.js?v=11.12.1-beta.8',
-  './js/features/imam-board-corpus.js?v=11.12.1-beta.8',
-  './js/features/imam-smart-board.js?v=11.12.1-beta.8',
+  './imam-smart-board.css?v=11.12.1-beta.9',
+  './js/features/imam-board-tafsir.js?v=11.12.1-beta.9',
+  './js/features/imam-board-corpus.js?v=11.12.1-beta.9',
+  './js/features/imam-smart-board.js?v=11.12.1-beta.9',
   './imam-board-display.html',
-  './imam-board-display.js?v=11.12.1-beta.8',
+  './imam-board-display.js?v=11.12.1-beta.9',
   './guest-practice.html',
   './guest-practice.css?v=11.7.4.2',
   './js/features/guest-practice.js?v=11.7.4.2',
   './js/features/guardian-tahfeez.js?v=11.7.4.2',
-  './role-home.css?v=11.12.1-beta.8',
+  './role-home.css?v=11.12.1-beta.9',
   './ux-guidance.css?v=11.7.4.2',
-  './js/features/role-home.js?v=11.12.1-beta.8',
-  './js/features/academy-analytics-1112.js?v=11.12.1-beta.8',
-  './academy-analytics-1112.css?v=11.12.1-beta.8',
+  './js/features/role-home.js?v=11.12.1-beta.9',
+  './js/features/academy-analytics-1112.js?v=11.12.1-beta.9',
+  './academy-analytics-1112.css?v=11.12.1-beta.9',
   './js/features/ux-guidance.js?v=11.7.4.2',
 
 
-  './app.js?v=11.12.1-beta.8',
+  './app.js?v=11.12.1-beta.9',
   './v8.js?v=11.2.0-s3',
-  './v9.js?v=11.12.1-beta.8-mobile-nav-hotfix1',
+  './v9.js?v=11.12.1-beta.9-mobile-nav-hotfix1',
   './js/features/mushaf-offline.js?v=11.7.4.2',
 
 
@@ -78,8 +80,8 @@ const APP_SHELL = [
   './academic-exams-1111.css?v=11.11.1',
   './js/features/academic-exams-1111.js?v=11.11.1',
   './progress-bridge-1111.css?v=11.11.1',
-  './academy-analytics-1112.css?v=11.12.1-beta.8',
-  './js/features/academy-analytics-1112.js?v=11.12.1-beta.8',
+  './academy-analytics-1112.css?v=11.12.1-beta.9',
+  './js/features/academy-analytics-1112.js?v=11.12.1-beta.9',
   './js/features/progress-bridge-1111.js?v=11.11.1',
   './js/features/circle-management-1110.js?v=11.11.1',
   './placement-center-1191.css?v=11.9.2',
@@ -94,7 +96,7 @@ const APP_SHELL = [
   './guardian-messages.css?v=11.6.0-s1',
   './teacher-rating.css?v=11.7.4.5-sync-health',
   './js/features/guardian-ratings.js?v=11.7.0-s1',
-  './js/features/supervisor-dashboard.js?v=11.12.1-beta.8',
+  './js/features/supervisor-dashboard.js?v=11.12.1-beta.9',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './v10.js?v=11.9.0',
@@ -128,9 +130,9 @@ const APP_SHELL = [
   './guardian-login.js?v=11.0.0',
   './js/features/quran-engine.js?v=11.0.0',
   './js/features/quran-structure.js?v=11.0.0',
-  './js/core/runtime.js?v=11.12.1-beta.8',
-  './js/core/offline-bootstrap.js?v=11.12.1-beta.8',
-  './js/core/mobile-navigation.js?v=11.12.1-beta.8',
+  './js/core/runtime.js?v=11.12.1-beta.9',
+  './js/core/offline-bootstrap.js?v=11.12.1-beta.9',
+  './js/core/mobile-navigation.js?v=11.12.1-beta.9',
   './js/features/v10-data.js?v=11.0.0',
   './js/features/recitation-carry.js?v=11.0.0',
   './auth.js?v=11.7.4-foundation',
@@ -140,7 +142,7 @@ const APP_SHELL = [
   './js/features/academy-workspaces.js?v=11.7.4-foundation',
   './privacy.html',
   './terms.html',
-  './manifest.json?v=11.12.1-beta.8',
+  './manifest.json?v=11.12.1-beta.9',
   './guardian-manifest.json?v=11.2.0-s4.1',
   './favicon.png',
   './icon-96.png',
@@ -166,9 +168,9 @@ const CORE_SHELL = [
   './guest-practice.css?v=11.7.4.2',
   './js/features/guest-practice.js?v=11.7.4.2',
   './js/features/guardian-tahfeez.js?v=11.7.4.2',
-  './role-home.css?v=11.12.1-beta.8',
+  './role-home.css?v=11.12.1-beta.9',
   './ux-guidance.css?v=11.7.4.2',
-  './js/features/role-home.js?v=11.12.1-beta.8',
+  './js/features/role-home.js?v=11.12.1-beta.9',
   './js/features/ux-guidance.js?v=11.7.4.2',
 
 
@@ -186,7 +188,7 @@ const CORE_SHELL = [
   './guardian-messages.css?v=11.6.0-s1',
   './teacher-rating.css?v=11.7.4.5-sync-health',
   './js/features/guardian-ratings.js?v=11.7.0-s1',
-  './js/features/supervisor-dashboard.js?v=11.12.1-beta.8',
+  './js/features/supervisor-dashboard.js?v=11.12.1-beta.9',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './js/features/smart-revision.js?v=11.9.2',
@@ -195,12 +197,12 @@ const CORE_SHELL = [
   './js/features/v11-ui.js?v=11.4.1-profile-ui',
   './js/features/teacher-error-marking.js?v=11.8.0',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
-  './app.js?v=11.12.1-beta.8',
+  './app.js?v=11.12.1-beta.9',
   './revision-quran-text.css?v=11.8.1',
   './js/features/revision-quran-text.js?v=11.8.1',
   './auth.js?v=11.7.4-foundation',
-  './js/core/runtime.js?v=11.12.1-beta.8',
-  './js/core/offline-bootstrap.js?v=11.12.1-beta.8'
+  './js/core/runtime.js?v=11.12.1-beta.9',
+  './js/core/offline-bootstrap.js?v=11.12.1-beta.9'
 ];
 
 function absolute(url){return new URL(url,self.location.href).href;}
@@ -290,7 +292,7 @@ self.addEventListener('install', event => {
   event.waitUntil((async()=>{
     const cache=await caches.open(CACHE_NAME);
     // Install the exact current app HTML/runtime first. No old-cache fallback
-    // is allowed for these files: otherwise a new worker may report v11.12.1-beta.8
+    // is allowed for these files: otherwise a new worker may report v11.12.1-beta.9
     // while actually serving an older account's v11.9 application shell.
     for(const url of CRITICAL_FRESH_SHELL)await cacheVerifiedCurrentShell(cache,url);
     const optionalShell=APP_SHELL.filter(url=>url!=='./'&&!CRITICAL_FRESH_SHELL.includes(url));
@@ -325,7 +327,17 @@ self.addEventListener('activate', event => {
 async function trimRuntimeCache(cache,maxEntries=110){
   const keys=await cache.keys();
   if(keys.length<=maxEntries)return;
-  await Promise.all(keys.slice(0,keys.length-maxEntries).map(k=>cache.delete(k)));
+  // App shell shares this cache with runtime responses. Never evict the pinned
+  // Quran/lesson code, CSS or offline entrypoint while trimming runtime data.
+  const pinned=new Set();
+  for(const path of [...APP_SHELL,...CORE_SHELL,...CRITICAL_FRESH_SHELL,'./']){
+    const url=absolute(path);
+    pinned.add(url);
+    const plain=new URL(url);plain.search='';plain.hash='';pinned.add(plain.href);
+  }
+  const runtime=keys.filter(key=>!pinned.has(key.url));
+  const count=Math.min(runtime.length,keys.length-maxEntries);
+  await Promise.all(runtime.slice(0,count).map(key=>cache.delete(key)));
 }
 
 async function refreshSameOrigin(cache,req){

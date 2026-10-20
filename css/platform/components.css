@@ -36,7 +36,7 @@ button:disabled,[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
 .sl{font-size:12px;color:var(--ui-muted);margin-top:6px;font-weight:600}
 .stc{display:flex;gap:13px;align-items:center;padding:13px 16px;cursor:pointer;border-right:3px solid var(--ui-primary);transition:transform var(--ui-ease),border-color var(--ui-ease)}
 .stc:hover{transform:translateY(-2px);border-color:var(--ui-primary)}
-.btn,.v92-start,.v9-start-session{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid transparent;border-radius:var(--ui-radius-sm);min-height:43px;padding:10px 17px;font-size:13px;font-weight:800;text-align:center;line-height:1.5;transition:filter var(--ui-ease),transform var(--ui-ease),background var(--ui-ease),box-shadow var(--ui-ease)}
+.btn,.v92-start,.v9-start-session{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid transparent;border-radius:var(--ui-radius-sm);min-height:46px;padding:10px 17px;font-size:13px;font-weight:800;text-align:center;line-height:1.5;transition:filter var(--ui-ease),transform var(--ui-ease),background var(--ui-ease),box-shadow var(--ui-ease)}
 .btn{width:100%}.btn-sm,.btn-xs{width:auto;min-height:36px;padding:7px 12px;font-size:12px}
 .btn-g,.v92-start,.v9-start-session{background:var(--ui-primary);color:#fff;box-shadow:0 7px 16px rgba(8,87,56,.14)}
 .btn-out{border-color:var(--ui-line);background:var(--ui-surface);color:var(--ui-primary)}
@@ -79,3 +79,62 @@ body.v9-shell-ready #mainNav{display:none!important}
 .v92-primary-card.overdue{border-color:var(--ui-gold);box-shadow:0 16px 42px rgba(137,83,22,.20)}
 :root[data-theme="dark"] .btn-g,:root[data-theme="dark"] .v9-start-session{background:#166045;color:#fff}
 :root[data-theme="dark"] .v92-primary-card{background:linear-gradient(125deg,#082c25,#134e3a)}
+
+/* Workspace page anatomy: shared semantic headings across existing pages, without affecting Quran text. */
+.ui-workspace-heading{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:clamp(18px,2.3vw,30px);margin-block:0 19px;border:1px solid var(--ui-line);border-radius:22px;background:linear-gradient(126deg,var(--ui-surface),var(--ui-soft));box-shadow:var(--ui-shadow)}
+.ui-workspace-kicker{font-size:12px;font-weight:750;color:var(--ui-primary)}
+.ui-workspace-heading h1{font-size:clamp(23px,2.6vw,34px);line-height:1.35;margin:6px 0;color:var(--ui-ink);font-weight:900;letter-spacing:-.4px}
+.ui-workspace-heading p{margin:0;color:var(--ui-muted);font-size:14px;line-height:1.8;max-width:650px}
+.ui-workspace-assist{flex-shrink:0;display:block;font-size:12px;color:var(--ui-muted);max-width:210px;text-align:center;border:1px solid var(--ui-line);padding:9px;border-radius:12px}
+.ui-network-note{max-width:1440px;margin:8px auto;padding:11px 18px;background:var(--ui-gold-soft);color:var(--ui-ink);border-inline-start:4px solid var(--ui-gold);border-radius:10px;font-weight:800}
+.ui-session-section-nav{display:flex;align-items:center;gap:8px;overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:thin;padding:3px 1px 13px;margin-bottom:8px;max-width:100%}
+.ui-session-section-link{flex:none;white-space:nowrap;min-height:44px;padding:9px 15px;border:1px solid var(--ui-line);border-radius:999px;background:var(--ui-surface);color:var(--ui-ink);font-size:13px;font-weight:750}
+.ui-session-section-link:hover,.ui-session-section-link:focus-visible{border-color:var(--ui-primary);background:var(--ui-soft)}
+#pg-session.on{padding-bottom:220px}
+#pg-session .card{scroll-margin-top:85px}
+#pg-session .status-btns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#pg-session .status-btns .st-btn{min-height:48px;min-width:0}
+#pg-session .error-chip-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#pg-session .error-chip-grid button{min-height:46px;white-space:normal;line-height:1.4}
+#pg-session .direction-btn{min-height:44px;min-width:44px}
+#pg-session .session-errors-card{border-inline-start:4px solid var(--ui-info)}
+#pg-session .fld>label{color:var(--ui-ink);font-weight:750;font-size:13px}
+#pg-session :is(input,select,textarea):focus-visible{outline:3px solid var(--ui-focus-color,rgba(16,133,90,.4));outline-offset:2px}
+.ui-session-action-dock{position:fixed;z-index:740;inset-inline-start:clamp(105px,8vw,150px);inset-inline-end:18px;bottom:14px;max-width:1100px;margin-inline:auto;display:flex;align-items:center;gap:20px;padding:12px 16px;background:color-mix(in srgb,var(--ui-surface) 94%,transparent);color:var(--ui-ink);border:1px solid var(--ui-line);border-radius:21px;box-shadow:0 12px 42px rgba(9,38,30,.19);backdrop-filter:blur(18px)}
+body:not(.ui-session-active) .ui-session-action-dock{display:none}
+.ui-session-action-caption{flex:1;min-width:130px;display:grid;gap:2px}
+.ui-session-action-caption b{font-size:13px}
+.ui-session-action-state{color:var(--ui-muted);font-size:12px;line-height:1.4;max-width:250px;overflow-wrap:anywhere}
+.ui-session-action-buttons{display:flex;gap:9px;flex:2;align-items:center}
+.ui-session-action-buttons .btn{min-height:50px;margin:0;flex:1;white-space:normal}
+.ui-session-action-buttons .ui-save-secondary{flex:.85}
+:root[data-theme="dark"] .ui-workspace-heading{background:linear-gradient(120deg,var(--ui-raised),var(--ui-soft))}
+@media print{.ui-session-action-dock,.ui-session-section-nav,.ui-network-note{display:none}}
+
+/* Internal workspace refresh. Existing controls stay inside their current module/permission boundaries. */
+#pg-students .stc,#pg-tasks .stc,#pg-followup .stc{border-radius:18px;border:1px solid var(--ui-line);border-inline-start:4px solid var(--ui-primary);min-height:75px;box-shadow:var(--ui-shadow);background:var(--ui-surface)}
+#pg-students .stc:focus-within,#pg-tasks .stc:focus-within{border-color:var(--ui-primary)}
+#pg-reports .card,#pg-settings .card,#pg-checkin .card,#pg-profile .card,#pg-compare .card{box-shadow:var(--ui-shadow);border:1px solid var(--ui-line);border-radius:19px}
+#pg-reports .ch,#pg-settings .ch,#pg-checkin .ch,#pg-profile .ch,#pg-compare .ch{font-size:15px;line-height:1.5;min-height:28px}
+#pg-students .ch,#pg-session .ch{font-size:15px}
+.pg :is(.frow,.voice-row,.fb){min-width:0;gap:9px}
+.pg :is(input[type="date"],input[type="number"],input[type="search"],select){min-width:0}
+.pg :is(.table-wrap,.table-scroll,.report-table-wrap,.finance-table,.comp-tbl){max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain}
+.pg :is(.table-wrap,.table-scroll,.report-table-wrap) table{min-width:540px}
+.pg :is(.sec-div){font-weight:850;font-size:15px;color:var(--ui-primary);padding-block:12px;margin-block:12px;line-height:1.7}
+.pg :is(.empty-state,.empty-msg,.no-data){line-height:1.8;color:var(--ui-muted)}
+#pg-session .note-templates{display:flex;flex-wrap:wrap;gap:8px}
+#pg-session .note-templates button{min-height:44px;border-radius:12px;padding-inline:12px}
+#pg-session #sesNotes{min-height:98px;line-height:1.85}
+#pg-session .direction-picker{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+#pg-session .direction-picker small{line-height:1.5}
+#pg-session :is(.status-btns,.error-chip-grid,.note-templates) button:focus-visible{outline:3px solid color-mix(in srgb,var(--ui-primary) 45%,transparent);outline-offset:2px}
+@media(max-width:550px){
+ .pg :is(.frow,.voice-row)>*{min-width:0}
+ #pg-students .stc{min-height:76px}
+ #pg-session .note-templates button{flex:1 1 135px}
+ #pg-session .direction-picker small{flex:1 1 100%}
+}
+
+#pg-settings .ui-important-settings{border-inline-start:5px solid var(--ui-primary);background:var(--ui-soft)}
+#pg-settings .ui-important-settings .ch{font-size:17px;color:var(--ui-primary)}
