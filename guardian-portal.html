@@ -25,6 +25,7 @@
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
 </style>
+<link rel="stylesheet" href="css/platform/public-experience.css?v=11.12.1-beta.7">
 </head>
 <body>
 <main class="portal-shell">
@@ -100,12 +101,12 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
     <section class="portal-card portal-rating-card" id="portalRatingCard" hidden>
       <div class="portal-card-head"><div><b>⭐ تقييم المحفظ</b><small>سري لإدارة الأكاديمية · لا يراه المحفظ · متاح بعد دخول الهاتف وPIN</small></div></div>
       <div class="portal-rating-form">
-        <label>الالتزام بالمواعيد<select id="portalRating_punctuality"><option value="" selected>اختر التقييم</option><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label>أسلوب التعليم<select id="portalRating_teaching"><option value="" selected>اختر التقييم</option><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label>متابعة الطالب<select id="portalRating_followup"><option value="" selected>اختر التقييم</option><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label>حسن التعامل<select id="portalRating_kindness"><option value="" selected>اختر التقييم</option><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label>الاستفادة<select id="portalRating_benefit"><option value="" selected>اختر التقييم</option><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label>وضوح الشرح<select id="portalRating_clarity"><option value="" selected>اختر التقييم</option><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
+        <label>الالتزام بالمواعيد<select id="portalRating_punctuality"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
+        <label>أسلوب التعليم<select id="portalRating_teaching"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
+        <label>متابعة الطالب<select id="portalRating_followup"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
+        <label>حسن التعامل<select id="portalRating_kindness"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
+        <label>الاستفادة<select id="portalRating_benefit"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
+        <label>وضوح الشرح<select id="portalRating_clarity"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
         <label class="rating-note">ملاحظة خاصة للإدارة (اختياري)<textarea id="portalRatingNote" maxlength="800" rows="2" placeholder="ملاحظات تساعد إدارة الأكاديمية على تحسين الخدمة"></textarea></label>
         <button type="button" id="portalRatingSend">حفظ التقييم للإدارة فقط</button>
       </div>

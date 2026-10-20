@@ -1,0 +1,55 @@
+/* Imam Academy — single source of semantic design tokens (v11.12.1-beta.7).
+   Historical --v9-*, --v11-* and --gm aliases are retained for existing features/JS. */
+:root{
+  color-scheme:light;
+  --ui-primary:#126044;--ui-primary-deep:#093d31;--ui-primary-bright:#13815b;
+  --ui-ink:#172b29;--ui-muted:#607570;--ui-line:#d9e5df;
+  --ui-canvas:#f5f8f5;--ui-surface:#fff;--ui-raised:#fff;
+  --ui-soft:#ebf5ef;--ui-gold:#be9141;--ui-gold-soft:#fff7e9;
+  --ui-danger:#bb4848;--ui-info:#28689e;--ui-good:#188459;
+  --ui-shadow:0 14px 48px rgba(13,63,43,.065);--ui-shadow-high:0 24px 74px rgba(11,50,37,.16);
+  --ui-radius:20px;--ui-radius-sm:13px;--ui-top-height:72px;
+  --ui-focus:0 0 0 3px rgba(16,133,90,.24);
+  --ui-ease:180ms cubic-bezier(.2,.7,.2,1);
+  --gd:var(--ui-primary-deep);--gm:var(--ui-primary);--gl:var(--ui-primary-bright);
+  --gp:var(--ui-soft);--gold:var(--ui-gold);--goldp:var(--ui-gold-soft);
+  --wa:#25d366;--bp:#edf4fc;--blue:var(--ui-info);--op:#fff3e0;--org:#995b1c;
+  --rp:#fceded;--red:var(--ui-danger);--txt:var(--ui-ink);--mut:var(--ui-muted);
+  --bdr:var(--ui-line);--bg:var(--ui-canvas);--wh:var(--ui-surface);
+  --rad:var(--ui-radius-sm);--sh:var(--ui-shadow);--fs:15px;
+  --ok:var(--ui-good);--warn:#a36b20;
+  --v9-bg:var(--ui-canvas);--v9-surface:var(--ui-surface);--v9-surface-2:var(--ui-soft);
+  --v9-text:var(--ui-ink);--v9-muted:var(--ui-muted);--v9-primary:var(--ui-primary);
+  --v9-primary-2:var(--ui-primary-deep);--v9-gold:var(--ui-gold);--v9-border:var(--ui-line);
+  --v9-danger:var(--ui-danger);--v9-warning:#a36b20;--v9-shadow:var(--ui-shadow);
+  --v9-radius:var(--ui-radius);--v9-radius-sm:var(--ui-radius-sm);--v9-ease:var(--ui-ease);
+  --v11-ink:var(--ui-ink);--v11-primary:var(--ui-primary);--v11-primary-deep:var(--ui-primary-deep);
+  --v11-primary-soft:var(--ui-soft);--v11-gold:var(--ui-gold);--v11-gold-soft:var(--ui-gold-soft);
+  --v11-bg:var(--ui-canvas);--v11-surface:var(--ui-surface);--v11-line:var(--ui-line);
+  --v11-muted:var(--ui-muted);--v11-shadow-sm:var(--ui-shadow);
+  --v11-shadow-md:var(--ui-shadow-high);--v11-radius:var(--ui-radius);
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ui-primary:#77d9a3;--ui-primary-deep:#103628;--ui-primary-bright:#92e6b7;
+  --ui-ink:#eaf5ef;--ui-muted:#adc4b7;--ui-line:#2d483b;
+  --ui-canvas:#0b1712;--ui-surface:#15241b;--ui-raised:#1b3024;
+  --ui-soft:#1e3b2c;--ui-gold:#e7c278;--ui-gold-soft:#352f20;
+  --ui-danger:#f0a09c;--ui-info:#92bbe9;--ui-good:#7dd9a2;
+  --ui-shadow:0 12px 38px rgba(0,0,0,.22);--ui-shadow-high:0 25px 70px rgba(0,0,0,.44);
+  --ui-focus:0 0 0 3px rgba(119,217,163,.31);
+  --rp:#3f2426;--bp:#1a2b40;--op:#36291a;--org:#f3c28d;
+}
+html.fs-lg{--fs:17px}html.fs-xl{--fs:19px}
+
+/* Compatibility tokens used by specialized modules, defined once. */
+:root{
+  --nav-h:68px;
+  --desktop-nav-w:236px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-top:env(safe-area-inset-top,0px);
+  --v92-ok:#117a4d;
+  --v92-bad:#b42318;
+  --v92-warn:#a15c00;
+  --v92-neutral:#66736b;
+}

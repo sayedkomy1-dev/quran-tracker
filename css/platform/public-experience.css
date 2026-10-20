@@ -1,0 +1,43 @@
+/* Unified public-facing polish: isolated from authenticated main app. */
+:root{--public-focus:#16845e;--public-round:19px}
+html{scroll-behavior:smooth}
+.portal-shell{width:min(1120px,100%);padding:clamp(12px,2.4vw,27px) clamp(11px,2.2vw,25px) 60px}
+.portal-header{border:1px solid var(--line);background:color-mix(in srgb,var(--card) 92%,transparent);padding:14px clamp(12px,2vw,23px);border-radius:23px;box-shadow:var(--shadow);backdrop-filter:blur(16px)}
+.portal-brand img{width:52px;height:52px;object-fit:cover;border-radius:16px}
+.portal-actions button{min-height:39px;border-radius:12px;transition:background .18s,transform .18s}
+.portal-actions button:hover{transform:translateY(-1px)}
+.portal-hero{border-radius:26px;padding:clamp(18px,3vw,30px);box-shadow:0 19px 44px rgba(8,74,47,.15)}
+.portal-card,.portal-kpis article,.portal-switcher{border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow-wrap:anywhere}
+.portal-quick-nav{gap:9px;grid-template-columns:repeat(auto-fit,minmax(105px,1fr))}
+.portal-quick-nav button{min-height:73px;border:1px solid var(--line);border-radius:16px;font-size:12px;box-shadow:0 5px 19px rgba(14,63,42,.04)}
+.portal-quick-nav button:hover{transform:translateY(-2px)}
+.portal-quick-nav button b{font-size:11px}
+.portal-kpis{gap:11px}
+.portal-kpis article{padding:clamp(11px,1.5vw,19px)}
+:where(.portal-shell,.guardian-login-shell) button:focus-visible,
+:where(.portal-shell,.guardian-login-shell) input:focus-visible,
+:where(.portal-shell,.guardian-login-shell) select:focus-visible,
+:where(.portal-shell,.guardian-login-shell) a:focus-visible{outline:3px solid var(--public-focus);outline-offset:3px}
+.guardian-login-shell{width:min(520px,100%);padding:clamp(18px,3vw,42px) 13px 45px}
+.guardian-login-card{border-radius:26px;padding:clamp(20px,3vw,29px);border-top:5px solid var(--green);box-shadow:0 23px 70px rgba(17,79,49,.13)}
+.guardian-login-brand img{border-radius:15px}
+.guardian-login-card h1{font-size:clamp(21px,3vw,27px)}
+.guardian-login-card input{font-size:16px;min-height:49px}
+.guardian-login-card form button{min-height:49px;font-size:14px;border-radius:13px}
+.guest-shell,.guest-card{max-width:100%;box-sizing:border-box}
+.guest-card{border-radius:20px}
+/* Light / kids / dark variants continue to come from the portal's own theme engine. */
+html[data-portal-theme="dark"] .portal-header{background:var(--card);border-color:var(--line)}
+html[data-portal-theme="dark"] .portal-card,html[data-portal-theme="dark"] .portal-kpis article{background:var(--card);border-color:var(--line)}
+html[data-portal-theme="kids"] .portal-quick-nav button{border-radius:21px}
+@media(max-width:650px){
+ .portal-shell{padding:11px 10px 44px}.portal-header{border-radius:19px;padding:11px}
+ .portal-hero{border-radius:20px}.portal-card{border-radius:17px}
+ .portal-quick-nav{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .portal-quick-nav button{min-height:68px;padding:8px 4px}
+ .portal-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .guardian-login-card{border-radius:21px;padding:19px}
+}
+@media(max-width:390px){.portal-quick-nav{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{.portal-header,.portal-card,.portal-kpis article{box-shadow:none!important}.portal-quick-nav,.portal-actions{display:none!important}}
+@media(prefers-reduced-motion:reduce){.portal-actions button,.portal-quick-nav button{transition:none}html{scroll-behavior:auto}}
