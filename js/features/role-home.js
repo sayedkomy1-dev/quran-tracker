@@ -39,11 +39,11 @@
     let box=$('roleHomeHub');if(!box){box=g.document.createElement('section');box.id='roleHomeHub';box.className='role-home-hub';box.dir='rtl';home.prepend(box);}
     lastRole=role;
     home.dataset.workspaceRole=role;
-    const title={owner:'الرئيسية — المالك',supervisor:'الرئيسية — المشرف',teacher:'مساحة المحفظ'}[role];
+    const title={owner:'لوحة قيادة الأكاديمية',supervisor:'لوحة الإشراف',teacher:'مساحة المحفظ'}[role];
     const desc={owner:'إدارة الأكاديمية والصلاحيات من مكان واحد',supervisor:'متابعة نطاقك المصرح به فقط',teacher:'أهم أعمال الحلقة بضغطة واحدة'}[role];
     box.replaceChildren();
     const head=g.document.createElement('div');head.className='role-home-head';
-    const intro=g.document.createElement('div');const h=g.document.createElement('h2');h.textContent=title;const s=g.document.createElement('small');s.textContent=desc;intro.append(h,s);
+    const intro=g.document.createElement('div');intro.className='role-hero-copy';const eyebrow=g.document.createElement('span');eyebrow.className='role-hero-eyebrow';eyebrow.textContent='أكاديمية الإمام / مساحة العمل';const h=g.document.createElement('h2');h.textContent=title;const s=g.document.createElement('small');s.textContent=desc;intro.append(eyebrow,h,s);
     const tools=g.document.createElement('div');tools.className='role-home-tools';
     const tag=g.document.createElement('span');tag.className='role-home-tag';tag.textContent={owner:'المالك',supervisor:'مشرف',teacher:'محفظ'}[role];tools.append(tag);
     if(authorizedRole!=='teacher'){
@@ -53,9 +53,13 @@
     }
     const help=g.document.createElement('button');help.type='button';help.className='role-help-toggle';help.textContent='؟ دليل الأزرار';help.title='شرح اختصارات هذه الصفحة';help.addEventListener('click',()=>g.ImamUXGuide?.open?.(role));tools.append(help);
     head.append(intro,tools);box.append(head);
+    const heroActions=g.document.createElement('div');heroActions.className='role-hero-actions';
+    const board=g.document.createElement('button');board.type='button';board.className='role-hero-board';board.textContent='✎  افتح سبورة الإمام';board.title='فتح السبورة التفاعلية وفق صلاحيات حسابك';board.addEventListener('click',()=>{if(typeof g.ImamApp?.SmartBoard?.open==='function')g.ImamApp.SmartBoard.open();else g.toast?.('تعذر فتح السبورة الآن. يرجى إعادة تحميل التطبيق.','error');});heroActions.append(board);
+    const next=g.document.createElement('span');next.className='role-hero-caption';next.textContent='أدواتك التعليمية والإدارية في مساحة واحدة';heroActions.append(next);box.append(heroActions);
+    const label=g.document.createElement('div');label.className='role-actions-heading';const labelTitle=g.document.createElement('h3');labelTitle.textContent='اختصارات مساحة العمل';const labelCaption=g.document.createElement('span');labelCaption.textContent='اختر القسم للانتقال مباشرة';label.append(labelTitle,labelCaption);box.append(label);
     const grid=g.document.createElement('div');grid.className='role-home-actions';
     for(const [icon,label,detail,code] of actions[role]){
-      const btn=g.document.createElement('button');btn.type='button';btn.className='role-home-action';
+      const btn=g.document.createElement('button');btn.type='button';btn.className='role-home-action';btn.dataset.destination=code;
       const mark=g.document.createElement('span');mark.className='role-icon';mark.textContent=icon;
       const text=g.document.createElement('span');const b=g.document.createElement('b');b.textContent=label;const small=g.document.createElement('small');small.textContent=detail;text.append(b,small);btn.append(mark,text);
       btn.title=detail;btn.setAttribute('aria-label',`${label}: ${detail}`);btn.dataset.helpText=detail;

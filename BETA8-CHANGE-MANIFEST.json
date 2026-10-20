@@ -1,0 +1,245 @@
+{
+  "release": "11.12.1-beta.8",
+  "base": "11.12.1-beta.7",
+  "classification": "development-preview-not-approved",
+  "changed_count_before_manifest": 47,
+  "removed_original_files": 0,
+  "database_sql_changed": [],
+  "changed": {
+    "BETA7-CHANGE-MANIFEST.json": {
+      "status": "modified",
+      "sha256": "e4eadeb9586b7a3ee7070f6e4ce437cc3ddab3f38e9ceed2da208cbbaa7173e4",
+      "bytes": 7445
+    },
+    "VERSION": {
+      "status": "modified",
+      "sha256": "ca7aa36e02d03de72f44b5f981380651e77254b1b86c2f5b5aebea2f7bc18513",
+      "bytes": 15
+    },
+    "app.js": {
+      "status": "modified",
+      "sha256": "bd7b58f269ab4389f90074fb75beb023895a32060e56fa3c661b971e38245f29",
+      "bytes": 252025
+    },
+    "css/platform/components.css": {
+      "status": "modified",
+      "sha256": "c9d43d649dbeb58b53f837d174687612cd8ef3df6b1993a43081302cce712814",
+      "bytes": 11012
+    },
+    "css/platform/responsive.css": {
+      "status": "modified",
+      "sha256": "f23103529527956e92bd3c4a48d4a8265919d19978580d1f9427260c72fa77a7",
+      "bytes": 4163
+    },
+    "css/platform/tokens.css": {
+      "status": "modified",
+      "sha256": "8e85cd9f34c034e0750da2f9181a6a07789ba971750e7ee9dd6028e012b59037",
+      "bytes": 3007
+    },
+    "docs/OP-BETA8-MOBILE-TEST-GUIDE.md": {
+      "status": "new",
+      "sha256": "47681b8e1c1c94c6df20508d0f4aedaad968cdfb25922b591b4af5d07a103f45",
+      "bytes": 3159
+    },
+    "docs/OP-BETA8-QUALITY-REPORT.md": {
+      "status": "new",
+      "sha256": "c176d6bbc183ab6b9a06a615f87beca7c641f8e2b521854cdd3d792be73c5394",
+      "bytes": 5399
+    },
+    "guardian-login.html": {
+      "status": "modified",
+      "sha256": "2ce7511d182ceeff8680fe5f5486c673a2a04ae3b1a4f16ae8f7ddf220106f2b",
+      "bytes": 4411
+    },
+    "guardian-portal.html": {
+      "status": "modified",
+      "sha256": "a901d3ed55c308c465241598ccc3ce902c3c8fcfabb573291efceeafed66c97b",
+      "bytes": 25946
+    },
+    "guest-practice.html": {
+      "status": "modified",
+      "sha256": "3c512e46e4bdf5c880f7d2b6d65ff2ba8fe1f54ac1929cd27c7436dce895e10c",
+      "bytes": 12533
+    },
+    "imam-board-display.html": {
+      "status": "modified",
+      "sha256": "840d3940019b47cb018bcb123499358f508186e281e435972b075dace8043622",
+      "bytes": 740
+    },
+    "index.html": {
+      "status": "modified",
+      "sha256": "b6da8eba4964869b282ce67f579412de8771a2d932226f6c301a0860f59b5725",
+      "bytes": 78969
+    },
+    "js/core/offline-bootstrap.js": {
+      "status": "modified",
+      "sha256": "8fad97d75eefcbe4ad9f733e5c00e5cba3eba1896c6e45963cc6f5427db022c3",
+      "bytes": 1232
+    },
+    "js/core/runtime.js": {
+      "status": "modified",
+      "sha256": "def9fa1c21bd41e2ff3a8d38a1b1d78fc6d7884a49715eececf1eb1bed00c7fb",
+      "bytes": 1485
+    },
+    "js/features/role-home.js": {
+      "status": "modified",
+      "sha256": "ce6206326cd9d87f4cfcda6a81ef08aa5a44250e2b17df31e803582fa1697f8f",
+      "bytes": 11403
+    },
+    "manifest.json": {
+      "status": "modified",
+      "sha256": "881b1fdbfd9e1c6f6de8475cf343f8d6e023ca1df871e6ce28297969cb313882",
+      "bytes": 2553
+    },
+    "package.json": {
+      "status": "modified",
+      "sha256": "f3caf6c19c4209cc1227b3fbf28d9749adb268fa79e09d5d937cfab386c8dd66",
+      "bytes": 4032
+    },
+    "role-home.css": {
+      "status": "modified",
+      "sha256": "e809872f3739b33649f5dc729e9b44376c9330d1bf83e11e0b282de5f511c09f",
+      "bytes": 9692
+    },
+    "sw.js": {
+      "status": "modified",
+      "sha256": "24e0321b6e68f6ed4d1d5af56d2198aade82575a44d9632d2bb33b7d9786d17c",
+      "bytes": 20289
+    },
+    "tests/academy-tenants-foundation-check.js": {
+      "status": "modified",
+      "sha256": "a0e68d94ce24a599d421bf4e0bc03fe1343ca6e5f181f718b667b4cb86bc73f9",
+      "bytes": 4208
+    },
+    "tests/advanced-analytics-stage1-check.js": {
+      "status": "modified",
+      "sha256": "eb3dd8b3f92dce56a3d8f58e5d38dc70b222f2136abdf38dc2cc6d15a9c06d82",
+      "bytes": 5346
+    },
+    "tests/automatic-roster-sync-check.js": {
+      "status": "modified",
+      "sha256": "b7071638a484553ba33daeeb9afd13fff19d9570ee7ce72ccbf97317b67b393e",
+      "bytes": 4862
+    },
+    "tests/circle-analytics-check.js": {
+      "status": "modified",
+      "sha256": "e030e43bff10296479e744c26b7a066fd5dbc301a959706f3aadbc6509dd248d",
+      "bytes": 4658
+    },
+    "tests/followup-center-check.js": {
+      "status": "modified",
+      "sha256": "2e9038aa4042dd74c034b31e3b6daa0379ec8390f0715f6c33bfe3d8a8cafe21",
+      "bytes": 3199
+    },
+    "tests/goal-planning-mobile-hotfix-check.js": {
+      "status": "modified",
+      "sha256": "e3df7d58af2d5734b42589f798209dc8e1da78a0882cdc1f9eae6b120d74b392",
+      "bytes": 1467
+    },
+    "tests/guardian-messages-stage1-check.js": {
+      "status": "modified",
+      "sha256": "959d369c8a2dcf44c17b93de8a246125b6911667f878efed36fa265e5d8cbd13",
+      "bytes": 2849
+    },
+    "tests/guardian-portal-check.js": {
+      "status": "modified",
+      "sha256": "1a0b62fddff76faa933bfbbe9af58acfb3686ed19049eb4936246caa74d44c85",
+      "bytes": 7670
+    },
+    "tests/guardian-tahfeez-check.js": {
+      "status": "modified",
+      "sha256": "45ac0af63670e3967cc7243726dce6f8d44a4f0ca5ca3d1d2a20f7ac53993375",
+      "bytes": 2307
+    },
+    "tests/guest-role-update-batch-check.js": {
+      "status": "modified",
+      "sha256": "8d11cdee23d960b3c3ab42499a61c90520bf45d9a48897de5c192e21fb7b3994",
+      "bytes": 5621
+    },
+    "tests/imam-board-beta6-corpus-check.js": {
+      "status": "modified",
+      "sha256": "f1f665c53fc76ebd287bec3fdcd68acad9a685405db924cb17bfa1df6274bd37",
+      "bytes": 3962
+    },
+    "tests/imam-board-mobile-entry-check.js": {
+      "status": "modified",
+      "sha256": "d09ffd4c3bdc51f0930d6e218691174187c3551a4b41e828373525fca78a5b0c",
+      "bytes": 3498
+    },
+    "tests/imam-board-official-science-source-check.js": {
+      "status": "modified",
+      "sha256": "5febb6bc515840bdc85f703824ea294c5e4ef51a67e0d1b4c9dbbfd84334d34a",
+      "bytes": 2476
+    },
+    "tests/imam-smart-board-check.js": {
+      "status": "modified",
+      "sha256": "808cfe67a31c8101aeae1f3083ada84a745f648cefef36f0916a324cadb0f4be",
+      "bytes": 1828
+    },
+    "tests/mobile-navigation-check.js": {
+      "status": "modified",
+      "sha256": "46ad107099a2f80b3257735c8f9d2ab7ccf33542c4c735a35c9573eaf5ea54d4",
+      "bytes": 1314
+    },
+    "tests/offline-reliability-check.js": {
+      "status": "modified",
+      "sha256": "1303de3da355448d1268d065d88b14668b6e23b4fb96c41e96175c70f5dc5c00",
+      "bytes": 2184
+    },
+    "tests/owner-upgrade-consistency-check.js": {
+      "status": "modified",
+      "sha256": "2b25af233cfc9dc9ebe5c453c7f178fd365e07026e2ef044670f4b3bee585f2c",
+      "bytes": 4074
+    },
+    "tests/platform-design-system-check.js": {
+      "status": "modified",
+      "sha256": "c440e3e6a4195a32010c7c9ad7e35d0447c6f0c6d750d9bc4c0db5c0f76c4ab9",
+      "bytes": 2516
+    },
+    "tests/platform-visual-refresh-check.js": {
+      "status": "new",
+      "sha256": "7d18b53f61ff3370dc8481841a3cd2626733f02aea962735ff1dc0ab0e31a577",
+      "bytes": 2152
+    },
+    "tests/role-home-tab-visibility-hotfix-check.js": {
+      "status": "modified",
+      "sha256": "6eecdce2dc305dfd66a623b4a82608b21a59b669c88ccb3b2633bdfa72f95254",
+      "bytes": 1991
+    },
+    "tests/role-ux-errors-batch-check.js": {
+      "status": "modified",
+      "sha256": "27f7a24dfeb5ffc3338800461a524e23bcacb0c933009ba84bbacfeb68a0b5f3",
+      "bytes": 5310
+    },
+    "tests/session-intelligence-119-check.js": {
+      "status": "modified",
+      "sha256": "0dfb9086609ddb7705a716aade0fe91113a4f4464c6eea92644e48c31974000f",
+      "bytes": 4604
+    },
+    "tests/static-check.js": {
+      "status": "modified",
+      "sha256": "67e78114db59fa9321105ece37d0bafc9cda92b898c5f74672c9da1614054393",
+      "bytes": 40731
+    },
+    "tests/supervision-roster-permissions-stage2-check.js": {
+      "status": "modified",
+      "sha256": "2d4ecb5bfd7e992c1168bb738a9c51fda8045105b70be356b79ca8364e49dcab",
+      "bytes": 3736
+    },
+    "tests/teacher-rating-supervision-stage1-check.js": {
+      "status": "modified",
+      "sha256": "16bd184aeff2dac08342cecb5893ec504cfca3007c60b6005a4d65cc9205d4c0",
+      "bytes": 5203
+    },
+    "tests/v11-premium-ui-check.js": {
+      "status": "modified",
+      "sha256": "de5541b25ca49082fe66a9cad943c5cf1981079d80025f82662312a00669f7e3",
+      "bytes": 1708
+    },
+    "tests/v11-premium-ui-stage2-check.js": {
+      "status": "modified",
+      "sha256": "f8b85222bfdffc1a3a1c4dca307c2ad8418c897aecfe447da3be597f54c13021",
+      "bytes": 1810
+    }
+  }
+}

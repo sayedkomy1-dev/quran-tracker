@@ -6,7 +6,7 @@ function assert(cond,msg){if(!cond)throw new Error(msg);}
 
 const feature=read('js/features/circle-analytics.js'),html=read('index.html'),sw=read('sw.js'),css=read('v10.css'),pkg=JSON.parse(read('package.json'));
 new vm.Script(feature,{filename:'circle-analytics.js'});
-assert(pkg.version==='11.12.1-beta.7','package version must be 10.10.0');
+assert(pkg.version==='11.12.1-beta.8','package version must be 10.10.0');
 assert(html.includes('id="pg-analytics"')&&html.includes('تحليلات وتقارير الحلقة'),'analytics page missing');
 assert(html.includes('circle-analytics.js?v=11.0.0'),'analytics script missing from HTML');
 assert(sw.includes("'./js/features/circle-analytics.js?v=11.0.0'"),'analytics feature missing from offline shell');
