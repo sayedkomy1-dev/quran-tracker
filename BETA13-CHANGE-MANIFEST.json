@@ -1,0 +1,198 @@
+{
+  "version": "11.12.1-beta.13",
+  "baseline": "11.12.1-beta.12",
+  "files_modified_or_added": 47,
+  "files_deleted": [],
+  "changed": {
+    "QA-BETA13-AUTO-RESTART.md": {
+      "kind": "new",
+      "sha256": "1798deb22944f42cb007d2239bbbf6c8f0b4efe4f70b869c62e4d4dbb30cac0c"
+    },
+    "VERSION": {
+      "kind": "modified",
+      "sha256": "f9d56ab3272f17fb2a6eec4b9b047adc6e27276681ca28bffd077fce4c062b56"
+    },
+    "app.js": {
+      "kind": "modified",
+      "sha256": "b24f557a63f6ead8f973ff595b8f5a6a648ed6693e1330a7048ca183c3226626"
+    },
+    "guardian-login.html": {
+      "kind": "modified",
+      "sha256": "d9addd88afca0c826cdd2f9d6e8282ac727ef195416831d4ffbae667bd9f8e45"
+    },
+    "guardian-portal.html": {
+      "kind": "modified",
+      "sha256": "b0ee11d0e2d9594a03a440dc296f07fc84c270aade5b9a6493c4bcea7a367e65"
+    },
+    "guest-practice.html": {
+      "kind": "modified",
+      "sha256": "b83d956d92a333bad71441323353d5a89fa35dd76c09fafc8e981a37a4fbdeab"
+    },
+    "imam-board-display.html": {
+      "kind": "modified",
+      "sha256": "015d82e5c515b9485557b05f6ab6608d4c425616bbeebb926d7668dcafafd340"
+    },
+    "index.html": {
+      "kind": "modified",
+      "sha256": "ca4a2f9cdc5a0cee44224b6cd4a5afe9293f0e2aef3ad7d29fcc45458d6558b7"
+    },
+    "js/core/boot-health.js": {
+      "kind": "new",
+      "sha256": "274071143d9f7ae5754adfe707a2e6bab44ac2d3cb6142779078b53afd420989"
+    },
+    "js/core/offline-bootstrap.js": {
+      "kind": "modified",
+      "sha256": "68b935502fc2dd2a395bc3625e2dcdd7299b465b1e9fae09e940c02fe8d2e901"
+    },
+    "js/core/runtime.js": {
+      "kind": "modified",
+      "sha256": "0a6191a75d1ab339af98720cc852ae98f62a0159a2fa251ed44d4b807d60bc3d"
+    },
+    "js/features/platform-workflow.js": {
+      "kind": "modified",
+      "sha256": "d590c5589cf4bedd72b87fc62b99998b63f37bbddf4d545be371c88134e339b6"
+    },
+    "manifest.json": {
+      "kind": "modified",
+      "sha256": "fbe4548881a7a58508baae5a6566e34a29e665f068431caa22adeb4caea9b307"
+    },
+    "package.json": {
+      "kind": "modified",
+      "sha256": "27c738fe252aa9ccb9bbac67649703dfe9e98be5a1906d41f8089b87e34cae2b"
+    },
+    "sw.js": {
+      "kind": "modified",
+      "sha256": "547d999a8a43e942b4a2d8fa3ccc4f6d332b59a16e74a96d8a0c5bb38cffe4da"
+    },
+    "tests/academy-tenants-foundation-check.js": {
+      "kind": "modified",
+      "sha256": "88e49318ac324b299e16c69301b167fd172c6ed7160c672b926226de8d8b6827"
+    },
+    "tests/academy-wide-overhaul-check.js": {
+      "kind": "modified",
+      "sha256": "790f2e18f809beaaa84a02807774461f2ff5becad51d62a4d6c3ea3cd1b1d993"
+    },
+    "tests/advanced-analytics-stage1-check.js": {
+      "kind": "modified",
+      "sha256": "df10365a1ca2c2a2f8c0a8dbb7e0e06c1a6fb51446b08ac8a760891b4e8cb26f"
+    },
+    "tests/automatic-roster-sync-check.js": {
+      "kind": "modified",
+      "sha256": "57fe13145f40f0f6064aa4fcfb4011e91673a5083c7a062cf1102dfa45b63e9e"
+    },
+    "tests/circle-analytics-check.js": {
+      "kind": "modified",
+      "sha256": "33a655f103b524d3f68c83a83a17c402f09b014a230af40a31a94b74fb1af038"
+    },
+    "tests/followup-center-check.js": {
+      "kind": "modified",
+      "sha256": "6f2cc30e94b82182f232ec20fecfcdae08760deb81a67a4261b40c5f6bc397a2"
+    },
+    "tests/goal-planning-mobile-hotfix-check.js": {
+      "kind": "modified",
+      "sha256": "63fb9ee334de8981811b516e83a7dc9628f3021d5aff84954665e6e3cc6b1f11"
+    },
+    "tests/guardian-messages-stage1-check.js": {
+      "kind": "modified",
+      "sha256": "9fe0ebe736026987cd45d87056f0bf2e5a4afb57e0e22312e06498effbd39289"
+    },
+    "tests/guardian-portal-check.js": {
+      "kind": "modified",
+      "sha256": "794e052a18d5079c876f3e9982baf414a053166fd3f18e99f0aac4c8c5d61c25"
+    },
+    "tests/guardian-tahfeez-check.js": {
+      "kind": "modified",
+      "sha256": "50f3237f1450a4337cf751fcad85bf85266ce6a7a3903b931e588eb885eee6ea"
+    },
+    "tests/guest-role-update-batch-check.js": {
+      "kind": "modified",
+      "sha256": "f400097c0843045be6be6eb7f9ae32034e69c0083c532be22cd368acecccb555"
+    },
+    "tests/imam-board-beta6-corpus-check.js": {
+      "kind": "modified",
+      "sha256": "f05db25b166ee919769191177556f2b6af751938199ea42b726dfeec7f7ea613"
+    },
+    "tests/imam-board-mobile-entry-check.js": {
+      "kind": "modified",
+      "sha256": "e24db0c4facea47aeb647244359438406cded8198ebd86419441ce8498c13637"
+    },
+    "tests/imam-board-official-science-source-check.js": {
+      "kind": "modified",
+      "sha256": "7da16966b7aa6472b7a32a6642f430cde0c7ea8c2ded18c66fd5c625d67df7e5"
+    },
+    "tests/imam-smart-board-check.js": {
+      "kind": "modified",
+      "sha256": "7227838c34da03cb8ac9c5666f1cc8ccf94e17bcdd8cc877240be37fd8f9fa52"
+    },
+    "tests/mobile-home-beta10-check.js": {
+      "kind": "modified",
+      "sha256": "ba96d28784cc60fa8efb39fe4d7a7e35436cf68870a923403e2a082fdf566479"
+    },
+    "tests/mobile-navigation-check.js": {
+      "kind": "modified",
+      "sha256": "95f26e4b26bc90df8003edb7b98e0de7d54a70fded084f3a25c9699b5a8af8f7"
+    },
+    "tests/offline-reliability-check.js": {
+      "kind": "modified",
+      "sha256": "5a6576cc7b190e9dd998bcea18475545ae815cd55870a0e57df92e6bb6ad2374"
+    },
+    "tests/owner-upgrade-consistency-check.js": {
+      "kind": "modified",
+      "sha256": "27101be60b48d74d7d0846281e4862f7cdb7dde438a65474c88dd3f2815c8866"
+    },
+    "tests/platform-design-system-check.js": {
+      "kind": "modified",
+      "sha256": "0da30eb49beaf06929ae0a9eff19e219928df92049d229b2fbc5b24ed1451df7"
+    },
+    "tests/platform-visual-refresh-check.js": {
+      "kind": "modified",
+      "sha256": "f4b7af54b53bb1701249163bac4df78dfc87580b1274e3c5787673dc072258f4"
+    },
+    "tests/platform-workflow-beta9-check.js": {
+      "kind": "modified",
+      "sha256": "8085efc9434dc8a4e11ebb69d12d187f50b8f129d2483e8ea18bf53bc73eee03"
+    },
+    "tests/pwa-automatic-restart-check.js": {
+      "kind": "new",
+      "sha256": "1f2d7332ab47a9545ad11efb525fa9651c2d80c03ed234140c2db6f74117a663"
+    },
+    "tests/role-home-tab-visibility-hotfix-check.js": {
+      "kind": "modified",
+      "sha256": "a096171eb8c3dda271ea711cbb91a60a8c5ab684f1968597183cccaa0f1a4c27"
+    },
+    "tests/role-ux-errors-batch-check.js": {
+      "kind": "modified",
+      "sha256": "ab07f6398bd906f79fb5b6df12084d6b738a077a0d13e48515e76b4aa0af032b"
+    },
+    "tests/session-intelligence-119-check.js": {
+      "kind": "modified",
+      "sha256": "fd3ebdf1722b84e29341ba3b5754109b3e6c7caf4109905a794e8d414be280e9"
+    },
+    "tests/static-check.js": {
+      "kind": "modified",
+      "sha256": "0511f7f5740ebcfed369bb1d075d021446f02b488b53dbe1e8baa022995dd6f2"
+    },
+    "tests/supervision-roster-permissions-stage2-check.js": {
+      "kind": "modified",
+      "sha256": "f18dec8f55a8b921cd5d2c3765ac691269a098c8e7b311eb5fa87d310fe5d373"
+    },
+    "tests/teacher-rating-supervision-stage1-check.js": {
+      "kind": "modified",
+      "sha256": "d54c50956e4fe87e3a170999d96aa1c97cdeb19d79ce1f3e720617a592314572"
+    },
+    "tests/v11-premium-ui-check.js": {
+      "kind": "modified",
+      "sha256": "28deb515391ae99a9d94d34fb7935c582d6a927d53ad3c127aa39c741f1ed4cb"
+    },
+    "tests/v11-premium-ui-stage2-check.js": {
+      "kind": "modified",
+      "sha256": "eb5c865cced80b5b78517a427ad71dd4b033b4a39c46cb394f7c945531495d39"
+    },
+    "tests/version-debt-beta11-check.js": {
+      "kind": "modified",
+      "sha256": "2d39721b9915886037e33bbee7cb58c84c27e564efe6aff30c9a2aa030a9f7e6"
+    }
+  },
+  "tests": "npm test: PASS, 84/84 command chain",
+  "release_status": "diagnostic-preview-unapproved"
+}
