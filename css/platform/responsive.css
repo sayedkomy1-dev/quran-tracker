@@ -65,6 +65,17 @@
  #pg-session .direction-picker small{flex:1 1 100%}
  body.ui-session-keyboard .v9-nav{display:none}
  body.ui-session-keyboard .ui-session-action-dock{bottom:max(8px,env(safe-area-inset-bottom))}
+ body.v9-shell-ready .v9-nav-btn.session-primary{width:auto;min-width:118px;max-width:54%;height:55px;transform:translateY(-3px)}
+ .v9-nav-btn.session-primary .v9-nav-label{display:block;font-size:12px;font-weight:850}
+ .ui-session-action-dock{gap:5px;padding:7px 10px;max-height:120px}
+ .ui-session-action-caption{min-height:0;gap:10px}
+ .ui-session-action-caption b{font-size:12px}
+ .ui-session-action-state{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .ui-session-action-buttons{display:flex;visibility:visible;min-width:0;gap:7px}
+ .ui-session-action-buttons .btn{min-height:44px;padding:6px 9px;line-height:1.35}
+ .ui-session-action-buttons .ui-save-primary{flex:1.25}
+ .ui-session-action-buttons .ui-save-secondary{flex:1}
+ #pg-session.on{padding-bottom:calc(245px + env(safe-area-inset-bottom))}
  :where(.pg,.role-home-hub) :is(button,input,select,textarea,[tabindex]){scroll-margin-bottom:calc(172px + env(safe-area-inset-bottom))}
 }
 @media(max-width:440px){
@@ -91,3 +102,14 @@
  body.v9-shell-ready .pg{padding-bottom:80px}
 }
 @media print{.ui-session-action-dock,.ui-session-section-nav,.ui-network-note,.ux-page-strip,.v9-nav,.hdr{display:none!important}.pg{max-width:100%;padding:0}}
+
+/* beta15 review: accessible surah picker, clearly labelled primary action, compact session dock. */
+.surah-dropdown.open{box-sizing:border-box;overflow-y:auto;overscroll-behavior:contain;z-index:9900;border:1px solid var(--ui-border-strong);box-shadow:0 15px 40px rgba(6,46,31,.22)}
+.surah-dropdown button{min-height:46px;grid-template-columns:38px minmax(0,1fr) 64px;gap:8px;padding:9px 12px}
+.surah-dropdown button span{font-size:15px;min-width:0;white-space:normal;overflow-wrap:anywhere}
+.surah-dropdown button small{font-size:12px}
+.surah-combo{min-width:0;width:100%}
+.surah-combo>input{width:100%;min-width:0}
+.assignment-audio-details{border:1px solid var(--ui-line);border-radius:14px;padding:12px;margin-block:12px;background:var(--ui-surface)}
+.assignment-audio-details summary{cursor:pointer;font-size:14px;font-weight:750;color:var(--ui-ink);min-height:32px;display:list-item}
+.assignment-audio-details[open] summary{margin-block-end:10px}

@@ -7,12 +7,12 @@
   const actions={
     owner:[['🛡️','لوحة الإشراف','متابعة التفويض والتقييمات','supervision'],['📊','تحليلات الأكاديمية','المحفظون والمجموعات والطلاب','academy-analytics'],['🌍','الأكاديميات','مساحات العمل والعضويات','academy'],['👥','طلابي المحليون','الملفات المسجلة على هذا الجهاز','students'],['🎓','الاختبارات والإجازات','اختبارات الطلاب والإجازات والتواصل','academic-exams'],['🏫','إدارة الحلقات','التسميع الجماعي والحضور والجداول','circle-manager'],['📊','التقارير','تقارير العمل المحلي','reports'],['💬','صندوق الرسائل','رسائل أولياء الأمور','inbox'],['⚙️','الإعدادات','المظهر والحماية والمزامنة','settings'],['📿','ضيوف التحفيظ','إحصاءات الحسابات المرتبطة','guests']],
     supervisor:[['📊','تحليلات نطاق الإشراف','المحفظون المصرح لك بمتابعتهم','academy-analytics'],['🎓','الاختبارات والإجازات','اختبارات الطلاب والإجازات والتواصل','academic-exams'],['🏫','إدارة الحلقات','الحضور والجداول والتسميع','circle-manager'],['⚙️','إعدادات الحساب','المظهر وتفضيلات العمل','settings'],['📗','المصحف','القراءة والتنزيل','mushaf'],['📊','تقارير حلقتي','تقاريرك التعليمية المحلية','reports']],
-    teacher:[['📖','ابدأ حصة','التسميع والتكليف','session'],['🎓','الاختبارات والإجازات','اختبارات الطلاب والإجازات والتواصل','academic-exams'],['🏫','إدارة الحلقات','التسميع الجماعي والحضور والانضباط','circle-manager'],['✅','الحضور','تسجيل حضور طلاب الحلقة','checkin'],['👥','طلابي','الملفات والتقدم','students'],['🧠','مراجعة اليوم','الأخطاء والمراجعة الذكية','followup'],['💬','رسائل الأهالي','الوارد والردود','inbox'],['📊','التقارير','التقدم والحضور','reports'],['➕','طالب جديد','إضافة طالب للحلقة','add-student'],['📗','المصحف','القراءة والتنزيل','mushaf']]
+    teacher:[['🎓','الاختبارات والإجازات','اختبارات الطلاب والإجازات والتواصل','academic-exams'],['🏫','إدارة الحلقات','التسميع الجماعي والحضور والانضباط','circle-manager'],['✅','الحضور','تسجيل حضور طلاب الحلقة','checkin'],['👥','طلابي','الملفات والتقدم','students'],['🧠','مراجعة اليوم','الأخطاء والمراجعة الذكية','followup'],['💬','رسائل الأهالي','الوارد والردود','inbox'],['➕','طالب جديد','إضافة طالب للحلقة','add-student'],['📗','المصحف','القراءة والتنزيل','mushaf']]
   };
   let authorizedRole='teacher', workspaceChoice='';
   function switchRole(target){
     if(target==='teacher'&&(authorizedRole==='owner'||authorizedRole==='supervisor')){workspaceChoice='teacher';paint('teacher');return;}
-    if(target===authorizedRole){workspaceChoice='';paint(authorizedRole);}
+    if(target===authorizedRole){workspaceChoice=authorizedRole;paint(authorizedRole);}
   }
   function trigger(code){
     if(code==='supervision')return g.ImamApp?.Supervision?.open?.();
@@ -55,7 +55,7 @@
     head.append(intro,tools);box.append(head);
     const heroActions=g.document.createElement('div');heroActions.className='role-hero-actions';
     const primary=g.document.createElement('button');primary.type='button';primary.className='role-hero-next';
-    const nextMap={owner:['عرض التحليلات','academy-analytics'],supervisor:['فتح لوحة الإشراف','supervision'],teacher:['ابدأ حصة قرآنية','session']};
+    const nextMap={owner:['عرض التحليلات','academy-analytics'],supervisor:['فتح لوحة الإشراف','supervision'],teacher:['ابدأ حصة الآن','session']};
     primary.textContent=nextMap[role][0]+' ←';primary.addEventListener('click',()=>trigger(nextMap[role][1]));heroActions.append(primary);
     const board=g.document.createElement('button');board.type='button';board.className='role-hero-board';board.textContent='✎  افتح سبورة الإمام';board.title='فتح السبورة التفاعلية وفق صلاحيات حسابك';board.addEventListener('click',()=>{if(typeof g.ImamApp?.SmartBoard?.open==='function')g.ImamApp.SmartBoard.open();else g.toast?.('تعذر فتح السبورة الآن. يرجى إعادة تحميل التطبيق.','error');});heroActions.append(board);
     const next=g.document.createElement('span');next.className='role-hero-caption';next.textContent='ابدأ مباشرة أو اختر قسمك أدناه';heroActions.append(next);box.append(heroActions);
@@ -80,6 +80,16 @@
     if(supervisorCard&&supervisorCard.parentElement===home)supervisorCard.insertAdjacentElement('afterend',box);
     else home.prepend(box);
   }
+  function syncSupervisorMoreEntry(){
+    const more=$('v9MoreGrid');if(!more)return;
+    let item=more.querySelector('[data-imam-supervisor-more]');
+    if(authorizedRole!=='supervisor'){item?.remove();return;}
+    if(item)return;
+    item=g.document.createElement('button');item.type='button';item.className='v9-more-item';item.dataset.imamSupervisorMore='1';
+    item.innerHTML='<b>🛡️ لوحة الإشراف</b><small>المحفظون والصلاحيات والتقييمات</small>';
+    item.addEventListener('click',()=>{g.closeV9More?.();switchRole('supervisor');g.goPage?.('home');});
+    more.append(item);
+  }
   async function refresh(){
     if(!g.WeLiveQuranAuth?.isActive?.())return;
     if(g.WeLiveQuranAuth.isOwner?.()){authorizedRole='owner';paint(workspaceChoice==='teacher'?'teacher':'owner');return;}
@@ -91,11 +101,11 @@
       if(!client)return;
       const {data,error}=await client.rpc('app_supervision_access');
       if(error)throw error;
-      if(data?.allowed===true&&!data?.owner){authorizedRole='supervisor';paint(workspaceChoice==='teacher'?'teacher':'supervisor');}
+      if(data?.allowed===true&&!data?.owner){authorizedRole='supervisor';paint(workspaceChoice==='supervisor'?'supervisor':'teacher');syncSupervisorMoreEntry();}
     }catch(_){/* Fail closed; never unlock supervision based on UI. */}
     finally{checking=false;}
   }
-  g.ImamApp=g.ImamApp||{};g.ImamApp.RoleHome={refresh};
+  g.ImamApp=g.ImamApp||{};g.ImamApp.RoleHome={refresh,syncSupervisorMoreEntry};
   if(g.document.readyState==='loading')g.document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();
   g.addEventListener?.('online',refresh);
 })(globalThis);

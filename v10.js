@@ -476,9 +476,15 @@ if(typeof V10_BASE_RENDER_HOME==='function')globalThis.renderHome=function(...ar
 function v10SurahSearchValue(v){const fn=globalThis.v8NormArabic||globalThis.normalizeSurahName;return fn?fn(String(v||'')):String(v||'').trim();}
 function v10PositionSurahDropdown(key){
  const input=document.getElementById(key+'-s'),el=document.getElementById(`${key}-surah-dropdown`);if(!input||!el||!el.classList.contains('open'))return;
- const r=input.getBoundingClientRect(),bottomNav=document.getElementById('v9Nav'),navTop=bottomNav&&getComputedStyle(bottomNav).position==='fixed'?bottomNav.getBoundingClientRect().top:window.innerHeight;
- const safeBottom=Math.min(window.innerHeight,navTop||window.innerHeight),below=Math.max(0,safeBottom-r.bottom-10),above=Math.max(0,r.top-10),up=below<220&&above>below;
- el.classList.toggle('open-up',up);const room=up?above:below;el.style.maxHeight=Math.max(150,Math.min(320,room-8))+'px';
+ const rect=input.getBoundingClientRect(),nav=document.getElementById('v9Nav');
+ const navTop=nav&&getComputedStyle(nav).position==='fixed'?nav.getBoundingClientRect().top:innerHeight;
+ const safeBottom=Math.min(innerHeight,navTop||innerHeight),below=Math.max(0,safeBottom-rect.bottom-12),above=Math.max(0,rect.top-14),up=below<230&&above>below;
+ const room=Math.max(0,up?above:below),height=Math.max(100,Math.min(360,room-10));
+ const width=Math.min(480,innerWidth-24),left=Math.max(12,Math.min(innerWidth-width-12,rect.right-width));
+ // The list is attached to document.body so cards and narrow columns cannot crop it.
+ el.style.position='fixed';el.style.width=width+'px';el.style.left=left+'px';el.style.right='auto';
+ el.style.top=Math.max(8,up?rect.top-height-7:rect.bottom+6)+'px';el.style.bottom='auto';
+ el.style.maxHeight=height+'px';el.classList.toggle('open-up',up);
 }
 function v10CloseOtherSurahDropdowns(exceptKey=''){document.querySelectorAll('.surah-dropdown.open').forEach(x=>{if(x.id!==`${exceptKey}-surah-dropdown`){x.classList.remove('open','open-up');x.style.maxHeight='';const k=x.id.replace(/-surah-dropdown$/,'');document.getElementById(k+'-s')?.setAttribute('aria-expanded','false');}});}
 function v10OpenSurahDropdown(key){
@@ -498,7 +504,7 @@ function v10FilterSurahDropdown(key){
  el.classList.add('open');el.setAttribute('role','listbox');input.setAttribute('aria-controls',`${key}-surah-dropdown`);input.setAttribute('aria-expanded','true');requestAnimationFrame(()=>v10PositionSurahDropdown(key));
 }
 function initV10SurahDropdowns(){
- ['new','rec','far'].forEach(key=>{const input=document.getElementById(key+'-s'),btn=input?.closest('.surah-combo')?.querySelector('.surah-drop-btn'),el=document.getElementById(`${key}-surah-dropdown`);if(!input||!el)return;input.setAttribute('role','combobox');input.setAttribute('aria-autocomplete','list');input.setAttribute('aria-expanded','false');input.setAttribute('aria-controls',`${key}-surah-dropdown`);if(btn)btn.setAttribute('aria-controls',`${key}-surah-dropdown`);});
+ ['new','rec','far'].forEach(key=>{const input=document.getElementById(key+'-s'),btn=input?.closest('.surah-combo')?.querySelector('.surah-drop-btn'),el=document.getElementById(`${key}-surah-dropdown`);if(!input||!el)return;if(el.parentNode!==document.body)document.body.appendChild(el);input.setAttribute('role','combobox');input.setAttribute('aria-autocomplete','list');input.setAttribute('aria-expanded','false');input.setAttribute('aria-controls',`${key}-surah-dropdown`);if(btn)btn.setAttribute('aria-controls',`${key}-surah-dropdown`);});
  if(!document.documentElement.dataset.v10SurahResizeBound){document.documentElement.dataset.v10SurahResizeBound='1';window.addEventListener('resize',()=>['new','rec','far'].forEach(v10PositionSurahDropdown),{passive:true});window.addEventListener('scroll',()=>['new','rec','far'].forEach(v10PositionSurahDropdown),{passive:true,capture:true});}
 }
 

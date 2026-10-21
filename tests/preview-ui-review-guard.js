@@ -1,0 +1,16 @@
+'use strict';
+const fs=require('fs'),assert=require('node:assert/strict'),path=require('path');
+const root=path.resolve(__dirname,'..');
+const src=f=>fs.readFileSync(path.join(root,f),'utf8');
+const board=src('js/features/imam-smart-board.js'),nav=src('v9.js'),role=src('js/features/role-home.js'),session=src('index.html'),surah=src('v10.js'),css=src('css/platform/responsive.css'),sound=src('v9.js');
+assert(board.includes('function returnToSession()')&&board.includes("case 'returnSession':returnToSession();"),'board must return to official lesson');
+assert(board.includes('if(b.dirty&&!flush())return;')&&board.includes('closeNativeEditor();active=false'),'board must preserve draft and original editor');
+assert(board.includes('ib-header-tools')&&board.includes('data-cmd="reading"')&&board.includes('data-cmd="close"'),'board tools and close must remain accessible');
+assert(role.includes("paint(workspaceChoice==='supervisor'?'supervisor':'teacher')"),'supervisor/teacher must default to teacher');
+assert(role.includes('syncSupervisorMoreEntry')&&role.includes("authorizedRole!=='supervisor'"),'supervision must require validated scope in More');
+assert(nav.includes("['users','الطلاب'")&&nav.includes("['chart','التقارير'"),'moved routes must remain reachable from More');
+assert(nav.includes("['session','book','ابدأ حصة'")&&css.includes('.v9-nav-btn.session-primary .v9-nav-label{display:block'),'lesson action must be named and prominent');
+assert(session.includes('id="teacherAssignmentAudioBtn"')&&session.includes('assignment-audio-details'),'audio sharing remains available without crowding lesson');
+assert(surah.includes("document.body.appendChild(el)")&&surah.includes("el.style.position='fixed'"),'Surah picker must escape narrow fields');
+assert(sound.includes("id=\"v9ButtonSound\"")&&sound.includes("if(!settings?.v9?.buttonSound")&&sound.includes("#pg-session,#imam-board-root"),'sound must be opt-in and off in a lesson');
+console.log('PASS preview UI: safe board return, accessible tools, teacher-first, all routes, wide surah picker, opt-in click audio');

@@ -536,7 +536,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
     <button class="btn btn-g mb8" id="saveSessionBtn" onclick="saveSession()">💾 حفظ الحصة</button>
     <button class="btn btn-wa" id="saveSendSessionBtn" onclick="saveAndSendWA()">📲 حفظ وإرسال لولي الأمر</button>
-    <div class="assignment-audio-share"><select id="teacherAssignmentAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري العفاسي</option><option value="husary">الحصري</option><option value="muaiqly">المعيقلي</option></select><button type="button" class="btn btn-out" id="teacherAssignmentAudioBtn" onclick="shareCurrentAssignmentAudio()">🎧 مشاركة صوت الحفظ الجديد</button></div>
+    <details class="assignment-audio-details"><summary>🎧 مشاركة صوت التكليف (اختياري)</summary><div class="assignment-audio-share"><select id="teacherAssignmentAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري العفاسي</option><option value="husary">الحصري</option><option value="muaiqly">المعيقلي</option></select><button type="button" class="btn btn-out" id="teacherAssignmentAudioBtn" onclick="shareCurrentAssignmentAudio()">مشاركة صوت الحفظ الجديد</button></div></details>
     <div class="wa-mode-row" id="sessionWaModes"><button class="btn btn-out btn-sm" onclick="saveAndSendWAMode('short')">رسالة مختصرة</button><button class="btn btn-out btn-sm" onclick="saveAndSendWAMode('detailed')">رسالة تفصيلية</button></div>
     <div style="height:20px"></div>
   </div>

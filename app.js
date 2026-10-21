@@ -1307,7 +1307,12 @@ function restoreDraft(existing){
     applyDraft(d);return true;
   }catch(e){return false;}
 }
-function clearDraft(){const key=draftKey();if(key)localStorage.removeItem(key);}
+function clearDraft(){
+  // A queued autosave must not recreate a draft after a successful session save.
+  // Keep this cancellation on the success path only: failed saves retain their draft.
+  if(draftTimer!==null){clearTimeout(draftTimer);draftTimer=null;}
+  const key=draftKey();if(key)localStorage.removeItem(key);
+}
 function setupSessionDraftAutosave(){
   const pg=document.getElementById('pg-session');if(!pg)return;
   pg.addEventListener('input',e=>{if(e.target.closest('#pg-session'))scheduleDraftSave();});

@@ -20,7 +20,7 @@
  };
  const find=id=>d.getElementById(id);
  function heading(page,key){
-  if(page.querySelector(':scope > .ui-workspace-heading'))return;
+  if(key==='students'||page.querySelector(':scope > .ui-workspace-heading'))return;
   // Specialist screens already render a semantic heading; do not duplicate it.
   if(page.querySelector(':scope > .cm-header, :scope > .ae-header, :scope > .analytics-header'))return;
   const [title,description]=pages[key]||[page.querySelector('.ch,h2')?.textContent?.trim()||'مساحة العمل','أدوات القسم وبياناته حسب صلاحيات حسابك.'];

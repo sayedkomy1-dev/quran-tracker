@@ -103,6 +103,22 @@ function migrateV9Data(){
   return changed;
 }
 function applyV9Prefs(){document.body.classList.toggle('v9-reduce-motion',!!settings.v9?.reduceMotion);}
+// Optional quiet tactile cue; deliberately off by default and silent in the live lesson/board.
+(function initImamClickFeedback(){
+ let ctx=null,lastAt=0;
+ document.addEventListener('click',e=>{
+   if(!settings?.v9?.buttonSound||!e.target?.closest?.('button'))return;
+   if(e.target.closest('#pg-session,#imam-board-root,.mo.open'))return;
+   const now=performance.now();if(now-lastAt<85)return;lastAt=now;
+   try{const AudioCtx=globalThis.AudioContext||globalThis.webkitAudioContext;if(!AudioCtx)return;
+     ctx=ctx||new AudioCtx();if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+     const tone=ctx.createOscillator(),gain=ctx.createGain(),t=ctx.currentTime;
+     tone.type='sine';tone.frequency.setValueAtTime(780,t);tone.frequency.exponentialRampToValueAtTime(550,t+.055);
+     gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.008,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+.065);
+     tone.connect(gain);gain.connect(ctx.destination);tone.start(t);tone.stop(t+.075);
+   }catch(_){/* No audio permission: controls remain functional. */}
+ },{passive:true});
+})();
 
 // ──────────────────────────────────────
 // Responsive navigation and More sheet
@@ -110,11 +126,11 @@ function applyV9Prefs(){document.body.classList.toggle('v9-reduce-motion',!!sett
 function injectV9Navigation(){
   const nav=document.getElementById('v9Nav');if(!nav)return;
   nav.innerHTML=[
-    ['home','home','الرئيسية',`goPage('home')`],['students','users','الطلاب',`goPage('students')`],['session','book','الحصة',`goPage('session')`],['reports','chart','التقارير',`goPage('reports')`],['more','more','المزيد','openV9More()']
+    ['home','home','الرئيسية',`goPage('home')`],['session','book','ابدأ حصة',`goPage('session')`],['more','more','المزيد','openV9More()']
   ].map(([p,i,l,a])=>`<button class="v9-nav-btn ${p==='session'?'session-primary':''}" data-page="${p}" onclick="${a}" aria-label="${l}">${v9Icon(i)}<span class="v9-nav-label">${l}</span></button>`).join('');
   const g=document.getElementById('v9MoreGrid');if(g){
     g.innerHTML=[
-      ['search','بحث في الأكاديمية','العثور على الأدوات والطلاب المخولين',`closeV9More();openQuickSearch()`],['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة وحزمة العمل دون إنترنت',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
+      ['search','بحث في الأكاديمية','العثور على الأدوات والطلاب المخولين',`closeV9More();openQuickSearch()`],['users','الطلاب','ملفات الطلاب والحضور',`goPage('students');closeV9More()`],['chart','التقارير','تقارير الحفظ والمتابعة',`goPage('reports');closeV9More()`],['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة وحزمة العمل دون إنترنت',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
     ].map(([i,t,s,a])=>`<button class="v9-more-item" onclick="${a}">${v9Icon(i)}<b>${t}</b><small>${s}</small></button>`).join('');
     g.insertAdjacentHTML('beforeend',`<button class="v9-more-item" data-v1010-portal-more="1" onclick="closeV9More();v1010OpenPortalPicker()">${v9Icon('group')}<b>بوابة ولي الأمر</b><small>دخول برقم الهاتف + PIN وتقارير قراءة فقط</small></button>`);
   }
@@ -164,12 +180,13 @@ function syncV9SmartBoardEntry(){
 }
 function openV9More(){
   syncV9SmartBoardEntry();
+  globalThis.ImamApp?.RoleHome?.syncSupervisorMoreEntry?.();
   const search=document.getElementById('imamMoreSearch');if(search){search.value='';search.dispatchEvent(new Event('input'));}
   const m=document.getElementById('v9MoreSheet');
   if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}
 }
 function closeV9More(){const m=document.getElementById('v9MoreSheet');if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');}}
-function updateV9Nav(p){document.querySelectorAll('#v9Nav .v9-nav-btn').forEach(b=>b.classList.toggle('on',b.dataset.page===p||(b.dataset.page==='more'&&['checkin','tasks','settings','mushaf'].includes(p))));}
+function updateV9Nav(p){document.querySelectorAll('#v9Nav .v9-nav-btn').forEach(b=>b.classList.toggle('on',b.dataset.page===p||(b.dataset.page==='more'&&['students','reports','checkin','tasks','settings','mushaf'].includes(p))));}
 function goPage(p){
   closeV9More();
   if(p==='mushaf'){
@@ -407,9 +424,9 @@ async function downloadQuranTextPack(){if(V9.textPackDownloading){V9.textPackCan
 // ──────────────────────────────────────
 // Settings / accessibility / quality
 // ──────────────────────────────────────
-function injectSettingsUX(){const pg=document.getElementById('pg-settings');if(!pg||document.getElementById('v9UxSettings'))return;pg.insertAdjacentHTML('afterbegin',`<div class="card" id="v9UxSettings"><div class="ch">تجربة الاستخدام</div><div class="fld"><label>طريقة شاشة الحصة</label><select id="v9ModeSetting" onchange="settings.v9.mode=this.value;save();setSessionMode(this.value,false)"><option value="guided">مبسطة — خطوة بخطوة</option><option value="expert">سريعة — كل الأقسام</option></select></div><label class="switch-line"><input type="checkbox" id="v9ReduceMotion" onchange="settings.v9.reduceMotion=this.checked;save();applyV9Prefs()"><span>تقليل الحركة والانتقالات</span></label><div class="settings-actions mt8"><button class="btn btn-out btn-sm" onclick="openV9Onboarding(true)">عرض دليل الاستخدام</button><button class="btn btn-out btn-sm" onclick="goPage('mushaf')">إدارة المصحف Offline</button></div></div>`);}
+function injectSettingsUX(){const pg=document.getElementById('pg-settings');if(!pg||document.getElementById('v9UxSettings'))return;pg.insertAdjacentHTML('afterbegin',`<div class="card" id="v9UxSettings"><div class="ch">تجربة الاستخدام</div><div class="fld"><label>طريقة شاشة الحصة</label><select id="v9ModeSetting" onchange="settings.v9.mode=this.value;save();setSessionMode(this.value,false)"><option value="guided">مبسطة — خطوة بخطوة</option><option value="expert">سريعة — كل الأقسام</option></select></div><label class="switch-line"><input type="checkbox" id="v9ReduceMotion" onchange="settings.v9.reduceMotion=this.checked;save();applyV9Prefs()"><span>تقليل الحركة والانتقالات</span></label><label class="switch-line"><input type="checkbox" id="v9ButtonSound" onchange="settings.v9.buttonSound=this.checked;save()"><span>صوت لمس هادئ للأزرار (اختياري؛ صامت أثناء الحصة والسبورة)</span></label><div class="settings-actions mt8"><button class="btn btn-out btn-sm" onclick="openV9Onboarding(true)">عرض دليل الاستخدام</button><button class="btn btn-out btn-sm" onclick="goPage('mushaf')">إدارة المصحف Offline</button></div></div>`);}
 function renderV9Settings(){const m=document.getElementById('v9ModeSetting'),r=document.getElementById('v9ReduceMotion');if(m)m.value=settings.v9?.mode||'expert';if(r)r.checked=!!settings.v9?.reduceMotion;}
-function initSettings(){V9_BASE.initSettings();injectSettingsUX();renderV9Settings();}
+function initSettings(){V9_BASE.initSettings();injectSettingsUX();renderV9Settings();const ch=document.getElementById('v9ButtonSound');if(ch)ch.checked=!!settings.v9?.buttonSound;}
 
 // ──────────────────────────────────────
 // Groups overview

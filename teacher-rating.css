@@ -120,3 +120,9 @@ html[data-portal-theme="dark"] .portal-rating-form select,html[data-portal-theme
 .supervision-sync-entry.stale,.supervision-sync-entry.missing{border-color:#e9c7a0;background:#fffbf5}
 .supervision-sync-entry.stale span,.supervision-sync-entry.missing span{color:#a45021}
 .supervision-sync-entry.delayed{border-color:#e8dfac;background:#fffdf3}
+
+/* beta15 review — keep roster synchronization discoverable, not an oversized duplicate students hero. */
+#pg-students .supervision-roster-sync{display:block;padding:10px 14px;margin-block:7px 14px}
+#pg-students .imam-roster-details summary{cursor:pointer;font-size:14px;font-weight:800;min-height:35px;display:list-item;color:var(--ui-ink,#17251d)}
+#pg-students .imam-roster-details[open]>div{display:grid;gap:5px;margin-top:9px}
+#pg-students .imam-roster-details[open]>button{margin-top:10px}

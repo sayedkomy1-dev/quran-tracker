@@ -91,3 +91,26 @@ body.ib-native-open > .mo.open,body.ib-native-open #im119Warning,body.ib-native-
 .ib-official-science{max-height:55vh;overflow-y:auto}
 @media (max-width:850px){.ib-science{max-width:100%;min-width:0;overflow-wrap:anywhere}.ib-science-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.ib-book-picker select{font-size:16px}}
 @media (prefers-reduced-motion:reduce){.imam-board-root .ib-effects *{animation:none!important;transition:none!important}}
+
+/* beta15 review: dependable exit to the official lesson and expandable nonessential tools. */
+.ib-header .ib-buttons{overflow:visible;min-width:0}
+.ib-header .ib-return-session{background:#f2d491;color:#19402e;border-color:#e4c16b;font-weight:800;white-space:nowrap}
+.ib-header-tools{position:relative;color:#fff;flex:0 0 auto}
+.ib-header-tools summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:center;min-height:43px;padding:8px 12px;border:1px solid rgba(255,255,255,.4);border-radius:11px;white-space:nowrap;font-weight:750}
+.ib-header-tools summary::-webkit-details-marker{display:none}
+.ib-header-tools[open] summary{background:rgba(255,255,255,.2)}
+.ib-header-tools-list{position:absolute;top:calc(100% + 8px);inset-inline-end:0;z-index:25;display:grid;grid-template-columns:minmax(170px,1fr);gap:6px;padding:10px;min-width:235px;max-width:calc(100vw - 25px);max-height:55dvh;overflow-y:auto;border-radius:14px;border:1px solid #d4e2d8;box-shadow:0 16px 40px #001d1555;background:#fff}
+.ib-header-tools-list button{text-align:start;white-space:normal;color:#194633}
+@media(max-width:850px){
+ .ib-header{display:flex;align-items:center;flex-direction:column;gap:7px}
+ .ib-header>div:first-child{width:100%;display:flex;justify-content:space-between}
+ .ib-header .ib-buttons{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:5px;padding-top:3px;width:100%;overflow:visible}
+ .ib-header .ib-buttons>button,.ib-header .ib-buttons>details{min-width:0;min-height:42px;font-size:11px;white-space:normal;padding:6px}
+ .ib-header .ib-buttons>button[data-cmd="returnSession"]{grid-column:span 2;font-size:13px}
+ .ib-header .ib-buttons>button[data-cmd="display"]{grid-column:span 1}
+ .ib-header .ib-buttons>button[data-cmd="save"]{grid-column:span 1}
+ .ib-header .ib-buttons>details{grid-column:1/-1}
+ .ib-header-tools summary{min-height:39px}
+ .ib-header-tools-list{position:static;min-width:0;max-width:none;max-height:32dvh;margin-top:4px;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ib-header-tools-list button{font-size:11px;padding:8px;min-height:44px}
+}

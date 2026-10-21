@@ -220,7 +220,7 @@
   async function initialize(){ensureShortcut();if(!g.WeLiveQuranAuth?.isActive?.())return false;ensureRosterEntry();startAutoRosterSync();return verifyAccess();}
   function ensureRosterEntry(){const pg=$('pg-students');if(!pg||$('supervisorRosterSync'))return;
     const entry=document.createElement('div');entry.id='supervisorRosterSync';entry.className='supervision-roster-sync';entry.dir='rtl';
-    entry.innerHTML='<div><b>👥 كشف الطلاب للإدارة — مزامنة تلقائية</b><small>يتحدث الكشف تلقائيًا عند فتح حساب المحفظ وعند تغيير الطلاب أو الحضور مع وجود الإنترنت. لا تُرسل الهواتف أو المالية أو رموز الدخول.</small><p id="supervisorRosterSyncStatus" role="status">ستبدأ المزامنة تلقائيًا عند تجهيز البيانات والاتصال بالإنترنت.</p></div><button type="button" id="supervisorRosterSyncButton">مزامنة الآن</button>';
+    entry.innerHTML='<details class="imam-roster-details"><summary>👥 حالة مزامنة كشف الطلاب للإدارة (تلقائية)</summary><div><small>يتحدث الكشف تلقائيًا عند فتح حساب المحفظ وعند تغيير الطلاب أو الحضور مع وجود الإنترنت. لا تُرسل الهواتف أو المالية أو رموز الدخول.</small><p id="supervisorRosterSyncStatus" role="status">ستبدأ المزامنة تلقائيًا عند تجهيز البيانات والاتصال بالإنترنت.</p></div><button type="button" id="supervisorRosterSyncButton">مزامنة الآن</button></details>';
     pg.insertBefore(entry,pg.firstChild);$('supervisorRosterSyncButton')?.addEventListener('click',()=>{void syncRoster(false);});
   }
   function getRosterData(){

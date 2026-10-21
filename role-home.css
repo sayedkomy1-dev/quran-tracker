@@ -65,3 +65,7 @@
 :root[data-theme="dark"] .role-home-action.role-action-featured{background:var(--ui-soft)}
 :root[data-theme="dark"] .role-home-action.role-action-featured b{color:var(--ui-ink)}
 @media(prefers-reduced-motion:reduce){.role-home-action,.role-hero-next,.role-hero-board{transition:none;transform:none}}
+
+/* beta15 review — admin shortcut is strictly singular even if legacy stylesheet loads later. */
+#pg-home[data-workspace-role].v9-home-ready > #supervisorShortcut.supervision-home-entry,
+#pg-home[data-workspace-role] > #supervisorShortcut[hidden].supervision-home-entry{display:none!important}
