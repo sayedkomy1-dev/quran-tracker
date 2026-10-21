@@ -10,7 +10,7 @@ const portal=read('guardian-portal.html');
 const sql=read('sql/guardian-portal-live.sql');
 const setup=read('sql/supabase-setup.sql');
 const css=read('guardian-portal.css');
-const appCss=read('v10.css');
+const appCss=read('archive/historical-css/v10.css');
 new vm.Script(feature,{filename:'guardian-portal-share.js'});
 new vm.Script(view,{filename:'guardian-portal-view.js'});
 assert(feature.includes("guardian_portal_publish")&&feature.includes("guardian_portal_status")&&feature.includes("guardian_portal_revoke"),'teacher live-link RPC integration missing');

@@ -114,9 +114,26 @@ function injectV9Navigation(){
   ].map(([p,i,l,a])=>`<button class="v9-nav-btn ${p==='session'?'session-primary':''}" data-page="${p}" onclick="${a}" aria-label="${l}">${v9Icon(i)}<span class="v9-nav-label">${l}</span></button>`).join('');
   const g=document.getElementById('v9MoreGrid');if(g){
     g.innerHTML=[
-      ['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة وحزمة العمل دون إنترنت',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
+      ['search','بحث في الأكاديمية','العثور على الأدوات والطلاب المخولين',`closeV9More();openQuickSearch()`],['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة وحزمة العمل دون إنترنت',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
     ].map(([i,t,s,a])=>`<button class="v9-more-item" onclick="${a}">${v9Icon(i)}<b>${t}</b><small>${s}</small></button>`).join('');
     g.insertAdjacentHTML('beforeend',`<button class="v9-more-item" data-v1010-portal-more="1" onclick="closeV9More();v1010OpenPortalPicker()">${v9Icon('group')}<b>بوابة ولي الأمر</b><small>دخول برقم الهاتف + PIN وتقارير قراءة فقط</small></button>`);
+  }
+  // One accessible discovery field for all currently permitted More actions.
+  // Filter only buttons already rendered by the active-account navigation.
+  const sheet=document.getElementById('v9MoreSheet');
+  if(g&&!document.getElementById('imamMoreSearch')){
+    const search=document.createElement('input');
+    search.type='search';search.id='imamMoreSearch';search.className='imam-more-search';
+    search.placeholder='ابحث في أدوات الأكاديمية';
+    search.setAttribute('aria-label','بحث في خيارات المزيد');
+    search.addEventListener('input',()=>{
+      const query=search.value.trim().toLocaleLowerCase('ar');
+      g.querySelectorAll('button').forEach(btn=>{
+        const label=(btn.textContent||'').toLocaleLowerCase('ar');
+        btn.hidden=Boolean(query&&!label.includes(query));
+      });
+    });
+    g.parentElement?.insertBefore(search,g);
   }
   document.body.classList.add('v9-shell-ready');
   syncV9SmartBoardEntry();
@@ -147,6 +164,7 @@ function syncV9SmartBoardEntry(){
 }
 function openV9More(){
   syncV9SmartBoardEntry();
+  const search=document.getElementById('imamMoreSearch');if(search){search.value='';search.dispatchEvent(new Event('input'));}
   const m=document.getElementById('v9MoreSheet');
   if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}
 }

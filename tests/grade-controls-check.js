@@ -3,7 +3,7 @@ const fs=require('fs');
 const path=require('path');
 const root=path.join(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
-const app=read('app.js'),v10=read('v10.js'),css=read('v10.css');
+const app=read('app.js'),v10=read('v10.js'),css=read('archive/historical-css/v10.css');
 function assert(c,m){if(!c)throw new Error(m);}
 for(const g of ['ممتاز','جيد جداً','جيد','ضعيف','إعادة'])assert(v10.includes(`'${g}':{`),`missing assessment choice ${g}`);
 assert(v10.includes("if(g==='إعادة')")&&v10.includes('repeatPrevAssignment(key)'), 'repeat assessment must copy the same assignment forward');

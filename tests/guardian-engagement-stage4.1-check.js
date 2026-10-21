@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('fs'),vm=require('vm');
 const read=f=>fs.readFileSync(f,'utf8');const ok=(v,m)=>{if(!v)throw new Error(m)};
-const sql=read('sql/guardian-portal-engagement.sql'),setup=read('sql/supabase-setup.sql'),portal=read('guardian-portal.html'),view=read('js/features/guardian-portal-view.js'),tracker=read('js/features/guardian-engagement.js'),tahfeez=read('js/features/guardian-tahfeez.js'),audio=read('js/features/guardian-audio-assist.js'),experience=read('js/features/guardian-portal-experience.js'),teacher=read('js/features/guardian-portal-share.js'),css=read('v10.css'),sw=read('sw.js'),app=read('app.js');
+const sql=read('sql/guardian-portal-engagement.sql'),setup=read('sql/supabase-setup.sql'),portal=read('guardian-portal.html'),view=read('js/features/guardian-portal-view.js'),tracker=read('js/features/guardian-engagement.js'),tahfeez=read('js/features/guardian-tahfeez.js'),audio=read('js/features/guardian-audio-assist.js'),experience=read('js/features/guardian-portal-experience.js'),teacher=read('js/features/guardian-portal-share.js'),css=read('archive/historical-css/v10.css'),sw=read('sw.js'),app=read('app.js');
 [new vm.Script(view),new vm.Script(tracker),new vm.Script(tahfeez),new vm.Script(audio),new vm.Script(experience),new vm.Script(teacher),new vm.Script(sw)];
 ok(app.includes('const SCHEMA_VERSION=12'),'local Schema must remain 12');
 ok(sql.includes('create table if not exists public.guardian_portal_activity_events'),'activity table missing');

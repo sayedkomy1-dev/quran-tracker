@@ -37,7 +37,7 @@ const html=read('index.html'),sw=read('sw.js'),runtime=read('js/core/runtime.js'
 assert(html.includes('session-intelligence-119.js?v=11.9.2'));
 assert(sw.includes("'./js/features/session-intelligence-119.js?v=11.9.2'"));
 assert(sw.includes("'./session-intelligence-119.css?v=11.9.2'"));
-assert(runtime.includes("version:'11.12.1-beta.6',schema:12"));
+assert(runtime.includes("version:'11.12.1-beta.14',schema:12"));
 assert(app.includes("if(save()===false)"),'failure-aware session save must exist');
 assert(read('js/features/achievement-certificates.js').includes("g.save?.()===false"),'certificate must reject failed local write');
 assert(!read('tests/complete-corrections-sync-health-check.js').includes('/mnt/data/work_v11745/'),'tests must be portable');

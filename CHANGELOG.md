@@ -1,3 +1,13 @@
+# 11.12.1-beta.12 — Academy-wide workspace redesign (development preview)
+
+- Rebuilt role dashboard stylesheet as a canonical, compact role-aware layout; removed supervisor/owner stacking with old teacher workspace.
+- Consolidated mobile responsiveness in one owner file; improved fixed session save and bottom navigation safe-area and readable controls.
+- Strengthened shared UI affordances on 14 static workspaces and specialized modules without changing their data logic.
+- Added permission-scoped More menu search, refined parent/student styles and mobile Smart Board teaching area.
+- Archived 53 obsolete nested screenshot-source files in a separate verified ZIP; screenshots themselves remain.
+- Preserved the original official session save control, Quran text engine, guardian privacy, student finance and SQL.
+- Remaining debt: active v8/v9/v10 JS and legacy-features.css; real browser acceptance has not been completed. Not a stable release.
+
 # 11.12.1-beta.4 — سبورة الإمام الذكية: البطاقات العلمية والمؤقت والمشاركة (تجريبي)
 
 - بطاقات علمية مرتبطة بالآية/الكلمة، بمصدر معلن وحقوق استعمال يقرّ بها المحفظ؛ لا تُعامل باعتبارها تفسيرًا معتمدًا.

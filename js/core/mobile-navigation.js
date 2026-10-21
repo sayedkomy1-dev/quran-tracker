@@ -11,7 +11,6 @@
   let baseGoPage=null;
   let baseGoBack=null;
   let seq=0;
-  let exitPromptAt=0;
 
   function appPage(){
     const el=g.document?.querySelector?.('.pg.on');
@@ -99,9 +98,18 @@
     if(closers[id]&&callCloser(closers[id]))return true;
     el.classList.remove('open');el.setAttribute('aria-hidden','true');return true;
   }
+  // A browser refresh normally preserves history.state, while the HTML boots
+  // into Home. Recover only a known, authorized local page AFTER app login.
+  // Never restore a student, lesson, or private overlay using stored content.
+  const RELOAD_PAGES=new Set(['home','students','session','checkin','reports','settings','tasks','followup']);
   function resetHistoryRoot(){
-    const initial=appPage();
     const prior=(g.history.state&&typeof g.history.state==='object')?g.history.state:{};
+    const resume=(isOurState(prior)&&prior.kind===KIND_PAGE)?String(prior.page||''):'';
+    if(resume&&resume!=='home'&&RELOAD_PAGES.has(resume)&&
+      g.WeLiveQuranAuth?.isActive?.()===true&&g.document.getElementById('pg-'+resume)){
+      restorePage(resume);
+    }
+    const initial=appPage();
     g.history.replaceState({...prior,...state(KIND_GUARD,'home')},'',g.location.href);
     g.history.pushState(state(KIND_PAGE,'home'),'',g.location.href);
     if(initial&&initial!=='home')g.history.pushState(state(KIND_PAGE,initial),'',g.location.href);
@@ -127,24 +135,15 @@
         pushPage('home',{force:true});
         return;
       }
-      exitPromptAt=Date.now();
-      notify('اضغط رجوع مرة أخرى للخروج');
-      // Stay on the guard entry for a short window: a second physical Back now
-      // leaves naturally. If the user does not press Back again, re-arm Home.
-      setTimeout(()=>{
-        const s2=g.history.state;
-        if(isOurState(s2)&&s2.kind===KIND_GUARD&&appPage()==='home'&&Date.now()-exitPromptAt>=1750){
-          exitPromptAt=0;
-          pushPage('home',{force:true});
-        }
-      },1900);
+      // A second Back immediately after a reload used to leave the installed
+      // Android PWA. Keep Home armed synchronously; never rely on a timer.
+      notify('أنت في الرئيسية — أغلق التطبيق من النظام عند الانتهاء');
+      pushPage('home',{force:true});
       return;
     }
-    // Unknown/external history entry: keep the user at Home once before leaving.
-    if(appPage()!=='home'){
-      restorePage('home');
-      pushPage('home',{force:true});
-    }
+    // Unknown/external history entry: return to a safe Home state.
+    if(appPage()!=='home')restorePage('home');
+    pushPage('home',{force:true});
   }
   function install(){
     if(installed)return true;
