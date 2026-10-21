@@ -22,7 +22,7 @@ assert.match(guardian,/if\(!data\?\.ok\)throw/);assert.match(guardian,/if\(s!==t
 assert.match(html,/id="portalMessageCard" hidden/);assert.match(html,/id="portalMessageNav"[^>]+hidden/);
 assert.ok(!get('js/features/guardian-portal-share.js').includes('guardian_teacher_messages'));
 for(const x of ['./js/features/teacher-inbox.js?v=11.6.0-s1','./js/features/guardian-messages.js?v=11.6.0-s1','./guardian-messages.css?v=11.6.0-s1'])assert.ok(sw.includes(x),x);
-assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.12\.1-beta\.13-workspace-workflow'/);
+assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.12\.1-beta\.14-workspace-workflow'/);
 assert.match(get('js/core/runtime.js'),/schema:12/);
 assert.ok(!/navigator\.share|wa\.me/.test(teacher+guardian),'Native messaging must not touch WhatsApp behavior');
 console.log('PASS guardian-messages-stage1: tenant+PIN isolation, RLS, teacher inbox/reply, guarded forms, offline, SW and additive SQL');

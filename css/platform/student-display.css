@@ -1,3 +1,5 @@
+/* Student display: disable native vertical pull-to-refresh only. */
+html,body{overscroll-behavior-y:none}
 /* شاشة الطالب مستقلة تمامًا عن لوحة المحفظ وأدوات الإدارة. */
 .imam-student-display{min-height:100vh;background:radial-gradient(circle at 55% -28%,#e8f5ed,transparent 53%),#f7f9f5;color:#173f31;font-family:system-ui,Tahoma,Arial,sans-serif;direction:rtl}
 .imam-student-display #ib-display{min-height:100dvh;max-width:1500px;margin-inline:auto}

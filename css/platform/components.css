@@ -1,4 +1,7 @@
 /* Modern platform components: one owner for common elements across all app modules. */
+/* Chrome/Android standalone PWA: suppress browser pull-to-refresh without cancelling touch scrolling.
+   Applied on both root scrollers to cover html-scroll and body-scroll layouts. */
+html,body{overscroll-behavior-y:none}
 *,*::before,*::after{box-sizing:border-box}
 html{min-height:100%;font-size:var(--fs);scroll-behavior:smooth;direction:rtl}
 body{margin:0;min-height:100vh;padding-bottom:86px;color:var(--ui-ink);font-size:var(--fs);font-family:system-ui,"Segoe UI",Tahoma,Arial,sans-serif;line-height:1.6;overflow-x:hidden;background:radial-gradient(ellipse 72% 420px at 88% -170px,rgba(22,152,103,.095),transparent 78%),radial-gradient(ellipse 65% 390px at 5% 5%,rgba(194,146,66,.065),transparent 70%),var(--ui-canvas)}

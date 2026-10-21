@@ -1,6 +1,8 @@
 /* أكاديمية الإمام — واجهات الدخول وولي الأمر والضيف.
    مصدر واحد للهيكل العام، مع احترام محرك ألوان بوابة ولي الأمر القائم. */
 :root{--public-focus:#177451;--public-round:16px}
+/* Guard against native pull-to-refresh on standalone public/guardian pages. */
+html,body{overscroll-behavior-y:none}
 html{scroll-behavior:smooth}
 .portal-shell{width:min(1040px,100%);padding:clamp(12px,2vw,25px) clamp(12px,2vw,23px) 48px}
 .portal-header{border:1px solid var(--line);background:var(--card);padding:13px clamp(12px,2vw,19px);border-radius:18px;box-shadow:0 8px 28px rgba(13,70,45,.06);display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}

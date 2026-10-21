@@ -15,7 +15,7 @@ const v9=read('v9.js');
 const pkg=JSON.parse(read('package.json'));
 new vm.Script(feature,{filename:'guardian-portal-share.js'});
 new vm.Script(view,{filename:'guardian-portal-view.js'});
-assert(pkg.version==='11.12.1-beta.13','package version must be 10.10.0');
+assert(pkg.version==='11.12.1-beta.14','package version must be 10.10.0');
 assert(html.includes('guardian-portal-share.js?v=11.2.0-s2'),'guardian portal share feature missing from main app');
 assert(sw.includes("'./guardian-portal.html'")&&sw.includes("'./guardian-portal.css?v=11.2.0-s2'")&&sw.includes("'./js/features/guardian-portal-view.js?v=11.2.0-s2'"),'guardian portal assets missing from offline shell');
 assert(sw.includes("portalNav=url.pathname.endsWith('/guardian-portal.html')"),'guardian portal navigation fallback missing');
