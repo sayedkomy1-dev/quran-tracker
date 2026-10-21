@@ -2,7 +2,7 @@ const fs=require('fs');
 function assert(c,m){if(!c){console.error('FAIL:',m);process.exit(1);}}
 const v10=fs.readFileSync('v10.js','utf8');
 const v8=fs.readFileSync('v8.js','utf8');
-const css=fs.readFileSync('v10.css','utf8');
+const css=fs.readFileSync('archive/historical-css/v10.css','utf8');
 assert(v10.includes('assessmentScores:{}'),'teacher score state missing');
 assert(v10.includes('function setAssessmentScore(')&&v10.includes('function setReviewItemScore('),'teacher percentage entry handlers missing');
 assert(v10.includes('type="number" min="0" max="100"'),'0-100 numeric score input missing');

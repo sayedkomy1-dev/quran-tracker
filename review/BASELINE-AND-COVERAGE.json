@@ -1,0 +1,133 @@
+{
+  "version": "11.12.1-beta.12",
+  "based_on": "11.12.1-beta.11",
+  "classification": "development-preview-not-approved",
+  "old_metrics": {
+    "total_css_files": 32,
+    "css_important_total": 724,
+    "active_legacy_css_bytes": 202257,
+    "responsive_css_bytes": 6311,
+    "old_js_loaded": 3,
+    "page_count": 14
+  },
+  "new_metrics": {
+    "total_css_files": 32,
+    "css_important_total": 716,
+    "active_legacy_css_bytes": 202257,
+    "responsive_css_bytes": 6667,
+    "old_js_loaded": 3,
+    "page_count": 14
+  },
+  "new_files": 8,
+  "changed_files": 53,
+  "deleted_legacy_snapshot_files": 53,
+  "original_sql_files_unchanged": 15,
+  "screens": [
+    {
+      "page": "pg-home",
+      "buttons": 8,
+      "fields": 1,
+      "controls": 9,
+      "heading": "📊 تحليل مبسط"
+    },
+    {
+      "page": "pg-checkin",
+      "buttons": 1,
+      "fields": 0,
+      "controls": 1,
+      "heading": "📋 تسجيل حضور اليوم"
+    },
+    {
+      "page": "pg-circle-manager",
+      "buttons": 4,
+      "fields": 2,
+      "controls": 6,
+      "heading": "🏫 إدارة الحلقات"
+    },
+    {
+      "page": "pg-academic-exams",
+      "buttons": 4,
+      "fields": 2,
+      "controls": 6,
+      "heading": "🎓 الاختبارات والإجازات القرآنية"
+    },
+    {
+      "page": "pg-students",
+      "buttons": 2,
+      "fields": 3,
+      "controls": 5,
+      "heading": ""
+    },
+    {
+      "page": "pg-session",
+      "buttons": 52,
+      "fields": 19,
+      "controls": 71,
+      "heading": "👤 الطالب"
+    },
+    {
+      "page": "pg-mushaf",
+      "buttons": 0,
+      "fields": 0,
+      "controls": 0,
+      "heading": ""
+    },
+    {
+      "page": "pg-reports",
+      "buttons": 4,
+      "fields": 2,
+      "controls": 6,
+      "heading": "📊 التقرير الشهري للطالب"
+    },
+    {
+      "page": "pg-settings",
+      "buttons": 26,
+      "fields": 12,
+      "controls": 38,
+      "heading": "👤 بيانات المحفظ"
+    },
+    {
+      "page": "pg-tasks",
+      "buttons": 10,
+      "fields": 1,
+      "controls": 11,
+      "heading": "☑️ المهام والمتابعة"
+    },
+    {
+      "page": "pg-followup",
+      "buttons": 11,
+      "fields": 2,
+      "controls": 13,
+      "heading": "🎯 مركز متابعة الطلاب"
+    },
+    {
+      "page": "pg-analytics",
+      "buttons": 4,
+      "fields": 2,
+      "controls": 6,
+      "heading": "📊 تحليلات وتقارير الحلقة"
+    },
+    {
+      "page": "pg-profile",
+      "buttons": 5,
+      "fields": 1,
+      "controls": 6,
+      "heading": "📊 لوحة تقدم الطالب"
+    },
+    {
+      "page": "pg-compare",
+      "buttons": 0,
+      "fields": 0,
+      "controls": 0,
+      "heading": "🏅 مقارنة الطلاب"
+    }
+  ],
+  "screenshot_browser_status": "BLOCKED_BY_ADMINISTRATOR even data URL",
+  "known_not_done": [
+    "old JS v8/v9/v10 runtime refactor",
+    "old CSS legacy-features rule-by-rule consolidation",
+    "real role-based browser QA",
+    "live Android refresh testing",
+    "complete redesign of every injected module UI"
+  ]
+}

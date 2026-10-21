@@ -150,3 +150,84 @@ body:not(.ui-session-active) .ui-session-action-dock{display:none}
 
 #pg-settings .ui-important-settings{border-inline-start:5px solid var(--ui-primary);background:var(--ui-soft)}
 #pg-settings .ui-important-settings .ch{font-size:17px;color:var(--ui-primary)}
+
+/* === Unified application workspaces — canonical components, not edition overrides. ===
+   Screen ownership stays with each feature module; this contract only handles
+   legibility, rhythm, controls, overflow and hierarchy for every existing tab. */
+:root{
+ --ui-space-1:4px;--ui-space-2:8px;--ui-space-3:12px;--ui-space-4:16px;
+ --ui-space-5:20px;--ui-space-6:24px;--ui-space-8:32px;
+ --ui-control-height:44px;--ui-page-width:1280px;
+ --ui-border-strong:color-mix(in srgb,var(--ui-primary) 34%,var(--ui-line));
+}
+body{font-size:15px;line-height:1.75;background:var(--ui-canvas)}
+.pg.on{max-width:var(--ui-page-width);margin-inline:auto;scroll-margin-top:95px;overflow:visible}
+.pg.on>*{min-width:0}
+.pg :is(.card,.v9-section,.v10-card,.cm-panel,.aa-card,.analytics-card,.finance-card,.goal-card,.stc){
+ border-color:var(--ui-line);background-color:var(--ui-surface);color:var(--ui-ink);
+ box-shadow:0 5px 26px rgba(8,49,38,.045);
+}
+.pg .card{border-radius:16px;padding:clamp(13px,1.6vw,20px);margin-block-end:14px}
+.pg .card .ch{font-size:17px;line-height:1.5;font-weight:800;color:var(--ui-ink);margin-block-end:12px}
+.pg :is(.fld,.form-field){min-width:0;margin-block-end:12px}
+.pg :is(.fld>label,.form-field>label){display:block;color:var(--ui-ink);font-size:13px;font-weight:750;line-height:1.6;margin-block-end:6px}
+.pg :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){
+ border:1px solid var(--ui-border-strong);min-height:var(--ui-control-height);
+ background-color:var(--ui-surface);color:var(--ui-ink);border-radius:11px;
+ padding-block:8px;max-width:100%;font-size:clamp(14px,1vw,16px);
+}
+.pg textarea{line-height:1.8;resize:vertical}
+.pg :is(button,.btn,[role="button"]){scroll-margin-block:110px;touch-action:manipulation}
+.pg :is(.btn,.quick-action,.session-btn,.tab-btn){min-height:var(--ui-control-height);border-radius:11px;font-size:14px;font-weight:750}
+.pg .btn-g{background:var(--ui-primary);color:#fff;border-color:var(--ui-primary)}
+.pg :is(button,input,select,textarea,a):focus-visible{outline:3px solid color-mix(in srgb,var(--ui-primary) 45%,transparent);outline-offset:2px}
+.pg :is(.frow,.fb,.flex-row,.form-row){gap:10px;flex-wrap:wrap}
+.pg :is(.frow,.fb,.flex-row,.form-row)>*{min-width:0}
+.pg :is(.sg,.insight-grid,.goal-grid,.role-home-actions)>*{min-width:0}
+.pg :is(.sn,.stat-value,.metric-value){font-variant-numeric:tabular-nums}
+.pg :is(.sl,.stat-label,.metric-label){font-size:13px;color:var(--ui-muted);line-height:1.55}
+.pg :is(.badge,.chip,.tag){max-width:100%;overflow-wrap:anywhere}
+.pg :is(table,.comp-tbl,.finance-table){border-collapse:separate;border-spacing:0;width:100%}
+.pg :is(th,td){vertical-align:middle;line-height:1.65;padding:11px 12px}
+.pg :is(th){background:var(--ui-soft);color:var(--ui-primary);font-weight:800}
+.pg :is(tr):focus-within{background:color-mix(in srgb,var(--ui-soft) 52%,transparent)}
+.pg :is(.table-wrap,.table-scroll,.v10-table,.report-table-wrap,.finance-table,.comp-tbl){max-width:100%;overflow:auto;overscroll-behavior-inline:contain}
+.pg :is(.card,.table-wrap,.v10-card) :is(img,svg,canvas){max-width:100%}
+.pg :is(.sec-div,.section-heading){font-size:16px;line-height:1.65;color:var(--ui-primary);margin-block:13px}
+.pg :is(.empty,.empty-state,.no-results,.no-data){color:var(--ui-muted);line-height:1.8}
+.pg :is(.mo-box,.modal-content){max-width:min(680px,calc(100vw - 24px));max-height:min(88vh,760px);overflow:auto}
+.pg :is(.status-btns,.note-templates,.cm-tabs,.academic-exam-tabs,.pc-tabs){gap:8px;min-width:0}
+.pg :is(.status-btns,.note-templates,.cm-tabs,.academic-exam-tabs,.pc-tabs)>button{min-height:42px;min-width:0;white-space:normal}
+/* One compact contextual heading in each tab. Keep all original controls and IDs. */
+.ui-workspace-heading{padding:16px 20px;border:1px solid var(--ui-line);background:linear-gradient(105deg,var(--ui-surface),var(--ui-soft));border-radius:17px;margin-block:4px 15px;box-shadow:none}
+.ui-workspace-heading h1{font-size:clamp(20px,2vw,24px);line-height:1.4;color:var(--ui-primary-deep)}
+.ui-workspace-heading p{font-size:13px;color:var(--ui-muted);line-height:1.7}
+.ui-workspace-kicker{font-size:12px;color:var(--ui-muted)}
+.ui-session-section-nav{display:flex;align-items:center;gap:7px;max-width:100%;overflow-x:auto;padding:5px 0 10px;scrollbar-width:thin;overscroll-behavior-inline:contain}
+.ui-session-section-link{flex:none;min-height:40px;padding:8px 13px;border-radius:11px;font-size:13px;background:var(--ui-surface);color:var(--ui-ink);border:1px solid var(--ui-line)}
+.ui-session-section-link:hover{background:var(--ui-soft);border-color:var(--ui-primary)}
+/* The official session save buttons are only moved, never cloned. */
+.ui-session-action-dock{border:1px solid var(--ui-border-strong);box-shadow:0 10px 35px rgba(8,53,37,.16)}
+.ui-session-action-buttons .ui-save-primary{background:var(--ui-primary);color:#fff}
+.ui-session-action-state{font-size:13px;line-height:1.5}
+/* Common feature tab rhythm: students, attendance, session, reports, analytics, settings,
+   tasks, followup, compare, placements, circle and exams, Quran and teacher board. */
+#pg-students :is(.v9-student-card,.stc),#pg-checkin .ci-row,#pg-tasks .task-row,#pg-followup .followup-row{border-radius:13px;min-height:66px}
+#pg-reports :is(.report-filter,.report-summary),#pg-analytics :is(.analysis-filter,.insight-item),#pg-compare :is(.compare-controls,.card){min-width:0}
+#pg-settings :is(.card,.settings-group){max-width:100%}
+#pg-mushaf .quran-text,#pg-session .quran-text,#pg-session .quran-verse-content{line-height:2.3;letter-spacing:0}
+#pg-session .note-templates button{font-size:13px;min-height:44px}
+#pg-session #sesNotes{min-height:108px;font-size:16px}
+#pg-circle-manager .cm-header,#pg-academic-exams .ae-header{border-radius:16px;padding:14px 18px;background:var(--ui-soft);border:1px solid var(--ui-line)}
+#pg-circle-manager :is(.cm-tabs,.cm-toolbar),#pg-academic-exams :is(.ae-tabs,.ae-toolbar){max-width:100%;overflow-x:auto}
+/* Content modals and dynamic feature panels need safe scroll boundaries. */
+:is(.mo-box,.role-report-card,.imam-board-panel,.supervision-modal,.academy-analytics-panel){max-width:calc(100vw - 20px)}
+:is(.mo-box,.role-report-card,.imam-board-panel) :is(input,select,textarea){font-size:16px}
+/* Prevent floating application controls from obscuring focused form fields. */
+:where(.pg,.mo-box) :is(input,textarea,select,button,[tabindex]){scroll-margin-block-end:180px}
+:root[data-theme="dark"] .pg .btn-g{color:#082719;background:var(--ui-primary)}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.pg *, .pg *::before, .pg *::after{animation-duration:.01ms;transition-duration:.01ms}}
+/* Search in mobile More: querying only rendered, permission-scoped actions. */
+.imam-more-search{display:block;width:calc(100% - 24px);height:45px;margin:9px 12px;padding:8px 14px;border-radius:12px;background:var(--ui-surface);color:var(--ui-ink);border:1px solid var(--ui-border-strong);font-size:16px}
+.v9-more-grid .v9-more-item[hidden]{display:none!important}
+#pg-students .st-add-inline{position:static;display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-block:8px 12px}

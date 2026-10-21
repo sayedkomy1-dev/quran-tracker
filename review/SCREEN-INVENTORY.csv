@@ -1,0 +1,15 @@
+﻿page,buttons,fields,controls,heading
+pg-home,8,1,9,📊 تحليل مبسط
+pg-checkin,1,0,1,📋 تسجيل حضور اليوم
+pg-circle-manager,4,2,6,🏫 إدارة الحلقات
+pg-academic-exams,4,2,6,🎓 الاختبارات والإجازات القرآنية
+pg-students,2,3,5,
+pg-session,52,19,71,👤 الطالب
+pg-mushaf,0,0,0,
+pg-reports,4,2,6,📊 التقرير الشهري للطالب
+pg-settings,26,12,38,👤 بيانات المحفظ
+pg-tasks,10,1,11,☑️ المهام والمتابعة
+pg-followup,11,2,13,🎯 مركز متابعة الطلاب
+pg-analytics,4,2,6,📊 تحليلات وتقارير الحلقة
+pg-profile,5,1,6,📊 لوحة تقدم الطالب
+pg-compare,0,0,0,🏅 مقارنة الطلاب

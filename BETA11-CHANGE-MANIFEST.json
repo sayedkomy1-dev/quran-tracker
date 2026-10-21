@@ -1,0 +1,269 @@
+{
+  "release": "11.12.1-beta.11",
+  "base": "11.12.1-beta.10",
+  "status": "development-preview",
+  "files_added": 9,
+  "files_modified": 54,
+  "source_files_moved_from_root": [
+    "styles.css",
+    "v10.css",
+    "v11.css",
+    "v9.css"
+  ],
+  "sql_changed": [],
+  "notes": "Run safe PowerShell archive migration when using changed-only overlay",
+  "files": {
+    "archive/historical-css/styles.css": {
+      "status": "added",
+      "sha256": "ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e"
+    },
+    "archive/historical-css/v10.css": {
+      "status": "added",
+      "sha256": "e4d356ac5b94834eba94661c023afd6665a438edb64953aaf42240d2c09b78df"
+    },
+    "archive/historical-css/v11.css": {
+      "status": "added",
+      "sha256": "27d01ded6c327acd95c4efb1d4f84297345911c2236cd7d78bd512847396640b"
+    },
+    "archive/historical-css/v9.css": {
+      "status": "added",
+      "sha256": "eaa9d8827bd5898d605d3185a526f440e531ff9081ab07be6fd4001a712eedef"
+    },
+    "docs/BETA11-REFRESH-AND-LEGACY-MAINTENANCE.md": {
+      "status": "added",
+      "sha256": "2688d53b47a9493826e86b2000e32a56d4fa0852ef360fc001fc24bcc422df3c"
+    },
+    "docs/BETA11-TEST-GUIDE.md": {
+      "status": "added",
+      "sha256": "1ec8c7f961f0390d7b61a06909d0862380c04c463ffc2fe03aaded306ac1727f"
+    },
+    "scripts/archive-historical-css.ps1": {
+      "status": "added",
+      "sha256": "0c12b49c07832a418f2ec26e392a089f767b7a32c358a99235188467bf963efa"
+    },
+    "tests/mobile-refresh-safety-check.js": {
+      "status": "added",
+      "sha256": "8dc0165811591ee8b7ebf95a2d3cb4f3abfd9cd9306f9d439e8d7740e48a0ed2"
+    },
+    "tests/version-debt-beta11-check.js": {
+      "status": "added",
+      "sha256": "8ea7c77864605bf8c3cce5938ed6b8af90019e8aebd29c79fa83d6fc1c46079c"
+    },
+    "VERSION": {
+      "status": "modified",
+      "sha256": "752556e2502962f0aafa0c84b72cdbf52e9504c41d6fa647c5c6a967641b6d56"
+    },
+    "app.js": {
+      "status": "modified",
+      "sha256": "1eed47e3fa9373192ee8d25ab35c869b3a3e23e9c452d8a5c3384d020863d28a"
+    },
+    "css/platform/tokens.css": {
+      "status": "modified",
+      "sha256": "9676c637a2f05f7c86256dae612e67d5e6732d276a38ed646f031b45fc7ea131"
+    },
+    "guardian-login.html": {
+      "status": "modified",
+      "sha256": "0b415becbc662ac6ab1f965e23a95437e00e1dae8cabb60dedfa7ba9e014f243"
+    },
+    "guardian-portal.html": {
+      "status": "modified",
+      "sha256": "d5f7e993cb5d111d081e5c916fc7e1f0540064aeae0f85b931c054dbf5383d04"
+    },
+    "guest-practice.html": {
+      "status": "modified",
+      "sha256": "6a4320216d05b1426fe3986d6f7d14cfdab184b202419cd557c205e735785154"
+    },
+    "imam-board-display.html": {
+      "status": "modified",
+      "sha256": "b49680575665df6fc7db5d55fb66551633c2697572cc14ec952ba72ba61a9a40"
+    },
+    "index.html": {
+      "status": "modified",
+      "sha256": "897ab89392bb3f3debe3e84292b0f9139aa551b8d75b07c5127bfcb88b0a0d35"
+    },
+    "js/core/mobile-navigation.js": {
+      "status": "modified",
+      "sha256": "c75ba2bd9578a52755e58ea22687299960ff68da1ccd08760fbd1facdcaa279b"
+    },
+    "js/core/offline-bootstrap.js": {
+      "status": "modified",
+      "sha256": "ed5c8d31d866a138df970df394c19984a5966aeb8a86519e643cdc290dabbb53"
+    },
+    "js/core/runtime.js": {
+      "status": "modified",
+      "sha256": "ca4b5e532b10a6782e989a2eb708b46ec99c0db1b913e96ca98a9577713e766e"
+    },
+    "js/features/platform-workflow.js": {
+      "status": "modified",
+      "sha256": "4498d886ef967c2590d886e9e8d46459ab7756235be618f737c6f4d6220c5b51"
+    },
+    "js/features/role-home.js": {
+      "status": "modified",
+      "sha256": "a2244fc49debf63db5c70274c3bab14822a3648bc5a683fe7878033f08a4f680"
+    },
+    "js/features/supervisor-dashboard.js": {
+      "status": "modified",
+      "sha256": "eb1ec6ffb82ca78c2aa55e0035603e240faabacf6b3ffda6858bbfe8ceab49bc"
+    },
+    "manifest.json": {
+      "status": "modified",
+      "sha256": "872a97b2a26c8ede2b0b1467bf808f3977e5cf7a96cba75ea47f421ce65ece2a"
+    },
+    "package.json": {
+      "status": "modified",
+      "sha256": "ecd2f6f6e9d620854d0d42d295c9078d563ad1226cbd52ad8e07b12e69990b97"
+    },
+    "sw.js": {
+      "status": "modified",
+      "sha256": "700e2d06baa7219207522d75bf0409ab9ecf077c37cf99b9bacf3f200472fd4b"
+    },
+    "tests/academy-tenants-foundation-check.js": {
+      "status": "modified",
+      "sha256": "c7b9e0f969921f606d370c9c49e6e1ef3d1047ac2efea196c948bfc90db9157a"
+    },
+    "tests/advanced-analytics-stage1-check.js": {
+      "status": "modified",
+      "sha256": "a9d315475cce3ef3acfab24f6cfdbcf1fc8c88c3e1a8c083ab439916bebbc6aa"
+    },
+    "tests/automatic-roster-sync-check.js": {
+      "status": "modified",
+      "sha256": "77fab3cdaecb1d40d10b11b3ed2cb575c53fb456114b6a2201d539e0657e63eb"
+    },
+    "tests/circle-analytics-check.js": {
+      "status": "modified",
+      "sha256": "b4b3587ff3ced425fd439fc4dbc412c4dea3ee71fbde91b7545763120b135526"
+    },
+    "tests/followup-center-check.js": {
+      "status": "modified",
+      "sha256": "424e8d2f53b53dc38c5360f01581604bd370965c78ff2f43fd4990e2189d281b"
+    },
+    "tests/goal-planning-mobile-hotfix-check.js": {
+      "status": "modified",
+      "sha256": "3eb3408e24685d4d930028ddb8e988e0dc0e11bf3093d7429082dbbda18ebbf7"
+    },
+    "tests/grade-controls-check.js": {
+      "status": "modified",
+      "sha256": "375a760df62c342ee2dbd7cda1dbb27ff9885016701fc019c60a6e64c594612b"
+    },
+    "tests/guardian-communication-check.js": {
+      "status": "modified",
+      "sha256": "413f88ec828c3ffb5a62bd62306cd50e24081cf26a4c4c1d11e0be62c5aeb1a1"
+    },
+    "tests/guardian-engagement-stage4.1-check.js": {
+      "status": "modified",
+      "sha256": "0c779f115208dc9d1a4c39fd402cb81a39e105c7525f07766ef704d8d94a0ff0"
+    },
+    "tests/guardian-messages-stage1-check.js": {
+      "status": "modified",
+      "sha256": "58124605d4dd57a61346687a2651db337974edbe839e2a243aa18cae6bba1f7d"
+    },
+    "tests/guardian-portal-check.js": {
+      "status": "modified",
+      "sha256": "afd49b54e62bdda0e5458b8d92e51ad85839992698936c5c29f12801419519b1"
+    },
+    "tests/guardian-portal-live-check.js": {
+      "status": "modified",
+      "sha256": "b1eada91066d3a70d9ed63c7e071d488cf784ebc0f7312d0b334094b96faed6b"
+    },
+    "tests/guardian-score-check.js": {
+      "status": "modified",
+      "sha256": "3ba8fb32e64e6f7270d256a0d64b8b1c150eb86aeca04c878ee125ab5015859b"
+    },
+    "tests/guardian-tahfeez-check.js": {
+      "status": "modified",
+      "sha256": "7001a89ed5bc3a6c2ae71fda683c276fd90c93757b9bed5a0d9d62f4aa3efe59"
+    },
+    "tests/guest-role-update-batch-check.js": {
+      "status": "modified",
+      "sha256": "d92e5c087f5d5dd966a5be4f0368ccec3049d984e83451c453d9ecd070c0916a"
+    },
+    "tests/imam-board-beta6-corpus-check.js": {
+      "status": "modified",
+      "sha256": "1f2d969deb4c9cf1cee7c6ef4cfb8dbffdb9d752ccac24c631124efdc887b689"
+    },
+    "tests/imam-board-mobile-entry-check.js": {
+      "status": "modified",
+      "sha256": "3243e3a3f1a426547cc27f6a1334fa599c76c7d5930574f5c6a86e65497242c3"
+    },
+    "tests/imam-board-official-science-source-check.js": {
+      "status": "modified",
+      "sha256": "d3d95d556d948d3552574d32d9b07270bbf6b86e8c2f77aa3c9e7271cafe9688"
+    },
+    "tests/imam-smart-board-check.js": {
+      "status": "modified",
+      "sha256": "06c20e8004d70f5818b2d1c0aee2d360a91ba24ea6e9e63b61cbc140e0bd1e18"
+    },
+    "tests/mobile-home-beta10-check.js": {
+      "status": "modified",
+      "sha256": "431b15e3406c81a2db83ce8b0290166b34ead5e6e5ecee7d9a9c1161f239758a"
+    },
+    "tests/mobile-navigation-check.js": {
+      "status": "modified",
+      "sha256": "723baedd357a916e4bda1c22635e605f6df39350307a85dbc497436d0045e5a2"
+    },
+    "tests/mobile-navigation-runtime-check.js": {
+      "status": "modified",
+      "sha256": "7173e348fb81bb7884d3d5127d67a551a76a24f99094979627af8e2d95569690"
+    },
+    "tests/offline-reliability-check.js": {
+      "status": "modified",
+      "sha256": "4f5ee7a51f6f210671650447e4066ff8b48df4fc3d0d900afad84a5618e7d38e"
+    },
+    "tests/owner-upgrade-consistency-check.js": {
+      "status": "modified",
+      "sha256": "92187209c318c0bdc9c5c36db06ebda6a34fa1e8230f1818f37b54f1a02d30e4"
+    },
+    "tests/platform-design-system-check.js": {
+      "status": "modified",
+      "sha256": "1de50bb2a6b2c361624393ab36617b18fe847174e34682e85c73f4517f9ef756"
+    },
+    "tests/platform-visual-refresh-check.js": {
+      "status": "modified",
+      "sha256": "9c33f75648473d2cdb0215e7ee8b702f6b39b8ba4c08db44c236a9dc750e1ed4"
+    },
+    "tests/platform-workflow-beta9-check.js": {
+      "status": "modified",
+      "sha256": "eea21348b332f521358e04ff6d863d0ed023f6e62f16e4b51cdf7bbba3f44754"
+    },
+    "tests/role-home-tab-visibility-hotfix-check.js": {
+      "status": "modified",
+      "sha256": "d3ae3e32af74debc55acb4639a2d64fd88b6f4b357029b4d414b3a95fa7c856e"
+    },
+    "tests/role-ux-errors-batch-check.js": {
+      "status": "modified",
+      "sha256": "350d77f3f53de40bdd1da06337b2d215fabae3b6684cf464a3fb6f20185a993c"
+    },
+    "tests/session-intelligence-119-check.js": {
+      "status": "modified",
+      "sha256": "bc2e3bd44e41ea58531ceffd4f65430ac539e055ab25aafa6147533b1f1525d5"
+    },
+    "tests/static-check.js": {
+      "status": "modified",
+      "sha256": "a0b2eebe180704e1ed5d51cec21736a97cb05f55291165e38e7577cfb7416bad"
+    },
+    "tests/student-progress-check.js": {
+      "status": "modified",
+      "sha256": "116145fc74b3ec7f911306a751031f64a86616a7314f54dbd7323e078bb22447"
+    },
+    "tests/supervision-roster-permissions-stage2-check.js": {
+      "status": "modified",
+      "sha256": "68bbed3fa5d71bfcf0e48687837a00f1e33cdf05bcf8950711d02c6131975e85"
+    },
+    "tests/supervision-visible-entry-hotfix-check.js": {
+      "status": "modified",
+      "sha256": "83109f4409bce776805e992cc650529cbf12741a17d4d35d6cf2ed7559113537"
+    },
+    "tests/teacher-rating-supervision-stage1-check.js": {
+      "status": "modified",
+      "sha256": "4769ce96c5068db3ba5cd744b46a8da75a4a352bbd5aadef39dae3794cb1222a"
+    },
+    "tests/v11-premium-ui-check.js": {
+      "status": "modified",
+      "sha256": "87a62bae959e3a3ce60655a8881099d07d5b23a68bd7a9dd88867f69090dd7c1"
+    },
+    "tests/v11-premium-ui-stage2-check.js": {
+      "status": "modified",
+      "sha256": "e7f5a02c4fe68370471f0bdea28b7524366143d9d97b71d8edc04621fce1ace4"
+    }
+  }
+}

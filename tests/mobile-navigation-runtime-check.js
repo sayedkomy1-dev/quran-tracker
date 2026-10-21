@@ -39,6 +39,9 @@ ok(history.state.page==='students','modal Back must restore current page history
 history.back();
 ok(document.querySelector('.pg.on').id==='pg-home','second Back should restore previous page');
 history.back();
-ok(toasts.some(x=>String(x).includes('رجوع مرة أخرى')),'Home Back exit hint missing');
+ok(toasts.some(x=>String(x).includes('أنت في الرئيسية')),'safe Home hint missing');
+ok(history.state.kind==='page' && history.state.page==='home','Home guard must immediately re-arm itself');
+history.back();
+ok(!history.exited && history.state.kind==='page','repeated Back must never close the installed PWA');
 ok(document.querySelector('.pg.on').id==='pg-home','Home Back must keep Home visible');
 console.log('mobile-navigation-runtime-check: PASS');

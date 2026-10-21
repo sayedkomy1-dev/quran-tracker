@@ -58,8 +58,8 @@
     const nextMap={owner:['عرض التحليلات','academy-analytics'],supervisor:['فتح لوحة الإشراف','supervision'],teacher:['ابدأ حصة قرآنية','session']};
     primary.textContent=nextMap[role][0]+' ←';primary.addEventListener('click',()=>trigger(nextMap[role][1]));heroActions.append(primary);
     const board=g.document.createElement('button');board.type='button';board.className='role-hero-board';board.textContent='✎  افتح سبورة الإمام';board.title='فتح السبورة التفاعلية وفق صلاحيات حسابك';board.addEventListener('click',()=>{if(typeof g.ImamApp?.SmartBoard?.open==='function')g.ImamApp.SmartBoard.open();else g.toast?.('تعذر فتح السبورة الآن. يرجى إعادة تحميل التطبيق.','error');});heroActions.append(board);
-    const next=g.document.createElement('span');next.className='role-hero-caption';next.textContent='أدواتك التعليمية والإدارية في مساحة واحدة';heroActions.append(next);box.append(heroActions);
-    const label=g.document.createElement('div');label.className='role-actions-heading';const labelTitle=g.document.createElement('h3');labelTitle.textContent='اختصارات مساحة العمل';const labelCaption=g.document.createElement('span');labelCaption.textContent='اختر القسم للانتقال مباشرة';label.append(labelTitle,labelCaption);box.append(label);
+    const next=g.document.createElement('span');next.className='role-hero-caption';next.textContent='ابدأ مباشرة أو اختر قسمك أدناه';heroActions.append(next);box.append(heroActions);
+    const label=g.document.createElement('div');label.className='role-actions-heading';const labelTitle=g.document.createElement('h3');labelTitle.textContent='اختصارات مساحة العمل';const labelCaption=g.document.createElement('span');labelCaption.textContent='جميع الأدوات حسب صلاحية حسابك';label.append(labelTitle,labelCaption);box.append(label);
     const grid=g.document.createElement('div');grid.className='role-home-actions';
     for(const [index,[icon,label,detail,code]] of actions[role].entries()){
       const btn=g.document.createElement('button');btn.type='button';btn.className='role-home-action'+(index===0?' role-action-featured':'');btn.dataset.destination=code;
@@ -74,6 +74,9 @@
       const hint=g.document.createElement('p');hint.className='role-home-footnote';hint.textContent='للحصص والطلاب والمراجعة: اختر المهمة من هنا. بقية الأدوات موجودة في القائمة الجانبية.';box.append(hint);
     }
     const supervisorCard=$('supervisorShortcut');
+    // The legacy shortcut is redundant with the role hub: hide it at DOM level,
+    // not merely via CSS (the supervision module may inject it later).
+    if(supervisorCard){supervisorCard.hidden=true;supervisorCard.setAttribute('aria-hidden','true');supervisorCard.tabIndex=-1;}
     if(supervisorCard&&supervisorCard.parentElement===home)supervisorCard.insertAdjacentElement('afterend',box);
     else home.prepend(box);
   }

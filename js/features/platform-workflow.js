@@ -13,11 +13,16 @@
   followup:['مركز المتابعة','مواضع التثبيت والتكليفات التي تحتاج متابعة.'],
   compare:['مقارنة التقدم','قارن البيانات الحقيقية ضمن حدود حسابك.'],
   mushaf:['المصحف الشريف','قراءة القرآن الكريم بالخط والمصدر الأصلي.'],
-  profile:['ملف الطالب','السجل التعليمي والتكليفات والمراجعات.']
+  profile:['ملف الطالب','السجل التعليمي والتكليفات والمراجعات.'],
+  'circle-manager':['إدارة الحلقات','المجموعة والحضور والجداول والتسميع الجماعي.'],
+  'academic-exams':['الاختبارات والإجازات','إدارة الاختبارات والإجازات من خلال صلاحياتك الحالية.'],
+  analytics:['التحليلات','المؤشرات والتغيرات التي تساعد على تحسين المتابعة.']
  };
  const find=id=>d.getElementById(id);
  function heading(page,key){
   if(page.querySelector(':scope > .ui-workspace-heading'))return;
+  // Specialist screens already render a semantic heading; do not duplicate it.
+  if(page.querySelector(':scope > .cm-header, :scope > .ae-header, :scope > .analytics-header'))return;
   const [title,description]=pages[key]||[page.querySelector('.ch,h2')?.textContent?.trim()||'مساحة العمل','أدوات القسم وبياناته حسب صلاحيات حسابك.'];
   const head=d.createElement('header');head.className='ui-workspace-heading';head.dir='rtl';
   const group=d.createElement('div');group.className='ui-workspace-heading-copy';
@@ -90,7 +95,7 @@
    d.querySelectorAll('.pg[id]').forEach(el=>observer.observe(el,{attributes:true,attributeFilter:['class']}));
    g.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
   }
-  g.ImamApp=g.ImamApp||{};g.ImamApp.PlatformWorkflow=Object.freeze({version:'11.12.1-beta.10',refresh:pageState});
+  g.ImamApp=g.ImamApp||{};g.ImamApp.PlatformWorkflow=Object.freeze({version:'11.12.1-beta.12',refresh:pageState});
  }
  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(globalThis);
