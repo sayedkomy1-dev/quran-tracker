@@ -2,7 +2,7 @@ const fs=require('fs');
 function assert(c,m){if(!c){console.error('FAIL:',m);process.exit(1);}}
 const js=fs.readFileSync('js/features/guardian-communication.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
-const css=fs.readFileSync('archive/historical-css/styles.css','utf8');
+const css=fs.readFileSync('styles.css','utf8');
 assert(js.includes("mode:'session'")&&js.includes("mode==='absence'")&&js.includes("mode==='assignment'")&&html.includes('data-guardian-mode="custom"'),'four guardian message modes missing');
 assert(js.includes("setBroadcastRecipients('absent')")||html.includes("setBroadcastRecipients('absent')"),'absent-today recipient scope missing');
 assert(html.includes('id="guardianGroup"')&&js.includes("mode==='group'"),'group recipient scope missing');

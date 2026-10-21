@@ -1,4 +1,4 @@
-// WLQ_RELEASE_11.12.1-beta.14 — Register update scripts without stale HTTP caching.
+// WLQ_RELEASE_11.12.1-beta.6 — Register update scripts without stale HTTP caching.
 'use strict';
 /* We Live Quran v10.10.0 — Stage 5 offline bootstrap.
    Registers the service worker before authentication/network libraries so a

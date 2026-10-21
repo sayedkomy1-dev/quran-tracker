@@ -6,7 +6,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 function assert(ok,msg){if(!ok)throw new Error(msg);}
 const feature=read('js/features/student-progress.js');
 const html=read('index.html');
-const css=read('archive/historical-css/v10.css');
+const css=read('v10.css');
 const sw=read('sw.js');
 new vm.Script(feature,{filename:'student-progress.js'});
 assert(html.includes('id="profProgress"'),'profile progress card missing');

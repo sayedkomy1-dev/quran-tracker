@@ -5,9 +5,9 @@
   let lastRole='',checking=false;
   // Each workspace owns its actions; shared shortcuts in the old home are hidden visually, not deleted.
   const actions={
-    owner:[['🛡️','لوحة الإشراف','متابعة التفويض والتقييمات','supervision'],['📊','تحليلات الأكاديمية','المحفظون والمجموعات والطلاب','academy-analytics'],['🌍','الأكاديميات','مساحات العمل والعضويات','academy'],['👥','طلابي المحليون','الملفات المسجلة على هذا الجهاز','students'],['🎓','الاختبارات والإجازات','اختبارات الطلاب والإجازات والتواصل','academic-exams'],['🏫','إدارة الحلقات','التسميع الجماعي والحضور والجداول','circle-manager'],['📊','التقارير','تقارير العمل المحلي','reports'],['💬','صندوق الرسائل','رسائل أولياء الأمور','inbox'],['⚙️','الإعدادات','المظهر والحماية والمزامنة','settings'],['📿','ضيوف التحفيظ','إحصاءات الحسابات المرتبطة','guests']],
+    owner:[['🌍','الأكاديميات','مساحات العمل والعضويات','academy'],['👥','طلابي المحليون','الملفات المسجلة على هذا الجهاز','students'],['🎓','الاختبارات والإجازات','اختبارات الطلاب والإجازات والتواصل','academic-exams'],['🏫','إدارة الحلقات','التسميع الجماعي والحضور والجداول','circle-manager'],['📊','تحليلات الأكاديمية','المحفظون والمجموعات والطلاب','academy-analytics'],['📊','التقارير','تقارير العمل المحلي','reports'],['💬','صندوق الرسائل','رسائل أولياء الأمور','inbox'],['⚙️','الإعدادات','المظهر والحماية والمزامنة','settings'],['📿','ضيوف التحفيظ','إحصاءات الحسابات المرتبطة','guests']],
     supervisor:[['📊','تحليلات نطاق الإشراف','المحفظون المصرح لك بمتابعتهم','academy-analytics'],['🎓','الاختبارات والإجازات','اختبارات الطلاب والإجازات والتواصل','academic-exams'],['🏫','إدارة الحلقات','الحضور والجداول والتسميع','circle-manager'],['⚙️','إعدادات الحساب','المظهر وتفضيلات العمل','settings'],['📗','المصحف','القراءة والتنزيل','mushaf'],['📊','تقارير حلقتي','تقاريرك التعليمية المحلية','reports']],
-    teacher:[['📖','ابدأ حصة','التسميع والتكليف','session'],['🎓','الاختبارات والإجازات','اختبارات الطلاب والإجازات والتواصل','academic-exams'],['🏫','إدارة الحلقات','التسميع الجماعي والحضور والانضباط','circle-manager'],['✅','الحضور','تسجيل حضور طلاب الحلقة','checkin'],['👥','طلابي','الملفات والتقدم','students'],['🧠','مراجعة اليوم','الأخطاء والمراجعة الذكية','followup'],['💬','رسائل الأهالي','الوارد والردود','inbox'],['📊','التقارير','التقدم والحضور','reports'],['➕','طالب جديد','إضافة طالب للحلقة','add-student'],['📗','المصحف','القراءة والتنزيل','mushaf']]
+    teacher:[['🎓','الاختبارات والإجازات','اختبارات الطلاب والإجازات والتواصل','academic-exams'],['🏫','إدارة الحلقات','التسميع الجماعي والحضور والانضباط','circle-manager'],['📖','ابدأ حصة','التسميع والتكليف','session'],['✅','الحضور','تسجيل حضور طلاب الحلقة','checkin'],['👥','طلابي','الملفات والتقدم','students'],['🧠','مراجعة اليوم','الأخطاء والمراجعة الذكية','followup'],['💬','رسائل الأهالي','الوارد والردود','inbox'],['📊','التقارير','التقدم والحضور','reports'],['➕','طالب جديد','إضافة طالب للحلقة','add-student'],['📗','المصحف','القراءة والتنزيل','mushaf']]
   };
   let authorizedRole='teacher', workspaceChoice='';
   function switchRole(target){
@@ -39,11 +39,11 @@
     let box=$('roleHomeHub');if(!box){box=g.document.createElement('section');box.id='roleHomeHub';box.className='role-home-hub';box.dir='rtl';home.prepend(box);}
     lastRole=role;
     home.dataset.workspaceRole=role;
-    const title={owner:'لوحة قيادة الأكاديمية',supervisor:'لوحة الإشراف',teacher:'مساحة المحفظ'}[role];
+    const title={owner:'الرئيسية — المالك',supervisor:'الرئيسية — المشرف',teacher:'مساحة المحفظ'}[role];
     const desc={owner:'إدارة الأكاديمية والصلاحيات من مكان واحد',supervisor:'متابعة نطاقك المصرح به فقط',teacher:'أهم أعمال الحلقة بضغطة واحدة'}[role];
     box.replaceChildren();
     const head=g.document.createElement('div');head.className='role-home-head';
-    const intro=g.document.createElement('div');intro.className='role-hero-copy';const eyebrow=g.document.createElement('span');eyebrow.className='role-hero-eyebrow';eyebrow.textContent='أكاديمية الإمام / مساحة العمل';const h=g.document.createElement('h2');h.textContent=title;const s=g.document.createElement('small');s.textContent=desc;intro.append(eyebrow,h,s);
+    const intro=g.document.createElement('div');const h=g.document.createElement('h2');h.textContent=title;const s=g.document.createElement('small');s.textContent=desc;intro.append(h,s);
     const tools=g.document.createElement('div');tools.className='role-home-tools';
     const tag=g.document.createElement('span');tag.className='role-home-tag';tag.textContent={owner:'المالك',supervisor:'مشرف',teacher:'محفظ'}[role];tools.append(tag);
     if(authorizedRole!=='teacher'){
@@ -53,16 +53,9 @@
     }
     const help=g.document.createElement('button');help.type='button';help.className='role-help-toggle';help.textContent='؟ دليل الأزرار';help.title='شرح اختصارات هذه الصفحة';help.addEventListener('click',()=>g.ImamUXGuide?.open?.(role));tools.append(help);
     head.append(intro,tools);box.append(head);
-    const heroActions=g.document.createElement('div');heroActions.className='role-hero-actions';
-    const primary=g.document.createElement('button');primary.type='button';primary.className='role-hero-next';
-    const nextMap={owner:['عرض التحليلات','academy-analytics'],supervisor:['فتح لوحة الإشراف','supervision'],teacher:['ابدأ حصة قرآنية','session']};
-    primary.textContent=nextMap[role][0]+' ←';primary.addEventListener('click',()=>trigger(nextMap[role][1]));heroActions.append(primary);
-    const board=g.document.createElement('button');board.type='button';board.className='role-hero-board';board.textContent='✎  افتح سبورة الإمام';board.title='فتح السبورة التفاعلية وفق صلاحيات حسابك';board.addEventListener('click',()=>{if(typeof g.ImamApp?.SmartBoard?.open==='function')g.ImamApp.SmartBoard.open();else g.toast?.('تعذر فتح السبورة الآن. يرجى إعادة تحميل التطبيق.','error');});heroActions.append(board);
-    const next=g.document.createElement('span');next.className='role-hero-caption';next.textContent='ابدأ مباشرة أو اختر قسمك أدناه';heroActions.append(next);box.append(heroActions);
-    const label=g.document.createElement('div');label.className='role-actions-heading';const labelTitle=g.document.createElement('h3');labelTitle.textContent='اختصارات مساحة العمل';const labelCaption=g.document.createElement('span');labelCaption.textContent='جميع الأدوات حسب صلاحية حسابك';label.append(labelTitle,labelCaption);box.append(label);
     const grid=g.document.createElement('div');grid.className='role-home-actions';
-    for(const [index,[icon,label,detail,code]] of actions[role].entries()){
-      const btn=g.document.createElement('button');btn.type='button';btn.className='role-home-action'+(index===0?' role-action-featured':'');btn.dataset.destination=code;
+    for(const [icon,label,detail,code] of actions[role]){
+      const btn=g.document.createElement('button');btn.type='button';btn.className='role-home-action';
       const mark=g.document.createElement('span');mark.className='role-icon';mark.textContent=icon;
       const text=g.document.createElement('span');const b=g.document.createElement('b');b.textContent=label;const small=g.document.createElement('small');small.textContent=detail;text.append(b,small);btn.append(mark,text);
       btn.title=detail;btn.setAttribute('aria-label',`${label}: ${detail}`);btn.dataset.helpText=detail;
@@ -74,9 +67,6 @@
       const hint=g.document.createElement('p');hint.className='role-home-footnote';hint.textContent='للحصص والطلاب والمراجعة: اختر المهمة من هنا. بقية الأدوات موجودة في القائمة الجانبية.';box.append(hint);
     }
     const supervisorCard=$('supervisorShortcut');
-    // The legacy shortcut is redundant with the role hub: hide it at DOM level,
-    // not merely via CSS (the supervision module may inject it later).
-    if(supervisorCard){supervisorCard.hidden=true;supervisorCard.setAttribute('aria-hidden','true');supervisorCard.tabIndex=-1;}
     if(supervisorCard&&supervisorCard.parentElement===home)supervisorCard.insertAdjacentElement('afterend',box);
     else home.prepend(box);
   }

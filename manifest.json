@@ -11,8 +11,8 @@
     "standalone",
     "minimal-ui"
   ],
-  "background_color": "#F5F8F5",
-  "theme_color": "#126044",
+  "background_color": "#F7F4EC",
+  "theme_color": "#145A3A",
   "orientation": "any",
   "lang": "ar",
   "dir": "rtl",
@@ -102,5 +102,5 @@
       ]
     }
   ],
-  "version": "11.12.1-beta.14"
+  "version": "11.12.1-beta.6"
 }

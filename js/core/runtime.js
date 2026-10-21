@@ -4,7 +4,7 @@
    "last function declaration wins" behavior for newly-refactored layers. */
 (function initImamRuntime(g){
   const root=g.ImamApp||(g.ImamApp={});
-  root.meta=Object.freeze({version:'11.12.1-beta.14',schema:12});
+  root.meta=Object.freeze({version:'11.12.1-beta.6',schema:12});
   const registry=new Map();
   const history=[];
   root.Legacy={

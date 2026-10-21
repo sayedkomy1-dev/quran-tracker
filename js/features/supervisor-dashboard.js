@@ -187,11 +187,6 @@
       button.addEventListener('click',open);
     }
     if(home.firstElementChild!==button)home.insertBefore(button,home.firstChild);
-    // Whichever feature loads last, do not render two supervision launchers.
-    const hasCanonicalHub=Boolean($('roleHomeHub'));
-    button.hidden=hasCanonicalHub;
-    button.setAttribute('aria-hidden',hasCanonicalHub?'true':'false');
-    button.tabIndex=hasCanonicalHub?-1:0;
     const hint=$('supervisorAccessHint');if(hint)hint.textContent=accessHint;
   }
   function clearPrivateView(){requestSeq++;const rows=$('supervisorRows'),detail=$('supervisorDetail');if(rows)rows.replaceChildren();if(detail){detail.hidden=true;detail.replaceChildren();}if($('supervisorOverview'))$('supervisorOverview').replaceChildren();teachers=[];}

@@ -9,7 +9,7 @@ assert.match(sw,/\.\/js\/features\/supervisor-dashboard\.js\?v=11\.12\.1/);
 assert.match(auth,/ImamApp\?\.Supervision\?\.initialize/);
 
 const css=fs.readFileSync('teacher-rating.css','utf8');
-const olderCss=fs.readFileSync('archive/historical-css/v9.css','utf8');
+const olderCss=fs.readFileSync('v9.css','utf8');
 assert.match(olderCss,/#pg-home\.v9-home-ready > :not\(#v9Home\)\{display:none!important\}/, 'Document the hidden legacy home rule');
 assert.match(css,/#pg-home\.v9-home-ready > #supervisorShortcut\.supervision-home-entry\s*\{\s*display:flex!important;/, 'Explicit Premium home exemption required');
 

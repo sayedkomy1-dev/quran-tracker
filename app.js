@@ -1,4 +1,4 @@
-// WLQ_RELEASE_11.12.1-beta.14 — Account-independent app version and safe upgrade hotfix.
+// WLQ_RELEASE_11.12.1-beta.6 — Account-independent app version and safe upgrade hotfix.
 
 'use strict';
 
@@ -2467,22 +2467,13 @@ async function registerSW(){
     // Reuse that registration here so the existing update UX stays intact.
     const reg=await (globalThis.WLQOfflineBootstrap?.ready||navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}));
     if(!reg)return;
-    if(reg.waiting){waitingSW=reg.waiting;globalThis.ImamBootHealth?.log('sw-update-waiting');document.getElementById('update-banner')?.classList.add('show');}
+    if(reg.waiting){waitingSW=reg.waiting;document.getElementById('update-banner')?.classList.add('show');}
     reg.addEventListener('updatefound',()=>{
       const worker=reg.installing;if(!worker)return;
-      worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller){waitingSW=worker;globalThis.ImamBootHealth?.log('sw-update-waiting');document.getElementById('update-banner')?.classList.add('show');}});
+      worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller){waitingSW=worker;document.getElementById('update-banner')?.classList.add('show');}});
     });
-    let lastUpdateCheck=Date.now();
     reg.update().catch(()=>{});
-    // Returning from a meeting or another app must not trigger repeated worker
-    // installs. Still check periodically while online, with opt-in activation.
-    document.addEventListener('visibilitychange',()=>{
-      if(document.visibilityState!=='visible'||!navigator.onLine)return;
-      if(Date.now()-lastUpdateCheck<60*60*1000)return;
-      lastUpdateCheck=Date.now();
-      globalThis.ImamBootHealth?.log('sw-update-check');
-      reg.update().catch(()=>{});
-    });
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')reg.update().catch(()=>{});});
   }catch(e){console.warn('Service worker registration failed',e);}
 }
 let userApprovedSWUpdate=false;
@@ -2490,7 +2481,6 @@ function applyUpdate(){
   const reg=waitingSW;
   if(!reg){navigator.serviceWorker?.getRegistration?.().then(r=>{if(r?.waiting){waitingSW=r.waiting;applyUpdate();}});return;}
   userApprovedSWUpdate=true;
-  globalThis.ImamBootHealth?.log('sw-update-requested');
   document.getElementById('update-banner')?.classList.add('updating');
   reg.postMessage('SKIP_WAITING');
 }
@@ -2499,9 +2489,7 @@ function dismissUpdate(){document.getElementById('update-banner')?.classList.add
 let reloadingForSW=false;
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('controllerchange',()=>{
   if(!userApprovedSWUpdate||reloadingForSW)return;
-  reloadingForSW=true;
-  globalThis.ImamBootHealth?.log('sw-reload-approved');
-  location.reload();
+  reloadingForSW=true;location.reload();
 });
 
 // ══════════════════════════════════════
@@ -2539,7 +2527,7 @@ async function wlqStartApp(){
   // previously trusted devices may continue locally while offline.
   if(globalThis.WeLiveQuranAuth){
     const allowed=await globalThis.WeLiveQuranAuth.beforeAppInit();
-    if(!allowed){globalThis.ImamBootHealth?.log('auth-paused');return;}
+    if(!allowed)return;
   }
 
   // 1. Load data (IndexedDB + localStorage fallback)
@@ -2580,7 +2568,6 @@ async function wlqStartApp(){
   if(typeof initQuranEngine==='function') await initQuranEngine();
   if(globalThis.WeLiveQuranAuth?.afterAppInit) await globalThis.WeLiveQuranAuth.afterAppInit();
   showAccountMigrationNotice();
-  globalThis.ImamBootHealth?.log('app-ready');
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>wlqStartApp().catch(err=>{console.error('[boot] failed',err);document.getElementById('splash')?.classList.add('hide');}),{once:true});
 else setTimeout(()=>wlqStartApp().catch(err=>{console.error('[boot] failed',err);document.getElementById('splash')?.classList.add('hide');}),0);
@@ -3121,19 +3108,6 @@ async function renderPlatformStatus(){
   let storage='غير متاح',persist='غير معروف';
   try{if(navigator.storage?.estimate){const e=await navigator.storage.estimate();const used=(e.usage||0)/1048576,quota=(e.quota||0)/1048576;storage=`${used.toFixed(1)} MB / ${quota>=1024?(quota/1024).toFixed(1)+' GB':quota.toFixed(0)+' MB'}`;}if(navigator.storage?.persisted)persist=(await navigator.storage.persisted())?'محمي':'قابل للتنظيف';}catch(_){}
   el.innerHTML=`<div><span>النظام</span><b>${esc(platform)}</b></div><div><span>وضع التشغيل</span><b>${standalone?'تطبيق مثبت':'داخل المتصفح'}</b></div><div><span>الاتصال</span><b>${navigator.onLine?'متصل':'بدون إنترنت'}</b></div><div><span>التخزين</span><b>${esc(storage)}</b></div><div><span>حماية التخزين</span><b>${esc(persist)}</b></div><div><span>الإصدار</span><b>${APP_VERSION}</b></div>`;
-}
-function showRestartDiagnostics(){
-  const panel=document.getElementById('pwaRestartDiagnostics');
-  if(!panel)return;
-  const info=globalThis.ImamBootHealth?.summary?.()||'التشخيص غير متاح بعد';
-  panel.textContent=info;
-  panel.hidden=false;
-}
-async function copyRestartDiagnostics(){
-  const text=globalThis.ImamBootHealth?.summary?.();
-  if(!text)return toast('التشخيص غير متاح','info');
-  try{await navigator.clipboard.writeText(text);toast('تم نسخ سجل التشغيل دون بيانات طلاب','success');}
-  catch(_){showRestartDiagnostics();toast('انسخ السجل الظاهر يدويًا','info');}
 }
 async function requestPersistentStorage(){
   if(!navigator.storage?.persist){toast('هذا المتصفح لا يدعم طلب حماية التخزين','info');return;}
