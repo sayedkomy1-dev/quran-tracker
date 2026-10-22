@@ -5,14 +5,14 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const read=p=>fs.readFileSync(p,'utf8');
 const html=read('index.html'),v9=read('v9.js'),css=read('css/platform/responsive.css');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.22');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.23');
 for(const id of ['saveSessionBtn','saveSendSessionBtn','teacherAssignmentAudioBtn','teacherAssignmentAudioReciter','sessionJourneyCard','ia22FollowupDisclosure']){
  assert.equal((html.match(new RegExp(`id="${id}"`,'g'))||[]).length,1,`${id} duplicated`);
 }
 assert(html.includes('<details id="ia22FollowupDisclosure"')&&!html.includes('<details id="ia22FollowupDisclosure" open'),'followup collapsed by default');
 assert(html.includes('id="v1059StopToggle"')&&html.includes('id="v1059ReviewToggle"'),'existing follow-up tools retained');
 assert(css.includes('#pg-session[data-ia-session-step]:not([data-ia-session-step="assessment"]) #sessionJourneyCard{display:none!important}'),'followup only in recitation');
-assert(css.includes('body.ui-session-keyboard #pg-session #v9SessionFooter{display:none!important}'),'must not obscure keyboard');
+assert(css.includes('#pg-session #v9SessionFooter{position:relative'),'actions must no longer obscure lesson');
 assert(css.includes('grid-template-columns:repeat(3,minmax(0,1fr))'),'three touch actions accessible together');
 assert(v9.includes("main.appendChild(audioBtn)")&&v9.includes("main.appendChild(saveBtn)")&&v9.includes("main.appendChild(sendBtn)"),'one copy of the real handlers');
 assert(v9.includes("observer.observe(main,{childList:true})"),'secondary PDF report should not clutter dock');
@@ -23,11 +23,11 @@ function test(mobile){
  const doc={querySelectorAll:()=>[],getElementById:id=>id==='repeatBar'?rec:id==='v9SessionFooter'?footer:null};
  const ctx={document:doc,window:{matchMedia:()=>({matches:mobile})},settings:{v9:{mode:'guided'}},V9:{step:'assessment'}};
  vm.runInNewContext(fn+'\nthis.check=applySessionStepVisibility;',ctx);
- ctx.check();assert.equal(footer.hidden,!mobile,'assessment actions persist on mobile only');assert.equal(rec.hidden,false);
- ctx.V9.step='new';ctx.check();assert.equal(footer.hidden,!mobile,`new tab ${mobile?'mobile':'desktop'}`);assert.equal(rec.hidden,true);
- ctx.V9.step='review';ctx.check();assert.equal(footer.hidden,!mobile);
+ ctx.check();assert.equal(footer.hidden,true,'assessment actions must not show on any device');assert.equal(rec.hidden,false);
+ ctx.V9.step='new';ctx.check();assert.equal(footer.hidden,true,'new tab never shows notes actions');assert.equal(rec.hidden,true);
+ ctx.V9.step='review';ctx.check();assert.equal(footer.hidden,true);
  ctx.V9.step='notes';ctx.check();assert.equal(footer.hidden,false);
 }
 test(true);test(false);
-for(const name of ['index.html','sw.js','manifest.json'])assert(read(name).includes('11.12.1-beta.22'),`${name}: release marker missing`);
-console.log('beta22-session-access-check: PASS — single action trio, phone shortcuts, followup recitation-only and closed, original data handlers');
+for(const name of ['index.html','sw.js','manifest.json'])assert(read(name).includes('11.12.1-beta.23'),`${name}: release marker missing`);
+console.log('beta22-session-access-check: PASS — one original action trio, notes-only, followup recitation-only and closed');

@@ -95,22 +95,23 @@
  #pg-session .im119-card .im119-top strong{font-size:20px}
 
 
- /* Native footer is pinned above bottom navigation, not a second save panel. */
- #pg-session #v9SessionFooter{position:fixed;left:8px;right:8px;bottom:calc(81px + env(safe-area-inset-bottom));z-index:590;max-width:none;max-height:170px;margin:0;padding:6px 8px 8px;background:var(--ui-surface,var(--wh));box-shadow:0 3px 18px rgba(0,35,25,.18);border:1px solid var(--ui-line,var(--bdr));border-radius:15px;overflow:visible}
+ /* Beta23: restore the original action group IN FLOW and ONLY on notes.
+    It must never overlay the recitation/new/revision tabs or the mobile nav. */
+ #pg-session #v9SessionFooter{position:relative;left:auto;right:auto;bottom:auto;z-index:auto;max-width:100%;max-height:none;margin:7px 0 10px;padding:12px;background:var(--ui-surface,var(--wh));box-shadow:none;border:1px solid var(--ui-line,var(--bdr));border-radius:15px;overflow:visible}
  #pg-session #v9SessionFooter .v9-action-head{display:none}
- #pg-session #v9SessionFooter .v9-action-stack{display:grid!important;grid-template-columns:1fr 1fr;column-gap:8px;row-gap:2px}
- #pg-session #v9SessionFooter .assignment-audio-details{grid-column:2;grid-row:1;margin:0;padding:0 4px;border:0;background:transparent;position:relative}
- #pg-session #v9SessionFooter .assignment-audio-details>summary{min-height:26px;padding:1px 5px;font-size:11px;color:var(--ui-muted,var(--mut));display:list-item}
- #pg-session #v9SessionFooter .assignment-audio-details[open] .assignment-audio-share{position:absolute;bottom:calc(100% + 6px);right:0;left:0;border:1px solid var(--ui-line,var(--bdr));background:var(--ui-surface,var(--wh));border-radius:12px;box-shadow:0 6px 22px rgba(0,36,23,.18);padding:10px;display:block}
+ #pg-session #v9SessionFooter .v9-action-stack{display:flex!important;flex-direction:column;gap:9px}
+ #pg-session #v9SessionFooter .assignment-audio-details{margin:0;padding:8px 11px;border:1px solid var(--ui-line,var(--bdr));background:transparent;position:static}
+ #pg-session #v9SessionFooter .assignment-audio-details>summary{min-height:36px;padding:5px;font-size:13px;color:var(--ui-muted,var(--mut));display:list-item}
+ #pg-session #v9SessionFooter .assignment-audio-details[open] .assignment-audio-share{position:static;border:0;box-shadow:none;padding:10px 0 0;display:flex;gap:8px;flex-wrap:wrap}
  #pg-session #v9SessionFooter .assignment-audio-details .assignment-audio-share select{width:100%;font-size:16px;min-height:44px}
- #pg-session #v9SessionFooter .v9-send-details{display:block;grid-column:1;grid-row:1;position:relative;padding:0 4px;border:0}
+ #pg-session #v9SessionFooter .v9-send-details{display:block;position:static;order:3;padding:0;border:0}
  #pg-session #v9SessionFooter .v9-send-details[hidden]{display:none!important}
- #pg-session #v9SessionFooter .v9-send-details>summary{font-size:11px;min-height:26px;text-align:start;display:list-item}
- #pg-session #v9SessionFooter .v9-secondary-actions{position:absolute;bottom:calc(100% + 6px);left:0;right:0;padding:10px;background:var(--ui-surface,var(--wh));border:1px solid var(--ui-line,var(--bdr));border-radius:12px;box-shadow:0 6px 20px rgba(0,36,23,.16)}
- #pg-session #v9SessionFooter .v9-main-actions{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px}
- #pg-session #v9SessionFooter .v9-main-actions>.btn{font-size:11px;padding:6px 3px;min-height:45px}
- #pg-session.on{padding-bottom:calc(246px + env(safe-area-inset-bottom))!important}
- body.ui-session-keyboard #pg-session #v9SessionFooter{display:none!important}
+ #pg-session #v9SessionFooter .v9-send-details>summary{font-size:12px;min-height:38px;padding:8px;text-align:start;display:list-item}
+ #pg-session #v9SessionFooter .v9-secondary-actions{position:static;left:auto;right:auto;bottom:auto;padding:9px 0;background:transparent;border:0;box-shadow:none}
+ #pg-session #v9SessionFooter .v9-main-actions{order:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
+ #pg-session #v9SessionFooter .v9-main-actions>.btn{font-size:12px;padding:8px 5px;min-height:48px}
+ #pg-session.on{padding-bottom:calc(120px + env(safe-area-inset-bottom))!important}
+ #pg-session #v9SessionFooter[hidden]{display:none!important}
 
 }
 @media(max-width:440px){
@@ -226,6 +227,7 @@
 #pg-session .v1059-insight-title small{font-size:10px;max-width:180px}
 #pg-session .v10510-insight-button{min-width:105px;min-height:39px;padding:7px 9px;font-size:12px;box-shadow:none}
 #pg-session .v1059-insight+.v1059-insight{border-top:1px solid var(--ui-line,var(--bdr))}
+#pg-session[data-ia-session-step]:not([data-ia-session-step="assessment"]) #sesContent>.sec-div{display:none}
 #pg-session #v9SessionSteps{margin-top:4px}
 #pg-session #v9SessionSteps .v9-step-row{gap:5px}
 #pg-session #v9SessionSteps .v9-step-btn{padding-inline:5px}

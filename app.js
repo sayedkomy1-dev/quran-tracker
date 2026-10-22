@@ -1,4 +1,4 @@
-// WLQ_RELEASE_11.12.1-beta.22 — Account-independent app version and safe upgrade hotfix.
+// WLQ_RELEASE_11.12.1-beta.23 — Account-independent app version and safe upgrade hotfix.
 
 'use strict';
 

@@ -343,6 +343,18 @@ function ensureSessionActionDock(){
     const observer=new MutationObserver(moveOptionalReport);observer.observe(main,{childList:true});footer.dataset.ia22ReportWatch='1';
   }
   const details=footer.querySelector('.v9-send-details');if(details)details.hidden=!(waModes&&waModes.querySelector('button'));
+  // Beta23: one NOTES-ONLY action section, immediately below the student/tabs.
+  // Reparent existing controls (never clone/rebind save handlers); put parent notes
+  // and legacy recitation-review disclosures BELOW them, as requested.
+  const notesCard=content.querySelector('#sesNotes')?.closest('.card');
+  if(notesCard){
+    notesCard.dataset.v9Step='notes';
+    if(footer.nextElementSibling!==notesCard)content.insertBefore(footer,notesCard);
+    let anchor=notesCard;
+    for(const legacy of [content.querySelector('#prevCard'),content.querySelector('#v10ErrorsAccordion, #sessionErrorsCard')]){
+      if(legacy){legacy.dataset.v9Step='notes';anchor.insertAdjacentElement('afterend',legacy);anchor=legacy;}
+    }
+  }
   if(!footer.dataset.ia22ResizeWatch&&typeof window!=='undefined'){
     window.matchMedia?.('(max-width:799px)')?.addEventListener?.('change',applySessionStepVisibility);
     footer.dataset.ia22ResizeWatch='1';
@@ -355,7 +367,7 @@ function setSessionMode(mode,persist=true){mode=mode==='expert'?'expert':'guided
 function setSessionStep(step,scroll=true){if(!V9.steps.includes(step))step='assessment';V9.step=step;document.getElementById('pg-session')?.setAttribute('data-ia-session-step',step);
   const guidance={assessment:'التسميع: راجع أداء الطالب وسجل الأخطاء عند الحاجة.',new:'الحفظ: اختر السورة وحدد نطاق الآيات أو سورة كاملة.',review:'المراجعة: راجع المواضع المستحقة دون إعادة إدخال الطالب.',notes:'الملاحظات: شارك صوت التكليف ثم احفظ الحصة رسميًا أو أرسلها لولي الأمر.'};
   const help=document.getElementById('ia20StepHelp');if(help)help.textContent=guidance[step]||'';document.querySelectorAll('.v9-step-btn').forEach(b=>{const on=b.dataset.step===step;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});applySessionStepVisibility();if(scroll&&settings.v9?.mode!=='expert')document.getElementById('v9SessionSteps')?.scrollIntoView({block:'start',behavior:settings.v9?.reduceMotion?'auto':'smooth'});}
-function applySessionStepVisibility(){const guided=(settings.v9?.mode||'expert')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',guided&&c.dataset.v9Step!==V9.step));const f=document.getElementById('v9SessionFooter');const mobile=typeof window!=='undefined'&&!!window.matchMedia?.('(max-width:799px)').matches;if(f)f.hidden=guided&&V9.step!=='notes'&&!mobile;const repeat=document.getElementById('repeatBar');if(repeat)repeat.classList.toggle('ia21-repeat-step-hidden',V9.step!=='assessment');}
+function applySessionStepVisibility(){const guided=(settings.v9?.mode||'expert')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',guided&&c.dataset.v9Step!==V9.step));const f=document.getElementById('v9SessionFooter');if(f)f.hidden=V9.step!=='notes';const repeat=document.getElementById('repeatBar');if(repeat)repeat.classList.toggle('ia21-repeat-step-hidden',V9.step!=='assessment');}
 function moveSessionStep(d){let i=Math.max(0,V9.steps.indexOf(V9.step));i=Math.max(0,Math.min(V9.steps.length-1,i+d));setSessionStep(V9.steps[i]);}
 function initSession(){V9_BASE.initSession();document.getElementById('ia22FollowupDisclosure')?.removeAttribute('open');ensureSessionActionDock();setSessionStep('assessment',false);setSessionMode(settings.v9?.mode||'expert',false);refreshV9DraftState();}
 function onSesSt(){V9_BASE.onSesSt();document.getElementById('ia22FollowupDisclosure')?.removeAttribute('open');setSessionStep('assessment',false);refreshV9DraftState();}
