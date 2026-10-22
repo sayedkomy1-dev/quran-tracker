@@ -13,7 +13,7 @@ assert(ui.includes('el.addEventListener(\'keydown\''),'icon-only toggle keyboard
 assert(ui.includes('onlineIndicator()')&&ui.includes('navigator?.onLine'),'offline warning');
 assert(component.includes('ui-workspace-heading')&&component.includes('ui-session-action-dock'),'common workspace and session dock');
 assert(responsive.includes('ui-session-keyboard')&&responsive.includes('bottom:calc(83px'),'mobile keyboard/navigation safe area');
-assert(html.includes('platform-workflow.js?v=11.12.1-beta.16')&&worker.includes("'./js/features/platform-workflow.js?v=11.12.1-beta.16'"),'refresh UI on version bump and offline shell');
+assert(html.includes('platform-workflow.js?v=11.12.1-beta.17')&&worker.includes("'./js/features/platform-workflow.js?v=11.12.1-beta.17'"),'refresh UI on version bump and offline shell');
 assert(roles.includes('role-hero-next')&&roles.includes('role-action-featured'),'role next action and hierarchy');
 const v8=read('v8.js');const fn=v8.match(/^function save\(\)\{[^\n]+/m)?.[0];assert(fn,'v8 effective save missing');
 function runSave(result){let backup=0,push=0;const context={V8:{syncing:false},settings:{sync:{auto:true}},stampLocalSyncChanges(){},__IMAM_BASE__:{save(){return result}},scheduleAutoBackup(){backup++},scheduleCloudPush(){push++}};vm.runInNewContext(fn+';this._save=save;',context);return {stored:context._save(),backup,push};}

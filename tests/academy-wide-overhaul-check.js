@@ -5,7 +5,7 @@ const read=name=>fs.readFileSync(path.join(__dirname,'..',name),'utf8');
 const html=read('index.html'),worker=read('sw.js'),roles=read('js/features/role-home.js');
 const css=read('role-home.css'),responsive=read('css/platform/responsive.css');
 const components=read('css/platform/components.css'),more=read('v9.js');
-const version='11.12.1-beta.16';
+const version='11.12.1-beta.17';
 assert.equal(read('VERSION').trim(),version);
 assert.equal(JSON.parse(read('package.json')).version,version);
 assert(html.includes(`application-version" content="${version}`));

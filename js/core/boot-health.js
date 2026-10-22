@@ -14,7 +14,7 @@
     if(typeof detail==='string'&&/^[a-z0-9_-]{1,32}$/.test(detail))e.detail=detail;
     try{g.localStorage.setItem(KEY,JSON.stringify([...read(),e].slice(-MAX)));}catch(_){}
   }
-  function report(){return {release:'11.12.1-beta.16',wasDiscarded:g.document?.wasDiscarded===true,events:read()};}
+  function report(){return {release:'11.12.1-beta.17',wasDiscarded:g.document?.wasDiscarded===true,events:read()};}
   function summary(){return JSON.stringify(report(),null,2);}
   g.ImamBootHealth=Object.freeze({log,report,summary,clear(){try{g.localStorage.removeItem(KEY);}catch(_){}}});
   let nav='unknown';

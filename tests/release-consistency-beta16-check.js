@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const version=read('VERSION').trim();
-assert.equal(version,'11.12.1-beta.16');
+assert.equal(version,'11.12.1-beta.17');
 assert.equal(JSON.parse(read('package.json')).version,version);
 assert.equal(JSON.parse(read('manifest.json')).version,version);
 const html=read('index.html'),sw=read('sw.js');
@@ -28,4 +28,4 @@ assert(read('imam-board-display.html').includes(`imam-smart-board.css?v=${versio
 for(const htmlFile of ['guardian-login.html','guardian-portal.html','guest-practice.html'])
  assert(read(htmlFile).includes(`css/platform/public-experience.css?v=${version}`));
 assert(read('guardian-portal.html').includes(`teacher-rating.css?v=${version}`));
-console.log('PASS release consistency beta16: app version, all changed asset URLs, critical shell, offline public pages');
+console.log('PASS release consistency beta17: app version, all changed asset URLs, critical shell, offline public pages');

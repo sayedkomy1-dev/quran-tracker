@@ -1,0 +1,43 @@
+/* Arabic surah picker: no unrelated layout changes, one place for three assignments. */
+#pg-session .voice-row{display:grid;grid-template-columns:minmax(0,1fr) 50px;align-items:end;gap:9px}
+#pg-session .voice-row>.fld{width:100%;min-width:0;flex:none!important}
+#pg-session .voice-row>.ia-surah-mic{flex:none!important;width:50px;min-width:50px!important;height:50px;padding:0;
+ display:grid;place-items:center;border-radius:13px;background:var(--ui-surface,#fff);font-size:22px;margin:0}
+#pg-session .surah-combo{width:100%;min-width:0}
+#pg-session .surah-combo>input{width:100%;min-width:0;height:50px;text-align:right;
+ padding-inline:13px 52px!important;font-size:16px;border-radius:13px;overflow:hidden;text-overflow:ellipsis}
+#pg-session .surah-combo>input[readonly]{cursor:pointer;background:var(--ui-surface,#fff)}
+#pg-session .surah-drop-btn{left:5px;right:auto;top:5px;bottom:5px;width:41px;min-width:41px;border-radius:10px;
+ background:var(--ui-surface,#fff);border:1px solid var(--ui-line,#dfe7e2);z-index:1}
+.surah-dropdown.ia-surah-picker{display:none;box-sizing:border-box;padding:9px!important;border:0!important;
+ background:rgba(6,30,23,.59)!important;box-shadow:none!important;z-index:10050!important;
+ align-items:flex-end;justify-content:center;overscroll-behavior:contain}
+.surah-dropdown.ia-surah-picker.open{display:flex}
+.ia-surah-sheet{display:flex;flex-direction:column;overflow:hidden;min-width:0;width:min(100%,580px);
+ height:min(690px,var(--surah-usable,80vh));min-height:135px;background:var(--ui-surface,#fff);
+ color:var(--ui-ink,#17251d);border-radius:22px 22px 15px 15px;
+ box-shadow:0 15px 60px rgba(0,0,0,.27);border:1px solid var(--ui-line,#dfe7e2)}
+.ia-surah-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:15px 17px 7px}
+.ia-surah-head b{display:block;font-size:20px}.ia-surah-head small{color:var(--ui-muted,#58665e);font-size:12px}
+.surah-dropdown.ia-surah-picker .ia-surah-close{width:44px;min-width:44px;height:44px;border-radius:12px;
+ border:1px solid var(--ui-line,#dfe7e2);background:transparent;color:inherit;font-size:23px}
+.ia-surah-sheet>label{font-size:13px;padding:0 17px 5px;color:var(--ui-muted,#58665e)}
+.ia-surah-search{flex:none;width:calc(100% - 34px);height:46px;margin:0 17px 10px;padding-inline:14px;
+ border:1.5px solid var(--ui-primary,#145a3a);border-radius:12px;font-size:16px;
+ color:var(--ui-ink,#17251d);background:var(--ui-surface,#fff);direction:rtl;text-align:right}
+.ia-surah-items{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:1px 10px 10px}
+.surah-dropdown.ia-surah-picker .ia-surah-items>button{width:100%;min-height:61px;display:grid;
+ grid-template-columns:42px minmax(0,1fr) 70px;align-items:center;gap:11px;
+ background:transparent;border:0;border-bottom:1px solid var(--ui-line,#dfe7e2);border-radius:9px;
+ padding:9px 11px;text-align:right;color:inherit;cursor:pointer}
+.surah-dropdown.ia-surah-picker .ia-surah-items>button[aria-selected="true"]{background:var(--ui-tint,#e8f3ec)}
+.ia-surah-no{display:grid;place-items:center;width:37px;height:37px;border:1px solid #c1a66c;
+ border-radius:11px;color:var(--ui-primary,#145a3a);font-size:15px;font-weight:700}
+.ia-surah-name{font-size:18px;font-weight:700;overflow-wrap:anywhere}
+.ia-surah-items small{color:var(--ui-muted,#58665e);font-size:12px;white-space:nowrap;text-align:end}
+.ia-surah-empty{padding:16px;text-align:center;color:var(--ui-muted,#58665e)}
+.ia-surah-sheet>footer{padding:9px 14px;text-align:center;font-size:12px;flex:none;
+ color:var(--ui-muted,#58665e);background:var(--ui-canvas,#f7f4ec)}
+.surah-dropdown.ia-surah-picker button:focus-visible{outline:3px solid var(--ui-primary,#145a3a);outline-offset:-3px}
+@media(min-width:800px){.surah-dropdown.ia-surah-picker{align-items:center}.ia-surah-sheet{height:min(660px,var(--surah-usable,90vh));border-radius:19px}}
+@media(max-width:390px){.surah-dropdown.ia-surah-picker{padding:6px!important}.ia-surah-name{font-size:16px}}

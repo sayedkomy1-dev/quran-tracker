@@ -1,4 +1,4 @@
-// WLQ_RELEASE_11.12.1-beta.16 — Account-independent app version and safe upgrade hotfix.
+// WLQ_RELEASE_11.12.1-beta.17 — Account-independent app version and safe upgrade hotfix.
 
 'use strict';
 
@@ -1593,15 +1593,14 @@ function startVoice(sec){
   toast('🎙️ يستمع... تكلم الآن','info');
   rec.onresult=e=>{
     const txt=e.results[0][0].transcript;
-    parseVoiceInput(sec,txt);
-    toast('تم التعرف: '+txt,'success');
+    if(parseVoiceInput(sec,txt))toast('تم إدخال اسم السورة في الخانة','success');
   };
   rec.onerror=()=>{ toast('لم يتعرف على الصوت، حاول مرة أخرى','error'); };
   rec.onend=()=>{
     if(btn) btn.classList.remove('listening');
     activeVoiceSec=null;
   };
-  rec.start();
+  try{rec.start();}catch(_){if(btn)btn.classList.remove('listening');activeVoiceSec=null;toast('تعذر بدء الميكروفون. راجع الإذن ثم أعد المحاولة','error');}
 }
 function parseVoiceInput(sec,txt){
   // Match surah name
@@ -2904,10 +2903,19 @@ function fillFromLast(){
   if(prev.juz?.chips){secOn.juz=true;updateTogs();juzChips=[...prev.juz.chips];renderChips();}scheduleDraftSave();toast('تم تحميل التكليف السابق ✓','success');vibrate([30,20,60]);
 }
 function parseVoiceInput(sec,txt){
-  const idx=S.findIndex(s=>txt.includes(s.n));if(idx>=0){document.getElementById(sec+'-s').value=S[idx].n;fillAyah(sec);}if(txt.includes('كامل')||txt.includes('كاملة')){const fc=document.getElementById(sec+'-full');if(fc){fc.checked=true;toggleFull(sec);}}
+  // Arabic speech may vary in hamza, ta marbuta or short vowels. Never guess an invalid surah.
+  const norm=globalThis.ImamSurahPicker17?.normalize||((x)=>String(x||'').trim());
+  const spoken=norm(txt);
+  const matches=S.map((s,i)=>({i,n:norm(s.n)})).filter(x=>spoken===x.n||spoken.includes(x.n))
+    .sort((a,b)=>b.n.length-a.n.length);
+  const idx=matches.length?matches[0].i:-1, input=document.getElementById(sec+'-s');
+  if(idx>=0&&input){input.value=S[idx].n;input.dataset.userTouched='1';fillAyah(sec);globalThis.ImamSurahPicker17?.close(sec);}
+  else if(input){input.value=String(txt||'').trim();input.dataset.userTouched='1';fillAyah(sec);toast('لم يتطابق الاسم الصوتي مع سورة؛ اخترها من القائمة','info');}
+  if(txt.includes('كامل')||txt.includes('كاملة')){const fc=document.getElementById(sec+'-full');if(fc){fc.checked=true;toggleFull(sec);}}
   const grade=Object.keys(GRADE_MAP).find(g=>txt.includes(g));if(grade)setGr(sec,grade);
   const nums=(txt.match(/\d+/g)||[]).map(Number);if(nums.length>=2&&idx>=0){const f=document.getElementById(sec+'-f'),t=document.getElementById(sec+'-t');if(f)f.value=nums[0];if(t)t.value=nums[1];}
   scheduleDraftSave();
+  return idx>=0;
 }
 
 function fmtActualResult(ses,key){const x=ses?.actualRecitation?.[key];return x?fmtSection(x):'';}
