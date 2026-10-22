@@ -103,22 +103,9 @@ function migrateV9Data(){
   return changed;
 }
 function applyV9Prefs(){document.body.classList.toggle('v9-reduce-motion',!!settings.v9?.reduceMotion);}
-// Optional quiet tactile cue; deliberately off by default and silent in the live lesson/board.
-(function initImamClickFeedback(){
- let ctx=null,lastAt=0;
- document.addEventListener('click',e=>{
-   if(!settings?.v9?.buttonSound||!e.target?.closest?.('button'))return;
-   if(e.target.closest('#pg-session,#imam-board-root,.mo.open'))return;
-   const now=performance.now();if(now-lastAt<85)return;lastAt=now;
-   try{const AudioCtx=globalThis.AudioContext||globalThis.webkitAudioContext;if(!AudioCtx)return;
-     ctx=ctx||new AudioCtx();if(ctx.state==='suspended')ctx.resume().catch(()=>{});
-     const tone=ctx.createOscillator(),gain=ctx.createGain(),t=ctx.currentTime;
-     tone.type='sine';tone.frequency.setValueAtTime(780,t);tone.frequency.exponentialRampToValueAtTime(550,t+.055);
-     gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(.008,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+.065);
-     tone.connect(gain);gain.connect(ctx.destination);tone.start(t);tone.stop(t+.075);
-   }catch(_){/* No audio permission: controls remain functional. */}
- },{passive:true});
-})();
+// Beta20: only one sound engine (beta19-experience.js), avoiding double beeps.
+// The legacy setting below stays as the visible on/off switch and synchronizes
+// with the single engine's local preference.
 
 // ──────────────────────────────────────
 // Responsive navigation and More sheet
@@ -305,7 +292,7 @@ function injectSessionUX(){
   const pg=document.getElementById('pg-session'),content=document.getElementById('sesContent');if(!pg||!content)return;
   pg.classList.remove('v9-ready');
   if(!document.getElementById('v9SessionSteps')){
-    content.insertAdjacentHTML('beforebegin',`<div id="v9SessionSteps" class="v9-session-steps"><div class="v9-session-mode"><div><small style="color:var(--v9-muted)">مسار الحصة</small><div class="v9-session-help">يمكنك إظهار كل الأقسام في «سريع» دون فقد أي زر.</div></div><div class="v9-mode-toggle"><button data-mode="guided" onclick="setSessionMode('guided')">مبسّط</button><button data-mode="expert" onclick="setSessionMode('expert')">سريع</button></div></div><div class="v9-step-row">${[['assessment','التسميع'],['new','الحفظ'],['review','المراجعة'],['notes','الملاحظات']].map(([k,l])=>`<button class="v9-step-btn" data-step="${k}" onclick="setSessionStep('${k}')">${l}</button>`).join('')}</div></div>`);
+    content.insertAdjacentHTML('beforebegin',`<div id="v9SessionSteps" class="v9-session-steps"><div class="v9-session-mode"><div><small style="color:var(--v9-muted)">مسار الحصة</small><div class="v9-session-help">يمكنك إظهار كل الأقسام في «سريع» دون فقد أي زر.</div></div><div class="v9-mode-toggle"><button data-mode="guided" onclick="setSessionMode('guided')">مبسّط</button><button data-mode="expert" onclick="setSessionMode('expert')">سريع</button></div></div><div class="v9-step-row">${[['assessment','التسميع'],['new','الحفظ'],['review','المراجعة'],['notes','الملاحظات']].map(([k,l])=>`<button class="v9-step-btn" data-step="${k}" onclick="setSessionStep('${k}')">${l}</button>`).join('')}</div><p class="ia20-step-help" id="ia20StepHelp" role="note">ابدأ باختيار الطالب والتسميع، ثم انتقل للتكليف والملاحظات.</p></div>`);
   }
   const cards=[...content.children].filter(x=>x.classList?.contains('card'));
   cards.forEach(c=>{if(c.id==='prevCard'||c.id==='sessionErrorsCard')c.dataset.v9Step='assessment';else if(c.querySelector('#tog-new'))c.dataset.v9Step='new';else if(c.querySelector('#tog-rec')||c.querySelector('#tog-far')||c.querySelector('#tog-juz')||c.querySelector('#tog-surahReview'))c.dataset.v9Step='review';else if(c.querySelector('#sesNotes'))c.dataset.v9Step='notes';});
@@ -332,6 +319,10 @@ function ensureSessionActionDock(){
   let sendBtn=document.getElementById('saveSendSessionBtn');
   if(!sendBtn)sendBtn=[...content.querySelectorAll('button')].find(b=>String(b.getAttribute('onclick')||'').includes('saveAndSendWA()'))||null;
   const waModes=document.getElementById('sessionWaModes')||content.querySelector('.wa-mode-row');
+  // The assignment-audio control is unique. Keep it directly above the ORIGINAL
+  // official save/send buttons, in the notes-only footer (guided workflow).
+  const audio=content.querySelector('.assignment-audio-details');
+  if(audio&&!footer.contains(audio)&&main)main.insertAdjacentElement('beforebegin',audio);
   if(saveBtn&&main&&saveBtn.parentElement!==main){saveBtn.classList.remove('mb8');saveBtn.classList.add('v9-save-primary');main.appendChild(saveBtn);}
   if(sendBtn&&main&&sendBtn.parentElement!==main){sendBtn.id='saveSendSessionBtn';sendBtn.classList.add('v9-send-primary');main.appendChild(sendBtn);}
   if(waModes&&secondary&&waModes.parentElement!==secondary){waModes.id='sessionWaModes';waModes.classList.add('v9-wa-mode-preserved');secondary.appendChild(waModes);}
@@ -341,7 +332,9 @@ function ensureSessionActionDock(){
 function enhanceAyahInput(id){const input=document.getElementById(id);if(!input||input.closest('.v9-ayah-wrap'))return;const w=document.createElement('div');w.className='v9-ayah-wrap';input.parentNode.insertBefore(w,input);w.innerHTML=`<button type="button" class="v9-ayah-step" aria-label="نقصان">−</button><span></span><button type="button" class="v9-ayah-step" aria-label="زيادة">+</button>`;w.children[1].replaceWith(input);w.children[0].onclick=()=>stepAyah(input,-1);w.children[2].onclick=()=>stepAyah(input,1);}
 function stepAyah(input,d){const max=Number(input.max)||999,min=Number(input.min)||1;input.value=Math.max(min,Math.min(max,(Number(input.value)||min)+d));input.dispatchEvent(new Event('input',{bubbles:true}));if(navigator.vibrate)navigator.vibrate(8);}
 function setSessionMode(mode,persist=true){mode=mode==='expert'?'expert':'guided';settings.v9=settings.v9||{};settings.v9.mode=mode;if(persist)save();const pg=document.getElementById('pg-session');pg?.classList.toggle('v9-guided',mode==='guided');pg?.classList.toggle('v9-expert',mode==='expert');document.querySelectorAll('.v9-mode-toggle button').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));applySessionStepVisibility();}
-function setSessionStep(step,scroll=true){if(!V9.steps.includes(step))step='assessment';V9.step=step;document.querySelectorAll('.v9-step-btn').forEach(b=>{const on=b.dataset.step===step;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});applySessionStepVisibility();if(scroll&&settings.v9?.mode!=='expert')document.getElementById('v9SessionSteps')?.scrollIntoView({block:'start',behavior:settings.v9?.reduceMotion?'auto':'smooth'});}
+function setSessionStep(step,scroll=true){if(!V9.steps.includes(step))step='assessment';V9.step=step;document.getElementById('pg-session')?.setAttribute('data-ia-session-step',step);
+  const guidance={assessment:'التسميع: راجع أداء الطالب وسجل الأخطاء عند الحاجة.',new:'الحفظ: اختر السورة وحدد نطاق الآيات أو سورة كاملة.',review:'المراجعة: راجع المواضع المستحقة دون إعادة إدخال الطالب.',notes:'الملاحظات: شارك صوت التكليف ثم احفظ الحصة رسميًا أو أرسلها لولي الأمر.'};
+  const help=document.getElementById('ia20StepHelp');if(help)help.textContent=guidance[step]||'';document.querySelectorAll('.v9-step-btn').forEach(b=>{const on=b.dataset.step===step;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});applySessionStepVisibility();if(scroll&&settings.v9?.mode!=='expert')document.getElementById('v9SessionSteps')?.scrollIntoView({block:'start',behavior:settings.v9?.reduceMotion?'auto':'smooth'});}
 function applySessionStepVisibility(){const guided=(settings.v9?.mode||'expert')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',guided&&c.dataset.v9Step!==V9.step));const f=document.getElementById('v9SessionFooter');if(f)f.hidden=guided&&V9.step!=='notes';}
 function moveSessionStep(d){let i=Math.max(0,V9.steps.indexOf(V9.step));i=Math.max(0,Math.min(V9.steps.length-1,i+d));setSessionStep(V9.steps[i]);}
 function initSession(){V9_BASE.initSession();ensureSessionActionDock();setSessionStep('assessment',false);setSessionMode(settings.v9?.mode||'expert',false);refreshV9DraftState();}
@@ -424,7 +417,7 @@ async function downloadQuranTextPack(){if(V9.textPackDownloading){V9.textPackCan
 // ──────────────────────────────────────
 // Settings / accessibility / quality
 // ──────────────────────────────────────
-function injectSettingsUX(){const pg=document.getElementById('pg-settings');if(!pg||document.getElementById('v9UxSettings'))return;pg.insertAdjacentHTML('afterbegin',`<div class="card" id="v9UxSettings"><div class="ch">تجربة الاستخدام</div><div class="fld"><label>طريقة شاشة الحصة</label><select id="v9ModeSetting" onchange="settings.v9.mode=this.value;save();setSessionMode(this.value,false)"><option value="guided">مبسطة — خطوة بخطوة</option><option value="expert">سريعة — كل الأقسام</option></select></div><label class="switch-line"><input type="checkbox" id="v9ReduceMotion" onchange="settings.v9.reduceMotion=this.checked;save();applyV9Prefs()"><span>تقليل الحركة والانتقالات</span></label><label class="switch-line"><input type="checkbox" id="v9ButtonSound" onchange="settings.v9.buttonSound=this.checked;save()"><span>صوت لمس هادئ للأزرار (اختياري؛ صامت أثناء الحصة والسبورة)</span></label><div class="settings-actions mt8"><button class="btn btn-out btn-sm" onclick="openV9Onboarding(true)">عرض دليل الاستخدام</button><button class="btn btn-out btn-sm" onclick="goPage('mushaf')">إدارة المصحف Offline</button></div></div>`);}
+function injectSettingsUX(){const pg=document.getElementById('pg-settings');if(!pg||document.getElementById('v9UxSettings'))return;pg.insertAdjacentHTML('afterbegin',`<div class="card" id="v9UxSettings"><div class="ch">تجربة الاستخدام</div><div class="fld"><label>طريقة شاشة الحصة</label><select id="v9ModeSetting" onchange="settings.v9.mode=this.value;save();setSessionMode(this.value,false)"><option value="guided">مبسطة — خطوة بخطوة</option><option value="expert">سريعة — كل الأقسام</option></select></div><label class="switch-line"><input type="checkbox" id="v9ReduceMotion" onchange="settings.v9.reduceMotion=this.checked;save();applyV9Prefs()"><span>تقليل الحركة والانتقالات</span></label><label class="switch-line"><input type="checkbox" id="v9ButtonSound" onchange="settings.v9.buttonSound=this.checked;save();try{localStorage.setItem('imam:ui-tap:v1',this.checked?'on':'off')}catch(_){}"><span>صوت لمس هادئ للأزرار (اختياري؛ صامت أثناء الحصة والسبورة)</span></label><div class="settings-actions mt8"><button class="btn btn-out btn-sm" onclick="openV9Onboarding(true)">عرض دليل الاستخدام</button><button class="btn btn-out btn-sm" onclick="goPage('mushaf')">إدارة المصحف Offline</button></div></div>`);}
 function renderV9Settings(){const m=document.getElementById('v9ModeSetting'),r=document.getElementById('v9ReduceMotion');if(m)m.value=settings.v9?.mode||'expert';if(r)r.checked=!!settings.v9?.reduceMotion;}
 function initSettings(){V9_BASE.initSettings();injectSettingsUX();renderV9Settings();const ch=document.getElementById('v9ButtonSound');if(ch)ch.checked=!!settings.v9?.buttonSound;}
 

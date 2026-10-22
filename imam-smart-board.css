@@ -114,3 +114,26 @@ body.ib-native-open > .mo.open,body.ib-native-open #im119Warning,body.ib-native-
  .ib-header-tools-list{position:static;min-width:0;max-width:none;max-height:32dvh;margin-top:4px;grid-template-columns:repeat(2,minmax(0,1fr))}
  .ib-header-tools-list button{font-size:11px;padding:8px;min-height:44px}
 }
+
+/* Beta20 touch-first board controls: all functions remain accessible in disclosures. */
+.imam-board-root :is(.ib-header .ib-buttons button,.ib-toolbox>button,.ib-tools-bottom>button,.ib-board-more-items button,.ib-range button,.ib-activities button){min-height:44px;touch-action:manipulation}
+.imam-board-root .ia20-board-more{min-width:0;position:relative;flex:1 0 170px}
+.imam-board-root .ia20-board-more>summary{min-height:44px;padding:10px 13px;background:#edf6ee;border:1px solid #c8dcd1;border-radius:12px;color:#194633;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center}
+.imam-board-root .ia20-board-more-items{display:flex;flex-wrap:wrap;gap:7px;padding:9px 0}
+.imam-board-root .ia20-board-more-items :is(button,select){min-height:44px;max-width:100%}
+.imam-board-root .ib-toolbox,.imam-board-root .ib-tools-bottom{overflow:visible;max-height:none;flex-wrap:wrap}
+.imam-board-root .ib-toolbox>button,.imam-board-root .ib-tools-bottom>button{min-width:44px;flex-shrink:0}
+.imam-board-root .ib-word:focus-visible{outline:2px solid #145a3a;outline-offset:2px;border-radius:6px}
+@media(max-width:850px){
+ .imam-board-root .ib-workspace{padding:6px;gap:8px}
+ .imam-board-root .ib-main{gap:8px}
+ .imam-board-root .ib-header{position:relative;padding:9px}
+ .imam-board-root .ib-header .ib-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .imam-board-root .ib-header .ib-buttons>*{min-height:44px}
+ .imam-board-root .ib-header .ib-buttons>details{grid-column:1/-1}
+ .imam-board-root .ib-board-area{min-height:320px}
+ .imam-board-root .ia20-board-more{flex-basis:100%}
+ .imam-board-root .ia20-board-more-items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .imam-board-root .ia20-board-more-items>*{min-width:0;width:100%;font-size:13px}
+ .imam-board-root .ib-students{max-height:none}
+}

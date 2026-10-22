@@ -38,31 +38,33 @@
  function sessionDock(){
   const page=find('pg-session'),save=find('saveSessionBtn'),send=find('saveSendSessionBtn'),draft=find('draftState');
   if(!page||!save||!send||!draft||find('uiSessionActionDock'))return;
-  const dock=d.createElement('section');dock.className='ui-session-action-dock';dock.id='uiSessionActionDock';dock.dir='rtl';dock.setAttribute('aria-label','إجراءات حفظ الحصة');
-  const caption=d.createElement('div');caption.className='ui-session-action-caption';
-  const name=d.createElement('b');name.textContent='إجراءات الحصة';
-  const status=d.createElement('span');status.className='ui-session-action-state';status.id='uiSessionActionState';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
-  caption.append(name,status);
-  const actions=d.createElement('div');actions.className='ui-session-action-buttons';
-  // Preserve original IDs and inline handlers, including official save behavior.
-  save.classList.add('ui-save-primary');send.classList.add('ui-save-secondary');
-  actions.append(save,send);dock.append(caption,actions);d.body.append(dock);
-  const sync=()=>{status.textContent='المسودة: '+(draft.textContent||'جاهز').trim();status.dataset.saveState=String(draft.className||'');};
-  sync();if(typeof MutationObserver==='function')new MutationObserver(sync).observe(draft,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
-  const landmarks=[['الطالب','sesSt'],['التسميع','prevCard'],['الأخطاء','sessionErrorsCard'],['الحفظ الجديد','tog-new'],['المراجعة القريبة','tog-rec'],['الملاحظات','sesNotes']];
-  if(!find('v11SessionNavigator')){
-  const nav=d.createElement('nav');nav.className='ui-session-section-nav';nav.setAttribute('aria-label','الانتقال بين أقسام الحصة');
-  landmarks.forEach(([label,id])=>{const target=find(id);if(!target)return;const btn=d.createElement('button');btn.type='button';btn.className='ui-session-section-link';btn.textContent=label;btn.addEventListener('click',()=>{const anchor=target.closest('.card')||target;anchor.scrollIntoView({block:'start',behavior:g.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});nav.append(btn);});
-  const heading=page.querySelector('.ui-workspace-heading');heading?.insertAdjacentElement('afterend',nav);
+  // Preserve BOTH official save actions in #v9SessionFooter. The previous floating
+  // dock separated the assignment-audio control from save/send and covered fields.
+  const dock=d.createElement('nav');dock.id='uiSessionActionDock';
+  dock.className='ui-session-action-dock ia20-save-jump';dock.dir='rtl';
+  dock.setAttribute('aria-label','انتقال إلى إجراءات حفظ الحصة');
+  const jump=d.createElement('button');jump.type='button';jump.className='ia20-save-jump-button';
+  jump.textContent='💾 الحفظ والإرسال';
+  jump.addEventListener('click',()=>{
+    if(typeof g.setSessionStep==='function')g.setSessionStep('notes',false);
+    const footer=find('v9SessionFooter');
+    if(footer){footer.scrollIntoView({block:'center',behavior:g.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth'});}
+  });
+  dock.appendChild(jump);d.body.append(dock);
+  const footer=find('v9SessionFooter');
+  if(footer&&typeof IntersectionObserver==='function'){
+    const observer=new IntersectionObserver(entries=>{
+      d.body.classList.toggle('ia20-save-footer-visible',entries.some(e=>e.isIntersecting));
+    },{root:null,threshold:.15});observer.observe(footer);
+    g.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
   }
   const setKeyboard=()=>{
-    if(!g.visualViewport)return;
+    const v=g.visualViewport;
     const isInput=d.activeElement?.matches?.('input,select,textarea,[contenteditable="true"]');
-    d.body.classList.toggle('ui-session-keyboard',!!(isInput&&g.innerWidth<=799&&g.innerHeight-g.visualViewport.height>145));
+    d.body.classList.toggle('ui-session-keyboard',!!(v&&isInput&&g.innerWidth<=799&&g.innerHeight-v.height>145));
   };
   g.visualViewport?.addEventListener('resize',setKeyboard,{passive:true});
   d.addEventListener('focusin',setKeyboard);d.addEventListener('focusout',()=>g.requestAnimationFrame?.(setKeyboard));
-  // Non-text buttons are keyboard accessible without changing their existing click handlers.
   page.querySelectorAll('.tog[id],.direction-btn,.voice-btn').forEach(el=>{
     if(!el.getAttribute('aria-label'))el.setAttribute('aria-label',el.title||el.closest('.card')?.querySelector('.badge,.ch')?.textContent?.trim()||'تغيير الخيار');
     if(el.matches('.tog[id]')){el.setAttribute('role','button');el.tabIndex=0;el.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();el.click();}});}
@@ -97,7 +99,7 @@
    d.querySelectorAll('.pg[id]').forEach(el=>observer.observe(el,{attributes:true,attributeFilter:['class']}));
    g.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
   }
-  g.ImamApp=g.ImamApp||{};g.ImamApp.PlatformWorkflow=Object.freeze({version:'11.12.1-beta.19',refresh:pageState});
+  g.ImamApp=g.ImamApp||{};g.ImamApp.PlatformWorkflow=Object.freeze({version:'11.12.1-beta.20',refresh:pageState});
  }
  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(globalThis);

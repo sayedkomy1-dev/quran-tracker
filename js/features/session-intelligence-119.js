@@ -124,6 +124,18 @@
     if(by('im119Completion')||!by('pg-session'))return;
     const head=by('pg-session');const target=by('sessionJourneyCard')||head.firstElementChild;
     target.insertAdjacentHTML('beforebegin',`<section class="card im119-card" id="im119Completion" dir="rtl" aria-label="مؤشر اكتمال الحصة"><div class="im119-top"><div><b>🛡️ فحص اكتمال الحصة</b><small id="im119State" role="status">جارٍ مراجعة البيانات</small></div><strong id="im119Percent">—</strong></div><div class="im119-track"><div id="im119Fill"></div></div><div id="im119SaveState" class="im119-save-state" role="status" aria-live="polite"></div><details><summary>عرض قائمة التحقق والنواقص</summary><div id="im119Requirements"></div></details><div class="im119-row"><label>نوع الحصة<select id="im119Kind">${options('auto',TYPES)}</select></label><details class="im119-range-disclosure"><summary>📖 مواضع تسميع إضافية <span id="im119ExtraCount" aria-live="polite"></span></summary><div class="im119-range-content"><button type="button" id="im119AddRange" class="btn btn-out btn-sm">+ إضافة موضع تسميع</button><div id="im119ExtraList"></div></div></details></div><div class="im119-row"><label><input type="checkbox" id="im119SkipNew"> لم يُنفذ حفظ جديد</label><label><input type="checkbox" id="im119SkipRec"> لم تُنفذ مراجعة</label></div><div class="im119-row"><label>تقييم المراجعة القريبة<select id="im119DecisionRec">${options('',{'':'لم يُحدد',...DECISIONS})}</select></label><label>تقييم المراجعة البعيدة<select id="im119DecisionFar">${options('',{'':'لم يُحدد',...DECISIONS})}</select></label></div><div class="im119-row"><label>سبب عدم تنفيذ الحفظ أو المراجعة (عند الحاجة)<input id="im119NoRecitation" type="text" maxlength="250" placeholder="مثل: مراجعة شفوية دون تكليف جديد"></label></div><label class="im119-audio-toggle"><input type="checkbox" id="im119AudioEnabled"> 🔔 تشغيل تنبيه صوتي قبل فتح رسالة ولي الأمر على واتساب</label><small class="im119-small">نسبة الاكتمال تخص بيانات الحصة، وليست نسبة إتقان الطالب. حالة الحفظ والمزامنة مستقلة عنها.</small></section>`);
+    // Beta20: the completeness percentage stays visible. Uncommon test/extra
+    // options are one accessible disclosure, closed for every new lesson view.
+    const completion=by('im119Completion');
+    if(completion&&!by('ia20SessionAdvanced')){
+      const advanced=document.createElement('details');advanced.id='ia20SessionAdvanced';
+      advanced.className='ia20-session-advanced';
+      const caption=document.createElement('summary');
+      caption.textContent='⚙️ نوع الحصة والتقييمات والمواضع الإضافية';
+      advanced.append(caption);
+      [...completion.querySelectorAll(':scope > .im119-row, :scope > .im119-audio-toggle, :scope > .im119-small')].forEach(el=>advanced.append(el));
+      completion.append(advanced);
+    }
     by('im119AudioEnabled').checked=audioEnabled();
     by('im119AudioEnabled').addEventListener('change',e=>{try{localStorage.setItem(AUDIO_PREF,e.target.checked?'on':'off');}catch(_){} });
     by('im119Kind').addEventListener('change',e=>{state.kind=e.target.value;writeKindPref(state.kind);touchDraft();render();});

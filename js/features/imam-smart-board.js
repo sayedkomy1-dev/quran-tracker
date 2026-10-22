@@ -46,12 +46,18 @@ function status(v){const el=$('ib-status');if(el)el.textContent=v;}
 function closeStudentDisplay(){clearInterval(displayHeartbeat);displayHeartbeat=null;channel?.close();channel=null;try{if(display&&!display.closed)display.close();}catch(_){}display=null;displaySecret='';}
 function exit(){if(b.dirty&&!flush())return;closeNativeEditor();active=false;clearInterval(accountWatch);accountWatch=null;resetView();clearTimeout(autosaveTimer);clearInterval(timelineTimer);quranRequest++;stopTimer();shutdownAudio();closeStudentDisplay();$('imam-board-root')?.remove();}
 // Exit without recreating an editor already open in the lesson. Never reset unsaved input.
+let ia20ReturnState=null;
 function returnToSession(){
  if(!active||!accountStillValid())return;
  const alreadyInSession=document.getElementById('pg-session')?.classList.contains('on');
  if(b.dirty&&!flush())return;
  exit();
  if(!active&&!alreadyInSession&&typeof g.goPage==='function')g.goPage?.('session');
+ const restore=ia20ReturnState;ia20ReturnState=null;
+ if(restore){
+   if(restore.studentId&&$('sesSt')?.value!==restore.studentId){/* Never switch an editor silently. */}
+   g.requestAnimationFrame?.(()=>g.scrollTo?.({top:restore.scrollY,behavior:'instant'}));
+ }
 }
 function dropPrivateBoardOnAccountChange(){
  // Do NOT flush another account's drafts or display its private state.
@@ -115,6 +121,21 @@ function updateGroups(){const el=$('ib-group');if(!el)return;const groups=[...ne
 function updateQueue(){const el=$('ib-queue');if(!el)return;const rows=visibleStudents();const done=rows.filter(s=>completedToday(s.id)).length,absent=rows.filter(s=>absentToday(s.id)).length;
  el.textContent=`طلاب الكشف ${rows.length} · تم تسميعهم اليوم ${done} · غائب/إجازة ${absent} · ينتظرون ${Math.max(0,rows.length-done-absent)}`;
 }
+function ia20CompactBoardTools(){
+  const groups=[
+    ['ib-toolbox','✏️ أدوات الرسم المتقدمة',el=>el.dataset.tool&&['choose','pen','highlight','erase'].includes(el.dataset.tool)||['undo','redo'].includes(el.dataset.cmd)],
+    ['ib-tools-bottom','⏱️ ألعاب ومؤقتات وأدوات أخرى',el=>['audio','stopAudio'].includes(el.dataset.cmd)||el.id==='ib-reciter']
+  ];
+  for(const [id,label,isPrimary] of groups){
+    const host=document.querySelector('.'+id);if(!host||host.querySelector('.ia20-board-more'))continue;
+    const more=document.createElement('details');more.className='ia20-board-more';
+    const summary=document.createElement('summary');summary.textContent=label;more.append(summary);
+    const items=document.createElement('div');items.className='ia20-board-more-items';
+    [...host.children].filter(el=>!isPrimary(el)).forEach(el=>items.append(el));
+    more.append(items);host.append(more);
+    host.setAttribute('aria-label',id==='ib-toolbox'?'أدوات الرسم الأساسية والمتقدمة':'أدوات الصوت والتفاعل');
+  }
+}
 function renderShell(){const root=document.createElement('div');root.id='imam-board-root';root.className='imam-board-root';root.dir='rtl';root.innerHTML=`<section class="ib-shell" role="dialog" aria-label="سبورة الإمام الذكية" aria-modal="true">
 <header class="ib-header"><div><b>📖 سبورة الإمام الذكية</b><small>استوديو الحصة القرآنية التفاعلية</small></div><div class="ib-buttons"><button data-cmd="returnSession" class="ib-return-session">↩ العودة إلى الحصة</button><button data-cmd="display">شاشة الطالب</button><button data-cmd="save">حفظ المسودة</button><details class="ib-header-tools"><summary>⋯ أدوات أخرى</summary><div class="ib-header-tools-list"><button data-cmd="reading" class="ib-rescue">↩ العودة إلى وضع القراءة</button><button data-cmd="pauseDisplay">إخفاء السبورة مؤقتًا</button><button data-cmd="expand">تكبير السبورة</button><button data-cmd="share">تجهيز للمشاركة</button><button data-cmd="export">تصدير ملخص PDF/HTML</button><button data-cmd="close">إغلاق السبورة</button></div></details></div></header>
 <div class="ib-workspace"><aside class="ib-students"><h3>الطالب والحلقة</h3><label>الحلقة<select id="ib-group"><option value="">جميع طلابي</option></select></label><div class="ib-info" id="ib-queue" role="status"></div><label>اختر الطالب<select id="ib-student"><option value="">— اختر طالبًا —</option>${optionList()}</select></label><div id="ib-student-info" class="ib-info"></div><div id="ib-assignments" class="ib-info" aria-live="polite"></div><div id="ib-timeline" class="ib-timeline" aria-label="خطوات الحصة المحضرة"></div><button data-cmd="previous">السابق</button><button data-cmd="nextStudent">التالي</button><h3>التحضير والجلسة</h3><button data-cmd="prepare">التحضير قبل الحصة</button><button data-cmd="timelinePrev">الخطوة السابقة</button><button data-cmd="timelineNext">الخطوة التالية</button><button data-cmd="loadDraft">استكمال جلسة محفوظة</button><button data-cmd="loadPrep">استخدام تحضير سابق</button><button data-cmd="wheel">اختيار طالب عشوائي</button><button data-cmd="new">جلسة جديدة</button><div id="ib-status" role="status" aria-live="polite">لم تبدأ الجلسة</div><label>ملاحظات خاصة بالمحفظ<textarea id="ib-private" placeholder="لا تُعرض للطالب"></textarea></label></aside>
@@ -125,7 +146,7 @@ function renderShell(){const root=document.createElement('div');root.id='imam-bo
 <div class="ib-tools-bottom"><button data-cmd="audio">▶ التلاوة</button><button data-cmd="stopAudio">■ إيقاف الصوت</button><select id="ib-reciter"><option value="Husary_128kbps">الحصري</option><option value="Alafasy_128kbps">العفاسي</option><option value="MaherAlMuaiqly128kbps">المعيقلي</option></select><select id="ib-timer-preset" aria-label="نوع المؤقت"><option value="0">تصاعدي</option><option value="120">دقيقتان</option><option value="180">٣ دقائق</option><option value="300">٥ دقائق</option><option value="600">١٠ دقائق</option></select><button data-cmd="timer">⏱️ تشغيل/إيقاف</button><button data-cmd="timerReset">تصفير</button><span id="ib-clock" role="timer">00:00</span><button data-cmd="question">سؤال سريع</button><button data-cmd="completeGame">أكمل الآية</button><button data-cmd="tajweed">سؤال تجويد</button><button data-cmd="preview">معاينة العرض</button><button data-cmd="lesson">أنشطة التحضير</button></div>
 <div class="ib-encourage"><label>التشجيع <select id="ib-cheer">${surprise.map(s=>`<option>${esc(s)}</option>`).join('')}</select></label><button data-cmd="cheer">تشجيع صوتي</button><button data-cmd="mute">كتم</button><label>مستوى الصوت <input id="ib-volume" type="range" min="0" max="100" value="85" aria-label="مستوى صوت التلاوة والتشجيع"></label>${emotions.map(x=>`<button data-emotion="${x}">${x}</button>`).join('')}</div>
 </main><aside class="ib-science"><h3>التفسير ومعاني الكلمات</h3><label class="ib-book-picker">التفسير المختار<select id="ib-book-select">${(root.BoardCorpus?.BOOKS||['التفسير الميسر']).map(x=>`<option>${esc(x)}</option>`).join('')}</select></label><div id="ib-science-content">لم تحدد كلمة أو آية بعد.</div><div class="ib-science-controls"><button data-cmd="scienceImport">📥 استيراد بيانات المجمع</button><button data-cmd="scienceMultiImport">📚 فحص واستيراد تفاسير متعددة</button><button data-cmd="scienceEdit">إضافة/تعديل بطاقة مع المصدر</button><button data-cmd="scienceShare">إظهار البطاقة للطالب</button><button data-cmd="scienceQuiz">سؤال من البطاقة</button></div><button data-cmd="explain">إظهار شرح المحفظ للطالب</button><label>شرح عام معتمد للمشاركة<textarea id="ib-public" placeholder="شرح يكتبه المحفظ ويختار مشاركته"></textarea></label><button data-cmd="quranCorrection">تصحيح على النص القرآني</button><button data-cmd="session">التسميع والتقييم داخل السبورة</button><button data-cmd="finish">مراجعة اكتمال الحصة</button><p class="ib-small">عند فتح التسميع يظهر محرر الأكاديمية الأصلي داخل السبورة؛ نفس الأخطاء ونفس الحفظ والتقرير، دون سجل مكرر.</p><p class="ib-small">الرسم والتشجيع لا يسجلان تقييمات أو أخطاء رسمية تلقائيًا.</p></aside></div><div id="ib-native-overlay" class="ib-native-overlay" hidden aria-label="محرر الحصة الرسمي"><div class="ib-native-panel"><header><div><strong>📝 التسميع والتصحيح والتقييم الرسمي</strong><p>محرر الحصة الأصلي داخل السبورة — لا تُعتمد السبورة تلقائيًا؛ لا يتم اعتماد الحصة قبل الضغط على حفظ الحصة</p></div><button type="button" data-cmd="native-close">العودة إلى السبورة</button></header><div class="ib-native-actions"><button type="button" data-cmd="reading">↩ العودة إلى وضع القراءة</button><button type="button" data-cmd="pauseDisplay">إخفاء شاشة الطالب</button><button type="button" data-cmd="native-quran">📖 تسجيل أخطاء النص القرآني</button><button type="button" data-cmd="native-save">💾 حفظ الحصة بالنظام المعتمد</button><span id="ib-native-status" role="status">لا توجد حصة معتمدة بمجرد فتح المحرر</span></div><div id="ib-native-mount" class="ib-native-mount"></div></div></div>
-</section>`;document.body.append(root);root.addEventListener('click',click);root.addEventListener('change',change);root.addEventListener('input',input);root.addEventListener('pointerdown',pointerDown);root.addEventListener('pointermove',pointerMove);root.addEventListener('pointerup',pointerUp);root.addEventListener('pointercancel',pointerUp);root.addEventListener('keydown',keyboard);if($('ib-book-select'))$('ib-book-select').value=b.scienceBook;$('ib-private').value=b.privateNote;$('ib-public').value=b.publicExplanation;const select=$('ib-chapter');const list=typeof S!=='undefined'?S:[];select.innerHTML=list.map((s,i)=>`<option value="${i+1}">${esc(s.n)}</option>`).join('');select.value=String(b.chapter);$('ib-from').value=b.from;$('ib-to').value=b.to;updateSummary();updateActivity();updateGroups();updateStudents();updateAssignments();updateTimeline();renderScience();drawCanvas();}
+</section>`;document.body.append(root);ia20CompactBoardTools();root.addEventListener('click',click);root.addEventListener('change',change);root.addEventListener('input',input);root.addEventListener('pointerdown',pointerDown);root.addEventListener('pointermove',pointerMove);root.addEventListener('pointerup',pointerUp);root.addEventListener('pointercancel',pointerUp);root.addEventListener('keydown',keyboard);if($('ib-book-select'))$('ib-book-select').value=b.scienceBook;$('ib-private').value=b.privateNote;$('ib-public').value=b.publicExplanation;const select=$('ib-chapter');const list=typeof S!=='undefined'?S:[];select.innerHTML=list.map((s,i)=>`<option value="${i+1}">${esc(s.n)}</option>`).join('');select.value=String(b.chapter);$('ib-from').value=b.from;$('ib-to').value=b.to;updateSummary();updateActivity();updateGroups();updateStudents();updateAssignments();updateTimeline();renderScience();drawCanvas();}
 function updateStudents(){const select=$('ib-student');if(!select)return;select.innerHTML=`<option value="">— اختر طالبًا —</option>${optionList()}`;select.value=visibleStudents().some(x=>String(x.id)===String(b.studentId))?b.studentId:'';const st=visibleStudents().find(x=>String(x.id)===String(b.studentId));$('ib-student-info').textContent=st?`الطالب: ${st.name||st.fullName} · المستوى: ${st.level||'غير محدد'} · الحلقة: ${studentGroup(st)||'غير محددة'}${completedToday(st.id)?' · تسميع اليوم محفوظ':''}`:'لم يتم اختيار طالب';updateQueue();}
 function updateActivity(){$('ib-activities')?.querySelectorAll('[data-activity]').forEach(el=>el.classList.toggle('on',el.dataset.activity===b.activity));}
 function updateSummary(){status(b.dirty?'تغييرات لم تحفظ':b.savedAt?'المسودة محفوظة محليًا':'جلسة تعليمية — غير معتمدة');}
@@ -303,6 +324,7 @@ g.addEventListener?.('pagehide',()=>{if(active&&b.dirty&&sessionUser===currentUs
 document.addEventListener?.('visibilitychange',()=>{if(active&&document.visibilityState==='hidden'&&b.dirty&&sessionUser===currentUser())flush();});
 function open(){try{assertUser();}catch(err){return notify(err.message,'error');}if(active){$('imam-board-root')?.scrollIntoView();return;}active=true;sessionUser=currentUser();b.sessionId=newId();b.groupFilter='';renderShell();clearInterval(accountWatch);accountWatch=setInterval(dropPrivateBoardOnAccountChange,1000);}
 function openForCurrentSession(){
+ ia20ReturnState={scrollY:Math.max(0,g.scrollY||0),studentId:String($('sesSt')?.value||'')};
  const id=String($('sesSt')?.value||'');
  if(!id){notify('اختر الطالب داخل الحصة أولًا','info');return false;}
  if(!students().some(st=>String(st.id)===id)){notify('الطالب غير متاح لحسابك','error');return false;}
@@ -314,17 +336,27 @@ function openForCurrentSession(){
  // Read the current, possibly unsaved task from the official lesson editor.
  // This only fills the educational display; it never writes/approves the lesson.
  const mappings=[['new','الحفظ الجديد'],['rec','المراجعة القريبة'],['far','المراجعة البعيدة']];
+ const step=g.V9?.step;
+ if(step==='review')mappings.push(mappings.shift());
  const surahs=typeof S!=='undefined'?S:[];
  for(const [key,activity] of mappings){
   const title=String($(key+'-s')?.value||'').trim();const index=surahs.findIndex(row=>row.n===title);
   if(index<0)continue;
   const full=!!$(key+'-full')?.checked;
   const from=full?1:Number($(key+'-f')?.value),to=full?Number(surahs[index].a):Number($(key+'-t')?.value);
-  if(!validRange(index+1,from,to))continue;
-  b.activity=activity;b.chapter=index+1;b.from=from;b.to=to;b.verse=from;
+  // An incomplete lesson range is common before the teacher enters ayah numbers.
+  // Show an explicitly temporary preview of the chosen surah, never a fake saved range.
+  let showFrom=from,showTo=to,preview=false;
+  if(!validRange(index+1,from,to)){
+    showFrom=1;showTo=Math.min(5,Number(surahs[index].a)||5);preview=true;
+  }
+  if(!validRange(index+1,showFrom,showTo))continue;
+  b.activity=activity;b.chapter=index+1;b.from=showFrom;b.to=showTo;b.verse=showFrom;
   const chapter=$('ib-chapter'),start=$('ib-from'),end=$('ib-to');
-  if(chapter)chapter.value=b.chapter;if(start)start.value=from;if(end)end.value=to;
-  updateActivity();updateSummary();loadVerses();break;
+  if(chapter)chapter.value=b.chapter;if(start)start.value=showFrom;if(end)end.value=showTo;
+  updateActivity();updateSummary();loadVerses();
+  if(preview)status('معاينة أول خمس آيات — حدّد نطاق الحصة قبل الحفظ الرسمي');
+  break;
  }
  return true;
 }

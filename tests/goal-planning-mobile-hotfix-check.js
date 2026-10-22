@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const read=f=>fs.readFileSync(f,'utf8');
 const html=read('index.html'),ui=read('js/features/v11-ui.js'),css=read('archive/historical-css/v11.css'),sw=read('sw.js'),goal=read('js/features/goal-planning.js');
-for(const [name,path,version] of [['style','css/platform/legacy-features.css','11.12.1-beta.19'],['ui','js/features/v11-ui.js','11.4.1-profile-ui'],['logic','js/features/goal-planning.js','11.4.2-s2']]){
+for(const [name,path,version] of [['style','css/platform/legacy-features.css','11.12.1-beta.20'],['ui','js/features/v11-ui.js','11.4.1-profile-ui'],['logic','js/features/goal-planning.js','11.4.2-s2']]){
   const ref=path+'?v='+version;
   assert.ok(html.includes(ref),name+' live HTML cache-bust not updated');
   assert.ok(sw.includes("'./"+ref+"'"),name+' SW cache must match HTML');

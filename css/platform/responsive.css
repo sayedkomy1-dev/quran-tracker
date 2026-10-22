@@ -86,6 +86,13 @@
  #pg-session.ui-session-keyboard .ui-session-action-dock,body.ui-session-keyboard .ui-session-action-dock{display:none!important}
  #pg-session .beta19-session-board{width:100%}
  #pg-session.on{scroll-padding-bottom:190px}
+
+ #pg-session.on{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+ .ui-session-action-dock.ia20-save-jump{inset-inline-start:12px;inset-inline-end:auto;bottom:calc(84px + env(safe-area-inset-bottom));width:auto;max-height:48px;padding:0}
+ .ia20-save-jump-button{min-height:45px;font-size:13px}
+ #pg-session #v11SessionContext{min-height:0}
+ #pg-session #v9SessionSteps .v9-session-help{font-size:12px}
+ #pg-session .im119-card .im119-top strong{font-size:20px}
 }
 @media(max-width:440px){
  .hdr-btn.hdr-search{display:inline-flex}
@@ -137,3 +144,27 @@
 .beta19-sound-pref{display:grid;gap:10px;max-width:520px;margin:18px 0;padding:15px;border:1px solid var(--ui-line,#dfe7e2);border-radius:14px;background:var(--ui-surface,#fff)}
 .beta19-sound-pref label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
 .beta19-sound-pref input[type=range]{width:100%;max-width:260px}
+
+/* Beta20: compact session without a second oversized floating action panel. */
+#pg-session[data-ia-session-step]:not([data-ia-session-step="assessment"]) #v9SessionSteps .v9-session-mode{display:none}
+#pg-session.v9-guided[data-ia-session-step]:not([data-ia-session-step="assessment"]) :is(#im119Completion,#sessionJourneyCard,#v11SessionContext){display:none}
+#pg-session #v9SessionSteps{margin-block:5px 9px}
+#pg-session.v9-ready #v11SessionNavigator{display:none}
+#pg-session #v9SessionSteps .v9-step-btn{min-height:44px;touch-action:manipulation}
+#pg-session #v9SessionSteps .ia20-step-help{font-size:12px;line-height:1.55;margin:5px 7px 0;color:var(--ui-muted,#58665e)}
+#pg-session #v9SessionSteps .v9-session-mode{padding-block:5px}
+#pg-session #v9SessionFooter .assignment-audio-details{margin-block:0 12px;order:-1}
+#pg-session #v9SessionFooter .v9-action-stack{display:flex;flex-direction:column;gap:8px}
+#pg-session #v9SessionFooter{scroll-margin-top:90px}
+#pg-session .im119-card{gap:7px;padding:10px 12px}
+#pg-session .im119-track{height:6px}
+#pg-session .im119-save-state{font-size:12px;line-height:1.55}
+#pg-session .ia20-session-advanced{border:1px solid var(--ui-line,#dfe7e2);border-radius:12px;padding:0 10px}
+#pg-session .ia20-session-advanced>summary{padding-block:12px;min-height:44px;font-size:14px;display:list-item;cursor:pointer}
+#pg-session .ia20-session-advanced[open]>summary{border-bottom:1px solid var(--ui-line,#dfe7e2);margin-bottom:10px}
+#pg-session .ia20-session-advanced>.im119-row{margin:10px 0}
+.ui-session-action-dock.ia20-save-jump{padding:0;display:flex;align-items:stretch;inset-inline:auto 16px;width:auto;max-width:none;border-radius:14px;box-shadow:0 6px 22px rgba(7,51,36,.15)}
+.ia20-save-jump-button{min-height:44px;padding:8px 14px;border-radius:14px;border:0;background:var(--ui-primary,#145a3a);color:#fff;font:inherit;font-weight:800;cursor:pointer}
+body.ui-session-active.ia20-save-footer-visible .ui-session-action-dock.ia20-save-jump{display:none}
+
+@media print{.ia20-save-jump{display:none!important}}
