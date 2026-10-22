@@ -11,7 +11,7 @@ assert(styles.includes('.role-home-head { background:radial-gradient')&&styles.i
 assert(styles.includes('#pg-home.v92-home-ready:not(.on){display:none!important}'),'non-active home must remain hidden');
 assert(styles.includes('@media(max-width:480px)')&&responsive.includes('#pg-home .v92-stats{grid-template-columns:repeat(2'),'mobile 2-column layout required');
 assert(base.includes('background:linear-gradient(110deg,#0a3934,#0c4b41)')&&base.includes('background:linear-gradient(115deg,#0d3936,#123e39)'),'header and dock must show visible redesign');
-assert(html.includes('role-home.css?v=11.12.1-beta.17')&&sw.includes("'./role-home.css?v=11.12.1-beta.17'"),'role home stylesheet needs cache bust in online and offline shells');
-assert(read('VERSION').trim()==='11.12.1-beta.17','version mismatch');
+assert(html.includes('role-home.css?v=11.12.1-beta.18')&&sw.includes("'./role-home.css?v=11.12.1-beta.18'"),'role home stylesheet needs cache bust in online and offline shells');
+assert(read('VERSION').trim()==='11.12.1-beta.18','version mismatch');
 assert(!/<link\s[^>]*href="(?:styles|v9|v10|v11)\.css/.test(html),'legacy edition layers should not be loaded');
 console.log('PASS beta8 visible homepage refresh: roles, existing destinations, board permission check, 2-column phone layout, dark header/dock, PWA cache');

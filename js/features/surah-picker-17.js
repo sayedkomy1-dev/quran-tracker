@@ -56,7 +56,14 @@
       const option=e.target.closest('[data-surah-index]');
       if(option)pick(key,Number(option.dataset.surahIndex));
     });
-    el.querySelector('.ia-surah-search').addEventListener('input',()=>filter(key));
+    const search=el.querySelector('.ia-surah-search');
+    search.addEventListener('input',()=>filter(key));
+    // Beta18: keep opening via the arrow keyboard-free, but typing must be
+    // explicitly focusable on the actual Android tap (not in a timer).
+    // Never preventDefault on this gesture: Chrome/Gboard needs its native path.
+    const focusSearch=()=>{if(document.activeElement!==search)search.focus({preventScroll:true});};
+    search.addEventListener('click',focusSearch);
+    search.addEventListener('touchend',focusSearch,{passive:true});
     el.addEventListener('keydown',e=>{
       if(e.key==='Escape'){e.preventDefault();close(key);}
       if(e.key==='Enter'&&e.target.classList.contains('ia-surah-search')){

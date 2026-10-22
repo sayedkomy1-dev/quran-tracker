@@ -476,6 +476,9 @@ if(typeof V10_BASE_RENDER_HOME==='function')globalThis.renderHome=function(...ar
 function v10SurahSearchValue(v){const fn=globalThis.v8NormArabic||globalThis.normalizeSurahName;return fn?fn(String(v||'')):String(v||'').trim();}
 function v10PositionSurahDropdown(key){
  const input=document.getElementById(key+'-s'),el=document.getElementById(`${key}-surah-dropdown`);if(!input||!el||!el.classList.contains('open'))return;
+ // Beta18: the new full-screen sheet positions itself with visualViewport.
+ // Do not let the legacy scroll listener shrink/move it during typing or scrolling.
+ if(el.classList.contains('ia-surah-picker'))return;
  const rect=input.getBoundingClientRect(),nav=document.getElementById('v9Nav');
  const navTop=nav&&getComputedStyle(nav).position==='fixed'?nav.getBoundingClientRect().top:innerHeight;
  const safeBottom=Math.min(innerHeight,navTop||innerHeight),below=Math.max(0,safeBottom-rect.bottom-12),above=Math.max(0,rect.top-14),up=below<230&&above>below;

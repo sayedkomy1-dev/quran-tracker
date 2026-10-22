@@ -1,0 +1,15 @@
+{
+  "release": "11.12.1-beta.18",
+  "base": "11.12.1-beta.17",
+  "purpose": "Fix Android in-dialog surah search focus and prevent legacy dropdown positioning overriding beta17 modal",
+  "sql_changed": [],
+  "deleted": [],
+  "code_paths_changed": [
+    "v10.js",
+    "js/features/surah-picker-17.js"
+  ],
+  "new_tests": [
+    "tests/surah-picker-focus-beta18-check.js"
+  ],
+  "note": "Other changed files are version identity, shell/cache pinning, changelog, package test chain, and matching test expectations. No changes to database or official lesson save schema."
+}
