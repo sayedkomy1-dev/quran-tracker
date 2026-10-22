@@ -3,7 +3,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('nod
 const read=p=>fs.readFileSync(p,'utf8');
 const index=read('index.html'),sw=read('sw.js'),role=read('js/features/role-home.js'),guide=read('js/features/ux-guidance.js'),style=read('role-home.css'),mark=read('js/features/teacher-error-marking.js'),portal=read('js/features/guardian-portal-view.js'),mushaf=read('js/features/mushaf-offline.js'),guest=read('guest-practice.html');
 for(const [k,text] of [['role',role],['guidance',guide],['error',mark],['portal',portal]])new vm.Script(text,{filename:k});
-for(const ref of ['role-home.css?v=11.12.1-beta.20','ux-guidance.css?v=11.7.4.2','js/features/role-home.js?v=11.12.1-beta.20','js/features/ux-guidance.js?v=11.12.1-beta.20','js/features/teacher-error-marking.js?v=11.8.0']){
+for(const ref of ['role-home.css?v=11.12.1-beta.21','ux-guidance.css?v=11.7.4.2','js/features/role-home.js?v=11.12.1-beta.21','js/features/ux-guidance.js?v=11.12.1-beta.21','js/features/teacher-error-marking.js?v=11.8.0']){
  assert(index.includes(ref),'missing HTML ref '+ref);assert(sw.includes(ref),'missing offline ref '+ref);
 }
 assert(style.includes('v92-actions{display:none!important}'),'old duplicate buttons must be hidden in workspace');

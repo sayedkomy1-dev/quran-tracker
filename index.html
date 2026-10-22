@@ -11,17 +11,17 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="11.12.1-beta.20">
-<link rel="manifest" href="manifest.json?v=11.12.1-beta.20">
+<meta name="application-version" content="11.12.1-beta.21">
+<link rel="manifest" href="manifest.json?v=11.12.1-beta.21">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<script src="js/core/boot-health.js?v=11.12.1-beta.20"></script>
-<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.20"></script>
+<script src="js/core/boot-health.js?v=11.12.1-beta.21"></script>
+<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.21"></script>
 <!-- Original style files retained in repository for compatibility/tests, but NOT loaded at runtime.
      Historical refs: styles.css?v=11.0.0 | v9.css?v=11.0.0 | v10.css?v=11.0.0 | v11.css?v=11.4.1-profile-ui -->
-<link rel="stylesheet" href="css/platform/tokens.css?v=11.12.1-beta.20">
-<link rel="stylesheet" href="css/platform/legacy-features.css?v=11.12.1-beta.20">
+<link rel="stylesheet" href="css/platform/tokens.css?v=11.12.1-beta.21">
+<link rel="stylesheet" href="css/platform/legacy-features.css?v=11.12.1-beta.21">
 <link rel="stylesheet" href="quran-engine.css?v=11.0.0">
 <link rel="stylesheet" href="teacher-error-marking.css?v=11.8.0">
 <link rel="stylesheet" href="correction-document.css?v=11.7.4.5">
@@ -29,9 +29,9 @@
 <link rel="stylesheet" href="goal-planning.css?v=11.4.2-s2">
 <link rel="stylesheet" href="student-finance.css?v=11.5.1-s2">
 <link rel="stylesheet" href="guardian-messages.css?v=11.6.0-s1">
-<link rel="stylesheet" href="teacher-rating.css?v=11.12.1-beta.20">
+<link rel="stylesheet" href="teacher-rating.css?v=11.12.1-beta.21">
 <link rel="stylesheet" href="auth.css?v=11.0.0">
-<link rel="stylesheet" href="role-home.css?v=11.12.1-beta.20">
+<link rel="stylesheet" href="role-home.css?v=11.12.1-beta.21">
 <link rel="stylesheet" href="ux-guidance.css?v=11.7.4.2">
 <link rel="stylesheet" href="academy-workspaces.css?v=11.7.4-foundation">
 <style id="wlqCriticalOfflineStyle">
@@ -39,16 +39,16 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 </style>
 <link rel="stylesheet" href="achievement-certificates.css?v=11.8.0">
 <link rel="stylesheet" href="revision-quran-text.css?v=11.8.1">
-<link rel="stylesheet" href="academy-analytics-1112.css?v=11.12.1-beta.20">
+<link rel="stylesheet" href="academy-analytics-1112.css?v=11.12.1-beta.21">
 <link rel="stylesheet" href="session-intelligence-119.css?v=11.9.2">
 <link rel="stylesheet" href="placement-center-1191.css?v=11.9.2">
 <link rel="stylesheet" href="circle-management-1110.css?v=11.11.1">
 <link rel="stylesheet" href="academic-exams-1111.css?v=11.11.1">
 <link rel="stylesheet" href="progress-bridge-1111.css?v=11.11.1">
-<link rel="stylesheet" href="imam-smart-board.css?v=11.12.1-beta.20">
-<link rel="stylesheet" href="css/platform/components.css?v=11.12.1-beta.20">
-<link rel="stylesheet" href="css/platform/responsive.css?v=11.12.1-beta.20">
-<link rel="stylesheet" href="css/platform/surah-picker.css?v=11.12.1-beta.20">
+<link rel="stylesheet" href="imam-smart-board.css?v=11.12.1-beta.21">
+<link rel="stylesheet" href="css/platform/components.css?v=11.12.1-beta.21">
+<link rel="stylesheet" href="css/platform/responsive.css?v=11.12.1-beta.21">
+<link rel="stylesheet" href="css/platform/surah-picker.css?v=11.12.1-beta.21">
 </head>
 <body class="imam-global-redesign">
 
@@ -267,7 +267,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
 <!-- ══════════════ SESSION ══════════════ -->
 <div class="pg" id="pg-session">
-  <div class="card">
+  <div class="card ia21-student-card" id="ia21SessionStudent">
     <div class="ch">👤 الطالب</div>
     <div class="fld">
       <select id="sesSt" onchange="onSesSt()">
@@ -294,6 +294,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
   </div>
 
   <div class="card session-journey-card v1059-session-insights" id="sessionJourneyCard" style="display:none">
+    <div class="ia21-followup-heading">📍 متابعة الطالب <span>التفاصيل عند الحاجة</span></div>
     <section class="v1059-insight" id="v1059StopPanel">
       <div class="v10510-insight-head">
         <span class="v1059-insight-title"><b>📍 أين توقفنا؟</b><small id="v1059StopHint">آخر مواضع الطالب والتكليف القادم</small></span>
@@ -302,7 +303,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
       <div class="v1059-insight-body" id="v1059StopBody" hidden>
         <div id="v1059JourneyMeta" class="v1059-journey-meta"></div>
         <div id="sessionJourneyStrip" class="journey-strip v1059-journey-grid"></div>
-        <div class="v1059-panel-actions"><button class="btn btn-out btn-sm" onclick="fillFromLast()">♻️ تحميل نفس التكليف السابق</button></div>
+        
       </div>
     </section>
     <section class="v1059-insight" id="v1059ReviewPanel">
@@ -321,17 +322,18 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
     <button class="btn btn-wa mb8" onclick="sendAbsenceWA()">📲 إبلاغ ولي الأمر بالغياب</button>
   </div>
 
-  <div id="repeatBar" class="repeat-bar" onclick="fillFromLast()" style="display:none">
-    <span style="font-size:18px">♻️</span>
-    <div class="repeat-bar-text">
-      <div style="font-weight:700">كرر تكليف آخر حصة</div>
-      <div class="repeat-bar-hint" id="repeatHint">اضغط لملء الحقول تلقائياً</div>
-    </div>
-    <span style="font-size:16px;color:var(--gold)">←</span>
-  </div>
-
   <div id="sesContent">
     <div class="sec-div">📋 القسم الأول: تقييم التسميع</div>
+  <button type="button" id="repeatBar" class="repeat-bar ia21-repeat-primary card" data-v9-step="assessment" onclick="fillFromLast()" style="display:none" aria-label="كرّر تكليف آخر حصة داخل التسميع">
+    <span style="font-size:18px">♻️</span>
+    <span class="repeat-bar-text">
+      <span style="font-weight:700">كرر تكليف آخر حصة</span>
+      <span class="repeat-bar-hint" id="repeatHint">اضغط لملء الحقول تلقائياً</span>
+    </span>
+    <span style="font-size:16px;color:var(--gold)">←</span>
+  </button>
+
+
     <div class="card" id="prevCard">
       <div class="ch">📋 تسميع الحصة السابقة</div>
       <div id="prevContent"><div class="txt-mut" style="text-align:center;padding:10px">اختر الطالب لعرض تكليف الحصة السابقة</div></div>
@@ -1056,21 +1058,21 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <!-- ════════════ SCRIPTS ════════════ -->
 <!-- v11.2.0 Stage 2 interactive error marking -->
 
-<script src="js/core/runtime.js?v=11.12.1-beta.20" defer></script>
+<script src="js/core/runtime.js?v=11.12.1-beta.21" defer></script>
 <script src="js/features/v10-data.js?v=11.0.0" defer></script>
 <script src="auth.js?v=11.7.4-foundation" defer></script>
-<script src="js/features/role-home.js?v=11.12.1-beta.20" defer></script>
-<script src="js/features/ux-guidance.js?v=11.12.1-beta.20" defer></script>
+<script src="js/features/role-home.js?v=11.12.1-beta.21" defer></script>
+<script src="js/features/ux-guidance.js?v=11.12.1-beta.21" defer></script>
 <script src="js/features/academy-workspaces.js?v=11.7.4-foundation" defer></script>
 <script src="sync-core.js?v=11.0.0" defer></script>
-<script src="app.js?v=11.12.1-beta.20" defer></script>
+<script src="app.js?v=11.12.1-beta.21" defer></script>
 <script src="v8.js?v=11.2.0-s3" defer></script>
-<script src="v9.js?v=11.12.1-beta.20-mobile-nav-hotfix1" defer></script>
+<script src="v9.js?v=11.12.1-beta.21-mobile-nav-hotfix1" defer></script>
 <script src="js/features/mushaf-offline.js?v=11.7.4.2" defer></script>
 <script src="js/features/quran-engine.js?v=11.0.0" defer></script>
 <script src="js/features/quran-structure.js?v=11.0.0" defer></script>
 <script src="js/features/recitation-carry.js?v=11.0.0" defer></script>
-<script src="v10.js?v=11.12.1-beta.20" defer></script>
+<script src="v10.js?v=11.12.1-beta.21" defer></script>
 <script src="js/features/revision-quran-text.js?v=11.8.1" defer></script>
 <script src="js/features/teacher-error-marking.js?v=11.8.0" defer></script>
 <script src="js/features/teacher-correction-document.js?v=11.7.4.5" defer></script>
@@ -1082,15 +1084,15 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/goal-planning.js?v=11.4.2-s2" defer></script>
 <script src="js/features/student-finance.js?v=11.5.1-s2" defer></script>
 <script src="js/features/teacher-inbox.js?v=11.6.0-s1" defer></script>
-<script src="js/features/supervisor-dashboard.js?v=11.12.1-beta.20" defer></script>
+<script src="js/features/supervisor-dashboard.js?v=11.12.1-beta.21" defer></script>
 <script src="js/features/guardian-portal-share.js?v=11.5.1-s2" defer></script>
 <script src="js/features/quran-audio-export.js?v=11.2.0-s4" defer></script>
 <script src="js/features/assignment-audio-share.js?v=11.2.0-s4" defer></script>
-<script src="js/features/v11-ui.js?v=11.4.1-profile-ui" defer></script>
-<script src="js/core/mobile-navigation.js?v=11.12.1-beta.20" defer></script>
+<script src="js/features/v11-ui.js?v=11.12.1-beta.21" defer></script>
+<script src="js/core/mobile-navigation.js?v=11.12.1-beta.21" defer></script>
 <script src="js/features/achievement-certificates.js?v=11.9.0" defer></script>
 
-<script src="js/features/session-intelligence-119.js?v=11.12.1-beta.20" defer></script>
+<script src="js/features/session-intelligence-119.js?v=11.12.1-beta.21" defer></script>
 
 <script src="js/features/placement-center-1191.js?v=11.9.2" defer></script>
 
@@ -1099,14 +1101,14 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/academic-exams-1111.js?v=11.11.1" defer></script>
 
 <script src="js/features/progress-bridge-1111.js?v=11.11.1" defer></script>
-<script src="js/features/academy-analytics-1112.js?v=11.12.1-beta.20" defer></script>
+<script src="js/features/academy-analytics-1112.js?v=11.12.1-beta.21" defer></script>
 
-<script src="js/features/imam-board-tafsir.js?v=11.12.1-beta.20" defer></script>
-<script src="js/features/imam-board-corpus.js?v=11.12.1-beta.20" defer></script>
-<script src="js/features/imam-smart-board.js?v=11.12.1-beta.20" defer></script>
-<script src="js/features/platform-ux.js?v=11.12.1-beta.20" defer></script>
-<script src="js/features/platform-workflow.js?v=11.12.1-beta.20" defer></script>
-<script src="js/features/surah-picker-17.js?v=11.12.1-beta.20" defer></script>
-<script src="js/features/beta19-experience.js?v=11.12.1-beta.20" defer></script>
+<script src="js/features/imam-board-tafsir.js?v=11.12.1-beta.21" defer></script>
+<script src="js/features/imam-board-corpus.js?v=11.12.1-beta.21" defer></script>
+<script src="js/features/imam-smart-board.js?v=11.12.1-beta.21" defer></script>
+<script src="js/features/platform-ux.js?v=11.12.1-beta.21" defer></script>
+<script src="js/features/platform-workflow.js?v=11.12.1-beta.21" defer></script>
+<script src="js/features/surah-picker-17.js?v=11.12.1-beta.21" defer></script>
+<script src="js/features/beta19-experience.js?v=11.12.1-beta.21" defer></script>
 </body>
 </html>

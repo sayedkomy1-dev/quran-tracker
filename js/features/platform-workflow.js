@@ -20,7 +20,7 @@
  };
  const find=id=>d.getElementById(id);
  function heading(page,key){
-  if(key==='students'||page.querySelector(':scope > .ui-workspace-heading, :scope > .v11-page-hero'))return;
+  if(key==='students'||key==='session'||page.querySelector(':scope > .ui-workspace-heading, :scope > .v11-page-hero'))return;
   // Specialist screens already render a semantic heading; do not duplicate it.
   if(page.querySelector(':scope > .cm-header, :scope > .ae-header, :scope > .analytics-header'))return;
   const [title,description]=pages[key]||[page.querySelector('.ch,h2')?.textContent?.trim()||'مساحة العمل','أدوات القسم وبياناته حسب صلاحيات حسابك.'];
@@ -40,24 +40,8 @@
   if(!page||!save||!send||!draft||find('uiSessionActionDock'))return;
   // Preserve BOTH official save actions in #v9SessionFooter. The previous floating
   // dock separated the assignment-audio control from save/send and covered fields.
-  const dock=d.createElement('nav');dock.id='uiSessionActionDock';
-  dock.className='ui-session-action-dock ia20-save-jump';dock.dir='rtl';
-  dock.setAttribute('aria-label','انتقال إلى إجراءات حفظ الحصة');
-  const jump=d.createElement('button');jump.type='button';jump.className='ia20-save-jump-button';
-  jump.textContent='💾 الحفظ والإرسال';
-  jump.addEventListener('click',()=>{
-    if(typeof g.setSessionStep==='function')g.setSessionStep('notes',false);
-    const footer=find('v9SessionFooter');
-    if(footer){footer.scrollIntoView({block:'center',behavior:g.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth'});}
-  });
-  dock.appendChild(jump);d.body.append(dock);
-  const footer=find('v9SessionFooter');
-  if(footer&&typeof IntersectionObserver==='function'){
-    const observer=new IntersectionObserver(entries=>{
-      d.body.classList.toggle('ia20-save-footer-visible',entries.some(e=>e.isIntersecting));
-    },{root:null,threshold:.15});observer.observe(footer);
-    g.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
-  }
+  // Beta21: No fixed save shortcut. Save/send stay in #v9SessionFooter;
+  // the notes tab provides the single explicit destination for official saving.
   const setKeyboard=()=>{
     const v=g.visualViewport;
     const isInput=d.activeElement?.matches?.('input,select,textarea,[contenteditable="true"]');
@@ -99,7 +83,7 @@
    d.querySelectorAll('.pg[id]').forEach(el=>observer.observe(el,{attributes:true,attributeFilter:['class']}));
    g.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
   }
-  g.ImamApp=g.ImamApp||{};g.ImamApp.PlatformWorkflow=Object.freeze({version:'11.12.1-beta.20',refresh:pageState});
+  g.ImamApp=g.ImamApp||{};g.ImamApp.PlatformWorkflow=Object.freeze({version:'11.12.1-beta.21',refresh:pageState});
  }
  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(globalThis);

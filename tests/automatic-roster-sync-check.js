@@ -16,8 +16,8 @@ assert.match(feature,/students\.length===0/);
 assert.match(feature,/actor!==currentActor\(\)/);
 assert.match(feature,/phone|الهواتف/); // explicit privacy promise only
 assert.match(sql,/if v_actor is null or not exists\(select 1 from public\.app_users/);
-assert.match(sw,/quran-pwa-v11\.12\.1-beta\.20-workspace-workflow/);
-for(const u of ['app.js?v=11.12.1-beta.20','js/features/supervisor-dashboard.js?v=11.12.1-beta.20']){
+assert.match(sw,/quran-pwa-v11\.12\.1-beta\.21-workspace-workflow/);
+for(const u of ['app.js?v=11.12.1-beta.21','js/features/supervisor-dashboard.js?v=11.12.1-beta.21']){
   assert(html.includes(u));assert(sw.includes(u));
 }
 const listeners={};const timers=new Map();let seq=0,online=true,user='teacher-1',role='teacher';

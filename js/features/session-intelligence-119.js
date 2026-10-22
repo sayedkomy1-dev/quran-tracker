@@ -136,6 +136,20 @@
       [...completion.querySelectorAll(':scope > .im119-row, :scope > .im119-audio-toggle, :scope > .im119-small')].forEach(el=>advanced.append(el));
       completion.append(advanced);
     }
+    // Beta21: the percentage + warning remain visible. Open this one disclosure
+    // for detailed verification, save/sync health, and advanced options.
+    if(completion&&!by('ia21CompletionMore')){
+      const more=document.createElement('details');more.id='ia21CompletionMore';more.className='ia21-completion-more';
+      const summary=document.createElement('summary');summary.textContent='المزيد: النواقص والتقييمات ونوع الحصة';
+      more.append(summary);
+      const saveHealth=by('im119SaveState');
+      const checklist=completion.querySelector(':scope > details:not(#ia20SessionAdvanced)');
+      if(saveHealth)more.append(saveHealth);
+      if(checklist)more.append(checklist);
+      const advancedOptions=by('ia20SessionAdvanced');
+      if(advancedOptions)more.append(advancedOptions);
+      completion.append(more);
+    }
     by('im119AudioEnabled').checked=audioEnabled();
     by('im119AudioEnabled').addEventListener('change',e=>{try{localStorage.setItem(AUDIO_PREF,e.target.checked?'on':'off');}catch(_){} });
     by('im119Kind').addEventListener('change',e=>{state.kind=e.target.value;writeKindPref(state.kind);touchDraft();render();});

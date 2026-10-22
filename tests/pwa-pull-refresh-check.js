@@ -8,7 +8,7 @@ const publicCSS=read('css/platform/public-experience.css');
 const studentCSS=read('css/platform/student-display.css');
 const worker=read('sw.js');
 const appVersion=read('VERSION').trim();
-const version='11.12.1-beta.20';
+const version='11.12.1-beta.21';
 assert.equal(appVersion,version);
 // Both root scrolling elements are guarded; no touch-action:none or JS touchmove cancellation.
 for(const [name,source] of Object.entries({main,css,publicCSS,studentCSS})){

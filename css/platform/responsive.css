@@ -88,8 +88,8 @@
  #pg-session.on{scroll-padding-bottom:190px}
 
  #pg-session.on{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
- .ui-session-action-dock.ia20-save-jump{inset-inline-start:12px;inset-inline-end:auto;bottom:calc(84px + env(safe-area-inset-bottom));width:auto;max-height:48px;padding:0}
- .ia20-save-jump-button{min-height:45px;font-size:13px}
+ 
+ 
  #pg-session #v11SessionContext{min-height:0}
  #pg-session #v9SessionSteps .v9-session-help{font-size:12px}
  #pg-session .im119-card .im119-top strong{font-size:20px}
@@ -163,8 +163,59 @@
 #pg-session .ia20-session-advanced>summary{padding-block:12px;min-height:44px;font-size:14px;display:list-item;cursor:pointer}
 #pg-session .ia20-session-advanced[open]>summary{border-bottom:1px solid var(--ui-line,#dfe7e2);margin-bottom:10px}
 #pg-session .ia20-session-advanced>.im119-row{margin:10px 0}
-.ui-session-action-dock.ia20-save-jump{padding:0;display:flex;align-items:stretch;inset-inline:auto 16px;width:auto;max-width:none;border-radius:14px;box-shadow:0 6px 22px rgba(7,51,36,.15)}
-.ia20-save-jump-button{min-height:44px;padding:8px 14px;border-radius:14px;border:0;background:var(--ui-primary,#145a3a);color:#fff;font:inherit;font-weight:800;cursor:pointer}
-body.ui-session-active.ia20-save-footer-visible .ui-session-action-dock.ia20-save-jump{display:none}
 
-@media print{.ia20-save-jump{display:none!important}}
+/* Beta21 — Single, compact lesson workspace: no duplicate student/hero/save overlay. */
+#pg-session .ia21-student-card{padding:14px 15px;display:grid;gap:9px}
+#pg-session .ia21-student-card>.ch{margin:0;font-size:15px}
+#pg-session .ia21-student-card>.fld{margin:0}
+#pg-session .ia21-student-card #sesSt{min-height:47px}
+#pg-session .ia21-student-card .beta19-session-board{min-height:40px;margin:0!important;padding:7px 12px;font-size:14px}
+#pg-session .ia21-student-card>.frow{gap:8px;margin:0}
+#pg-session .ia21-student-card>.frow .fld{margin-bottom:0}
+#pg-session .ia21-student-card>.frow label{margin-block:0 3px;font-size:12px}
+#pg-session .ia21-student-card #sesDate{min-height:42px;padding-block:7px}
+#pg-session .ia21-student-card #draftState{min-height:42px;padding:9px 7px;font-size:12px;display:flex;align-items:center;justify-content:center;text-align:center}
+#pg-session .ia21-student-card .status-btns{gap:7px;margin-top:0}
+#pg-session .ia21-student-card .status-btns .st-btn{min-height:44px;padding:8px 4px;font-size:14px}
+#pg-session .ia21-student-card .fld.mb4{margin:0}
+#pg-session.v9-guided[data-ia-session-step]:not([data-ia-session-step="assessment"]) .ia21-student-card>.frow,
+#pg-session.v9-guided[data-ia-session-step]:not([data-ia-session-step="assessment"]) .ia21-student-card>.fld.mb4,
+#pg-session.v9-guided[data-ia-session-step]:not([data-ia-session-step="assessment"]) .ia21-student-card>.status-btns{display:none}
+#pg-session.v9-guided[data-ia-session-step]:not([data-ia-session-step="assessment"]) .ia21-student-card{padding-block:9px;gap:6px}
+#pg-session.v9-guided[data-ia-session-step]:not([data-ia-session-step="assessment"]) .ia21-student-card>.ch{display:none}
+#pg-session .ia21-repeat-primary{width:100%;display:flex;min-height:68px;border-radius:15px;padding:13px 16px;background:color-mix(in srgb,var(--goldp,#fff8e5) 80%,var(--wh,#fff));color:var(--txt);border:1.5px solid var(--gold,#caab63);font:inherit;text-align:start;box-shadow:0 2px 9px rgba(0,0,0,.045);margin:0 0 10px;gap:12px}
+#pg-session .ia21-repeat-primary .repeat-bar-text{font-size:16px}
+#pg-session .ia21-repeat-primary .repeat-bar-hint{font-size:12px;margin-top:3px}
+#pg-session #repeatBar.ia21-repeat-step-hidden{display:none!important}
+#pg-session .im119-card{padding:10px 12px;gap:5px}
+#pg-session .im119-top{gap:8px;align-items:center}
+#pg-session .im119-top b{font-size:14px}
+#pg-session .im119-top small{font-size:11px}
+#pg-session .im119-top strong{font-size:18px}
+#pg-session .im119-track{height:5px;margin:1px 0}
+#pg-session #ia21CompletionMore{border:0;padding:0;margin:0}
+#pg-session #ia21CompletionMore>summary{padding:8px 10px;border:1px solid var(--ui-line,var(--bdr));border-radius:10px;font-weight:700;min-height:38px;font-size:12px;list-style-position:inside}
+#pg-session #ia21CompletionMore[open]>summary{margin-bottom:9px}
+#pg-session #ia21CompletionMore>.im119-save-state{margin-block:5px}
+#pg-session #ia21CompletionMore>.ia20-session-advanced{margin-top:7px}
+#pg-session .v1059-session-insights{margin:8px 0;padding:0!important}
+#pg-session .ia21-followup-heading{padding:9px 12px 5px;font-size:14px;font-weight:800;display:flex;justify-content:space-between;align-items:center;gap:8px}
+#pg-session .ia21-followup-heading span{font-size:11px;font-weight:500;color:var(--ui-muted,var(--mut))}
+#pg-session .v10510-insight-head{padding:7px 11px;align-items:center;gap:7px}
+#pg-session .v1059-insight-title{gap:1px}
+#pg-session .v1059-insight-title b{font-size:13px}
+#pg-session .v1059-insight-title small{font-size:10px;max-width:180px}
+#pg-session .v10510-insight-button{min-width:105px;min-height:39px;padding:7px 9px;font-size:12px;box-shadow:none}
+#pg-session .v1059-insight+.v1059-insight{border-top:1px solid var(--ui-line,var(--bdr))}
+#pg-session #v9SessionSteps{margin-top:4px}
+#pg-session #v9SessionSteps .v9-step-row{gap:5px}
+#pg-session #v9SessionSteps .v9-step-btn{padding-inline:5px}
+#pg-session #sesContent>.card{margin-bottom:9px}
+@media(max-width:520px){
+ #pg-session .ia21-student-card{padding:10px 11px;gap:7px}
+ #pg-session .ia21-student-card .frow{flex-wrap:nowrap}
+ #pg-session .ia21-student-card .frow>.fld{min-width:0;flex:1}
+ #pg-session .ia21-student-card .status-btns .st-btn{min-height:45px}
+ #pg-session .v1059-insight-title small{max-width:160px}
+}
+@media print{#pg-session #repeatBar{display:none!important}}

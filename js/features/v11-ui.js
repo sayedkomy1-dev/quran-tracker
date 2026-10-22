@@ -47,6 +47,7 @@
   };
 
   function ensurePageHero(page){
+    if(page==='session')return; // The actual lesson form is the title; no redundant session hero.
     const meta=pageMeta[page],pg=document.getElementById('pg-'+page);
     if(!meta||!pg||pg.querySelector(':scope > .v11-page-hero'))return;
     const hero=document.createElement('section');
@@ -72,11 +73,8 @@
     nav.innerHTML=`<button data-target="student" class="on"><span>1</span>الطالب</button><button data-target="assessment"><span>2</span>التسميع</button><button data-target="assignment"><span>3</span>التكليف</button><button data-target="notes"><span>4</span>الملاحظات</button>`;
     nav.addEventListener('click',e=>{const b=e.target.closest('button[data-target]');if(!b)return;sessionJump(b.dataset.target);});
     hero?.insertAdjacentElement('afterend',nav);
-    const firstCard=[...pg.children].find(x=>x.classList?.contains('card')&&!x.classList.contains('session-journey-card'));
-    if(firstCard&&!document.getElementById('v11SessionContext')){
-      const ctx=document.createElement('section');ctx.id='v11SessionContext';ctx.className='v11-session-context empty';ctx.innerHTML='<div class="v11-context-avatar">—</div><div><b>اختر طالبًا لبدء الحصة</b><span>سيظهر هنا ملخص سريع قبل التقييم</span></div>';
-      firstCard.insertAdjacentElement('afterend',ctx);
-    }
+    // Beta21: avoid generating a second copy of the selected student's card.
+    // The original #sesSt and attendance form remain the single source of truth.
   }
 
   function sessionJump(target){

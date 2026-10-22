@@ -22,8 +22,8 @@ assert.throws(()=>a.parseChapter(good,'كتاب غير موجود'),/غير مد
 const html=fake();html.ayahs[0].tafsir[0].text='<script>alert(1)</script>شرح تجريبي';assert(!a.parseChapter(html,'التفسير الميسر').entries[0].content.includes('<script>'));
 const wire=read('js/features/imam-smart-board.js'),htmlShell=read('index.html'),sw=read('sw.js');
 for(const s of ['case \'scienceMultiImport\'','case \'scienceShareMulti\'','ib-book-select','scienceBook:'])assert(wire.includes(s),s);
-assert(sw.includes('imam-board-corpus.js?v=11.12.1-beta.20'));
-assert(htmlShell.includes('imam-board-corpus.js?v=11.12.1-beta.20'));
+assert(sw.includes('imam-board-corpus.js?v=11.12.1-beta.21'));
+assert(htmlShell.includes('imam-board-corpus.js?v=11.12.1-beta.21'));
 assert(!wire.includes('fetch("https://raw.githubusercontent.com'),'no unlicensed remote auto fetching');
 (async()=>{
  const inp=JSON.stringify(good),file={name:'001_al-fatiha.json',size:Buffer.byteLength(inp),text:async()=>inp};

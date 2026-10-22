@@ -5,17 +5,17 @@ const html=read('index.html'),ui=read('js/features/platform-workflow.js'),compon
 assert.equal((html.match(/id="saveSessionBtn"/g)||[]).length,1,'single official save control');
 assert.equal((html.match(/id="saveSendSessionBtn"/g)||[]).length,1,'single official share control');
 for(const pattern of ['id="sesSt"','id="sesDate"','id="sesNotes"','id="draftState"','onclick="saveSession()"','onclick="saveAndSendWA()"'])assert(html.includes(pattern),'original form contract '+pattern);
-assert(ui.includes('d.body.append(dock)')&&ui.includes("g.setSessionStep('notes',false)"),'compact save shortcut must navigate to notes');
+assert(!ui.includes('d.body.append(dock)'),'save actions must not create a redundant fixed dock');
 assert(!ui.includes('actions.append(save,send)')&&legacy.includes('main.appendChild(saveBtn)')&&legacy.includes('main.appendChild(sendBtn)'),'official save controls must stay together in notes footer');
 assert(legacy.includes("main.insertAdjacentElement('beforebegin',audio)"),'assignment audio stays above official save controls');
 assert(!ui.includes('g.saveSession(')&&!ui.includes('g.saveAndSendWA('),'view must not create official records');
 assert(ui.includes("find('draftState')")&&legacy.includes('refreshV9DraftState()'),'original draft feedback remains available');
-assert(ui.includes("d.body.classList.toggle('ui-session-active',key==='session')"),'dock page visibility');
+assert(ui.includes("d.body.classList.toggle('ui-session-active',key==='session')"),'page awareness retained');
 assert(ui.includes('el.addEventListener(\'keydown\''),'icon-only toggle keyboard use');
 assert(ui.includes('onlineIndicator()')&&ui.includes('navigator?.onLine'),'offline warning');
 assert(component.includes('ui-workspace-heading')&&component.includes('ui-session-action-dock'),'common workspace and session dock');
 assert(responsive.includes('ui-session-keyboard')&&responsive.includes('bottom:calc(83px'),'mobile keyboard/navigation safe area');
-assert(html.includes('platform-workflow.js?v=11.12.1-beta.20')&&worker.includes("'./js/features/platform-workflow.js?v=11.12.1-beta.20'"),'refresh UI on version bump and offline shell');
+assert(html.includes('platform-workflow.js?v=11.12.1-beta.21')&&worker.includes("'./js/features/platform-workflow.js?v=11.12.1-beta.21'"),'refresh UI on version bump and offline shell');
 assert(roles.includes('role-hero-next')&&roles.includes('role-action-featured'),'role next action and hierarchy');
 const v8=read('v8.js');const fn=v8.match(/^function save\(\)\{[^\n]+/m)?.[0];assert(fn,'v8 effective save missing');
 function runSave(result){let backup=0,push=0;const context={V8:{syncing:false},settings:{sync:{auto:true}},stampLocalSyncChanges(){},__IMAM_BASE__:{save(){return result}},scheduleAutoBackup(){backup++},scheduleCloudPush(){push++}};vm.runInNewContext(fn+';this._save=save;',context);return {stored:context._save(),backup,push};}
