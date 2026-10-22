@@ -23,5 +23,5 @@ assert(app.includes('60*60*1000'),'resume worker checks throttled');
 assert(app.includes("ImamBootHealth?.log('sw-reload-approved')"));
 assert(index.includes('showRestartDiagnostics()')&&index.includes('pwaRestartDiagnostics'));
 assert(index.indexOf('boot-health.js')<index.indexOf('offline-bootstrap.js'));
-assert(swSrc.includes("'./js/core/boot-health.js?v=11.12.1-beta.23'"));
+assert(swSrc.includes("'./js/core/boot-health.js?v=11.12.1-beta.22'"));
 console.log('pwa-automatic-restart-check: PASS');

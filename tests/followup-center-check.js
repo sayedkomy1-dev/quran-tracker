@@ -5,7 +5,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 function assert(cond,msg){if(!cond)throw new Error(msg);}
 
 const html=read('index.html'),sw=read('sw.js'),feature=read('js/features/teacher-followup.js'),css=read('archive/historical-css/v10.css'),pkg=JSON.parse(read('package.json'));
-assert(pkg.version==='11.12.1-beta.23','package version must be 10.10.0');
+assert(pkg.version==='11.12.1-beta.22','package version must be 10.10.0');
 assert(html.includes('id="pg-followup"')&&html.includes('مركز متابعة الطلاب'),'follow-up page missing');
 assert(html.includes('teacher-followup.js?v=11.0.0'),'follow-up feature missing from HTML');
 assert(sw.includes("'./js/features/teacher-followup.js?v=11.0.0'"),'follow-up feature missing from offline shell');
