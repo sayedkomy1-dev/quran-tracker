@@ -36,6 +36,6 @@ assert.match(ui,/!g\.WeLiveQuranAuth\?\.isActive\?\.\(\)/,'No roster upload with
 assert.ok(!/phone:\s*|\.phone\s*\|\||pin:\s*|\.pin\s*\|\|/i.test(ui),'No phone or PIN is published with roster');
 assert.match(css,/\.supervisor-inline-detail/);
 assert.match(html,/supervisor-dashboard\.js\?v=11\.12\.1/);
-assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.12\.1-beta\.21-workspace-workflow'/);
+assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.12\.1-beta\.22-workspace-workflow'/);
 assert.match(read('js/core/runtime.js'),/schema:12/);
 console.log('PASS supervision-roster-permissions-stage2: tenant-scoped students, controlled progress/ratings, owner ACL, batch roster, audit, cache, no destructive SQL');

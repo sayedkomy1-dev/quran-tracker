@@ -27,6 +27,6 @@ assert.match(strip, /strip\.hidden=\(id==='home'\)/,'do not duplicate the homepa
 assert.match(responsive, /body\.v9-shell-ready \.pg\{padding:13px 12px calc\(var\(--imam-focus-clearance\)/,'reserve scroll space below fixed phone navigation');
 assert.match(responsive, /\.v9-nav,body\.v9-shell-ready \.v9-nav\{left:9px;right:9px;bottom:max\(8px/,'compact phone nav');
 assert.match(roleStyles, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,'two-column action cards');
-assert(html.includes('role-home.css?v=11.12.1-beta.21') && sw.includes("'./role-home.css?v=11.12.1-beta.21'"),'client and offline resource versions match');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.21');
+assert(html.includes('role-home.css?v=11.12.1-beta.22') && sw.includes("'./role-home.css?v=11.12.1-beta.22'"),'client and offline resource versions match');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.22');
 console.log('PASS beta10 phone homepage screenshot regression: toast, duplicate role title, contextual actions, accessible original routes, nav safe area');
