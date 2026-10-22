@@ -20,7 +20,7 @@
  };
  const find=id=>d.getElementById(id);
  function heading(page,key){
-  if(key==='students'||page.querySelector(':scope > .ui-workspace-heading'))return;
+  if(key==='students'||page.querySelector(':scope > .ui-workspace-heading, :scope > .v11-page-hero'))return;
   // Specialist screens already render a semantic heading; do not duplicate it.
   if(page.querySelector(':scope > .cm-header, :scope > .ae-header, :scope > .analytics-header'))return;
   const [title,description]=pages[key]||[page.querySelector('.ch,h2')?.textContent?.trim()||'مساحة العمل','أدوات القسم وبياناته حسب صلاحيات حسابك.'];
@@ -50,9 +50,11 @@
   const sync=()=>{status.textContent='المسودة: '+(draft.textContent||'جاهز').trim();status.dataset.saveState=String(draft.className||'');};
   sync();if(typeof MutationObserver==='function')new MutationObserver(sync).observe(draft,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class']});
   const landmarks=[['الطالب','sesSt'],['التسميع','prevCard'],['الأخطاء','sessionErrorsCard'],['الحفظ الجديد','tog-new'],['المراجعة القريبة','tog-rec'],['الملاحظات','sesNotes']];
+  if(!find('v11SessionNavigator')){
   const nav=d.createElement('nav');nav.className='ui-session-section-nav';nav.setAttribute('aria-label','الانتقال بين أقسام الحصة');
   landmarks.forEach(([label,id])=>{const target=find(id);if(!target)return;const btn=d.createElement('button');btn.type='button';btn.className='ui-session-section-link';btn.textContent=label;btn.addEventListener('click',()=>{const anchor=target.closest('.card')||target;anchor.scrollIntoView({block:'start',behavior:g.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});nav.append(btn);});
   const heading=page.querySelector('.ui-workspace-heading');heading?.insertAdjacentElement('afterend',nav);
+  }
   const setKeyboard=()=>{
     if(!g.visualViewport)return;
     const isInput=d.activeElement?.matches?.('input,select,textarea,[contenteditable="true"]');
@@ -95,7 +97,7 @@
    d.querySelectorAll('.pg[id]').forEach(el=>observer.observe(el,{attributes:true,attributeFilter:['class']}));
    g.addEventListener('pagehide',()=>observer.disconnect(),{once:true});
   }
-  g.ImamApp=g.ImamApp||{};g.ImamApp.PlatformWorkflow=Object.freeze({version:'11.12.1-beta.18',refresh:pageState});
+  g.ImamApp=g.ImamApp||{};g.ImamApp.PlatformWorkflow=Object.freeze({version:'11.12.1-beta.19',refresh:pageState});
  }
  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(globalThis);

@@ -43,6 +43,18 @@
   function normalizedRange(item){return {id:String(item.id||uniqueId()),type:String(item.type||'rec'),surahId:quran().findIndex(x=>x.n===item.surah)+1,surah:item.surah,from:Number(item.from),to:Number(item.to),score:item.score!==null&&item.score!==undefined&&String(item.score).trim()!==''&&Number.isFinite(Number(item.score))?Math.max(0,Math.min(100,Number(item.score))):null,decision:String(item.decision||''),notes:String(item.notes||'').slice(0,500)};}
   function studentId(){return String(by('sesSt')?.value||'');}
   function sessionKey(){return `${studentId()}|${by('sesDate')?.value||''}`;}
+  // Preference is device-local and separated by authenticated user and student.
+  // Official session metadata and restored drafts always take precedence.
+  function kindPrefKey(){
+    const uid=String(g.WeLiveQuranAuth?.getAccess?.()?.user_id||g.WeLiveQuranAuth?.getProfile?.()?.user_id||'');
+    const sid=studentId();return uid&&sid?`imam:session-kind:v1:${encodeURIComponent(uid)}:${encodeURIComponent(sid)}`:'';
+  }
+  function readKindPref(){try{const key=kindPrefKey();const value=key?localStorage.getItem(key):'';return TYPES[value]?value:'auto';}catch(_){return 'auto';}}
+  function writeKindPref(kind){
+    const key=kindPrefKey();if(!key||!TYPES[kind])return;
+    try{localStorage.setItem(key,kind);}catch(_){g.toast?.('لم نستطع تذكر نوع الحصة على هذا الجهاز','info');}
+  }
+
   function current(){
     const sid=studentId(),ses=(app().sessions||[]).find(x=>x.studentId===sid&&String(x.sessionDate||x.date||'').slice(0,10)===(by('sesDate')?.value||''));return ses||null;
   }
@@ -105,15 +117,16 @@
     if(items)items.innerHTML=e.checks.map(x=>`<button type="button" class="im119-item ${x.done?'done':x.severity}" data-target="${escape(x.target)}"><span>${x.done?'✓':'!'}</span>${escape(x.label)}</button>`).join('');
     card.dataset.status=e.critical.length?'critical':e.important.length?'important':'complete';
     const storage=by('im119SaveState');if(storage){const health=root.SaveHealth;const ses=current();const local=health?.ok===false?'فشل آخر حفظ محلي':health?.ok===true?'آخر حفظ محلي مؤكد':'لم يُتحقق من الحفظ بعد';const net=(typeof navigator!=='undefined'&&navigator.onLine===false)?'لا يوجد اتصال':'المزامنة: تُراجع بشكل مستقل';storage.textContent=`${ses?.completed?'حصة معتمدة':'حصة غير معتمدة'} · ${local} · ${net}`;}
+    const count=by('im119ExtraCount');if(count)count.textContent=state.extra.length?`(${state.extra.length})`:'(لا يوجد)';
     const host=by('im119ExtraList');if(host)host.innerHTML=state.extra.map((x,i)=>`<div class="im119-extra"><div><b>${escape(ACTION_TYPES[x.type]||x.type)}</b> · سورة ${escape(x.surah)} (${x.from}–${x.to})${x.score!==null?` · ${x.score}٪`:''} ${escape(DECISIONS[x.decision]||'')}</div><div class="im119-extra-actions"><button type="button" data-view="${i}">📖 النص</button><button type="button" data-remove="${i}">حذف</button></div></div>`).join('');
   }
   function initSessionUi(){
     if(by('im119Completion')||!by('pg-session'))return;
     const head=by('pg-session');const target=by('sessionJourneyCard')||head.firstElementChild;
-    target.insertAdjacentHTML('beforebegin',`<section class="card im119-card" id="im119Completion" dir="rtl" aria-label="مؤشر اكتمال الحصة"><div class="im119-top"><div><b>🛡️ فحص اكتمال الحصة</b><small id="im119State" role="status">جارٍ مراجعة البيانات</small></div><strong id="im119Percent">—</strong></div><div class="im119-track"><div id="im119Fill"></div></div><div id="im119SaveState" class="im119-save-state" role="status" aria-live="polite"></div><details><summary>عرض قائمة التحقق والنواقص</summary><div id="im119Requirements"></div></details><div class="im119-row"><label>نوع الحصة<select id="im119Kind">${options('auto',TYPES)}</select></label><button type="button" id="im119AddRange" class="btn btn-out btn-sm">📖 إضافة موضع تسميع</button></div><div class="im119-row"><label><input type="checkbox" id="im119SkipNew"> لم يُنفذ حفظ جديد</label><label><input type="checkbox" id="im119SkipRec"> لم تُنفذ مراجعة</label></div><div class="im119-row"><label>تقييم المراجعة القريبة<select id="im119DecisionRec">${options('',{'':'لم يُحدد',...DECISIONS})}</select></label><label>تقييم المراجعة البعيدة<select id="im119DecisionFar">${options('',{'':'لم يُحدد',...DECISIONS})}</select></label></div><div class="im119-row"><label>سبب عدم تنفيذ الحفظ أو المراجعة (عند الحاجة)<input id="im119NoRecitation" type="text" maxlength="250" placeholder="مثل: مراجعة شفوية دون تكليف جديد"></label></div><div id="im119ExtraList"></div><label class="im119-audio-toggle"><input type="checkbox" id="im119AudioEnabled"> 🔔 تشغيل تنبيه صوتي قبل فتح رسالة ولي الأمر على واتساب</label><small class="im119-small">نسبة الاكتمال تخص بيانات الحصة، وليست نسبة إتقان الطالب. حالة الحفظ والمزامنة مستقلة عنها.</small></section>`);
+    target.insertAdjacentHTML('beforebegin',`<section class="card im119-card" id="im119Completion" dir="rtl" aria-label="مؤشر اكتمال الحصة"><div class="im119-top"><div><b>🛡️ فحص اكتمال الحصة</b><small id="im119State" role="status">جارٍ مراجعة البيانات</small></div><strong id="im119Percent">—</strong></div><div class="im119-track"><div id="im119Fill"></div></div><div id="im119SaveState" class="im119-save-state" role="status" aria-live="polite"></div><details><summary>عرض قائمة التحقق والنواقص</summary><div id="im119Requirements"></div></details><div class="im119-row"><label>نوع الحصة<select id="im119Kind">${options('auto',TYPES)}</select></label><details class="im119-range-disclosure"><summary>📖 مواضع تسميع إضافية <span id="im119ExtraCount" aria-live="polite"></span></summary><div class="im119-range-content"><button type="button" id="im119AddRange" class="btn btn-out btn-sm">+ إضافة موضع تسميع</button><div id="im119ExtraList"></div></div></details></div><div class="im119-row"><label><input type="checkbox" id="im119SkipNew"> لم يُنفذ حفظ جديد</label><label><input type="checkbox" id="im119SkipRec"> لم تُنفذ مراجعة</label></div><div class="im119-row"><label>تقييم المراجعة القريبة<select id="im119DecisionRec">${options('',{'':'لم يُحدد',...DECISIONS})}</select></label><label>تقييم المراجعة البعيدة<select id="im119DecisionFar">${options('',{'':'لم يُحدد',...DECISIONS})}</select></label></div><div class="im119-row"><label>سبب عدم تنفيذ الحفظ أو المراجعة (عند الحاجة)<input id="im119NoRecitation" type="text" maxlength="250" placeholder="مثل: مراجعة شفوية دون تكليف جديد"></label></div><label class="im119-audio-toggle"><input type="checkbox" id="im119AudioEnabled"> 🔔 تشغيل تنبيه صوتي قبل فتح رسالة ولي الأمر على واتساب</label><small class="im119-small">نسبة الاكتمال تخص بيانات الحصة، وليست نسبة إتقان الطالب. حالة الحفظ والمزامنة مستقلة عنها.</small></section>`);
     by('im119AudioEnabled').checked=audioEnabled();
     by('im119AudioEnabled').addEventListener('change',e=>{try{localStorage.setItem(AUDIO_PREF,e.target.checked?'on':'off');}catch(_){} });
-    by('im119Kind').addEventListener('change',e=>{state.kind=e.target.value;touchDraft();render();});
+    by('im119Kind').addEventListener('change',e=>{state.kind=e.target.value;writeKindPref(state.kind);touchDraft();render();});
     by('im119SkipNew').addEventListener('change',e=>{state.skip.new=e.target.checked;touchDraft();render();});
     by('im119SkipRec').addEventListener('change',e=>{state.skip.rec=e.target.checked;state.skip.far=e.target.checked;touchDraft();render();});
     by('im119DecisionRec').addEventListener('change',e=>{state.decisions.rec=e.target.value;touchDraft();render();});
@@ -131,7 +144,7 @@
     const s=current();let meta=s?.teacher119||{};
     try{const key=typeof g.draftKey==='function'?g.draftKey():'';const draft=key?JSON.parse(localStorage.getItem(key)||'null'):null; if(draft?.teacher119&&(!s||Date.parse(draft.savedAt||'')>Date.parse(s.updatedAt||'')))meta=draft.teacher119;}catch(_){}
 
-    state.kind=TYPES[meta.kind]?meta.kind:'auto';state.extra=Array.isArray(meta.extra)?meta.extra.filter(rangeValid).map(normalizedRange):[];state.skip={...(meta.notPerformed||{})};state.decisions={...(meta.decisions||{})};state.skipReason=String(meta.skipReason||'');
+    state.kind=TYPES[meta.kind]?meta.kind:readKindPref();state.extra=Array.isArray(meta.extra)?meta.extra.filter(rangeValid).map(normalizedRange):[];state.skip={...(meta.notPerformed||{})};state.decisions={...(meta.decisions||{})};state.skipReason=String(meta.skipReason||'');
     if(by('im119NoRecitation'))by('im119NoRecitation').value=state.skipReason;
     if(by('im119Kind'))by('im119Kind').value=state.kind;
     if(by('im119SkipNew'))by('im119SkipNew').checked=!!state.skip.new;

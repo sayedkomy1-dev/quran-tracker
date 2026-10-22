@@ -45,7 +45,9 @@
     el.innerHTML=`<div class="ia-surah-sheet" dir="rtl">
       <header class="ia-surah-head"><div><b>اختر السورة</b><small>١١٤ سورة مرتبة حسب المصحف</small></div><button type="button" class="ia-surah-close" aria-label="إغلاق القائمة">✕</button></header>
       <label for="ia-surah-query-${key}">اكتب اسم السورة أو رقمها</label>
-      <input type="search" class="ia-surah-search" id="ia-surah-query-${key}" inputmode="search" autocomplete="off" spellcheck="false" placeholder="ابحث عن سورة…">
+      <div class="ia-surah-search-hit" role="group" aria-label="حقل البحث عن السورة">
+        <input type="search" class="ia-surah-search" id="ia-surah-query-${key}" inputmode="search" autocomplete="off" spellcheck="false" placeholder="ابحث عن سورة…">
+      </div>
       <div class="ia-surah-items" role="listbox" aria-label="أسماء السور"></div>
       <footer>اختر السورة لكتابة اسمها في تكليف الحصة</footer>
     </div>`;
@@ -63,6 +65,10 @@
     // Never preventDefault on this gesture: Chrome/Gboard needs its native path.
     const focusSearch=()=>{if(document.activeElement!==search)search.focus({preventScroll:true});};
     search.addEventListener('click',focusSearch);
+    // Taps on the full search panel, not just the visible caret/text, focus the input.
+    const searchHit=el.querySelector('.ia-surah-search-hit');
+    searchHit.addEventListener('click',event=>{if(!event.target.closest('input'))focusSearch();});
+    // Do not preventDefault: Android must see a trusted native tap to show Gboard.
     search.addEventListener('touchend',focusSearch,{passive:true});
     el.addEventListener('keydown',e=>{
       if(e.key==='Escape'){e.preventDefault();close(key);}

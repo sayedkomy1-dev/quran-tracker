@@ -186,7 +186,7 @@ function openV9More(){
   if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}
 }
 function closeV9More(){const m=document.getElementById('v9MoreSheet');if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');}}
-function updateV9Nav(p){document.querySelectorAll('#v9Nav .v9-nav-btn').forEach(b=>b.classList.toggle('on',b.dataset.page===p||(b.dataset.page==='more'&&['students','reports','checkin','tasks','settings','mushaf'].includes(p))));}
+function updateV9Nav(p){document.querySelectorAll('#v9Nav .v9-nav-btn').forEach(b=>{b.classList.toggle('on',b.dataset.page===p||(b.dataset.page==='more'&&['students','reports','checkin','tasks','settings','mushaf'].includes(p)));if(b.dataset.page==='session'){const text=p==='session'?'الحصة الحالية':'ابدأ حصة';const label=b.querySelector('.v9-nav-label');if(label)label.textContent=text;b.setAttribute('aria-label',text);}});}
 function goPage(p){
   closeV9More();
   if(p==='mushaf'){

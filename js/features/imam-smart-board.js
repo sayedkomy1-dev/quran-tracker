@@ -302,5 +302,31 @@ function keyboard(e){if(e.target.matches('input,textarea,select,[contenteditable
 g.addEventListener?.('pagehide',()=>{if(active&&b.dirty&&sessionUser===currentUser())flush();closeStudentDisplay();shutdownAudio();});
 document.addEventListener?.('visibilitychange',()=>{if(active&&document.visibilityState==='hidden'&&b.dirty&&sessionUser===currentUser())flush();});
 function open(){try{assertUser();}catch(err){return notify(err.message,'error');}if(active){$('imam-board-root')?.scrollIntoView();return;}active=true;sessionUser=currentUser();b.sessionId=newId();b.groupFilter='';renderShell();clearInterval(accountWatch);accountWatch=setInterval(dropPrivateBoardOnAccountChange,1000);}
-root.SmartBoard=Object.freeze({open,close:exit,save:flush,returnToReading:reading,getSnapshot:()=>({studentId:b.studentId,chapter:b.chapter,from:b.from,to:b.to,activity:b.activity,dirty:b.dirty}),getVersion:()=> '11.12.1-beta.6'});
+function openForCurrentSession(){
+ const id=String($('sesSt')?.value||'');
+ if(!id){notify('اختر الطالب داخل الحصة أولًا','info');return false;}
+ if(!students().some(st=>String(st.id)===id)){notify('الطالب غير متاح لحسابك','error');return false;}
+ if(active&&b.studentId&&b.studentId!==id&&b.dirty&&!flush())return false;
+ open();
+ if(!active||!accountStillValid())return false;
+ chooseStudent(id); // The board's own access control and draft safety remain authoritative.
+ if(b.studentId!==id)return false;
+ // Read the current, possibly unsaved task from the official lesson editor.
+ // This only fills the educational display; it never writes/approves the lesson.
+ const mappings=[['new','الحفظ الجديد'],['rec','المراجعة القريبة'],['far','المراجعة البعيدة']];
+ const surahs=typeof S!=='undefined'?S:[];
+ for(const [key,activity] of mappings){
+  const title=String($(key+'-s')?.value||'').trim();const index=surahs.findIndex(row=>row.n===title);
+  if(index<0)continue;
+  const full=!!$(key+'-full')?.checked;
+  const from=full?1:Number($(key+'-f')?.value),to=full?Number(surahs[index].a):Number($(key+'-t')?.value);
+  if(!validRange(index+1,from,to))continue;
+  b.activity=activity;b.chapter=index+1;b.from=from;b.to=to;b.verse=from;
+  const chapter=$('ib-chapter'),start=$('ib-from'),end=$('ib-to');
+  if(chapter)chapter.value=b.chapter;if(start)start.value=from;if(end)end.value=to;
+  updateActivity();updateSummary();loadVerses();break;
+ }
+ return true;
+}
+root.SmartBoard=Object.freeze({open,openForCurrentSession,close:exit,save:flush,returnToReading:reading,getSnapshot:()=>({studentId:b.studentId,chapter:b.chapter,from:b.from,to:b.to,activity:b.activity,dirty:b.dirty}),getVersion:()=> '11.12.1-beta.6'});
 })(globalThis);

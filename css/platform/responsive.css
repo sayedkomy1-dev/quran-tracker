@@ -77,6 +77,15 @@
  .ui-session-action-buttons .ui-save-secondary{flex:1}
  #pg-session.on{padding-bottom:calc(245px + env(safe-area-inset-bottom))}
  :where(.pg,.role-home-hub) :is(button,input,select,textarea,[tabindex]){scroll-margin-bottom:calc(172px + env(safe-area-inset-bottom))}
+
+ #pg-session > .v11-page-hero{padding:12px 14px;min-height:auto;margin-block-end:8px;display:none}
+ #pg-session > .ui-workspace-heading{display:none}
+ #pg-session .ui-session-section-nav{display:none}
+ #pg-session .v11-session-nav{top:calc(var(--ui-top-height,72px) - 6px);margin-block-end:8px;z-index:90}
+ #pg-session .ui-session-action-dock{max-height:min(34dvh,185px)}
+ #pg-session.ui-session-keyboard .ui-session-action-dock,body.ui-session-keyboard .ui-session-action-dock{display:none!important}
+ #pg-session .beta19-session-board{width:100%}
+ #pg-session.on{scroll-padding-bottom:190px}
 }
 @media(max-width:440px){
  .hdr-btn.hdr-search{display:inline-flex}
@@ -113,3 +122,18 @@
 .assignment-audio-details{border:1px solid var(--ui-line);border-radius:14px;padding:12px;margin-block:12px;background:var(--ui-surface)}
 .assignment-audio-details summary{cursor:pointer;font-size:14px;font-weight:750;color:var(--ui-ink);min-height:32px;display:list-item}
 .assignment-audio-details[open] summary{margin-block-end:10px}
+
+/* Beta19: single audio control, collapsed range form, clear session-to-board action. */
+#pg-session .beta19-session-board{display:inline-flex;align-items:center;justify-content:center;min-height:46px;margin:8px 0 10px;padding-inline:15px;max-width:100%;white-space:normal}
+#pg-session .assignment-audio-details{width:100%;max-width:100%;margin-block:16px 5px}
+#pg-session .im119-range-disclosure{width:100%;min-width:0;border:1px solid var(--ui-line,#dfe7e2);border-radius:12px;padding:9px 12px;box-sizing:border-box;background:var(--ui-surface,#fff)}
+#pg-session .im119-range-disclosure>summary{cursor:pointer;min-height:42px;display:flex;gap:10px;align-items:center;font-weight:750;font-size:14px}
+#pg-session .im119-range-disclosure .im119-range-content{padding-block:10px;min-width:0}
+#pg-session .im119-range-disclosure:not([open]) #im119ExtraList{display:none}
+#pg-session #im119ExtraCount{font-size:12px;color:var(--ui-muted,#58665e)}
+#pg-session #im119Completion .im119-row:has(.im119-range-disclosure){align-items:stretch;flex-wrap:wrap}
+/* Compact the giant session hero without hiding any save controls or student data. */
+/* Avoid decorative press sounds when reduced motion/accessibility is enabled. */
+.beta19-sound-pref{display:grid;gap:10px;max-width:520px;margin:18px 0;padding:15px;border:1px solid var(--ui-line,#dfe7e2);border-radius:14px;background:var(--ui-surface,#fff)}
+.beta19-sound-pref label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
+.beta19-sound-pref input[type=range]{width:100%;max-width:260px}

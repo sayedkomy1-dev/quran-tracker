@@ -2,7 +2,7 @@
 const fs=require('node:fs'),assert=require('node:assert/strict'),path=require('node:path');
 const read=p=>fs.readFileSync(path.resolve(__dirname,'..',p),'utf8');
 const version=read('VERSION').trim();
-assert.equal(version,'11.12.1-beta.18');
+assert.equal(version,'11.12.1-beta.19');
 const oldScroller=read('v10.js'),picker=read('js/features/surah-picker-17.js'),css=read('css/platform/surah-picker.css');
 const region=oldScroller.split('function v10PositionSurahDropdown(key){')[1].split('function v10CloseOtherSurahDropdowns')[0];
 assert(region.includes("el.classList.contains('ia-surah-picker')")&&region.includes('return'),

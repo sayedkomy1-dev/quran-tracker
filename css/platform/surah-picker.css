@@ -41,3 +41,8 @@
 .surah-dropdown.ia-surah-picker button:focus-visible{outline:3px solid var(--ui-primary,#145a3a);outline-offset:-3px}
 @media(min-width:800px){.surah-dropdown.ia-surah-picker{align-items:center}.ia-surah-sheet{height:min(660px,var(--surah-usable,90vh));border-radius:19px}}
 @media(max-width:390px){.surah-dropdown.ia-surah-picker{padding:6px!important}.ia-surah-name{font-size:16px}}
+
+/* The entire visible search row is a native touch target. Keep it above the scrollable options. */
+.ia-surah-search-hit{position:relative;z-index:7;display:block;flex:0 0 auto;padding:3px 17px 10px;min-height:58px;box-sizing:border-box;pointer-events:auto}
+.ia-surah-search-hit .ia-surah-search{position:relative;z-index:8;display:block;margin:0;width:100%;min-height:48px;box-sizing:border-box;pointer-events:auto;touch-action:manipulation}
+.ia-surah-sheet>.ia-surah-items{position:relative;z-index:1}
