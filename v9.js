@@ -119,7 +119,7 @@ function injectV9Navigation(){
     g.innerHTML=[
       ['search','بحث في الأكاديمية','العثور على الأدوات والطلاب المخولين',`closeV9More();openQuickSearch()`],['users','الطلاب','ملفات الطلاب والحضور',`goPage('students');closeV9More()`],['chart','التقارير','تقارير الحفظ والمتابعة',`goPage('reports');closeV9More()`],['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة وحزمة العمل دون إنترنت',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
     ].map(([i,t,s,a])=>`<button class="v9-more-item" onclick="${a}">${v9Icon(i)}<b>${t}</b><small>${s}</small></button>`).join('');
-    g.insertAdjacentHTML('beforeend',`<button class="v9-more-item" data-v1010-portal-more="1" onclick="closeV9More();v1010OpenPortalPicker()">${v9Icon('group')}<b>بوابة ولي الأمر</b><small>دخول برقم الهاتف + PIN وتقارير قراءة فقط</small></button>`);
+    g.insertAdjacentHTML('beforeend',`<button class="v9-more-item" data-v1010-portal-more="1" onclick="closeV9More();v1010OpenPortalPicker()">${v9Icon('group')}<b>إدارة ولي الأمر</b><small>الدخول والرمز والتواصل ومتابعة المذاكرة</small></button>`);
   }
   // One accessible discovery field for all currently permitted More actions.
   // Filter only buttons already rendered by the active-account navigation.
@@ -295,7 +295,7 @@ function injectSessionUX(){
     content.insertAdjacentHTML('beforebegin',`<div id="v9SessionSteps" class="v9-session-steps"><div class="v9-session-mode"><div><small style="color:var(--v9-muted)">مسار الحصة</small><div class="v9-session-help">يمكنك إظهار كل الأقسام في «سريع» دون فقد أي زر.</div></div><div class="v9-mode-toggle"><button data-mode="guided" onclick="setSessionMode('guided')">مبسّط</button><button data-mode="expert" onclick="setSessionMode('expert')">سريع</button></div></div><div class="v9-step-row">${[['assessment','التسميع'],['new','الحفظ'],['review','المراجعة'],['notes','الملاحظات']].map(([k,l])=>`<button class="v9-step-btn" data-step="${k}" onclick="setSessionStep('${k}')">${l}</button>`).join('')}</div><p class="ia20-step-help" id="ia20StepHelp" role="note">ابدأ باختيار الطالب والتسميع، ثم انتقل للتكليف والملاحظات.</p></div>`);
   }
   const cards=[...content.children].filter(x=>x.classList?.contains('card'));
-  cards.forEach(c=>{if(c.id==='prevCard'||c.id==='sessionErrorsCard')c.dataset.v9Step='assessment';else if(c.querySelector('#tog-new'))c.dataset.v9Step='new';else if(c.querySelector('#tog-rec')||c.querySelector('#tog-far')||c.querySelector('#tog-juz')||c.querySelector('#tog-surahReview'))c.dataset.v9Step='review';else if(c.querySelector('#sesNotes'))c.dataset.v9Step='notes';});
+  cards.forEach(c=>{if(c.id==='prevCard')c.dataset.v9Step='assessment';else if(c.id==='sessionErrorsCard'||c.id==='v10ErrorsAccordion')c.dataset.v9Step='notes';else if(c.querySelector('#tog-new'))c.dataset.v9Step='new';else if(c.querySelector('#tog-rec')||c.querySelector('#tog-far')||c.querySelector('#tog-juz')||c.querySelector('#tog-surahReview'))c.dataset.v9Step='review';else if(c.querySelector('#sesNotes'))c.dataset.v9Step='notes';});
   ensureSessionActionDock();
   ['new','rec','far'].forEach(k=>['f','t'].forEach(x=>enhanceAyahInput(`${k}-${x}`)));
   setSessionMode(settings.v9?.mode||'expert',false);setSessionStep('assessment',false);
@@ -313,7 +313,7 @@ function ensureSessionActionDock(){
     content.appendChild(footer);
   }
   // The official actions live immediately below the session tabs in document flow.
-  // Do not move assessment/error cards: their location and callbacks belong to recitation.
+  // Keep assessment and previous-session cards intact. The one existing error log belongs to Notes.
   // Keep the existing footer and the original save/send/audio nodes (no cloned buttons).
   if(footer.parentElement!==content||footer!==content.firstElementChild){
     content.insertBefore(footer,content.firstElementChild);
@@ -323,24 +323,42 @@ function ensureSessionActionDock(){
   let sendBtn=document.getElementById('saveSendSessionBtn');
   if(!sendBtn)sendBtn=[...content.querySelectorAll('button')].find(b=>String(b.getAttribute('onclick')||'').includes('saveAndSendWA()'))||null;
   const waModes=document.getElementById('sessionWaModes')||content.querySelector('.wa-mode-row');
-  // The assignment-audio control is unique. Keep it directly above the ORIGINAL
-  // official save/send buttons, in the notes-only footer (guided workflow).
+  // Reuse the original audio/save/send buttons; do not clone or change their handlers.
+  // The four large actions remain in the Notes-only flow for both session modes.
   const audio=content.querySelector('.assignment-audio-details');
-  if(audio&&!footer.contains(audio)&&main)main.insertAdjacentElement('beforebegin',audio);
+  if(audio&&!footer.contains(audio)&&main)main.insertAdjacentElement('afterend',audio);
   const audioBtn=document.getElementById('teacherAssignmentAudioBtn');
   if(audioBtn&&main&&audioBtn.parentElement!==main){
     audioBtn.classList.add('ia22-audio-action');
-    audioBtn.textContent='🎧 مشاركة الصوت';
+    audioBtn.textContent='🎧 مشاركة صوت التكليف (الحفظ الجديد)';
     audioBtn.setAttribute('aria-label','مشاركة صوت التكليف القرآني');
     main.appendChild(audioBtn);
   }
   if(audio){
     const selector=audio.querySelector('summary');
-    if(selector)selector.textContent='🎙️ تغيير قارئ صوت التكليف';
+    if(selector)selector.textContent='🎙️ تغيير قارئ صوت التكليف (اختياري)';
   }
   if(saveBtn&&main&&saveBtn.parentElement!==main){saveBtn.classList.remove('mb8');saveBtn.classList.add('v9-save-primary');main.appendChild(saveBtn);}
   if(sendBtn&&main&&sendBtn.parentElement!==main){sendBtn.id='saveSendSessionBtn';sendBtn.classList.add('v9-send-primary');main.appendChild(sendBtn);}
   if(waModes&&secondary&&waModes.parentElement!==secondary){waModes.id='sessionWaModes';waModes.classList.add('v9-wa-mode-preserved');secondary.appendChild(waModes);}
+  let errorShare=document.getElementById('ia25ShareErrorsButton');
+  if(!errorShare&&main){
+    errorShare=document.createElement('button');errorShare.type='button';errorShare.id='ia25ShareErrorsButton';
+    errorShare.className='btn btn-out ia25-errors-action';
+    errorShare.textContent='🧭 مشاركة أخطاء الحصة';
+    errorShare.addEventListener('click',()=>{
+      if(window.ImamCorrectionDocument?.openErrorsOnly)window.ImamCorrectionDocument.openErrorsOnly();
+      else if(typeof toast==='function')toast('تقرير الأخطاء لم يكتمل تحميله. أعد فتح التطبيق.','error');
+    });
+    main.appendChild(errorShare);
+  }
+  // The existing list (and its same IDs/handlers) moves, never clones.
+  const errors=document.getElementById('v10ErrorsAccordion')||document.getElementById('sessionErrorsCard');
+  if(errors){
+    errors.dataset.v9Step='notes';
+    if(errors.parentElement!==content||errors.previousElementSibling!==footer)footer.insertAdjacentElement('afterend',errors);
+  }
+
   const moveOptionalReport=()=>{const report=document.getElementById('correctionReportOpenButton');if(report&&secondary&&report.parentElement!==secondary)secondary.appendChild(report);};
   moveOptionalReport();
   if(main&&!footer.dataset.ia22ReportWatch&&typeof MutationObserver==='function'){
@@ -357,9 +375,9 @@ function enhanceAyahInput(id){const input=document.getElementById(id);if(!input|
 function stepAyah(input,d){const max=Number(input.max)||999,min=Number(input.min)||1;input.value=Math.max(min,Math.min(max,(Number(input.value)||min)+d));input.dispatchEvent(new Event('input',{bubbles:true}));if(navigator.vibrate)navigator.vibrate(8);}
 function setSessionMode(mode,persist=true){mode=mode==='expert'?'expert':'guided';settings.v9=settings.v9||{};settings.v9.mode=mode;if(persist)save();const pg=document.getElementById('pg-session');pg?.classList.toggle('v9-guided',mode==='guided');pg?.classList.toggle('v9-expert',mode==='expert');document.querySelectorAll('.v9-mode-toggle button').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));applySessionStepVisibility();}
 function setSessionStep(step,scroll=true){if(!V9.steps.includes(step))step='assessment';V9.step=step;document.getElementById('pg-session')?.setAttribute('data-ia-session-step',step);
-  const guidance={assessment:'التسميع: راجع أداء الطالب وسجل الأخطاء عند الحاجة.',new:'الحفظ: اختر السورة وحدد نطاق الآيات أو سورة كاملة.',review:'المراجعة: راجع المواضع المستحقة دون إعادة إدخال الطالب.',notes:'الملاحظات: شارك صوت التكليف ثم احفظ الحصة رسميًا أو أرسلها لولي الأمر.'};
+  const guidance={assessment:'التسميع: قيّم الأداء وسجّل أخطاء الكلمات من النص القرآني؛ سجل الأخطاء ومشاركتها داخل الملاحظات.',new:'الحفظ: اختر السورة وحدد نطاق الآيات أو سورة كاملة.',review:'المراجعة: راجع المواضع المستحقة دون إعادة إدخال الطالب.',notes:'الملاحظات: مشاركة الصوت، حفظ الحصة، الإرسال لولي الأمر، ثم مشاركة أخطاء الحصة.'};
   const help=document.getElementById('ia20StepHelp');if(help)help.textContent=guidance[step]||'';document.querySelectorAll('.v9-step-btn').forEach(b=>{const on=b.dataset.step===step;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});applySessionStepVisibility();if(scroll&&settings.v9?.mode!=='expert')document.getElementById('v9SessionSteps')?.scrollIntoView({block:'start',behavior:settings.v9?.reduceMotion?'auto':'smooth'});}
-function applySessionStepVisibility(){const guided=(settings.v9?.mode||'expert')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',guided&&c.dataset.v9Step!==V9.step));const f=document.getElementById('v9SessionFooter');if(f)f.hidden=V9.step!=='notes';const repeat=document.getElementById('repeatBar');if(repeat)repeat.classList.toggle('ia21-repeat-step-hidden',V9.step!=='assessment');}
+function applySessionStepVisibility(){const guided=(settings.v9?.mode||'expert')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',(guided&&c.dataset.v9Step!==V9.step)||(c.classList.contains('session-errors-card')&&V9.step!=='notes')));const f=document.getElementById('v9SessionFooter');if(f)f.hidden=V9.step!=='notes';const errors=document.getElementById('v10ErrorsAccordion')||document.getElementById('sessionErrorsCard');if(errors)errors.hidden=V9.step!=='notes';const repeat=document.getElementById('repeatBar');if(repeat)repeat.classList.toggle('ia21-repeat-step-hidden',V9.step!=='assessment');}
 function moveSessionStep(d){let i=Math.max(0,V9.steps.indexOf(V9.step));i=Math.max(0,Math.min(V9.steps.length-1,i+d));setSessionStep(V9.steps[i]);}
 function initSession(){V9_BASE.initSession();document.getElementById('ia22FollowupDisclosure')?.removeAttribute('open');ensureSessionActionDock();setSessionStep('assessment',false);setSessionMode(settings.v9?.mode||'expert',false);refreshV9DraftState();}
 function onSesSt(){V9_BASE.onSesSt();document.getElementById('ia22FollowupDisclosure')?.removeAttribute('open');setSessionStep('assessment',false);refreshV9DraftState();}

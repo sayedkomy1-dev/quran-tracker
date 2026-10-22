@@ -2,7 +2,7 @@
 const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
 const read=p=>fs.readFileSync(p,'utf8');
 const html=read('index.html'),js=read('v9.js'),css=read('css/platform/responsive.css');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.24');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.25');
 for(const id of ['saveSessionBtn','saveSendSessionBtn','teacherAssignmentAudioBtn']){
  assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,`${id} must occur once`);
 }
@@ -10,7 +10,10 @@ for(const call of ['onclick="saveSession()"','onclick="saveAndSendWA()"','onclic
  assert(html.includes(call),`original button handler changed: ${call}`);
 assert(js.includes('content.insertBefore(footer,content.firstElementChild)'), 'real action footer must be first child of session content');
 assert(!js.includes("legacy.dataset.v9Step='notes'"),'never reclassify recitation cards as Notes');
-assert(js.includes("c.id==='prevCard'||c.id==='sessionErrorsCard'"),'recitation cards remain assessment');
+assert(js.includes("c.id==='prevCard'"),'previous-session card remains assessment');
+assert(js.includes("errors.dataset.v9Step='notes'"),'single error ledger belongs to Notes');
+assert(js.includes("footer.insertAdjacentElement('afterend',errors)"),'existing error ledger must move without cloning');
+assert(js.includes("errors.hidden=V9.step!=='notes'"),'error ledger must hide even in expert mode');
 assert(css.includes('#pg-session #v9SessionFooter{position:relative;inset:auto;z-index:auto;'),'footer must be in normal document flow');
 assert(!css.includes('#pg-session #v9SessionFooter{position:fixed'),'old fixed actions must not reappear');
 assert(!js.includes("if(f)f.hidden=guided&&V9.step!=='notes'&&!mobile"),'mobile always-visible action bar prohibited');
@@ -28,6 +31,6 @@ for(const mode of ['guided','expert']) for(const mobile of [true,false]) {
  }
 }
 assert(html.indexOf('id="prevCard"')<html.indexOf('id="sessionErrorsCard"'), 'recitation cards keep original sequence');
-assert(html.indexOf('id="sessionErrorsCard"')<html.indexOf('id="sesNotes"'), 'error log remains in recitation and not after notes');
+assert(html.includes('id="sessionErrorsCard"'), 'single original error log must remain in HTML template');
 assert(css.includes('#v10SuggestionAccordion{display:none}'),'auto-repeat card should not intrude in other guided steps');
-console.log('beta24-notes-only-actions-check: PASS — single original actions, notes only, in-flow, preserved assessment/error cards');
+console.log('beta24-notes-only-actions-check: PASS — original actions + errors in Notes, in-flow, preserved assessments');

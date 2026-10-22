@@ -11,6 +11,7 @@ const V8_PLANS={
   stabilize:{label:'ختمة تثبيت',icon:'🧱',sections:{new:false,rec:true,far:true,juz:true,surahReview:true}},
   shortSurahs:{label:'قصار السور',icon:'🌙',sections:{new:true,rec:true,far:false,juz:false,surahReview:true}}
 };
+const V8_ERROR_CONTEXTS=['التسميع','الحفظ الجديد','المراجعة القريبة','المراجعة البعيدة','مراجعة السور','مراجعة الأجزاء','مراجعة الأرباع','مراجعة الأحزاب','التصحيح على النص الجديد'];
 const V8_ERROR_TYPES=['حفظ','تردد','تلقين','تجويد','تشكيل','نسيان آية','نطق حرف','حذف حرف','زيادة حرف','كلمة خاطئة','نسيان','مد','غنة','إخفاء','إدغام','إقلاب','قلقلة','وقف/ابتداء','حكم تجويدي آخر'];
 const V8_PASS_GRADES=new Set(['ممتاز','جيد جداً','جيد']);
 const V8={
@@ -51,6 +52,8 @@ function v8NormalizeErrorRecord(x,fallbackAt=''){
   // Legacy/free-standing error rows keep the historical whitelist.
   if(!type||(!isQuranWord&&!V8_ERROR_TYPES.includes(type)))return null;
   const out={type,at:v8SafeText(x.at||fallbackAt||v8Now(),40)};
+  // Keep manual-chip context through migration, draft saving, exports and restores.
+  if(!isQuranWord&&V8_ERROR_CONTEXTS.includes(x.section))out.section=x.section;
   if(isQuranWord){
     out.id=/^[A-Za-z0-9._:-]{1,160}$/.test(String(x.id||''))?String(x.id):`qe-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
     out.source='quran-word';
@@ -121,7 +124,7 @@ function initV8DOM(){
   const content=document.getElementById('sesContent');
   if(content&&!document.getElementById('quickSessionCockpit')){
     const bar=document.createElement('div');bar.id='quickSessionCockpit';bar.className='quick-session-cockpit';
-    bar.innerHTML='<div class="quick-session-steps"><button onclick="scrollSessionStep(\'prevCard\')">🎧 التسميع</button><button onclick="scrollSessionStep(\'sessionErrorsCard\')">🧭 الأخطاء</button><button onclick="scrollSessionStep(\'sessionCard-new\')">📖 الحفظ</button><button onclick="scrollSessionStep(\'sessionCard-rec\')">📚 قريب</button><button onclick="scrollSessionStep(\'sessionCard-far\')">📘 بعيد</button><button onclick="scrollSessionStep(\'sessionCard-juz\')">📜 الأجزاء</button><button onclick="scrollSessionStep(\'sessionCard-surahReview\')">🕌 السور</button><button onclick="scrollSessionStep(\'sessionCard-notes\')">💬 الملاحظات</button></div>';
+    bar.innerHTML='<div class="quick-session-steps"><button onclick="scrollSessionStep(\'prevCard\')">🎧 التسميع</button><button onclick="scrollSessionStep(\'sessionCard-new\')">📖 الحفظ</button><button onclick="scrollSessionStep(\'sessionCard-rec\')">📚 قريب</button><button onclick="scrollSessionStep(\'sessionCard-far\')">📘 بعيد</button><button onclick="scrollSessionStep(\'sessionCard-juz\')">📜 الأجزاء</button><button onclick="scrollSessionStep(\'sessionCard-surahReview\')">🕌 السور</button><button onclick="scrollSessionStep(\'sessionCard-notes\')">💬 الملاحظات</button></div>';
     content.prepend(bar);
   }
   ['new','rec','far'].forEach(k=>{
@@ -275,12 +278,12 @@ function applyReviewSuggestion(i){const x=V8.currentDue?.[i];if(!x)return;const 
 // ──────────────────────────────────────
 // Error logging
 // ──────────────────────────────────────
-function addRecitationError(type){if(!V8_ERROR_TYPES.includes(type))return;V8.sessionErrors.push({type,at:v8Now()});renderSessionErrors();scheduleDraftSave();}
+function addRecitationError(type){if(!V8_ERROR_TYPES.includes(type))return;const section=document.getElementById('ia25ErrorContext')?.value;V8.sessionErrors.push({type,at:v8Now(),...(V8_ERROR_CONTEXTS.includes(section)?{section}:{})});renderSessionErrors();scheduleDraftSave();}
 function removeRecitationError(i){V8.sessionErrors.splice(i,1);renderSessionErrors();scheduleDraftSave();}
 function renderSessionErrors(){
   const n=V8.sessionErrors.length,l=document.getElementById('errorCountLabel'),el=document.getElementById('sessionErrorList');if(l)l.textContent=n===1?'خطأ واحد':`${n} أخطاء`;if(!el)return;
   const modeLabel=m=>m==='new_read'?'الحفظ الجديد':m==='talaqqin'?'التلقين':m==='review'?'المراجعة':'التسميع';
-  el.innerHTML=V8.sessionErrors.map((x,i)=>{if(x?.source==='quran-word'){const where=[x.surah?`سورة ${v8Esc(x.surah)}`:'',x.ayah?`آية ${v8Esc(x.ayah)}`:'',x.word?`«${v8Esc(x.word)}»`:'',x.targetLevel==='char'&&x.charText?`الحرف «${v8Esc(x.charText)}»`:''].filter(Boolean).join(' · ');return `<span class="error-log-item qmark-rich ${x.resolved?'resolved':''}"><b>${v8Esc(x.type)}</b><small>${v8Esc(modeLabel(x.mode))}${where?' · '+where:''}</small>${x.resolved?'<span class="qmark-status">تم التصحيح</span>':''}<button type="button" onclick="removeRecitationError(${i})">✕</button></span>`;}return `<span class="error-log-item">${v8Esc(x.type)} <button type="button" onclick="removeRecitationError(${i})">✕</button></span>`;}).join('')||'<span class="txt-mut" style="font-size:10px">اضغط على نوع الخطأ أو افتح النص القرآني وفعّل وضع التصحيح التفاعلي.</span>';
+  el.innerHTML=V8.sessionErrors.map((x,i)=>{if(x?.source==='quran-word'){const where=[x.surah?`سورة ${v8Esc(x.surah)}`:'',x.ayah?`آية ${v8Esc(x.ayah)}`:'',x.word?`«${v8Esc(x.word)}»`:'',x.targetLevel==='char'&&x.charText?`الحرف «${v8Esc(x.charText)}»`:''].filter(Boolean).join(' · ');return `<span class="error-log-item qmark-rich ${x.resolved?'resolved':''}"><b>${v8Esc(x.type)}</b><small>${v8Esc(modeLabel(x.mode))}${where?' · '+where:''}</small>${x.resolved?'<span class="qmark-status">تم التصحيح</span>':''}<button type="button" onclick="removeRecitationError(${i})">✕</button></span>`;}return `<span class="error-log-item">${v8Esc(x.type)}${x.section?` <small>(${v8Esc(x.section)})</small>`:''} <button type="button" onclick="removeRecitationError(${i})">✕</button></span>`;}).join('')||'<span class="txt-mut" style="font-size:10px">اضغط على نوع الخطأ أو افتح النص القرآني وفعّل وضع التصحيح التفاعلي.</span>';
   try{globalThis.ImamTeacherErrorMarking?.paintAllWords?.();}catch(_){}
 }
 function studentErrorSummary(studentId){const m={};sessions.filter(s=>s.studentId===studentId).forEach(s=>(s.recitationErrors||[]).forEach(e=>m[e.type]=(m[e.type]||0)+1));return Object.entries(m).sort((a,b)=>b[1]-a[1]);}

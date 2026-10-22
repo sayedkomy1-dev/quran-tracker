@@ -372,28 +372,32 @@
     if(!g.document?.body||g.document.getElementById('v1010PortalModal'))return;
     const box=g.document.createElement('div');box.className='mo';box.id='v1010PortalModal';
     box.innerHTML=`<div class="mo-box v1010-portal-modal">
-      <div class="mo-title"><div><span>👨‍👩‍👧 بوابة ولي الأمر / الطالب</span><small>Stage 3 — الدخول الأساسي برقم الهاتف + PIN</small></div><button class="mo-x" onclick="v1010ClosePortalPicker()">✕</button></div>
-      <div class="fld"><label for="v1010PortalStudent">الطالب</label><select id="v1010PortalStudent" onchange="v1010PortalStudentChanged()"></select></div>
+      <div class="mo-title"><div><span>👨‍👩‍👧 إدارة ولي الأمر</span><small>اختَر الطالب، راجع حالة الدخول، ثم أرسل البيانات بشكل واضح وآمن.</small></div><button class="mo-x" onclick="v1010ClosePortalPicker()">✕</button></div>
+      <div class="v1010-guide">① اختر الطالب أو أحد الإخوة المرتبطين بولي الأمر نفسه. ② راجع حالة رقم الهاتف. ③ أنشئ الرمز عند الحاجة وأرسل بيانات الدخول.</div><div class="fld"><label for="v1010PortalStudent">١ — اختر الطالب</label><select id="v1010PortalStudent" onchange="v1010PortalStudentChanged()"></select></div>
 
       <div class="v1010-portal-section v1010-access-section">
-        <div class="v1010-portal-info"><b>📱 دخول ولي الأمر برقم الهاتف</b><p>أنشئ رمز دخول من 6 أرقام لأول مرة ثم أرسله لولي الأمر عبر WhatsApp. الرمز لا يُخزن كنص، لذلك عند نسيانه يتم إنشاء رمز جديد.</p></div>
+        <div class="v1010-portal-info"><b>٢ — حالة دخول ولي الأمر</b><p>رقم الهاتف المسجل مع رمز سري من ٦ أرقام. لا يظهر الرمز القديم بعد إنشائه؛ إذا نسيه ولي الأمر يُنشأ رمز جديد.</p></div>
         <div id="v1010PhoneStatus" class="v1010-portal-status">اختر طالبًا لعرض حالة دخول الهاتف.</div>
         <div id="v1010GuardianSecret" class="v1010-guardian-secret" hidden></div>
-        <div class="v1010-portal-actions v1010-access-actions">
+        <div class="v1010-portal-info"><b>٣ — تفعيل الدخول أو إرسال الرابط</b><p>إذا كان الدخول مفعّلًا، استخدم «إرسال رابط الدخول». وإذا لم يكن مفعّلًا، أنشئ الرمز أولًا وشارك بياناته من البطاقة التي تظهر لك.</p></div><div class="v1010-portal-actions v1010-access-actions">
           <button id="v1010EnablePhoneBtn" class="btn btn-g" onclick="v1010EnablePhoneAccess()">🔐 إنشاء رمز دخول لولي الأمر</button>
           <button id="v1010ResetPhoneBtn" class="btn btn-out" onclick="v1010ResetPhonePin()" hidden>🔐 إنشاء PIN جديد</button>
           <button class="btn btn-wa" onclick="v1010SendGuardianLoginLink()">📲 إرسال رابط الدخول</button>
           <button class="btn btn-out" onclick="v1010OpenGuardianLogin()">🌐 فتح صفحة الدخول</button>
-          <button class="btn btn-out" onclick="v1010CopyGuardianLogin()">🔗 نسخ رابط الدخول</button>
-          <button id="v1010UnlinkPhoneBtn" class="btn btn-out v1010-danger" onclick="v1010UnlinkPhoneAccess()" hidden>⛔ إيقاف دخول الهاتف</button>
         </div>
+        <details class="v1010-guardian-more"><summary>⚙️ أدوات إضافية: نسخ الرابط وإدارة الأمان</summary>
+          <div class="v1010-portal-actions">
+            <button class="btn btn-out" onclick="v1010CopyGuardianLogin()">🔗 نسخ رابط الدخول</button>
+            <button id="v1010UnlinkPhoneBtn" class="btn btn-out v1010-danger" onclick="v1010UnlinkPhoneAccess()" hidden>⛔ إيقاف دخول الهاتف</button>
+          </div>
+        </details>
         <div class="v1010-reset-requests">
           <div class="v1010-reset-head"><div><b>🔔 طلبات استعادة الرمز</b><small>يظهر هنا طلب «نسيت رمز الدخول؟» من ولي الأمر.</small></div><button class="btn btn-out btn-sm" onclick="v1010RefreshResetRequests()">تحديث</button></div>
           <div id="v1010ResetRequestsList" class="v1010-reset-list"><div class="v1010-reset-empty">جارٍ فحص الطلبات…</div></div>
         </div>
       </div>
 
-      <details class="v1010-engagement-details" open>
+      <details class="v1010-engagement-details">
         <summary>📊 متابعة استخدام ولي الأمر</summary>
         <div class="v1010-engagement-head"><div><b>هل تمّت المذاكرة في المنزل؟</b><small>تظهر الزيارات وتشغيل التحفيظ والتكرار من بوابة الهاتف + PIN.</small></div><select id="v1010EngagementDays" onchange="v1010EngagementDaysChanged()"><option value="7">آخر 7 أيام</option><option value="30">آخر 30 يومًا</option></select></div>
         <div id="v1010EngagementSelected" class="v1010-engagement-selected"><div class="v1010-reset-empty">جارٍ تحميل نشاط ولي الأمر…</div></div>
@@ -599,7 +603,7 @@
   function ensureMoreItem(){
     const grid=g.document?.getElementById?.('v9MoreGrid');if(!grid||grid.querySelector('[data-v1010-portal-more]'))return;
     const btn=g.document.createElement('button');btn.className='v9-more-item';btn.dataset.v1010PortalMore='1';btn.setAttribute('onclick','closeV9More();v1010OpenPortalPicker()');
-    const icon=typeof g.v9Icon==='function'?g.v9Icon('users'):'👨‍👩‍👧';btn.innerHTML=`${icon}<b>بوابة ولي الأمر</b><small>دخول برقم الهاتف + PIN وتقارير قراءة فقط</small>`;grid.appendChild(btn);
+    const icon=typeof g.v9Icon==='function'?g.v9Icon('users'):'👨‍👩‍👧';btn.innerHTML=`${icon}<b>إدارة ولي الأمر</b><small>الدخول والرمز والتواصل ومتابعة المذاكرة</small>`;grid.appendChild(btn);
   }
   function patchHooks(){
     const currentInject=g.injectV9Navigation;

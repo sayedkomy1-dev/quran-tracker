@@ -279,7 +279,9 @@
     if(!shared)try{toast('تم إنشاء بطاقة التصحيح. يمكنك إرسال الرسالة مباشرة بزر حفظ وإرسال.','info');}catch(_){}
   }
   function correctionDetailsText(ses){
-    const all=quranErrors(ses?.recitationErrors||[]);if(!all.length)return '';
+    const rows=Array.isArray(ses?.recitationErrors)?ses.recitationErrors:[];
+    const all=quranErrors(rows),simple=rows.filter(e=>e&&e.source!=='quran-word');
+    if(!all.length&&!simple.length)return '';
     const sections=[];
     for(const ph of ['new','recitation','review']){
       const category=all.filter(x=>phase(x.mode)===ph).sort((a,b)=>(Number(a.resolved)-Number(b.resolved))||(Number(a.surahId)-Number(b.surahId))||(Number(a.ayah)-Number(b.ayah))||(Number(a.wordIndex)-Number(b.wordIndex)));
@@ -289,10 +291,13 @@
       const lines=category.map(e=>`${e.resolved?'✓':'•'} سورة ${e.surah||'—'} ${e.ayah||''} — «${e.word||'—'}»${rowIsChar(e)?` — الحرف «${e.charText||''}»`:''}: ${e.type}${e.resolved?' (تم التصحيح)':''}`);
       sections.push(`*${phaseLabel(ph)} (${category.length})*\n${lines.join('\n')}`);
     }
-    return `\n\n🪶 *مواضع التصحيح على النص*\n${sections.join('\n\n')}`;
+    const out=[];
+    if(all.length)out.push(`🪶 *مواضع التصحيح على النص*\n${sections.join('\n\n')}`);
+    if(simple.length)out.push(`🧭 *أخطاء سجلها المحفظ (${simple.length})*\n${simple.map((e,i)=>`${i+1}. ${e.type||'خطأ غير مصنف'}${e.section?' — '+e.section:(e.mode?' — '+ctxLabel(e.mode):'')}${e.note?' — '+e.note:''}`).join('\n')}`);
+    return `\n\n${out.join('\n\n')}`;
   }
   function appendCorrectionDetails(msg,ses){
-    const base=String(msg||''),details=correctionDetailsText(ses);if(!base||!details||base.includes('🪶 *مواضع التصحيح على النص*'))return base;
+    const base=String(msg||''),details=correctionDetailsText(ses);if(!base||!details||(base.includes('🪶 *مواضع التصحيح على النص*')||base.includes('🧭 *أخطاء سجلها المحفظ')))return base;
     // V10 detailed reports use a separator before the assignment/closing lines.
     // Insert corrections before that separator, never after the academy footer.
     for(const marker of [

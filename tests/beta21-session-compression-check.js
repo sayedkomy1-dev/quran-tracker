@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const read=p=>fs.readFileSync(p,'utf8');
 const html=read('index.html'),v9=read('v9.js'),ui=read('js/features/platform-workflow.js'),render=read('js/features/session-intelligence-119.js'),css=read('css/platform/responsive.css'),v11=read('js/features/v11-ui.js');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.24');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.25');
 for(const id of ['sesSt','sesDate','draftState','saveSessionBtn','saveSendSessionBtn','teacherAssignmentAudioBtn','repeatBar','im119ExtraCount']){
   if(id==='im119ExtraCount')assert(render.includes(`id="${id}"`));
   else assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,id+' must be unique');
@@ -13,7 +13,7 @@ assert(ui.includes("if(key==='students'||key==='session'"),'redundant lesson hea
 assert(v11.includes("if(page==='session')return;"),'redundant second session hero must not be generated');
 assert(!v11.includes("ctx.innerHTML='<div class=\"v11-context-avatar\""),'second student context should not be created');
 assert(v9.includes('main.appendChild(saveBtn)')&&v9.includes('main.appendChild(sendBtn)'),'official handlers remain in their footer');
-assert(v9.includes("main.insertAdjacentElement('beforebegin',audio)"),'audio stays directly above originals');
+assert(v9.includes("main.insertAdjacentElement('afterend',audio)"),'optional reciter selector follows action stack');
 const inside=html.split('<div id="sesContent">')[1];
 assert(inside.includes('id="repeatBar"')&&inside.indexOf('id="repeatBar"')<inside.indexOf('id="prevCard"'),'large repeat placed in recitation');
 assert(inside.includes('data-v9-step="assessment"')&&inside.includes('onclick="fillFromLast()"'),'existing repeat contract retained');

@@ -255,3 +255,28 @@
 #pg-session #v9SessionFooter .ia22-audio-action{font-weight:800}
 
 @media print{#pg-session #v9SessionFooter{display:none!important}}
+
+/* beta25 — Four large in-flow Notes actions; the one error log is Notes-only. */
+#pg-session #v9SessionFooter .v9-main-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+#pg-session #v9SessionFooter .v9-main-actions>.btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;padding:12px 14px;font-size:16px;font-weight:800;line-height:1.55;white-space:normal;text-align:center;border-radius:13px}
+#pg-session #v9SessionFooter .v9-main-actions>.ia25-errors-action{border:2px solid var(--gd,#165d3a);background:var(--wh,#fff);color:var(--gd,#165d3a)}
+#pg-session #v9SessionFooter .assignment-audio-details{order:0;margin:6px 0 0}
+#pg-session .session-errors-card[hidden],#pg-session #v10ErrorsAccordion[hidden]{display:none!important}
+#pg-session #v9SessionFooter{margin:0 0 10px}
+#pg-session #v10ErrorsAccordion{margin-top:0}
+
+/* beta25 guardian — clear workflow and optional advanced tools, no RPC changes. */
+.v1010-portal-modal .mo-title small{font-size:12px;line-height:1.6}
+.v1010-portal-modal .v1010-guide{padding:12px;margin:10px 0 14px;border-radius:12px;background:#edf6ef;color:#164b34;font-size:13px;line-height:1.9}
+.v1010-portal-modal .v1010-portal-info b{font-size:15px}
+.v1010-portal-modal .v1010-portal-info p{font-size:12px;line-height:1.85}
+.v1010-portal-modal .v1010-access-actions{display:flex;flex-direction:column;gap:8px}
+.v1010-portal-modal .v1010-access-actions .btn{width:100%;min-width:0;min-height:46px}
+.v1010-guardian-more{border:1px solid var(--bdr,#dce5db);border-radius:11px;margin:10px 0;padding:4px 10px}
+.v1010-guardian-more>summary{cursor:pointer;font-weight:700;padding:8px 4px;line-height:1.7}
+.v1010-guardian-more .v1010-portal-actions{padding-bottom:8px}
+
+/* beta25 context selector, no new storage or backend fields */
+#pg-session .ia25-error-context{margin:9px 0 12px}
+#pg-session .ia25-error-context select{width:100%;min-height:46px;border-radius:10px}
+#pg-session .ia25-error-context small{display:block;margin-top:5px;line-height:1.65;font-size:11px;color:var(--ui-muted,var(--mut))}
