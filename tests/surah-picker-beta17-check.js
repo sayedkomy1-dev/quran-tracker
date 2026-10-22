@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),read=name=>fs.readFileSync(path.join(root,name),'utf8');
-const version=read('VERSION').trim();assert.equal(version,'11.12.1-beta.22');
+const version=read('VERSION').trim();assert.equal(version,'11.12.1-beta.24');
 const html=read('index.html'),sw=read('sw.js'),css=read('css/platform/surah-picker.css'),script=read('js/features/surah-picker-17.js'),app=read('app.js');
 for(const section of ['new','rec','far']){
  assert(html.includes(`id="${section}-s"`)&&html.includes(`id="vb-${section}"`));

@@ -311,8 +311,12 @@ function ensureSessionActionDock(){
     footer.setAttribute('aria-label','إجراءات إنهاء الحصة');
     footer.innerHTML=`<div class="v9-action-head"><div><b>إنهاء الحصة</b><small>احفظ بعد الانتهاء من إدخال بيانات الحصة.</small></div><span class="v9-action-safe">✓ لا يغطي محتوى الصفحة</span></div><div class="v9-action-stack"><div class="v9-main-actions"></div><details class="v9-send-details"><summary>خيارات رسالة ولي الأمر</summary><div class="v9-secondary-actions"></div></details></div>`;
     content.appendChild(footer);
-  }else if(footer.parentElement!==content){
-    content.appendChild(footer);
+  }
+  // The official actions live immediately below the session tabs in document flow.
+  // Do not move assessment/error cards: their location and callbacks belong to recitation.
+  // Keep the existing footer and the original save/send/audio nodes (no cloned buttons).
+  if(footer.parentElement!==content||footer!==content.firstElementChild){
+    content.insertBefore(footer,content.firstElementChild);
   }
   const main=footer.querySelector('.v9-main-actions'),secondary=footer.querySelector('.v9-secondary-actions');
   const saveBtn=document.getElementById('saveSessionBtn');
@@ -355,7 +359,7 @@ function setSessionMode(mode,persist=true){mode=mode==='expert'?'expert':'guided
 function setSessionStep(step,scroll=true){if(!V9.steps.includes(step))step='assessment';V9.step=step;document.getElementById('pg-session')?.setAttribute('data-ia-session-step',step);
   const guidance={assessment:'التسميع: راجع أداء الطالب وسجل الأخطاء عند الحاجة.',new:'الحفظ: اختر السورة وحدد نطاق الآيات أو سورة كاملة.',review:'المراجعة: راجع المواضع المستحقة دون إعادة إدخال الطالب.',notes:'الملاحظات: شارك صوت التكليف ثم احفظ الحصة رسميًا أو أرسلها لولي الأمر.'};
   const help=document.getElementById('ia20StepHelp');if(help)help.textContent=guidance[step]||'';document.querySelectorAll('.v9-step-btn').forEach(b=>{const on=b.dataset.step===step;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});applySessionStepVisibility();if(scroll&&settings.v9?.mode!=='expert')document.getElementById('v9SessionSteps')?.scrollIntoView({block:'start',behavior:settings.v9?.reduceMotion?'auto':'smooth'});}
-function applySessionStepVisibility(){const guided=(settings.v9?.mode||'expert')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',guided&&c.dataset.v9Step!==V9.step));const f=document.getElementById('v9SessionFooter');const mobile=typeof window!=='undefined'&&!!window.matchMedia?.('(max-width:799px)').matches;if(f)f.hidden=guided&&V9.step!=='notes'&&!mobile;const repeat=document.getElementById('repeatBar');if(repeat)repeat.classList.toggle('ia21-repeat-step-hidden',V9.step!=='assessment');}
+function applySessionStepVisibility(){const guided=(settings.v9?.mode||'expert')==='guided';document.querySelectorAll('#sesContent>.card[data-v9-step]').forEach(c=>c.classList.toggle('v9-step-hidden',guided&&c.dataset.v9Step!==V9.step));const f=document.getElementById('v9SessionFooter');if(f)f.hidden=V9.step!=='notes';const repeat=document.getElementById('repeatBar');if(repeat)repeat.classList.toggle('ia21-repeat-step-hidden',V9.step!=='assessment');}
 function moveSessionStep(d){let i=Math.max(0,V9.steps.indexOf(V9.step));i=Math.max(0,Math.min(V9.steps.length-1,i+d));setSessionStep(V9.steps[i]);}
 function initSession(){V9_BASE.initSession();document.getElementById('ia22FollowupDisclosure')?.removeAttribute('open');ensureSessionActionDock();setSessionStep('assessment',false);setSessionMode(settings.v9?.mode||'expert',false);refreshV9DraftState();}
 function onSesSt(){V9_BASE.onSesSt();document.getElementById('ia22FollowupDisclosure')?.removeAttribute('open');setSessionStep('assessment',false);refreshV9DraftState();}

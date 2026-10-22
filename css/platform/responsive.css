@@ -95,22 +95,21 @@
  #pg-session .im119-card .im119-top strong{font-size:20px}
 
 
- /* Native footer is pinned above bottom navigation, not a second save panel. */
- #pg-session #v9SessionFooter{position:fixed;left:8px;right:8px;bottom:calc(81px + env(safe-area-inset-bottom));z-index:590;max-width:none;max-height:170px;margin:0;padding:6px 8px 8px;background:var(--ui-surface,var(--wh));box-shadow:0 3px 18px rgba(0,35,25,.18);border:1px solid var(--ui-line,var(--bdr));border-radius:15px;overflow:visible}
+ /* Beta24: same official footer in the notes step, IN FLOW, never fixed or duplicated. */
+ #pg-session #v9SessionFooter{position:relative;inset:auto;z-index:auto;max-width:100%;max-height:none;margin:0 0 10px;padding:10px 12px;background:var(--ui-surface,var(--wh));box-shadow:none;border:1px solid var(--ui-line,var(--bdr));border-radius:14px;overflow:visible}
  #pg-session #v9SessionFooter .v9-action-head{display:none}
- #pg-session #v9SessionFooter .v9-action-stack{display:grid!important;grid-template-columns:1fr 1fr;column-gap:8px;row-gap:2px}
- #pg-session #v9SessionFooter .assignment-audio-details{grid-column:2;grid-row:1;margin:0;padding:0 4px;border:0;background:transparent;position:relative}
- #pg-session #v9SessionFooter .assignment-audio-details>summary{min-height:26px;padding:1px 5px;font-size:11px;color:var(--ui-muted,var(--mut));display:list-item}
- #pg-session #v9SessionFooter .assignment-audio-details[open] .assignment-audio-share{position:absolute;bottom:calc(100% + 6px);right:0;left:0;border:1px solid var(--ui-line,var(--bdr));background:var(--ui-surface,var(--wh));border-radius:12px;box-shadow:0 6px 22px rgba(0,36,23,.18);padding:10px;display:block}
+ #pg-session #v9SessionFooter .v9-action-stack{display:flex;flex-direction:column;gap:8px}
+ #pg-session #v9SessionFooter .v9-main-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ #pg-session #v9SessionFooter .v9-main-actions>.btn{min-width:0;min-height:46px;padding:7px 6px;font-size:12px;line-height:1.4;white-space:normal;touch-action:manipulation}
+ #pg-session #v9SessionFooter .assignment-audio-details{position:static;order:-1;width:100%;max-width:100%;margin:0 0 4px;padding:9px 10px;border:1px solid var(--ui-line,var(--bdr));background:var(--ui-surface,var(--wh))}
+ #pg-session #v9SessionFooter .assignment-audio-details>summary{min-height:35px;padding:4px;font-size:13px;display:list-item}
+ #pg-session #v9SessionFooter .assignment-audio-details[open] .assignment-audio-share{position:static;box-shadow:none;border:0;background:transparent;padding:7px 0 0;display:block}
  #pg-session #v9SessionFooter .assignment-audio-details .assignment-audio-share select{width:100%;font-size:16px;min-height:44px}
- #pg-session #v9SessionFooter .v9-send-details{display:block;grid-column:1;grid-row:1;position:relative;padding:0 4px;border:0}
+ #pg-session #v9SessionFooter .v9-send-details{position:relative;padding:0;margin:0;border:0}
  #pg-session #v9SessionFooter .v9-send-details[hidden]{display:none!important}
- #pg-session #v9SessionFooter .v9-send-details>summary{font-size:11px;min-height:26px;text-align:start;display:list-item}
- #pg-session #v9SessionFooter .v9-secondary-actions{position:absolute;bottom:calc(100% + 6px);left:0;right:0;padding:10px;background:var(--ui-surface,var(--wh));border:1px solid var(--ui-line,var(--bdr));border-radius:12px;box-shadow:0 6px 20px rgba(0,36,23,.16)}
- #pg-session #v9SessionFooter .v9-main-actions{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px}
- #pg-session #v9SessionFooter .v9-main-actions>.btn{font-size:11px;padding:6px 3px;min-height:45px}
- #pg-session.on{padding-bottom:calc(246px + env(safe-area-inset-bottom))!important}
- body.ui-session-keyboard #pg-session #v9SessionFooter{display:none!important}
+ #pg-session #v9SessionFooter .v9-send-details>summary{font-size:13px;min-height:42px;padding:8px 4px;text-align:start;display:list-item}
+ #pg-session #v9SessionFooter .v9-secondary-actions{position:static;padding:8px 0;border:0;box-shadow:none;background:transparent}
+ #pg-session.on{padding-bottom:calc(96px + env(safe-area-inset-bottom))!important}
 
 }
 @media(max-width:440px){
@@ -167,12 +166,13 @@
 /* Beta20: compact session without a second oversized floating action panel. */
 #pg-session[data-ia-session-step]:not([data-ia-session-step="assessment"]) #v9SessionSteps .v9-session-mode{display:none}
 #pg-session.v9-guided[data-ia-session-step]:not([data-ia-session-step="assessment"]) :is(#im119Completion,#sessionJourneyCard,#v11SessionContext){display:none}
+#pg-session.v9-guided[data-ia-session-step]:not([data-ia-session-step="assessment"]) #v10SuggestionAccordion{display:none}
 #pg-session #v9SessionSteps{margin-block:5px 9px}
 #pg-session.v9-ready #v11SessionNavigator{display:none}
 #pg-session #v9SessionSteps .v9-step-btn{min-height:44px;touch-action:manipulation}
 #pg-session #v9SessionSteps .ia20-step-help{font-size:12px;line-height:1.55;margin:5px 7px 0;color:var(--ui-muted,#58665e)}
 #pg-session #v9SessionSteps .v9-session-mode{padding-block:5px}
-#pg-session #v9SessionFooter .assignment-audio-details{margin-block:0 12px;order:-1}
+#pg-session #v9SessionFooter .assignment-audio-details{margin-block:0 8px;order:-1}
 #pg-session #v9SessionFooter .v9-action-stack{display:flex;flex-direction:column;gap:8px}
 #pg-session #v9SessionFooter{scroll-margin-top:90px}
 #pg-session .im119-card{gap:7px;padding:10px 12px}
@@ -242,8 +242,7 @@
 /* The global animated page transform would trap a fixed lesson footer inside a
    scrolling containing block; disable this animation on the lesson only. */
 #pg-session.on{animation:none!important;transform:none!important}
-/* One native action cluster on phones: original share / save / send DOM nodes.
-   The action bar replaces the far-down footer, never duplicates its handlers. */
+/* The same original action nodes are placed at the start of Notes, not in a floating bar. */
 #pg-session[data-ia-session-step]:not([data-ia-session-step="assessment"]) #sessionJourneyCard{display:none!important}
 #pg-session #ia22FollowupDisclosure{margin:0;padding:0;border:0}
 #pg-session #ia22FollowupDisclosure>summary{cursor:pointer;list-style:none;min-height:44px;border-radius:12px;padding:11px 12px;display:flex;align-items:center;justify-content:space-between;gap:9px}

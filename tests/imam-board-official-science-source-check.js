@@ -19,8 +19,8 @@ assert.equal(a.canonical({sura_no:1,aya_no:2,explanation:'غريب بلا كلم
 const csv=a.parseCSV('sura_no,aya_no,aya_tafseer\r\n1,2,"شرح، تجريبي"\r\n');
 assert.equal(csv.length,1);assert.equal(csv[0].aya_tafseer,'شرح، تجريبي');
 assert.throws(()=>a.parseCSV('x,y\n"unfinished,value\n'),/غير مغلق/);
-assert(html.includes('imam-board-tafsir.js?v=11.12.1-beta.22'));
-assert(sw.includes("'./js/features/imam-board-tafsir.js?v=11.12.1-beta.22'"));
+assert(html.includes('imam-board-tafsir.js?v=11.12.1-beta.24'));
+assert(sw.includes("'./js/features/imam-board-tafsir.js?v=11.12.1-beta.24'"));
 assert(board.includes('case \'scienceShareImported\':shareImportedScience();'));
 assert(board.includes('data-cmd="scienceImport"'));
 assert(board.includes('sourceTitle')&&board.includes('sourceUrl'));

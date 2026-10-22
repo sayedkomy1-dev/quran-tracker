@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const read=p=>fs.readFileSync(p,'utf8');
 const html=read('index.html'),v9=read('v9.js'),ui=read('js/features/platform-workflow.js'),render=read('js/features/session-intelligence-119.js'),css=read('css/platform/responsive.css'),v11=read('js/features/v11-ui.js');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.22');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.24');
 for(const id of ['sesSt','sesDate','draftState','saveSessionBtn','saveSendSessionBtn','teacherAssignmentAudioBtn','repeatBar','im119ExtraCount']){
   if(id==='im119ExtraCount')assert(render.includes(`id="${id}"`));
   else assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,id+' must be unique');
