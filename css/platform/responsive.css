@@ -280,3 +280,54 @@
 #pg-session .ia25-error-context{margin:9px 0 12px}
 #pg-session .ia25-error-context select{width:100%;min-height:46px;border-radius:10px}
 #pg-session .ia25-error-context small{display:block;margin-top:5px;line-height:1.65;font-size:11px;color:var(--ui-muted,var(--mut))}
+
+
+/* beta26 — chosen reciter directly below the original assignment audio-share action */
+#pg-session #v9SessionFooter .v9-main-actions>.ia26-reciter-picker{grid-column:1/-1;min-width:0;display:flex;flex-direction:column;gap:5px;padding:11px 13px 13px;border:1px solid var(--ui-line,#dce6e1);border-radius:14px;background:var(--ui-soft,#f4f8f5)}
+#pg-session .ia26-reciter-picker label{font-size:14px;font-weight:800;color:var(--ui-ink,#173e31)}
+#pg-session .ia26-reciter-picker select{display:block;width:100%;min-height:49px;padding:9px 12px;font-size:16px;font-weight:700;background:var(--ui-surface,#fff);border:1px solid var(--ui-line,#dae4dd)}
+#pg-session .ia26-reciter-picker small{font-size:12px;color:var(--ui-muted,#58665e)}
+/* beta26 — Guardian Management as a real in-app fullscreen surface, not an overlapping sheet */
+body.ia26-guardian-open{overflow:hidden!important}
+body.ia26-guardian-open #v9Nav,body.ia26-guardian-open #v9MoreSheet{visibility:hidden!important}
+#v1010PortalModal.ia26-guardian-screen{position:fixed;inset:0;z-index:2147483000;align-items:stretch;justify-content:center;padding:0!important;margin:0;background:var(--ui-canvas,#f6f8f5);backdrop-filter:none;-webkit-backdrop-filter:none;overflow:hidden}
+#v1010PortalModal .v1010-portal-modal.mo-box{display:flex;flex-direction:column;position:relative;width:min(100%,850px);max-width:100%;height:100dvh;max-height:100dvh;min-height:0;overflow:hidden;margin:0;padding:0!important;border:0;border-radius:0!important;box-shadow:0 0 32px rgba(12,54,41,.12);background:var(--ui-canvas,#f6f8f5)}
+#v1010PortalModal .ia26-guardian-header{position:relative;z-index:2;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:9px;flex:none;min-height:74px;padding:calc(10px + env(safe-area-inset-top)) 14px 12px;background:linear-gradient(115deg,#104d3e,#0b3938);color:#fff;box-shadow:0 6px 20px rgba(7,44,38,.14)}
+#v1010PortalModal .ia26-guardian-header button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;min-width:46px;border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:7px 12px;background:rgba(255,255,255,.10);color:#fff;font-size:14px;font-weight:850}
+#v1010PortalModal .ia26-guardian-header button:focus-visible{outline:3px solid #e5cd83;outline-offset:2px}
+#v1010PortalModal .ia26-guardian-heading{min-width:0;text-align:center;display:grid;gap:1px}
+#v1010PortalModal .ia26-guardian-heading b{font-size:clamp(16px,2vw,21px);font-weight:900;line-height:1.45}
+#v1010PortalModal .ia26-guardian-heading small{font-size:11px;color:#d8eee6;line-height:1.5}
+#v1010PortalModal .ia26-guardian-content{flex:1;min-height:0;overflow-y:auto;overscroll-behavior-y:contain;scroll-behavior:smooth;padding:18px clamp(14px,3vw,28px) calc(32px + env(safe-area-inset-bottom));scroll-padding-top:14px}
+#v1010PortalModal .ia26-guardian-lead{color:var(--ui-muted,#58665e);margin:0 0 14px;font-size:14px;line-height:1.8}
+#v1010PortalModal .ia26-guardian-shortcuts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:17px}
+#v1010PortalModal .ia26-guardian-shortcuts button{min-width:0;min-height:48px;background:var(--ui-surface,#fff);color:var(--ui-primary,#0d5e46);border:1px solid var(--ui-line,#dbe4df);border-radius:13px;font-size:13px;font-weight:800}
+#v1010PortalModal .ia26-guardian-student{padding:15px;border:1px solid var(--ui-line,#dbe4df);border-radius:16px;background:var(--ui-surface,#fff);margin:0 0 12px}
+#v1010PortalModal .ia26-guardian-student label{font-size:14px;color:var(--ui-ink,#123e32);font-weight:900}
+#v1010PortalModal #v1010PortalStudent{min-height:52px;font-size:16px;width:100%}
+#v1010PortalModal .v1010-access-section{margin:12px 0 14px;padding:14px;border:1px solid var(--ui-line,#dbe4df);background:var(--ui-surface,#fff);border-radius:16px}
+#v1010PortalModal .v1010-portal-info{padding:10px 12px;border-radius:12px}
+#v1010PortalModal .v1010-portal-info b{font-size:15px}
+#v1010PortalModal .v1010-portal-info p{font-size:13px;line-height:1.75}
+#v1010PortalModal .v1010-portal-status{padding:12px 14px;font-size:13px;line-height:1.7}
+#v1010PortalModal .v1010-portal-status b{font-size:14px}
+#v1010PortalModal .v1010-access-actions{display:grid;grid-template-columns:1fr;gap:10px}
+#v1010PortalModal .v1010-portal-actions .btn{min-height:50px;padding:10px 14px;font-size:14px;font-weight:800;border-radius:13px;line-height:1.65}
+#v1010PortalModal .v1010-guardian-more{margin-top:15px;padding:5px 12px}
+#v1010PortalModal .v1010-guardian-more>summary{font-size:14px;min-height:44px}
+#v1010PortalModal .ia26-guardian-disclosure{margin:14px 0;overflow:hidden;border-radius:15px;border:1px solid var(--ui-line,#dbe4df);background:var(--ui-surface,#fff)}
+#v1010PortalModal .ia26-guardian-disclosure>summary{min-height:56px;display:list-item;padding:15px 16px;font-size:15px;font-weight:850;cursor:pointer;line-height:1.65;background:var(--ui-surface,#fff)}
+#v1010PortalModal .ia26-guardian-disclosure[open]>summary{border-bottom:1px solid var(--ui-line,#dbe4df);background:var(--ui-soft,#f4f8f5)}
+#v1010PortalModal .ia26-disclosure-content{padding:14px}
+#v1010PortalModal .v1010-reset-requests{border-top:1px solid var(--ui-line,#dbe4df)}
+#v1010PortalModal .v1010-reset-head b,#v1010PortalModal .v1010-engagement-head b{font-size:14px}
+#v1010PortalModal .v1010-reset-head small,#v1010PortalModal .v1010-engagement-head small{font-size:12px}
+#v1010PortalModal .v1010-reset-empty,#v1010PortalModal .v1010-engagement-state span,#v1010PortalModal .v1010-engagement-status span{font-size:12px}
+#v1010PortalModal .v1010-engagement-kpis small{font-size:11px}
+#v1010PortalModal .v1010-engagement-row b{font-size:13px}
+#v1010PortalModal .v1010-engagement-row small{font-size:11px}
+#v1010PortalModal .v1010-engagement-row em{font-size:11px}
+#v1010PortalModal .v1010-link-details>summary{font-size:14px;padding:14px 16px;min-height:54px}
+#v1010PortalModal .v1010-portal-busy{padding:12px;font-size:13px}
+@media(max-width:370px){#v1010PortalModal .ia26-guardian-header{gap:5px;padding-inline:8px}#v1010PortalModal .ia26-guardian-header button{padding-inline:7px;font-size:12px}#v1010PortalModal .ia26-guardian-shortcuts{gap:5px}#v1010PortalModal .ia26-guardian-shortcuts button{font-size:11px;padding:4px}}
+@media print{#v1010PortalModal{display:none!important}}

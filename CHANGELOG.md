@@ -1,4 +1,9 @@
-## 11.12.1-beta.25 — مراجعة أخطاء الحصة وإدارة ولي الأمر (تجريبي للمراجعة فقط)
+## v11.12.1-beta.26 — Guardian full-screen UX + visible reciter
+- Full-height Guardian management panel with a visible Back button, isolated scrolling, clearer primary actions, and expandable secondary sections; existing backend/RPC/PIN and student isolation untouched.
+- Display the current reciter directly under the original assignment-audio share button, reusing the same native select and its value.
+- UI-only, no SQL/data changes.
+
+## 11.12.1-beta.26 — مراجعة أخطاء الحصة وإدارة ولي الأمر (تجريبي للمراجعة فقط)
 
 - مبني على الإصدار 11.12.1-beta.24 الذي وصل إلى الهاتف؛ لا تُستبدل ملفات المشروع بإصدارات الأرشيف السابقة.
 - تثبيت مجموعة أربعة أزرار كبيرة بالترتيب: صوت التكليف، حفظ الحصة، حفظ وإرسال لولي الأمر، مشاركة أخطاء الحصة؛ داخل تبويب الملاحظات فقط.

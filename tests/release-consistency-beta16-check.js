@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const version=read('VERSION').trim();
-assert.equal(version,'11.12.1-beta.25');
+assert.equal(version,'11.12.1-beta.26');
 assert.equal(JSON.parse(read('package.json')).version,version);
 assert.equal(JSON.parse(read('manifest.json')).version,version);
 const html=read('index.html'),sw=read('sw.js');

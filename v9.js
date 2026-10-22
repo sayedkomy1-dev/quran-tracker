@@ -119,7 +119,7 @@ function injectV9Navigation(){
     g.innerHTML=[
       ['search','بحث في الأكاديمية','العثور على الأدوات والطلاب المخولين',`closeV9More();openQuickSearch()`],['users','الطلاب','ملفات الطلاب والحضور',`goPage('students');closeV9More()`],['chart','التقارير','تقارير الحفظ والمتابعة',`goPage('reports');closeV9More()`],['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة وحزمة العمل دون إنترنت',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
     ].map(([i,t,s,a])=>`<button class="v9-more-item" onclick="${a}">${v9Icon(i)}<b>${t}</b><small>${s}</small></button>`).join('');
-    g.insertAdjacentHTML('beforeend',`<button class="v9-more-item" data-v1010-portal-more="1" onclick="closeV9More();v1010OpenPortalPicker()">${v9Icon('group')}<b>إدارة ولي الأمر</b><small>الدخول والرمز والتواصل ومتابعة المذاكرة</small></button>`);
+    g.insertAdjacentHTML('beforeend',`<button class="v9-more-item" data-v1010-portal-more="1" onclick="closeV9More();v1010OpenPortalPicker('',true)">${v9Icon('group')}<b>إدارة ولي الأمر</b><small>الدخول والرمز والتواصل ومتابعة المذاكرة</small></button>`);
   }
   // One accessible discovery field for all currently permitted More actions.
   // Filter only buttons already rendered by the active-account navigation.
@@ -326,7 +326,6 @@ function ensureSessionActionDock(){
   // Reuse the original audio/save/send buttons; do not clone or change their handlers.
   // The four large actions remain in the Notes-only flow for both session modes.
   const audio=content.querySelector('.assignment-audio-details');
-  if(audio&&!footer.contains(audio)&&main)main.insertAdjacentElement('afterend',audio);
   const audioBtn=document.getElementById('teacherAssignmentAudioBtn');
   if(audioBtn&&main&&audioBtn.parentElement!==main){
     audioBtn.classList.add('ia22-audio-action');
@@ -334,9 +333,24 @@ function ensureSessionActionDock(){
     audioBtn.setAttribute('aria-label','مشاركة صوت التكليف القرآني');
     main.appendChild(audioBtn);
   }
-  if(audio){
-    const selector=audio.querySelector('summary');
-    if(selector)selector.textContent='🎙️ تغيير قارئ صوت التكليف (اختياري)';
+  // Beta26: show the chosen reciter immediately UNDER the real audio-share button.
+  // Move the one original select element; do not clone or replace its ID/value.
+  const existingReciter=main?.querySelector('#ia26ReciterPicker');
+  if(audio&&main&&!existingReciter){
+    const select=audio.querySelector('#teacherAssignmentAudioReciter');
+    if(select){
+      const panel=document.createElement('div');panel.id='ia26ReciterPicker';panel.className='ia26-reciter-picker';
+      panel.innerHTML='<label for="teacherAssignmentAudioReciter" id="ia26ReciterLabel">🎙️ قارئ صوت التكليف</label><small>يمكن تغييره قبل مشاركة الصوت</small>';
+      panel.insertBefore(select,panel.querySelector('small'));
+      audio.remove();
+      main.insertBefore(panel,audioBtn?.parentElement===main?audioBtn.nextSibling:main.firstChild);
+      const update=()=>{
+        const label=document.getElementById('ia26ReciterLabel');
+        const name=select.selectedOptions?.[0]?.textContent?.trim()||'مشاري العفاسي';
+        if(label)label.textContent=`🎙️ القارئ المختار: ${name}`;
+      };
+      select.addEventListener('change',update);update();
+    }
   }
   if(saveBtn&&main&&saveBtn.parentElement!==main){saveBtn.classList.remove('mb8');saveBtn.classList.add('v9-save-primary');main.appendChild(saveBtn);}
   if(sendBtn&&main&&sendBtn.parentElement!==main){sendBtn.id='saveSendSessionBtn';sendBtn.classList.add('v9-send-primary');main.appendChild(sendBtn);}

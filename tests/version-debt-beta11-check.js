@@ -16,11 +16,11 @@ for(const tag of tags){
  assert(fs.existsSync(pathname),`missing primary HTML asset: ${pathname}`);
  assert(!/^(styles|v9|v10|v11)\.css$/.test(pathname),`historical cascade loaded: ${pathname}`);
 }
-assert(sw.includes("const APP_VERSION = '11.12.1-beta.25'"));
-assert(sw.includes("const CACHE_NAME = 'quran-pwa-v11.12.1-beta.25-workspace-workflow'"));
+assert(sw.includes("const APP_VERSION = '11.12.1-beta.26'"));
+assert(sw.includes("const CACHE_NAME = 'quran-pwa-v11.12.1-beta.26-workspace-workflow'"));
 assert(nav.includes('RELOAD_PAGES')&&nav.includes("g.WeLiveQuranAuth?.isActive?.()===true"),'auth-gated reload recovery missing');
 assert(!nav.includes('exitPromptAt'),'unsafe timed PWA exit remains');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.25');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.26');
 assert(read('js/features/role-home.js').includes('supervisorCard.hidden=true'),'canonical role hub must hide legacy launcher in DOM');
 assert(read('js/features/supervisor-dashboard.js').includes('button.hidden=hasCanonicalHub'),'late supervision injection must honor canonical role hub');
 console.log('version-debt-beta11-check: PASS');

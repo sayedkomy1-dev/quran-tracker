@@ -3,7 +3,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('nod
 const read=p=>fs.readFileSync(p,'utf8');
 const html=read('index.html'),core=read('js/features/session-intelligence-119.js'),board=read('js/features/imam-smart-board.js'),picker=read('js/features/surah-picker-17.js'),css=read('css/platform/surah-picker.css'),responsive=read('css/platform/responsive.css'),sound=read('js/features/beta19-experience.js'),sw=read('sw.js');
 for(const p of ['js/features/session-intelligence-119.js','js/features/imam-smart-board.js','js/features/surah-picker-17.js','js/features/beta19-experience.js','js/features/platform-workflow.js'])new vm.Script(read(p),{filename:p});
-assert.equal(read('VERSION').trim(),'11.12.1-beta.25');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.26');
 assert.equal((html.match(/id="teacherAssignmentAudioBtn"/g)||[]).length,1,'share audio action must remain singular');
 const notes=html.indexOf('id="sesNotes"'),audio=html.indexOf('class="assignment-audio-details"'),save=html.indexOf('id="saveSessionBtn"');
 assert(notes>=0&&notes<audio&&audio<save,'audio must be in notes before official save actions');
@@ -16,7 +16,7 @@ assert(!core.includes('<details class="im119-range-disclosure" open'),'extra ran
 assert.equal((core.match(/id="im119ExtraList"/g)||[]).length,1,'extra range list must remain unique');
 assert(picker.includes('ia-surah-search-hit')&&picker.includes('searchHit.addEventListener')&&css.includes('pointer-events:auto')&&css.includes('z-index:8'),'full search region must be tappable');
 assert(sound.includes("pref(KEY,'off')")&&sound.includes("getElementById('pg-session')?.classList.contains('on')")&&sound.includes("getElementById('imam-board-root')"),'sound is off by default and quiet in class');
-assert(html.includes('beta19-experience.js?v=11.12.1-beta.25')&&sw.includes('beta19-experience.js?v=11.12.1-beta.25'),'sound control must be included in offline shell');
+assert(html.includes('beta19-experience.js?v=11.12.1-beta.26')&&sw.includes('beta19-experience.js?v=11.12.1-beta.26'),'sound control must be included in offline shell');
 assert.equal((responsive.match(/@media\(max-width:799px\)/g)||[]).length,1,'phone breakpoint must have one owner');
 assert(/id="saveSessionBtn"/.test(html)&&/id="saveSendSessionBtn"/.test(html),'original save actions preserved');
 console.log('beta19-session-ux-check: PASS — notes share, teacher board, kind preference, collapsed range, search touch area, sound, cache');

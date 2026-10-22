@@ -8,10 +8,10 @@ const source=fs.readFileSync(path.join(root,'js/features/academy-analytics-1112.
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const worker=fs.readFileSync(path.join(root,'sw.js'),'utf8');
 const roleHome=fs.readFileSync(path.join(root,'js/features/role-home.js'),'utf8');
-assert(html.includes('academy-analytics-1112.css?v=11.12.1-beta.25'));
-assert(html.includes('js/features/academy-analytics-1112.js?v=11.12.1-beta.25'));
-assert(worker.includes("'./academy-analytics-1112.css?v=11.12.1-beta.25'"));
-assert(worker.includes("'./js/features/academy-analytics-1112.js?v=11.12.1-beta.25'"));
+assert(html.includes('academy-analytics-1112.css?v=11.12.1-beta.26'));
+assert(html.includes('js/features/academy-analytics-1112.js?v=11.12.1-beta.26'));
+assert(worker.includes("'./academy-analytics-1112.css?v=11.12.1-beta.26'"));
+assert(worker.includes("'./js/features/academy-analytics-1112.js?v=11.12.1-beta.26'"));
 assert(roleHome.includes("['📊','تحليلات الأكاديمية'"));
 assert(roleHome.includes("['📊','تحليلات نطاق الإشراف'"));
 assert(!source.includes('localStorage')&&!source.includes('sessionStorage'),'administrative data must not persist locally');

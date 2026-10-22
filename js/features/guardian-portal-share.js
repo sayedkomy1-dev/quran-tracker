@@ -11,6 +11,9 @@
   const ACCESS_RPC={status:'guardian_portal_access_status',enable:'guardian_portal_access_enable',reset:'guardian_portal_access_reset_pin',unlink:'guardian_portal_access_unlink',refresh:'guardian_portal_access_refresh',resetList:'guardian_portal_reset_requests_list',resetResolve:'guardian_portal_reset_request_resolve',resetDismiss:'guardian_portal_reset_request_dismiss',engagement:'guardian_portal_activity_summary'};
   let lastGuardianSecret=null;
   let pendingResetRequests=[];
+  let guardianOpenedFromMore=false;
+  let guardianReturnFocus=null;
+  let guardianLastScroll=0;
 
   function appState(){return g.ImamApp?.State||{};}
   function stateStudents(){const v=appState().students??g.students;return Array.isArray(v)?v:[];}
@@ -370,16 +373,29 @@
 
   function ensurePicker(){
     if(!g.document?.body||g.document.getElementById('v1010PortalModal'))return;
-    const box=g.document.createElement('div');box.className='mo';box.id='v1010PortalModal';
-    box.innerHTML=`<div class="mo-box v1010-portal-modal">
-      <div class="mo-title"><div><span>👨‍👩‍👧 إدارة ولي الأمر</span><small>اختَر الطالب، راجع حالة الدخول، ثم أرسل البيانات بشكل واضح وآمن.</small></div><button class="mo-x" onclick="v1010ClosePortalPicker()">✕</button></div>
-      <div class="v1010-guide">① اختر الطالب أو أحد الإخوة المرتبطين بولي الأمر نفسه. ② راجع حالة رقم الهاتف. ③ أنشئ الرمز عند الحاجة وأرسل بيانات الدخول.</div><div class="fld"><label for="v1010PortalStudent">١ — اختر الطالب</label><select id="v1010PortalStudent" onchange="v1010PortalStudentChanged()"></select></div>
+    const box=g.document.createElement('div');box.className='mo ia26-guardian-screen';box.id='v1010PortalModal';
+    box.setAttribute('role','dialog');box.setAttribute('aria-modal','true');box.setAttribute('aria-labelledby','ia26GuardianHeading');
+    box.setAttribute('aria-hidden','true');
+    box.innerHTML=`<div class="mo-box v1010-portal-modal" dir="rtl">
+      <header class="ia26-guardian-header">
+        <button type="button" id="ia26GuardianBack" class="ia26-guardian-back" onclick="v1010ClosePortalPicker()" aria-label="الرجوع إلى الصفحة السابقة">↩ رجوع</button>
+        <div class="ia26-guardian-heading"><b id="ia26GuardianHeading">إدارة ولي الأمر</b><small>بوابة الطالب والتواصل والمتابعة</small></div>
+        <button type="button" class="ia26-guardian-close" onclick="v1010ClosePortalPicker()" aria-label="إغلاق إدارة ولي الأمر">✕</button>
+      </header>
+      <div class="ia26-guardian-content" id="ia26GuardianContent" tabindex="-1">
+      <p class="ia26-guardian-lead">اختر الطالب ثم راجع حالة الدخول، وأرسل الرابط في خطوات واضحة.</p>
+      <nav class="ia26-guardian-shortcuts" aria-label="الانتقال داخل إدارة ولي الأمر">
+        <button type="button" onclick="v1010GuardianJump('v1010AccessSection')">🔐 الدخول</button>
+        <button type="button" onclick="v1010GuardianJump('v1010ResetSection',true)">🔔 استعادة الرمز</button>
+        <button type="button" onclick="v1010GuardianJump('v1010EngagementSection',true)">📊 النشاط</button>
+      </nav>
+      <div class="fld ia26-guardian-student"><label for="v1010PortalStudent">الطالب / الطالبة</label><select id="v1010PortalStudent" onchange="v1010PortalStudentChanged()"></select></div>
 
-      <div class="v1010-portal-section v1010-access-section">
-        <div class="v1010-portal-info"><b>٢ — حالة دخول ولي الأمر</b><p>رقم الهاتف المسجل مع رمز سري من ٦ أرقام. لا يظهر الرمز القديم بعد إنشائه؛ إذا نسيه ولي الأمر يُنشأ رمز جديد.</p></div>
+      <section class="v1010-portal-section v1010-access-section" id="v1010AccessSection" aria-label="حالة دخول ولي الأمر">
+        <div class="v1010-portal-info"><b>١ — حالة الدخول</b><p>يستخدم ولي الأمر رقم الهاتف المسجل ورمز دخول من ٦ أرقام. إذا نسي الرمز، يمكن إنشاء رمز جديد بأمان.</p></div>
         <div id="v1010PhoneStatus" class="v1010-portal-status">اختر طالبًا لعرض حالة دخول الهاتف.</div>
         <div id="v1010GuardianSecret" class="v1010-guardian-secret" hidden></div>
-        <div class="v1010-portal-info"><b>٣ — تفعيل الدخول أو إرسال الرابط</b><p>إذا كان الدخول مفعّلًا، استخدم «إرسال رابط الدخول». وإذا لم يكن مفعّلًا، أنشئ الرمز أولًا وشارك بياناته من البطاقة التي تظهر لك.</p></div><div class="v1010-portal-actions v1010-access-actions">
+        <div class="v1010-portal-info"><b>٢ — الدخول والتواصل</b><p>إن لم يكن الدخول مفعّلًا، أنشئ رمزًا وشاركه. وإن كان مفعّلًا، أرسل رابط الدخول مباشرة.</p></div><div class="v1010-portal-actions v1010-access-actions">
           <button id="v1010EnablePhoneBtn" class="btn btn-g" onclick="v1010EnablePhoneAccess()">🔐 إنشاء رمز دخول لولي الأمر</button>
           <button id="v1010ResetPhoneBtn" class="btn btn-out" onclick="v1010ResetPhonePin()" hidden>🔐 إنشاء PIN جديد</button>
           <button class="btn btn-wa" onclick="v1010SendGuardianLoginLink()">📲 إرسال رابط الدخول</button>
@@ -391,13 +407,16 @@
             <button id="v1010UnlinkPhoneBtn" class="btn btn-out v1010-danger" onclick="v1010UnlinkPhoneAccess()" hidden>⛔ إيقاف دخول الهاتف</button>
           </div>
         </details>
-        <div class="v1010-reset-requests">
-          <div class="v1010-reset-head"><div><b>🔔 طلبات استعادة الرمز</b><small>يظهر هنا طلب «نسيت رمز الدخول؟» من ولي الأمر.</small></div><button class="btn btn-out btn-sm" onclick="v1010RefreshResetRequests()">تحديث</button></div>
-          <div id="v1010ResetRequestsList" class="v1010-reset-list"><div class="v1010-reset-empty">جارٍ فحص الطلبات…</div></div>
-        </div>
-      </div>
+        <details class="v1010-reset-requests ia26-guardian-disclosure" id="v1010ResetSection">
+          <summary>🔔 طلبات استعادة الرمز</summary>
+          <div class="ia26-disclosure-content">
+            <div class="v1010-reset-head"><div><b>طلبات ولي الأمر</b><small>الطلبات الواردة من «نسيت رمز الدخول؟».</small></div><button class="btn btn-out btn-sm" type="button" onclick="v1010RefreshResetRequests()">تحديث الطلبات</button></div>
+            <div id="v1010ResetRequestsList" class="v1010-reset-list"><div class="v1010-reset-empty">جارٍ فحص الطلبات…</div></div>
+          </div>
+        </details>
+      </section>
 
-      <details class="v1010-engagement-details">
+      <details class="v1010-engagement-details ia26-guardian-disclosure" id="v1010EngagementSection">
         <summary>📊 متابعة استخدام ولي الأمر</summary>
         <div class="v1010-engagement-head"><div><b>هل تمّت المذاكرة في المنزل؟</b><small>تظهر الزيارات وتشغيل التحفيظ والتكرار من بوابة الهاتف + PIN.</small></div><select id="v1010EngagementDays" onchange="v1010EngagementDaysChanged()"><option value="7">آخر 7 أيام</option><option value="30">آخر 30 يومًا</option></select></div>
         <div id="v1010EngagementSelected" class="v1010-engagement-selected"><div class="v1010-reset-empty">جارٍ تحميل نشاط ولي الأمر…</div></div>
@@ -406,13 +425,14 @@
       </details>
 
       <details class="v1010-link-details">
-        <summary>🔗 الرابط المباشر (اختياري — Stage 2)</summary>
+        <summary>🔗 الرابط المباشر القديم (خيار إضافي)</summary>
         <div class="v1010-portal-info"><b>رابط حي مباشر</b><p>يبقى متاحًا كطريقة مشاركة سريعة. أي شخص يملك الرابط يستطيع القراءة، لذلك الدخول برقم الهاتف + PIN هو الخيار الأساسي الآن.</p></div>
         <div id="v1010PortalStatus" class="v1010-portal-status">اختر طالبًا لعرض حالة الرابط.</div>
         <div class="v1010-portal-actions"><button class="btn btn-g" onclick="v1010OpenPickedPortal()">🌐 تحديث وفتح</button><button class="btn btn-out" onclick="v1010CopyPickedPortal()">🔗 تحديث ونسخ الرابط</button><button class="btn btn-out" onclick="v1010RefreshPickedPortal()">🔄 تحديث فقط</button><button class="btn btn-out v1010-danger" onclick="v1010RevokePickedPortal()">⛔ إيقاف الرابط</button></div>
-        <div class="v1010-portal-snapshot"><button class="btn btn-out btn-sm" onclick="v1010CopyPickedSnapshot()">📸 نسخ لقطة ثابتة بدون Cloud</button><small>الخيار الاحتياطي من Stage 1 يظل متاحًا.</small></div>
+        <div class="v1010-portal-snapshot"><button class="btn btn-out btn-sm" onclick="v1010CopyPickedSnapshot()">📸 نسخ لقطة ثابتة بدون Cloud</button><small>نسخة ثابتة للقراءة، تعمل دون اتصال مباشر بالخادم.</small></div>
       </details>
-      <div id="v1010PortalBusy" class="v1010-portal-busy" hidden>جارٍ التنفيذ…</div>
+      <div id="v1010PortalBusy" class="v1010-portal-busy" role="status" hidden>جارٍ التنفيذ…</div>
+      </div>
     </div>`
     g.document.body.appendChild(box);
   }
@@ -492,6 +512,8 @@
   function renderResetRequests(){
     const el=g.document?.getElementById?.('v1010ResetRequestsList');if(!el)return;
     const rows=Array.isArray(pendingResetRequests)?pendingResetRequests:[];updateResetBadge(rows.length);
+    const title=g.document?.querySelector?.('#v1010ResetSection > summary');
+    if(title)title.textContent=rows.length?`🔔 طلبات استعادة الرمز (${rows.length})`:'🔔 طلبات استعادة الرمز';
     if(!rows.length){el.innerHTML='<div class="v1010-reset-empty">لا توجد طلبات استعادة رمز معلّقة.</div>';return;}
     el.innerHTML=rows.map(r=>{
       const names=(Array.isArray(r.students)?r.students:[]).map(x=>x?.name).filter(Boolean).join('، ')||'ولي أمر';
@@ -574,10 +596,43 @@
   }
   function engagementDaysChanged(){return refreshEngagement();}
 
-  function openPicker(selected='') {const id=fillPicker(selected);clearGuardianSecret();g.document.getElementById('v1010PortalModal')?.classList.add('open');Promise.all([refreshPhoneAccessStatus(id),refreshPickerStatus(id),refreshResetRequests(),refreshEngagement()]);}
-  function closePicker(){clearGuardianSecret();g.document.getElementById('v1010PortalModal')?.classList.remove('open');}
+  // The guardian area is a dedicated fullscreen surface, not a short bottom sheet.
+  // No backend, PIN, link, or account isolation behavior is changed here.
+  function guardianJump(id,expand=false){
+    const node=g.document.getElementById(id);if(!node)return false;
+    if(expand&&node.tagName==='DETAILS')node.open=true;
+    node.scrollIntoView?.({block:'start',behavior:'smooth'});return true;
+  }
+  function openPicker(selected='',fromMore=false){
+    const modal=g.document.getElementById('v1010PortalModal');
+    guardianOpenedFromMore=!!fromMore;
+    guardianReturnFocus=g.document.activeElement;
+    guardianLastScroll=g.scrollY||0;
+    const id=fillPicker(selected);clearGuardianSecret();
+    modal?.classList.add('open');modal?.setAttribute('aria-hidden','false');
+    g.document.body?.classList.add('ia26-guardian-open');
+    const area=g.document.getElementById('ia26GuardianContent');if(area)area.scrollTop=0;
+    g.document.getElementById('ia26GuardianBack')?.focus?.({preventScroll:true});
+    // Load the whole-family activity list only when the teacher opens its section.
+    Promise.all([refreshPhoneAccessStatus(id),refreshPickerStatus(id),refreshResetRequests()]);
+  }
+  function closePicker(){
+    const modal=g.document.getElementById('v1010PortalModal');
+    if(!modal?.classList.contains('open'))return;
+    clearGuardianSecret();modal.classList.remove('open');modal.setAttribute('aria-hidden','true');
+    g.document.body?.classList.remove('ia26-guardian-open');
+    const returnMore=guardianOpenedFromMore;guardianOpenedFromMore=false;
+    if(returnMore&&typeof g.openV9More==='function')g.openV9More();
+    else guardianReturnFocus?.focus?.({preventScroll:true});
+    guardianReturnFocus=null;
+  }
   function pickedId(){return g.document.getElementById('v1010PortalStudent')?.value||'';}
-  function studentChanged(){clearGuardianSecret();const id=pickedId();Promise.all([refreshPhoneAccessStatus(id),refreshPickerStatus(id),refreshEngagement({silent:true})]);}
+  function studentChanged(){
+    clearGuardianSecret();const id=pickedId();
+    const calls=[refreshPhoneAccessStatus(id),refreshPickerStatus(id)];
+    if(g.document.getElementById('v1010EngagementSection')?.open)calls.push(refreshEngagement({silent:true}));
+    Promise.all(calls);
+  }
   function openPicked(){const id=pickedId();if(id)return openPortal(id);toastSafe('لا يوجد طالب محدد','error');return null;}
   function copyPicked(){const id=pickedId();if(id)return copyPortalLink(id);toastSafe('لا يوجد طالب محدد','error');return false;}
   function refreshPicked(){const id=pickedId();if(id)return refreshLivePortal(id);toastSafe('لا يوجد طالب محدد','error');return false;}
@@ -602,7 +657,7 @@
   }
   function ensureMoreItem(){
     const grid=g.document?.getElementById?.('v9MoreGrid');if(!grid||grid.querySelector('[data-v1010-portal-more]'))return;
-    const btn=g.document.createElement('button');btn.className='v9-more-item';btn.dataset.v1010PortalMore='1';btn.setAttribute('onclick','closeV9More();v1010OpenPortalPicker()');
+    const btn=g.document.createElement('button');btn.className='v9-more-item';btn.dataset.v1010PortalMore='1';btn.setAttribute('onclick',"closeV9More();v1010OpenPortalPicker('',true)");
     const icon=typeof g.v9Icon==='function'?g.v9Icon('users'):'👨‍👩‍👧';btn.innerHTML=`${icon}<b>إدارة ولي الأمر</b><small>الدخول والرمز والتواصل ومتابعة المذاكرة</small>`;grid.appendChild(btn);
   }
   function patchHooks(){
@@ -622,13 +677,17 @@
       wrapped.__v1010GuardianRefreshPatched=true;g.saveSession=wrapped;
     }
   }
-  function init(){ensurePicker();patchHooks();ensureMoreItem();ensureProfileButton();ensureGuardianButton();setTimeout(()=>refreshResetRequests({silent:true}),1200);}
+  function init(){
+    ensurePicker();patchHooks();ensureMoreItem();ensureProfileButton();ensureGuardianButton();
+    g.document.addEventListener('keydown',event=>{if(event.key==='Escape'&&g.document.getElementById('v1010PortalModal')?.classList.contains('open')){event.preventDefault();closePicker();}});
+    setTimeout(()=>refreshResetRequests({silent:true}),1200);
+  }
 
   Object.assign(g,{
     v1010BuildPortalSnapshot:buildSnapshot,v1010PortalUrl:portalUrl,v1010LivePortalUrl:liveUrl,
     v1010PublishLivePortal:publishLive,v1010PortalStatus:liveStatus,v1010RevokePortal:revokePortal,
     v1010OpenPortal:openPortal,v1010CopyPortalLink:copyPortalLink,v1010CopySnapshotLink:copySnapshotLink,
-    v1010OpenPortalPicker:openPicker,v1010ClosePortalPicker:closePicker,v1010OpenPickedPortal:openPicked,
+    v1010OpenPortalPicker:openPicker,v1010ClosePortalPicker:closePicker,v1010GuardianJump:guardianJump,v1010OpenPickedPortal:openPicked,
     v1010CopyPickedPortal:copyPicked,v1010RefreshPickedPortal:refreshPicked,v1010RevokePickedPortal:revokePicked,
     v1010CopyPickedSnapshot:copyPickedSnapshot,v1010PortalStudentChanged:studentChanged,v1010OpenSelectedGuardianPortal:openSelectedGuardian,
     v1010EnablePhoneAccess:enablePickedPhone,v1010ResetPhonePin:resetPickedPhone,v1010UnlinkPhoneAccess:unlinkPickedPhone,

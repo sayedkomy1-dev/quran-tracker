@@ -4,11 +4,11 @@ const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('nod
 const read=x=>fs.readFileSync(x,'utf8');
 const v9=read('v9.js'),workflow=read('js/features/platform-workflow.js'),board=read('js/features/imam-smart-board.js'),session=read('js/features/session-intelligence-119.js'),html=read('index.html'),css=read('css/platform/responsive.css'),boardCss=read('imam-smart-board.css'),sound=read('js/features/beta19-experience.js'),sw=read('sw.js');
 for(const rel of ['v9.js','js/features/platform-workflow.js','js/features/imam-smart-board.js','js/features/session-intelligence-119.js','js/features/beta19-experience.js'])new vm.Script(read(rel),{filename:rel});
-assert.equal(read('VERSION').trim(),'11.12.1-beta.25');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.26');
 assert.equal((html.match(/id="saveSessionBtn"/g)||[]).length,1);
 assert.equal((html.match(/id="saveSendSessionBtn"/g)||[]).length,1);
 assert.equal((html.match(/id="teacherAssignmentAudioBtn"/g)||[]).length,1);
-assert(v9.includes("main.insertAdjacentElement('afterend',audio)"),'optional reciter selector follows action stack');
+assert(v9.includes("main.insertBefore(panel,audioBtn?.parentElement===main?audioBtn.nextSibling:main.firstChild)"),'optional reciter selector follows action stack');
 assert(v9.includes("main.appendChild(saveBtn)")&&v9.includes('main.appendChild(sendBtn)'),'preserve official save buttons in original footer');
 assert(!workflow.includes('actions.append(save,send)'),'no floating actual save controls');
 assert(!workflow.includes("d.body.append(dock)"),'redundant floating save jump must be removed');
@@ -26,7 +26,7 @@ assert(board.includes('ia20ReturnState')&&board.includes('g.scrollTo?.'),'return
 assert(sound.includes("pref(LESSON,'off')!=='on'")&&sound.includes("pref(KEY,'off')"),'lesson sound opt-in and globally off by default');
 assert(!v9.includes('initImamClickFeedback()'),'legacy click beeps must not overlap new engine');
 assert(!css.includes('.ia20-save-jump-button'),'obsolete fixed shortcut styles eliminated');
-for(const rel of ['index.html','sw.js'])assert(read(rel).includes('11.12.1-beta.25'),rel+' not updated');
-assert(sw.includes("'./js/features/imam-smart-board.js?v=11.12.1-beta.25'"),'board shell offline pinning');
-assert(sw.includes("'./js/features/platform-workflow.js?v=11.12.1-beta.25'"),'lesson navigation shell offline pinning');
+for(const rel of ['index.html','sw.js'])assert(read(rel).includes('11.12.1-beta.26'),rel+' not updated');
+assert(sw.includes("'./js/features/imam-smart-board.js?v=11.12.1-beta.26'"),'board shell offline pinning');
+assert(sw.includes("'./js/features/platform-workflow.js?v=11.12.1-beta.26'"),'lesson navigation shell offline pinning');
 console.log('beta20-lesson-board-ux-check: PASS — real save actions, notes audio, collapsed extras, board tools, session context, touch sound, cache');
