@@ -24,8 +24,8 @@ assert.match(view,/ImamGuardianRatings\?\.clear\?\.\(\)/);assert.match(view,/Ima
 assert.match(rating,/guardian_teacher_rating_submit/);assert.match(rating,/guardian_teacher_rating_session_get/);assert.match(rating,/if\(!context\?\.sessionToken\|\|!context\?\.studentRef\)return/);
 assert.match(supervisor,/app_supervision_access/);assert.match(supervisor,/if\(!g.WeLiveQuranAuth\?\.isOwner\?\.\(\)\&\&!allowed\)return/);assert.match(supervisor,/app_supervisor_assign/);
 assert.match(auth,/ImamApp\?\.Supervision\?\.initialize/);
-for(const file of ['./teacher-rating.css?v=11.12.1-beta.26','./js/features/guardian-ratings.js?v=11.7.0-s1','./js/features/supervisor-dashboard.js?v=11.12.1-beta.26'])assert.ok(sw.includes(file),'Missing offline asset '+file);
-assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.12\.1-beta\.26-workspace-workflow'/);
+for(const file of ['./teacher-rating.css?v=11.12.1-beta.27','./js/features/guardian-ratings.js?v=11.7.0-s1','./js/features/supervisor-dashboard.js?v=11.12.1-beta.27'])assert.ok(sw.includes(file),'Missing offline asset '+file);
+assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.12\.1-beta\.27-workspace-workflow'/);
 assert.match(read('js/core/runtime.js'),/schema:12/);
 assert.ok(!/navigator\.share|wa\.me/.test(rating+supervisor),'Do not touch WhatsApp behavior');
 // Interactive test: rating hidden for public mode, loaded for verified context, send not permitted without token.

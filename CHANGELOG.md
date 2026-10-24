@@ -1,3 +1,11 @@
+## v11.12.1-beta.27 — Student add/edit repair (review-only)
+
+- Repair Arabic/Eastern Arabic and international guardian phone normalization while preserving Egyptian numbers.
+- Reject exact same-name/same-guardian duplicates; allow siblings sharing the same WhatsApp number.
+- Put a visible edit action beside each student and directly in the student's profile header.
+- After a successful create/update, navigate to the saved student's profile to confirm visibility; clear stale student-list filters.
+- No SQL, record deletions, or modifications to stored student/session data during the release build.
+
 ## v11.12.1-beta.26 — Guardian full-screen UX + visible reciter
 - Full-height Guardian management panel with a visible Back button, isolated scrolling, clearer primary actions, and expandable secondary sections; existing backend/RPC/PIN and student isolation untouched.
 - Display the current reciter directly under the original assignment-audio share button, reusing the same native select and its value.

@@ -1,4 +1,4 @@
-// WLQ_RELEASE_11.12.1-beta.26 — Account-independent app version and safe upgrade hotfix.
+// WLQ_RELEASE_11.12.1-beta.27 — Account-independent app version and safe upgrade hotfix.
 
 'use strict';
 
@@ -1001,7 +1001,15 @@ function saveSt(){
   if(!name){toast('أدخل اسم الطالب','error');return;}
   if(!phone){toast('أدخل رقم الواتساب','error');return;}
   const normalizedPhone=normPhone(phone);
-  if(!/^20\d{10}$/.test(normalizedPhone)){toast('رقم الواتساب غير صحيح — اكتب رقمًا مصريًا مثل 01xxxxxxxxx','error');return;}
+  if(!/^[1-9]\d{7,14}$/.test(normalizedPhone)){
+    toast('رقم واتساب غير صحيح. اكتب 01xxxxxxxxx لمصر أو الرقم الدولي مع رمز الدولة مثل +966...','error');return;
+  }
+  // An identical name and guardian WhatsApp number is almost certainly a double tap.
+  // Shared guardian numbers are allowed for siblings with different names.
+  const duplicate=students.find(st=>st.id!==editId
+    && String(st.name||'').trim().replace(/\s+/g,' ')===name.replace(/\s+/g,' ')
+    && normPhone(String(st.phone||''))===normalizedPhone);
+  if(duplicate){toast('الطالب مسجل بالفعل بنفس الاسم ورقم ولي الأمر؛ افتح ملفه للتعديل','error');return;}
   const scheduleDays=[...document.querySelectorAll('.m-day:checked')].map(x=>Number(x.value)).sort((a,b)=>a-b);
   const scheduleTime=document.getElementById('m-time').value||'';
   const sessionDuration=Math.min(180,Math.max(15,parseInt(document.getElementById('m-duration').value)||30));
@@ -1036,10 +1044,17 @@ ${lines}
   closeMo();renderSt();renderHome();toast(successMessage,'success');
 }
 function normPhone(p){
-  p=p.replace(/\D/g,'');
-  if(p.startsWith('0')) p='2'+p;
-  if(!p.startsWith('20')) p='20'+p;
-  return p;
+  // Arabic/Eastern Arabic digits are common on teachers' Android keyboards.
+  const value=String(p||'').replace(/[٠-٩۰-۹]/g,ch=>{
+    const n=ch.charCodeAt(0);return String(n>=0x6F0?n-0x6F0:n-0x660);
+  }).replace(/[\s()\-.]/g,'');
+  const digits=value.replace(/\D/g,'');
+  if(/^01[0125]\d{8}$/.test(digits))return '2'+digits; // local Egyptian mobile
+  if(/^1[0125]\d{8}$/.test(digits))return '20'+digits;
+  if(digits.startsWith('00'))return digits.slice(2); // international dialing prefix
+  // Only convert a plain local Egyptian number automatically; leave full
+  // international numbers untouched rather than silently adding 20 to them.
+  return digits;
 }
 
 // ══════════════════════════════════════
@@ -1072,8 +1087,9 @@ function openProf(id){
     <div class="ir"><span class="ir-k">📊 مستوى الحفظ</span><span>${qualityPct==null?'—':qualityPct+'%'}</span></div>
     <div class="ir"><span class="ir-k">📈 الإنجاز الموثق</span><span>${quranPct}% من القرآن</span></div>
     <div class="ir"><span class="ir-k">📝 ملاحظات</span><span>${esc(s.notes||'—')}</span></div>
-    <div style="display:flex;gap:8px;margin-top:12px">
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
       <button class="btn btn-g btn-sm" onclick="startFor('${esc(id)}')">📖 ابدأ حصة</button>
+      <button class="btn btn-out btn-sm" type="button" onclick="editSt()">✏️ تعديل بيانات الطالب</button>
       <button class="btn btn-wa btn-sm" onclick="directWA('${esc(id)}')">📲 واتساب</button>
     </div>`;
 

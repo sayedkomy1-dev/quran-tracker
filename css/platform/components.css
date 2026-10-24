@@ -234,3 +234,7 @@ body{font-size:15px;line-height:1.75;background:var(--ui-canvas)}
 .imam-more-search{display:block;width:calc(100% - 24px);height:45px;margin:9px 12px;padding:8px 14px;border-radius:12px;background:var(--ui-surface);color:var(--ui-ink);border:1px solid var(--ui-border-strong);font-size:16px}
 .v9-more-grid .v9-more-item[hidden]{display:none!important}
 #pg-students .st-add-inline{position:static;display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-block:8px 12px}
+
+/* beta.27: visible, accessible edit action in the student list. */
+.v9-edit-student-link{display:inline-flex;align-items:center;justify-content:center;min-height:36px;border:1px solid var(--ui-primary,#246b4f);border-radius:11px;background:transparent;color:var(--ui-primary,#246b4f);font-size:12px;font-weight:750;padding:6px 10px;cursor:pointer;white-space:nowrap;touch-action:manipulation}
+.v9-edit-student-link:focus-visible{outline:3px solid var(--ui-primary,#246b4f);outline-offset:2px}

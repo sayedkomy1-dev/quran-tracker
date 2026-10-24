@@ -2,7 +2,7 @@
 const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
 const read=p=>fs.readFileSync(p,'utf8');
 const html=read('index.html'),js=read('v9.js'),css=read('css/platform/responsive.css');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.26');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.27');
 for(const id of ['saveSessionBtn','saveSendSessionBtn','teacherAssignmentAudioBtn']){
  assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,`${id} must occur once`);
 }

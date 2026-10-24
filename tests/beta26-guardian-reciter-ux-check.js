@@ -2,7 +2,7 @@
 const fs=require('node:fs'),assert=require('node:assert/strict');
 const read=p=>fs.readFileSync(p,'utf8');
 const v9=read('v9.js'),g=read('js/features/guardian-portal-share.js'),css=read('css/platform/responsive.css'),html=read('index.html');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.26');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.27');
 assert.equal((html.match(/id="teacherAssignmentAudioReciter"/g)||[]).length,1,'preserve a single original reciter select');
 assert.equal((html.match(/id="teacherAssignmentAudioBtn"/g)||[]).length,1,'preserve the single original audio button');
 assert(v9.includes("main.insertBefore(panel,audioBtn?.parentElement===main?audioBtn.nextSibling:main.firstChild)"),'reciter panel must be immediately after audio button');

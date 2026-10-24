@@ -5,7 +5,7 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const read=p=>fs.readFileSync(p,'utf8');
 const html=read('index.html'),v9=read('v9.js'),css=read('css/platform/responsive.css');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.26');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.27');
 for(const id of ['saveSessionBtn','saveSendSessionBtn','teacherAssignmentAudioBtn','teacherAssignmentAudioReciter','sessionJourneyCard','ia22FollowupDisclosure']){
  assert.equal((html.match(new RegExp(`id="${id}"`,'g'))||[]).length,1,`${id} duplicated`);
 }
@@ -30,5 +30,5 @@ function test(mobile){
  ctx.V9.step='notes';ctx.check();assert.equal(footer.hidden,false);
 }
 test(true);test(false);
-for(const name of ['index.html','sw.js','manifest.json'])assert(read(name).includes('11.12.1-beta.26'),`${name}: release marker missing`);
+for(const name of ['index.html','sw.js','manifest.json'])assert(read(name).includes('11.12.1-beta.27'),`${name}: release marker missing`);
 console.log('beta22-session-access-check: PASS — single action trio, phone shortcuts, followup recitation-only and closed, original data handlers');

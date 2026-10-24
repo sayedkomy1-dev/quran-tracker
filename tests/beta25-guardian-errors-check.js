@@ -2,7 +2,7 @@
 const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('node:vm');
 const read=p=>fs.readFileSync(p,'utf8');
 const js=read('v9.js'),css=read('css/platform/responsive.css'),guardian=read('js/features/guardian-portal-share.js'),reportSource=read('js/features/teacher-correction-document.js'),error=read('js/features/teacher-error-marking.js');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.26');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.27');
 for(const step of ['assessment','new','review','notes'])assert(js.includes(step));
 assert(js.includes("footer.insertAdjacentElement('afterend',errors)"));
 assert(js.includes("errors.hidden=V9.step!=='notes'"));
