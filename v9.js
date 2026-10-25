@@ -170,7 +170,7 @@ function openV9More(){
   globalThis.ImamApp?.RoleHome?.syncSupervisorMoreEntry?.();
   const search=document.getElementById('imamMoreSearch');if(search){search.value='';search.dispatchEvent(new Event('input'));}
   const m=document.getElementById('v9MoreSheet');
-  if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');}
+  if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');const box=m.querySelector('.mo-box');if(box)box.scrollTop=0;}
 }
 function closeV9More(){const m=document.getElementById('v9MoreSheet');if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');}}
 function updateV9Nav(p){document.querySelectorAll('#v9Nav .v9-nav-btn').forEach(b=>{b.classList.toggle('on',b.dataset.page===p||(b.dataset.page==='more'&&['students','reports','checkin','tasks','settings','mushaf'].includes(p)));if(b.dataset.page==='session'){const text=p==='session'?'الحصة الحالية':'ابدأ حصة';const label=b.querySelector('.v9-nav-label');if(label)label.textContent=text;b.setAttribute('aria-label',text);}});}
@@ -248,39 +248,111 @@ function toggleStudentPin(id){const st=students.find(s=>s.id===id);if(!st)return
 function toggleBulkMode(){V9.bulkMode=!V9.bulkMode;if(!V9.bulkMode)V9.selectedStudents.clear();document.getElementById('v9BulkBar').hidden=!V9.bulkMode;renderSt();updateBulkBar();}
 function toggleBulkStudent(id,on){on?V9.selectedStudents.add(id):V9.selectedStudents.delete(id);updateBulkBar();}
 function updateBulkBar(){const c=document.getElementById('v9BulkCount');if(c)c.textContent=`${V9.selectedStudents.size} محدد`;}
-function bulkSetStatus(status){if(!V9.selectedStudents.size)return v9Toast('حدد طالبًا واحدًا على الأقل','error');const ids=[...V9.selectedStudents],before=new Map(ids.map(id=>{const st=students.find(x=>x.id===id);return[id,st?v9StudentStatus(st):'active'];}));students.forEach(st=>{if(V9.selectedStudents.has(st.id)){st.studentStatus=status;st.updatedAt=new Date().toISOString();}});save();V9.undo=()=>{before.forEach((oldStatus,id)=>{const st=students.find(x=>x.id===id);if(st){st.studentStatus=oldStatus;st.updatedAt=new Date().toISOString();}});save();renderSt();renderHome();};setTimeout(()=>V9.undo=null,8000);V9.selectedStudents.clear();renderSt();renderHome();updateBulkBar();v9Toast(status==='active'?'تمت إعادة تنشيط الطلاب — Ctrl+Z للتراجع':'تم تحديث حالة الطلاب — Ctrl+Z للتراجع','success');}
+// The remote guardian grants are independent of local studentStatus. Always
+// revoke them before persisting a paused/archived status (including bulk edits).
+// An interruption fails closed; the student and all linked local data stay put.
+async function v9GuardInactiveStudents(ids){
+  const unique=[...new Set(ids)].filter(id=>students.some(st=>st.id===id));
+  if(!unique.length)return;
+  if(!V9.guardianStatusBusy)V9.guardianStatusBusy=new Set();
+  if(unique.some(id=>V9.guardianStatusBusy.has(id)))throw new Error('GUARDIAN_OPERATION_BUSY');
+  const portal=globalThis.ImamApp?.GuardianPortal;
+  if(typeof portal?.revokeForStudentDeletion!=='function')throw new Error('GUARDIAN_SERVICE_MISSING');
+  unique.forEach(id=>V9.guardianStatusBusy.add(id));
+  try{
+    for(const id of unique){
+      const result=await portal.revokeForStudentDeletion(id);
+      if(!result?.ok)throw new Error('GUARDIAN_REVOCATION_NOT_CONFIRMED');
+    }
+  }finally{unique.forEach(id=>V9.guardianStatusBusy.delete(id));}
+}
+function v9GuardianStatusError(err){
+  console.warn('[student status] guardian revocation was not verified',err);
+  v9Toast('لم تتغير حالة الطالب: تعذر تأكيد إيقاف دخول ولي الأمر. تحقق من الإنترنت ثم أعد المحاولة. إذا كان الإيقاف جزئيًا فراجع إدارة ولي الأمر.','error');
+}
+async function bulkSetStatus(status){
+  if(!V9.selectedStudents.size)return v9Toast('حدد طالبًا واحدًا على الأقل','error');
+  if(!['active','paused','archived'].includes(status))return;
+  const ids=[...V9.selectedStudents].filter(id=>students.some(st=>st.id===id));
+  if(status!=='active'){
+    try{await v9GuardInactiveStudents(ids);}catch(err){v9GuardianStatusError(err);return;}
+  }
+  const before=new Map(ids.map(id=>{const st=students.find(x=>x.id===id);return[id,v9StudentStatus(st)];}));
+  students.forEach(st=>{if(before.has(st.id)){st.studentStatus=status;st.updatedAt=new Date().toISOString();}});
+  if(save()===false){before.forEach((old,id)=>{const st=students.find(x=>x.id===id);if(st)st.studentStatus=old;});v9Toast('تعذر حفظ تغيير الحالة محليًا. قد تكون صلاحيات البوابة أُوقفت بالفعل؛ راجع إدارة ولي الأمر.','error');return;}
+  // An undo could re-activate a locally stopped record without restoring
+  // server-side access. Require an explicit status change instead.
+  V9.undo=null;
+  V9.selectedStudents.clear();renderSt();renderHome();updateBulkBar();
+  v9Toast(status==='active'?'تمت إعادة تنشيط الطلاب محليًا؛ أعد تفعيل بوابة ولي الأمر يدويًا عند الحاجة':'تم تحديث الحالة وإيقاف الوصول عبر بوابة ولي الأمر الحية للطلاب المحددين','success');
+}
 function bulkMoveGroup(){if(!V9.selectedStudents.size)return v9Toast('حدد طلابًا أولاً','error');const name=prompt('اسم المجموعة / الحلقة:');if(name==null)return;const ids=[...V9.selectedStudents],before=new Map(ids.map(id=>{const s=students.find(x=>x.id===id);return[id,s?.group||''];}));students.forEach(s=>{if(V9.selectedStudents.has(s.id)){s.group=String(name).trim().slice(0,120);s.updatedAt=new Date().toISOString();}});save();V9.undo=()=>{before.forEach((old,id)=>{const s=students.find(x=>x.id===id);if(s)s.group=old;});save();renderSt();};setTimeout(()=>V9.undo=null,8000);renderSt();v9Toast('تم نقل الطلاب — Ctrl+Z للتراجع','success');}
 function bulkBroadcast(){if(!V9.selectedStudents.size)return v9Toast('حدد طلابًا أولاً','error');const ids=new Set(V9.selectedStudents);openBroadcastComposer();broadcastSelected=new Set([...ids].filter(id=>students.find(s=>s.id===id&&s.phone)));renderBroadcastRecipients();updateBroadcastPreview();}
 function openAddSt(){V9_BASE.openAddSt();const a=document.getElementById('m-status'),p=document.getElementById('m-pinned');if(a)a.value='active';if(p)p.value='0';}
 function editSt(){V9_BASE.editSt();const st=students.find(x=>x.id===curStId);if(!st)return;const a=document.getElementById('m-status'),p=document.getElementById('m-pinned');if(a)a.value=v9StudentStatus(st);if(p)p.value=st.pinned?'1':'0';}
 function saveSt(){
   const editing=editId,before=new Set(students.map(s=>s.id)),status=document.getElementById('m-status')?.value||'active',pinned=document.getElementById('m-pinned')?.value==='1';
-  V9_BASE.saveSt();
-  if(document.getElementById('stModal')?.classList.contains('open'))return;
-  const st=editing?students.find(s=>s.id===editing):students.find(s=>!before.has(s.id));
-  if(st){st.studentStatus=status;st.pinned=pinned;st.updatedAt=new Date().toISOString();save();}
-  renderSt();renderHome();
-  // Postpone navigation until outer student wrappers have completed enriching
-  // the record (goals and prior memorization). Never navigate on validation failure.
-  if(st)setTimeout(()=>{
-    if(document.getElementById('stModal')?.classList.contains('open'))return;
-    if(!students.some(s=>s.id===st.id))return;
-    const search=document.getElementById('searchIn'),level=document.getElementById('filterLevel'),group=document.getElementById('filterGroup');
-    if(search)search.value='';if(level)level.value='';if(group)group.value='';
-    const statusFilter=document.getElementById('v9StudentStatusFilter');if(statusFilter)statusFilter.value='all';
-    if(typeof V9!=='undefined'&&V9.filters) V9.filters.status='all';
-    editId=null;openProf(st.id);
-  },0);
+  const commit=()=>{
+    V9_BASE.saveSt();
+    if(document.getElementById('stModal')?.classList.contains('open'))return false;
+    const st=editing?students.find(s=>s.id===editing):students.find(s=>!before.has(s.id));
+    if(st){st.studentStatus=status;st.pinned=pinned;st.updatedAt=new Date().toISOString();save();}
+    renderSt();renderHome();
+    if(st)setTimeout(()=>{
+      if(document.getElementById('stModal')?.classList.contains('open'))return;
+      if(!students.some(s=>s.id===st.id))return;
+      const search=document.getElementById('searchIn'),level=document.getElementById('filterLevel'),group=document.getElementById('filterGroup');
+      if(search)search.value='';if(level)level.value='';if(group)group.value='';
+      const statusFilter=document.getElementById('v9StudentStatusFilter');if(statusFilter)statusFilter.value='all';
+      if(typeof V9!=='undefined'&&V9.filters)V9.filters.status='all';
+      editId=null;openProf(st.id);
+    },0);
+    return true;
+  };
+  // Normal additions and edits stay synchronous for old integration hooks.
+  // Only changes to an existing inactive record wait for remote revocation.
+  if(editing&&status!=='active'&&v9StudentStatus(students.find(s=>s.id===editing))!==status){
+    return v9GuardInactiveStudents([editing]).then(commit).catch(err=>{v9GuardianStatusError(err);return false;});
+  }
+  return commit();
 }
 function openV9ContextMenu(e,id){e.preventDefault();V9.contextStudentId=id;const m=document.getElementById('v9ContextMenu'),st=students.find(s=>s.id===id);if(!m||!st)return;const status=v9StudentStatus(st),statusActions=status==='active'?`<button onclick="setStudentStatusWithUndo('${v9Esc(id)}','paused');closeV9ContextMenu()">${v9Icon('pause')} إيقاف مؤقت</button><button onclick="setStudentStatusWithUndo('${v9Esc(id)}','archived');closeV9ContextMenu()">${v9Icon('trash')} أرشفة</button>`:`<button onclick="setStudentStatusWithUndo('${v9Esc(id)}','active');closeV9ContextMenu()">${v9Icon('check')} إعادة تنشيط</button>${status==='paused'?`<button onclick="setStudentStatusWithUndo('${v9Esc(id)}','archived');closeV9ContextMenu()">${v9Icon('trash')} أرشفة</button>`:''}`;m.innerHTML=`${status==='archived'?'':`<button onclick="startFor('${v9Esc(id)}');closeV9ContextMenu()">${v9Icon('play')} بدء حصة</button>`}<button onclick="openProf('${v9Esc(id)}');closeV9ContextMenu()">${v9Icon('users')} ملف الطالب</button><button onclick="directWA('${v9Esc(id)}');closeV9ContextMenu()">${v9Icon('message')} واتساب</button><button onclick="toggleStudentPin('${v9Esc(id)}');closeV9ContextMenu()">${v9Icon('pin')} ${st.pinned?'إلغاء التثبيت':'تثبيت في الأعلى'}</button>${statusActions}`;m.hidden=false;m.style.left=Math.min(e.clientX,innerWidth-210)+'px';m.style.top=Math.min(e.clientY,innerHeight-300)+'px';}
 function closeV9ContextMenu(){const m=document.getElementById('v9ContextMenu');if(m)m.hidden=true;}
-function setStudentStatusWithUndo(id,status){const st=students.find(s=>s.id===id);if(!st)return;const oldStatus=v9StudentStatus(st);st.studentStatus=status;st.updatedAt=new Date().toISOString();save();renderSt();renderHome();V9.undo=()=>{st.studentStatus=oldStatus;st.updatedAt=new Date().toISOString();save();renderSt();renderHome();};const action=status==='archived'?'أرشفة':status==='paused'?'إيقاف مؤقت':'إعادة تنشيط';v9Toast(`تم ${action} ${st.name} — يمكنك التراجع من Ctrl+Z`,'info');setTimeout(()=>V9.undo=null,8000);}
+async function setStudentStatusWithUndo(id,status){
+  const st=students.find(s=>s.id===id);if(!st||!['active','paused','archived'].includes(status))return;
+  const oldStatus=v9StudentStatus(st);
+  if(status!=='active'){
+    try{await v9GuardInactiveStudents([id]);}catch(err){v9GuardianStatusError(err);return;}
+  }
+  st.studentStatus=status;st.updatedAt=new Date().toISOString();
+  if(save()===false){st.studentStatus=oldStatus;v9Toast('تعذر حفظ تغيير الحالة. راجع صلاحيات بوابة ولي الأمر قبل المحاولة مجددًا.','error');return;}
+  renderSt();renderHome();V9.undo=null;
+  const action=status==='archived'?'أرشفة':status==='paused'?'إيقاف مؤقت':'إعادة تنشيط';
+  v9Toast(status==='active'?`تمت إعادة تنشيط ${st.name} محليًا؛ يلزم تفعيل بوابة ولي الأمر يدويًا إن لزم`:`تم ${action} ${st.name} وإيقاف الدخول الحي لهذا الطالب`,'info');
+}
+
 
 
 async function deleteSt(){
   const id=curStId,st=students.find(x=>x.id===id);if(!id||!st)return;
   if(!confirm(`هل تريد حذف ${st.name} وجميع حصصه ومهامه؟
 سيتم أيضًا حذف الملاحظات الصوتية المحلية التابعة لحصصه.`))return;
+  // The live guardian portal is independent of local student storage.
+  // Do not remove a student if either phone/PIN access or direct-link revoke
+  // cannot be verified. This also preserves sibling access on shared numbers.
+  const portal=globalThis.ImamApp?.GuardianPortal;
+  if(typeof portal?.revokeForStudentDeletion!=='function'){
+    v9Toast('تعذر تأمين بوابة ولي الأمر؛ لم يُحذف الطالب. أعد فتح التطبيق مع الاتصال بالإنترنت.','error');
+    return;
+  }
+  try{
+    const guard=await portal.revokeForStudentDeletion(id);
+    if(!guard?.ok)throw new Error('GUARDIAN_REVOCATION_NOT_CONFIRMED');
+  }catch(err){
+    console.warn('[student delete] guardian access not revoked',err);
+    v9Toast('تعذر التأكد من إيقاف بوابة ولي الأمر؛ لم يُحذف الطالب. تحقق من الإنترنت أو صلاحيات الحساب.','error');
+    return;
+  }
   const voiceIds=[...new Set(sessions.filter(s=>s.studentId===id&&s.voiceNoteId).map(s=>s.voiceNoteId))];
   if(typeof mediaDelete==='function')await Promise.allSettled(voiceIds.map(x=>mediaDelete(x)));
   if(V8.voiceNoteId&&voiceIds.includes(V8.voiceNoteId)){V8.voiceNoteId='';V8.pendingVoiceBlob=null;}

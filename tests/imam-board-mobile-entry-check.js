@@ -5,7 +5,7 @@ const assert=require('node:assert/strict');
 const v9=fs.readFileSync('v9.js','utf8');
 const index=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
-const tag='11.12.1-beta.27-mobile-nav-hotfix1';
+const tag='11.12.1-beta.27-guardian-both-hotfix3';
 assert(index.includes(`v9.js?v=${tag}`),'HTML must request the updated mobile menu');
 assert(sw.includes(`'./v9.js?v=${tag}'`),'offline precache must use the patched menu');
 assert(sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./v9.js?v=${tag}'`),'menu must be installed fresh without an old-cache fallback');
@@ -23,7 +23,7 @@ function fakeButton(){return {
  remove(){const i=this.parent?.items.indexOf(this);if(i>=0)this.parent.items.splice(i,1);},
  click(){this.listeners.click?.();}
 };}
-const modal={classes:new Set(),attrs:{},classList:{add(k){modal.classes.add(k);},remove(k){modal.classes.delete(k);}},setAttribute(k,v){this.attrs[k]=v;}};
+const modal={classes:new Set(),attrs:{},querySelector:(selector)=>selector==='.mo-box'?{scrollTop:10}:null,classList:{add(k){modal.classes.add(k);},remove(k){modal.classes.delete(k);}},setAttribute(k,v){this.attrs[k]=v;}};
 const ctx={
  WeLiveQuranAuth:{getAccess:()=>({role,status})},
  ImamApp:{SmartBoard:{open:()=>opens++}},

@@ -35,7 +35,7 @@ assert.equal(api.normalizedRange({...placement,id:'a'}).surahId,2);
 assert.equal(api.normalizedRange({...placement,score:null}).score,null,'unknown score is not zero');
 const html=read('index.html'),sw=read('sw.js'),runtime=read('js/core/runtime.js'),app=read('app.js');
 assert(html.includes('session-intelligence-119.js?v=11.12.1-beta.27'));
-assert(sw.includes("'./js/features/session-intelligence-119.js?v=11.12.1-beta.27'"));
+assert(sw.includes("'./js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3'"));
 assert(sw.includes("'./session-intelligence-119.css?v=11.9.2'"));
 assert(runtime.includes("version:'11.12.1-beta.27',schema:12"));
 assert(app.includes("if(save()===false)"),'failure-aware session save must exist');

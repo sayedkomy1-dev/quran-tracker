@@ -110,6 +110,8 @@
   }
   function buildSnapshot(studentId){
     const st=stateStudents().find(x=>x.id===studentId);if(!st)throw new Error('STUDENT_NOT_FOUND');
+    // Never generate or refresh an access snapshot for a paused/archived student.
+    if(st.studentStatus&&st.studentStatus!=='active')throw new Error('STUDENT_NOT_ACTIVE');
     const rows=stateSessions().filter(x=>x.studentId===studentId&&x.status==='حضر').slice().sort((a,b)=>dateValue(b)-dateValue(a));
     const latest=rows.find(s=>assignmentItems(s).length)||rows[0]||null;
     let progress=null;
@@ -225,6 +227,32 @@
     if(!liveAvailable())throw new Error('LIVE_OFFLINE');
     const ref=await studentRef(studentId);const data=await rpc(LIVE_RPC.revoke,{p_student_ref:ref});
     const x=Array.isArray(data)?data[0]:data;return !!(x===true||x?.ok||x?.revoked);
+  }
+
+  // Deleting, pausing or archiving a student must not leave authenticated access or
+  // a revocable direct link alive. No student/session data is changed here.
+  // Fail closed: a missing backend, session, or network is not a safe revocation.
+  async function revokeForStudentDeletion(studentId){
+    if(!studentId)throw new Error('STUDENT_REQUIRED');
+    if(!liveAvailable())throw new Error('GUARDIAN_REVOCATION_OFFLINE');
+    const [beforeLink,beforePhone]=await Promise.all([liveStatus(studentId),accessStatus(studentId)]);
+    if(!beforeLink.available||!beforePhone.available)throw new Error('GUARDIAN_REVOCATION_STATUS_UNAVAILABLE');
+    if(beforeLink.exists&&beforeLink.active){
+      await revokeLive(studentId);
+    }
+    if(beforePhone.linked){
+      const ref=await studentRef(studentId);
+      const data=await rpc(ACCESS_RPC.unlink,{p_student_ref:ref});
+      const result=Array.isArray(data)?data[0]:data;
+      if(!result?.ok||!result?.unlinked)throw new Error('GUARDIAN_UNLINK_FAILED');
+    }
+    // Verify both paths are now inaccessible before the caller removes data.
+    const [afterLink,afterPhone]=await Promise.all([liveStatus(studentId),accessStatus(studentId)]);
+    if(!afterLink.available||!afterPhone.available||
+       (afterLink.exists&&afterLink.active)||afterPhone.linked){
+      throw new Error('GUARDIAN_REVOCATION_NOT_CONFIRMED');
+    }
+    return {ok:true,hadLiveLink:!!(beforeLink.exists&&beforeLink.active),hadPhoneAccess:!!beforePhone.linked};
   }
   async function accessStatus(studentId){
     if(!studentId||!liveAvailable())return {available:false,linked:false};
@@ -694,6 +722,6 @@
     v1010OpenGuardianLogin:openGuardianLogin,v1010CopyGuardianLogin:copyGuardianLogin,v1010CopyGuardianCredentials:copyGuardianCredentials,v1010SendGuardianCredentials:sendGuardianCredentials,v1010SendGuardianLoginLink:sendGuardianLoginLink,v1010RefreshResetRequests:refreshResetRequests,v1010ResolveResetRequest:resolveResetRequest,v1010DismissResetRequest:dismissResetRequest,v1010RefreshEngagement:refreshEngagement,v1010EngagementDaysChanged:engagementDaysChanged
   });
   g.ImamApp=g.ImamApp||{};
-  g.ImamApp.GuardianPortal=Object.freeze({buildSnapshot,portalUrl,liveUrl,studentRef,loginUrl:guardianLoginUrl,publish:publishLive,status:liveStatus,revoke:revokePortal,open:openPortal,copyLink:copyPortalLink,copySnapshot:copySnapshotLink,accessStatus,enablePhoneAccess,resetPhonePin,unlinkPhoneAccess,refreshPhoneSnapshot,refreshResetRequests,resolveResetRequest,dismissResetRequest,engagementSummary,refreshEngagement});
+  g.ImamApp.GuardianPortal=Object.freeze({buildSnapshot,portalUrl,liveUrl,studentRef,loginUrl:guardianLoginUrl,publish:publishLive,status:liveStatus,revoke:revokePortal,open:openPortal,copyLink:copyPortalLink,copySnapshot:copySnapshotLink,accessStatus,enablePhoneAccess,resetPhonePin,unlinkPhoneAccess,revokeForStudentDeletion,revokeForStudentDeactivation:revokeForStudentDeletion,refreshPhoneSnapshot,refreshResetRequests,resolveResetRequest,dismissResetRequest,engagementSummary,refreshEngagement});
   if(g.document?.readyState==='loading')g.document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0),{once:true});else setTimeout(init,0);
 })(globalThis);

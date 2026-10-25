@@ -12,7 +12,7 @@ need(goal.includes('JUZ_STARTS')&&goal.includes('memorizationGoal'),'goal planne
 need(goal.includes('recommended')&&goal.includes('expectedPct')&&goal.includes('milestones'),'automatic pacing/milestones missing');
 need(goal.includes('goalPlanningApply')&&(goal.includes("setSectionAutoValue?.('new'")||goal.includes("setSectionAutoValue('new'")),'one-click next assignment missing');
 need(goal.includes("legacy.override('saveSt'")&&goal.includes("legacy.override('sanitizeBackupData'"),'student save/import preservation hooks missing');
-need(idx.includes('goal-planning.css?v=11.4.2-s2')&&(idx.includes('js/features/goal-planning.js?v=11.4.0-s1')||idx.includes('js/features/goal-planning.js?v=11.4.2-s2')),'teacher app assets not wired');
+need(idx.includes('goal-planning.css?v=11.4.2-s2')&&(idx.includes('js/features/goal-planning.js?v=11.4.0-s1')||idx.includes('js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3')),'teacher app assets not wired');
 need(share.includes('memorizationPlan')&&share.includes('GoalPlanner?.buildGuardian'),'guardian snapshot must include plan summary');
 need(gp.includes('portalGoalCard')&&gp.includes('portalGoalNext'),'guardian goal card markup missing');
 need(view.includes('function renderGoalPlan')&&view.includes('portalGoalPractice')&&view.includes("practiceMode:'tutor'"),'guardian goal rendering/practice missing');

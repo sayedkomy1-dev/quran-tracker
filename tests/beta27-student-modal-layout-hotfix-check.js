@@ -13,7 +13,7 @@ const section=css.slice(css.indexOf('#stModal > .mo-box{'),css.indexOf('@media (
 assert(section.includes('max-height:88dvh')&&section.includes('overflow-y:auto'),'desktop sized scrolling required');
 assert(css.includes('max-height:92dvh')&&css.includes('env(safe-area-inset-bottom)'),'mobile safe-area scroll required');
 assert.equal((app.match(/document\.querySelector\?\.\('#stModal > \.mo-box'\)/g)||[]).length,2,'add and edit must reset scroll');
-assert(sw.includes("const LIVE_CACHE_NAME = CACHE_NAME + '-student-modal-scroll-hotfix1'"),'distinct offline cache required');
+assert(/const LIVE_CACHE_NAME = CACHE_NAME \+ '-[a-z0-9-]+';/.test(sw),'distinct offline cache required after subsequent hotfixes');
 assert(sw.includes('caches.open(LIVE_CACHE_NAME)'),'install should never overwrite old release cache');
 assert(sw.includes('k!==LIVE_CACHE_NAME'),'activate must preserve new cache');
 console.log('PASS student modal: bounded scrolling, start-at-top, one field set, distinct offline release cache');

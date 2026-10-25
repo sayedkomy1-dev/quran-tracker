@@ -10,7 +10,7 @@
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Candidate hotfix cache is separate from beta.27, so failed installation cannot alter its offline shell.
-const LIVE_CACHE_NAME = CACHE_NAME + '-student-modal-scroll-hotfix1';
+const LIVE_CACHE_NAME = CACHE_NAME + '-guardian-both-hotfix3';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -20,14 +20,14 @@ const CRITICAL_FRESH_SHELL = [
   './index.html',
   './css/platform/tokens.css?v=11.12.1-beta.27',
   './css/platform/legacy-features.css?v=11.12.1-beta.27',
-  './css/platform/components.css?v=11.12.1-beta.27',
+  './css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2',
   './css/platform/responsive.css?v=11.12.1-beta.27',
   './css/platform/surah-picker.css?v=11.12.1-beta.27',
   './js/features/platform-ux.js?v=11.12.1-beta.27',
   './js/features/platform-workflow.js?v=11.12.1-beta.27',
-  './js/features/guardian-portal-share.js?v=11.12.1-beta.27',
+  './js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/assignment-audio-share.js?v=11.12.1-beta.27',
-  './v9.js?v=11.12.1-beta.27-mobile-nav-hotfix1',
+  './v9.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './app.js?v=11.12.1-beta.27',
   './js/core/runtime.js?v=11.12.1-beta.27',
   './js/core/boot-health.js?v=11.12.1-beta.27',
@@ -53,7 +53,7 @@ const CRITICAL_FRESH_SHELL = [
 const APP_SHELL = [
   './css/platform/tokens.css?v=11.12.1-beta.27',
   './css/platform/legacy-features.css?v=11.12.1-beta.27',
-  './css/platform/components.css?v=11.12.1-beta.27',
+  './css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2',
   './css/platform/responsive.css?v=11.12.1-beta.27',
   './css/platform/public-experience.css?v=11.12.1-beta.27',
   './css/platform/student-display.css?v=11.12.1-beta.27',
@@ -81,7 +81,7 @@ const APP_SHELL = [
 
   './app.js?v=11.12.1-beta.27',
   './v8.js?v=11.2.0-s3',
-  './v9.js?v=11.12.1-beta.27-mobile-nav-hotfix1',
+  './v9.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/mushaf-offline.js?v=11.7.4.2',
 
 
@@ -97,7 +97,7 @@ const APP_SHELL = [
   './js/features/circle-management-1110.js?v=11.11.1',
   './placement-center-1191.css?v=11.9.2',
   './js/features/placement-center-1191.js?v=11.9.2',
-  './js/features/session-intelligence-119.js?v=11.12.1-beta.27',
+  './js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './teacher-error-marking.css?v=11.8.0',
   './correction-document.css?v=11.7.4.5',
   './smart-revision.css?v=11.3.0-s1',
@@ -120,9 +120,9 @@ const APP_SHELL = [
   './js/features/teacher-followup.js?v=11.0.0',
   './js/features/circle-analytics.js?v=11.0.0',
   './js/features/smart-revision.js?v=11.9.2',
-  './js/features/goal-planning.js?v=11.4.2-s2',
+  './js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/student-finance.js?v=11.5.1-s2',
-  './js/features/guardian-portal-share.js?v=11.12.1-beta.27',
+  './js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/quran-audio-export.js?v=11.2.0-s4',
   './js/features/assignment-audio-share.js?v=11.12.1-beta.27',
   './js/features/v11-ui.js?v=11.12.1-beta.27',
@@ -191,7 +191,7 @@ const CORE_SHELL = [
   './js/features/circle-management-1110.js?v=11.11.1',
   './placement-center-1191.css?v=11.9.2',
   './js/features/placement-center-1191.js?v=11.9.2',
-  './js/features/session-intelligence-119.js?v=11.12.1-beta.27',
+  './js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './teacher-error-marking.css?v=11.8.0',
   './correction-document.css?v=11.7.4.5',
   './smart-revision.css?v=11.3.0-s1',
@@ -204,7 +204,7 @@ const CORE_SHELL = [
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './js/features/smart-revision.js?v=11.9.2',
-  './js/features/goal-planning.js?v=11.4.2-s2',
+  './js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/student-finance.js?v=11.5.1-s2',
   './js/features/v11-ui.js?v=11.12.1-beta.27',
   './js/features/teacher-error-marking.js?v=11.8.0',
