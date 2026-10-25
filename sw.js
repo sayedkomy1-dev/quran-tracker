@@ -9,6 +9,8 @@
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
+// Candidate hotfix cache is separate from beta.27, so failed installation cannot alter its offline shell.
+const LIVE_CACHE_NAME = CACHE_NAME + '-student-modal-scroll-hotfix1';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -300,7 +302,7 @@ async function cacheExternal(cache,url){
 
 self.addEventListener('install', event => {
   event.waitUntil((async()=>{
-    const cache=await caches.open(CACHE_NAME);
+    const cache=await caches.open(LIVE_CACHE_NAME);
     // Install the exact current app HTML/runtime first. No old-cache fallback
     // is allowed for these files: otherwise a new worker may report v11.12.1-beta.27
     // while actually serving an older account's v11.9 application shell.
@@ -328,7 +330,7 @@ self.addEventListener('activate', event => {
   event.waitUntil((async()=>{
     // Delete old app caches only after Stage 5 has installed a complete core shell.
     const keys=await caches.keys();
-    await Promise.all(keys.filter(k=>k.startsWith('quran-pwa-')&&k!==CACHE_NAME).map(k=>caches.delete(k)));
+    await Promise.all(keys.filter(k=>k.startsWith('quran-pwa-')&&k!==LIVE_CACHE_NAME).map(k=>caches.delete(k)));
     if(self.registration.navigationPreload)await self.registration.navigationPreload.enable().catch(()=>{});
     await self.clients.claim();
   })());
@@ -364,7 +366,7 @@ async function refreshSameOrigin(cache,req){
 }
 
 async function cacheFirstSameOrigin(req){
-  const cache=await caches.open(CACHE_NAME);
+  const cache=await caches.open(LIVE_CACHE_NAME);
   const cached=await matchLocalAsset(cache,req);
   if(cached)return cached;
   try{
@@ -379,7 +381,7 @@ async function cacheFirstSameOrigin(req){
 }
 
 async function externalSupabase(req){
-  const cache=await caches.open(CACHE_NAME);
+  const cache=await caches.open(LIVE_CACHE_NAME);
   const cached=(await cache.match(req))||(await cache.match(SUPABASE_CDN));
   if(cached)return cached;
   try{
@@ -408,7 +410,7 @@ self.addEventListener('fetch', event => {
 
   if(req.mode==='navigate'){
     event.respondWith((async()=>{
-      const cache=await caches.open(CACHE_NAME);
+      const cache=await caches.open(LIVE_CACHE_NAME);
       const portalNav=url.pathname.endsWith('/guardian-portal.html');
       const guardianLoginNav=url.pathname.endsWith('/guardian-login.html');
       const guestNav=url.pathname.endsWith('/guest-practice.html');
@@ -432,7 +434,7 @@ self.addEventListener('fetch', event => {
   const isCodeAsset=/\.(?:js|css)$/.test(url.pathname)||url.pathname.endsWith('/manifest.json');
   if(isCodeAsset){
     event.respondWith((async()=>{
-      const cache=await caches.open(CACHE_NAME);
+      const cache=await caches.open(LIVE_CACHE_NAME);
       const cached=await matchLocalAsset(cache,req);
       if(cached)return cached; // opt-in update: no silent JS/CSS refresh
       return cacheFirstSameOrigin(req);
@@ -441,7 +443,7 @@ self.addEventListener('fetch', event => {
   }
 
   event.respondWith((async()=>{
-    const cache=await caches.open(CACHE_NAME);
+    const cache=await caches.open(LIVE_CACHE_NAME);
     const cached=await matchLocalAsset(cache,req);
     if(cached)return cached;
     try{
@@ -464,5 +466,5 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:CACHE_NAME,offlineStage:'5.5',uiStage:'11.7.3-supervision-2'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:LIVE_CACHE_NAME,offlineStage:'5.5',uiStage:'11.7.3-supervision-2'});
 });

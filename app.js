@@ -992,6 +992,9 @@ function openAddSt(){
   document.getElementById('m-time').value='';
   document.getElementById('m-duration').value='30';
   document.getElementById('stModal').classList.add('open');
+  // A reopened student editor must start at its identity fields, not old scroll.
+  const box=document.querySelector?.('#stModal > .mo-box');
+  if(box)box.scrollTop=0;
 }
 function closeMo(){ document.getElementById('stModal').classList.remove('open'); }
 
@@ -1126,6 +1129,9 @@ function editSt(){
   document.getElementById('m-duration').value=String(s.sessionDuration||30);
   document.getElementById('m-notes').value=s.notes||'';
   document.getElementById('stModal').classList.add('open');
+  // A reopened student editor must start at its identity fields, not old scroll.
+  const box=document.querySelector?.('#stModal > .mo-box');
+  if(box)box.scrollTop=0;
 }
 function deleteSt(){
   if(!confirm('هل تريد حذف هذا الطالب وجميع بياناته؟')) return;

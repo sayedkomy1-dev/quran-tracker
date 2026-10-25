@@ -51,6 +51,28 @@ button:disabled,[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
 .fld textarea,textarea{min-height:78px;resize:vertical}
 .fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--ui-primary);box-shadow:var(--ui-focus)}
 .mo-box{border:1px solid var(--ui-line);border-radius:24px;background:var(--ui-surface);box-shadow:var(--ui-shadow-high);max-width:min(96vw,780px)}
+
+/* beta.27 student modal layout hotfix: restore the dedicated scroll boundary.
+   Only the student editor is scoped: other modals and session UI stay untouched. */
+#stModal > .mo-box{
+  box-sizing:border-box;
+  width:100%;
+  max-height:88vh;
+  max-height:88dvh;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  -webkit-overflow-scrolling:touch;
+  padding:20px 16px 32px;
+}
+@media (max-width:899px){
+  #stModal > .mo-box{
+    max-height:92vh;
+    max-height:92dvh;
+    border-radius:20px 20px 0 0;
+    padding:16px 14px calc(16px + env(safe-area-inset-bottom));
+  }
+}
+
 /* Canonical toast geometry. Legacy edition stylesheets no longer load, so
    notifications must never participate in the document flow. */
 .toast{position:fixed;inset-inline:16px;bottom:calc(86px + env(safe-area-inset-bottom));
