@@ -15,7 +15,7 @@ function method(source,start,end){const a=source.indexOf(start),b=source.indexOf
 assert(css.includes('#v9MoreSheet > .mo-box{')&&/max-height:92dvh/.test(css)&&/overflow-y:auto/.test(css),'More has bounded internal scroll');
 assert(method(v9,'function openV9More(){','function closeV9More()').includes('box.scrollTop=0'),'More opens at top');
 assert(index.includes('guardian-both-hotfix3')&&sw.includes('guardian-both-hotfix3'),'new assets cached separately');
-assert(portal.includes('revokeForStudentDeletion,revokeForStudentDeactivation:revokeForStudentDeletion,refreshPhoneSnapshot'),'guardian cleanup is exported');
+assert(portal.includes('revokeForStudentDeletion,revokeForStudentDeactivation:revokeForStudentDeletion'),'guardian cleanup is exported');
 const cleanupCode=method(portal,'async function revokeForStudentDeletion(studentId){','async function accessStatus(studentId){');
 async function checkCleanup({link=false,phone=false,offline=false,statusFails=false,unlinkFails=false}={}){
  const calls=[];let linked=link,phoneLinked=phone;

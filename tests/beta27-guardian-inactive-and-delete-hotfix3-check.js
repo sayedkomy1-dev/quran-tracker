@@ -66,9 +66,9 @@ function sandbox({deny=false,denyAt=0,portalMissing=false}={}){
   assert(!events.includes('rpc:a'),'editing existing paused notes does not require re-revoking');}
  {const {ctx,events}=sandbox();ctx.students[0].studentStatus='paused';
   await ctx.ops.setStudentStatusWithUndo('a','archived');assert(events.includes('rpc:a'),'existing paused record rechecked before archive');}
- assert(portal.includes("if(st.studentStatus&&st.studentStatus!=='active')throw new Error('STUDENT_NOT_ACTIVE')"),'inactive snapshots blocked');
+ assert(portal.includes("if(st.studentStatus&&st.studentStatus!=='active'&&!forReactivation)throw new Error('STUDENT_NOT_ACTIVE')"),'inactive snapshots blocked for normal requests');
  assert(portal.includes('revokeForStudentDeactivation:revokeForStudentDeletion'),'all status routes reuse verified cleanup');
- assert(index.includes('guardian-both-hotfix3')&&worker.includes('guardian-both-hotfix3'),'fresh worker asset versioning');
+ assert(index.includes('guardian-reactivation-hotfix4')&&worker.includes('guardian-reactivation-hotfix4'),'fresh worker asset versioning');
  for(const f of ['js/features/goal-planning.js','js/features/session-intelligence-119.js']){
    const t=fs.readFileSync(path.join(root,f),'utf8');assert(t.includes("typeof out.then==='function'"),`${f} must await deferred status save`);
  }

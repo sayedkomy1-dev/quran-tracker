@@ -266,6 +266,46 @@ async function v9GuardInactiveStudents(ids){
     }
   }finally{unique.forEach(id=>V9.guardianStatusBusy.delete(id));}
 }
+async function v9RestoreActiveStudents(ids){
+  const unique=[...new Set(ids)].filter(id=>students.some(st=>st.id===id&&v9StudentStatus(st)!=='active'));
+  if(!unique.length)return {activated:[],ids:[]};
+  if(!V9.guardianStatusBusy)V9.guardianStatusBusy=new Set();
+  if(unique.some(id=>V9.guardianStatusBusy.has(id)))throw new Error('GUARDIAN_OPERATION_BUSY');
+  const portal=globalThis.ImamApp?.GuardianPortal;
+  if(typeof portal?.restoreForStudentReactivation!=='function')throw new Error('GUARDIAN_REACTIVATION_SERVICE_MISSING');
+  const activated=[];
+  unique.forEach(id=>V9.guardianStatusBusy.add(id));
+  try{
+    for(const id of unique){
+      const result=await portal.restoreForStudentReactivation(id);
+      if(!result?.ok)throw new Error('GUARDIAN_REACTIVATION_NOT_CONFIRMED');
+      if(result.changed)activated.push(id);
+    }
+    return {activated,ids:unique};
+  }catch(err){
+    // A batch can have already granted access to earlier students.
+    for(const id of activated.reverse()){
+      try{await portal.revokeForStudentDeletion(id);portal.forgetReactivationSecret?.(id);}catch(rollbackError){err.rollbackFailed=true;console.warn('[guardian activation rollback]',rollbackError);}
+    }
+    throw err;
+  }finally{unique.forEach(id=>V9.guardianStatusBusy.delete(id));}
+}
+async function v9RollbackActiveStudents(result){
+  const portal=globalThis.ImamApp?.GuardianPortal;
+  let failed=false;
+  for(const id of result?.activated||[]){
+    try{const out=await portal.revokeForStudentDeletion(id);if(!out?.ok)throw new Error('GUARDIAN_REVOKE_UNCONFIRMED');portal.forgetReactivationSecret?.(id);}catch(e){failed=true;console.warn('[guardian activation compensation]',e);}
+  }
+  return !failed;
+}
+function v9ShowReactivationAccess(ids){
+  setTimeout(()=>globalThis.ImamApp?.GuardianPortal?.showReactivationCredentials?.(ids),80);
+}
+function v9GuardianActivationError(err){
+  console.warn('[student status] guardian reactivation was not verified',err);
+  const invalidPhone=String(err?.message||'').includes('GUARDIAN_PHONE_INVALID');
+  v9Toast(err?.rollbackFailed?'لم تكتمل إعادة التنشيط، وتعذر التراجع عن جزء من صلاحيات الخادم. راجع إدارة ولي الأمر فورًا.':invalidPhone?'لا يمكن إعادة دخول ولي الأمر تلقائيًا بهذا الرقم. البوابة تدعم المحمول المصري حاليًا؛ راجع إدارة ولي الأمر.':'لم تتغير حالة الطالب: تعذر تأكيد إعادة دخول ولي الأمر. تحقق من الإنترنت والرقم ثم أعد المحاولة.','error');
+}
 function v9GuardianStatusError(err){
   console.warn('[student status] guardian revocation was not verified',err);
   v9Toast('لم تتغير حالة الطالب: تعذر تأكيد إيقاف دخول ولي الأمر. تحقق من الإنترنت ثم أعد المحاولة. إذا كان الإيقاف جزئيًا فراجع إدارة ولي الأمر.','error');
@@ -274,17 +314,23 @@ async function bulkSetStatus(status){
   if(!V9.selectedStudents.size)return v9Toast('حدد طالبًا واحدًا على الأقل','error');
   if(!['active','paused','archived'].includes(status))return;
   const ids=[...V9.selectedStudents].filter(id=>students.some(st=>st.id===id));
+  let restored=null;
   if(status!=='active'){
     try{await v9GuardInactiveStudents(ids);}catch(err){v9GuardianStatusError(err);return;}
+  }else{
+    try{restored=await v9RestoreActiveStudents(ids);}catch(err){v9GuardianActivationError(err);return;}
   }
   const before=new Map(ids.map(id=>{const st=students.find(x=>x.id===id);return[id,v9StudentStatus(st)];}));
   students.forEach(st=>{if(before.has(st.id)){st.studentStatus=status;st.updatedAt=new Date().toISOString();}});
-  if(save()===false){before.forEach((old,id)=>{const st=students.find(x=>x.id===id);if(st)st.studentStatus=old;});v9Toast('تعذر حفظ تغيير الحالة محليًا. قد تكون صلاحيات البوابة أُوقفت بالفعل؛ راجع إدارة ولي الأمر.','error');return;}
+  let stored=false;
+  try{stored=save()!==false;}catch(err){console.warn('[student status] local save',err);}
+  if(!stored){before.forEach((old,id)=>{const st=students.find(x=>x.id===id);if(st)st.studentStatus=old;});if(restored)await v9RollbackActiveStudents(restored);v9Toast('تعذر حفظ تغيير الحالة محليًا. راجع صلاحيات بوابة ولي الأمر قبل المحاولة مجددًا.','error');return;}
   // An undo could re-activate a locally stopped record without restoring
   // server-side access. Require an explicit status change instead.
   V9.undo=null;
   V9.selectedStudents.clear();renderSt();renderHome();updateBulkBar();
-  v9Toast(status==='active'?'تمت إعادة تنشيط الطلاب محليًا؛ أعد تفعيل بوابة ولي الأمر يدويًا عند الحاجة':'تم تحديث الحالة وإيقاف الوصول عبر بوابة ولي الأمر الحية للطلاب المحددين','success');
+  if(restored)v9ShowReactivationAccess(ids);
+  v9Toast(status==='active'?'تمت إعادة تنشيط الطلاب والتأكد من دخول ولي الأمر':'تم تحديث الحالة وإيقاف الوصول عبر بوابة ولي الأمر الحية للطلاب المحددين','success');
 }
 function bulkMoveGroup(){if(!V9.selectedStudents.size)return v9Toast('حدد طلابًا أولاً','error');const name=prompt('اسم المجموعة / الحلقة:');if(name==null)return;const ids=[...V9.selectedStudents],before=new Map(ids.map(id=>{const s=students.find(x=>x.id===id);return[id,s?.group||''];}));students.forEach(s=>{if(V9.selectedStudents.has(s.id)){s.group=String(name).trim().slice(0,120);s.updatedAt=new Date().toISOString();}});save();V9.undo=()=>{before.forEach((old,id)=>{const s=students.find(x=>x.id===id);if(s)s.group=old;});save();renderSt();};setTimeout(()=>V9.undo=null,8000);renderSt();v9Toast('تم نقل الطلاب — Ctrl+Z للتراجع','success');}
 function bulkBroadcast(){if(!V9.selectedStudents.size)return v9Toast('حدد طلابًا أولاً','error');const ids=new Set(V9.selectedStudents);openBroadcastComposer();broadcastSelected=new Set([...ids].filter(id=>students.find(s=>s.id===id&&s.phone)));renderBroadcastRecipients();updateBroadcastPreview();}
@@ -311,8 +357,27 @@ function saveSt(){
   };
   // Normal additions and edits stay synchronous for old integration hooks.
   // Only changes to an existing inactive record wait for remote revocation.
-  if(editing&&status!=='active'&&v9StudentStatus(students.find(s=>s.id===editing))!==status){
-    return v9GuardInactiveStudents([editing]).then(commit).catch(err=>{v9GuardianStatusError(err);return false;});
+  if(editing&&v9StudentStatus(students.find(s=>s.id===editing))!==status){
+    if(status!=='active')return v9GuardInactiveStudents([editing]).then(commit).catch(err=>{v9GuardianStatusError(err);return false;});
+    const existing=students.find(st=>st.id===editing);
+    if(!existing){v9Toast('تعذر العثور على الطالب المطلوب','error');return false;}
+    // The guardian RPC must never link a stale phone or run for a rejected form.
+    const phone=document.getElementById('m-phone')?.value||'';
+    if(typeof normPhone==='function'&&normPhone(phone)!==normPhone(existing.phone)){
+      v9Toast('لإعادة التنشيط احتفظ برقم ولي الأمر كما هو، وبعد التفعيل يمكنك تعديل الرقم من إدارة ولي الأمر.','error');return false;
+    }
+    if(!document.getElementById('m-name')?.value?.trim()||!phone.trim()){
+      v9Toast('أكمل الاسم ورقم ولي الأمر أولًا','error');return false;
+    }
+    return v9RestoreActiveStudents([editing]).then(async restored=>{
+      let result=false;
+      try{result=commit();}catch(error){console.warn('[student editor] local save',error);}
+      if(result===false){
+        const rollback=await v9RollbackActiveStudents(restored);
+        v9Toast(rollback?'لم تُحفظ البيانات؛ تم التراجع عن ربط ولي الأمر الجديد.':'لم تُحفظ البيانات وتعذر التراجع عن ربط ولي الأمر. راجع إدارة ولي الأمر فورًا.','error');return false;
+      }
+      v9ShowReactivationAccess([editing]);return true;
+    }).catch(err=>{v9GuardianActivationError(err);return false;});
   }
   return commit();
 }
@@ -321,14 +386,20 @@ function closeV9ContextMenu(){const m=document.getElementById('v9ContextMenu');i
 async function setStudentStatusWithUndo(id,status){
   const st=students.find(s=>s.id===id);if(!st||!['active','paused','archived'].includes(status))return;
   const oldStatus=v9StudentStatus(st);
+  let restored=null;
   if(status!=='active'){
     try{await v9GuardInactiveStudents([id]);}catch(err){v9GuardianStatusError(err);return;}
+  }else if(oldStatus!=='active'){
+    try{restored=await v9RestoreActiveStudents([id]);}catch(err){v9GuardianActivationError(err);return;}
   }
   st.studentStatus=status;st.updatedAt=new Date().toISOString();
-  if(save()===false){st.studentStatus=oldStatus;v9Toast('تعذر حفظ تغيير الحالة. راجع صلاحيات بوابة ولي الأمر قبل المحاولة مجددًا.','error');return;}
+  let stored=false;
+  try{stored=save()!==false;}catch(err){console.warn('[student status] local save',err);}
+  if(!stored){st.studentStatus=oldStatus;if(restored)await v9RollbackActiveStudents(restored);v9Toast('تعذر حفظ تغيير الحالة. راجع صلاحيات بوابة ولي الأمر قبل المحاولة مجددًا.','error');return;}
   renderSt();renderHome();V9.undo=null;
+  if(restored)v9ShowReactivationAccess([id]);
   const action=status==='archived'?'أرشفة':status==='paused'?'إيقاف مؤقت':'إعادة تنشيط';
-  v9Toast(status==='active'?`تمت إعادة تنشيط ${st.name} محليًا؛ يلزم تفعيل بوابة ولي الأمر يدويًا إن لزم`:`تم ${action} ${st.name} وإيقاف الدخول الحي لهذا الطالب`,'info');
+  v9Toast(status==='active'?`تمت إعادة تنشيط ${st.name} وتأكيد دخوله في بوابة ولي الأمر`:`تم ${action} ${st.name} وإيقاف الدخول الحي لهذا الطالب`,'info');
 }
 
 

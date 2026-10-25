@@ -16,13 +16,13 @@ const scripts=['app.js','v9.js','v10.js','js/features/imam-smart-board.js','js/f
 const css=['css/platform/responsive.css','imam-smart-board.css','role-home.css','teacher-rating.css'];
 for(const name of [...scripts,...css]){
  const ref=`${name}?v=${version}`;
- const versionedV9=`${name}?v=${version}-guardian-both-hotfix3`;
+ const versionedV9=`${name}?v=${version}-guardian-reactivation-hotfix4`;
  assert(html.includes(ref)||html.includes(versionedV9),`index missing fresh ${name}`);
  assert(sw.includes(`'./${ref}'`)||sw.includes(`'./${versionedV9}'`),`SW missing fresh ${name}`);
 }
 for(const name of ['v9.js','v10.js','role-home.css','teacher-rating.css']){
  assert(sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./${name}?v=${version}`)
- ||(name==='v9.js'&&sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./v9.js?v=${version}-guardian-both-hotfix3'`)),`Critical shell missing ${name}`);
+ ||(name==='v9.js'&&sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./v9.js?v=${version}-guardian-reactivation-hotfix4'`)),`Critical shell missing ${name}`);
 }
 assert(read('imam-board-display.html').includes(`imam-smart-board.css?v=${version}`));
 for(const htmlFile of ['guardian-login.html','guardian-portal.html','guest-practice.html'])

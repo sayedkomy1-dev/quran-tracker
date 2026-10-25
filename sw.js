@@ -10,7 +10,7 @@
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Candidate hotfix cache is separate from beta.27, so failed installation cannot alter its offline shell.
-const LIVE_CACHE_NAME = CACHE_NAME + '-guardian-both-hotfix3';
+const LIVE_CACHE_NAME = CACHE_NAME + '-guardian-reactivation-hotfix4';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -25,9 +25,9 @@ const CRITICAL_FRESH_SHELL = [
   './css/platform/surah-picker.css?v=11.12.1-beta.27',
   './js/features/platform-ux.js?v=11.12.1-beta.27',
   './js/features/platform-workflow.js?v=11.12.1-beta.27',
-  './js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-both-hotfix3',
+  './js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
   './js/features/assignment-audio-share.js?v=11.12.1-beta.27',
-  './v9.js?v=11.12.1-beta.27-guardian-both-hotfix3',
+  './v9.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
   './app.js?v=11.12.1-beta.27',
   './js/core/runtime.js?v=11.12.1-beta.27',
   './js/core/boot-health.js?v=11.12.1-beta.27',
@@ -81,7 +81,7 @@ const APP_SHELL = [
 
   './app.js?v=11.12.1-beta.27',
   './v8.js?v=11.2.0-s3',
-  './v9.js?v=11.12.1-beta.27-guardian-both-hotfix3',
+  './v9.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
   './js/features/mushaf-offline.js?v=11.7.4.2',
 
 
@@ -122,7 +122,7 @@ const APP_SHELL = [
   './js/features/smart-revision.js?v=11.9.2',
   './js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/student-finance.js?v=11.5.1-s2',
-  './js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-both-hotfix3',
+  './js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
   './js/features/quran-audio-export.js?v=11.2.0-s4',
   './js/features/assignment-audio-share.js?v=11.12.1-beta.27',
   './js/features/v11-ui.js?v=11.12.1-beta.27',

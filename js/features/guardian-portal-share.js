@@ -10,6 +10,7 @@
   const LIVE_RPC={publish:'guardian_portal_publish',status:'guardian_portal_status',revoke:'guardian_portal_revoke'};
   const ACCESS_RPC={status:'guardian_portal_access_status',enable:'guardian_portal_access_enable',reset:'guardian_portal_access_reset_pin',unlink:'guardian_portal_access_unlink',refresh:'guardian_portal_access_refresh',resetList:'guardian_portal_reset_requests_list',resetResolve:'guardian_portal_reset_request_resolve',resetDismiss:'guardian_portal_reset_request_dismiss',engagement:'guardian_portal_activity_summary'};
   let lastGuardianSecret=null;
+  const pendingReactivationSecrets=new Map(); // Ephemeral, never persisted.
   let pendingResetRequests=[];
   let guardianOpenedFromMore=false;
   let guardianReturnFocus=null;
@@ -108,10 +109,10 @@
     const eligible=present.length+absent.length;
     return {mastery,attendance:eligible?Math.round(present.length/eligible*100):null,repeats:0,newAyat:0,attention:[],trend:{label:'—'}};
   }
-  function buildSnapshot(studentId){
+  function buildSnapshot(studentId,{forReactivation=false}={}){
     const st=stateStudents().find(x=>x.id===studentId);if(!st)throw new Error('STUDENT_NOT_FOUND');
     // Never generate or refresh an access snapshot for a paused/archived student.
-    if(st.studentStatus&&st.studentStatus!=='active')throw new Error('STUDENT_NOT_ACTIVE');
+    if(st.studentStatus&&st.studentStatus!=='active'&&!forReactivation)throw new Error('STUDENT_NOT_ACTIVE');
     const rows=stateSessions().filter(x=>x.studentId===studentId&&x.status==='حضر').slice().sort((a,b)=>dateValue(b)-dateValue(a));
     const latest=rows.find(s=>assignmentItems(s).length)||rows[0]||null;
     let progress=null;
@@ -263,8 +264,59 @@
     }catch(err){return {available:false,linked:false,error:err};}
   }
   function rememberGuardianSecret(studentId,phone,pin,studentIds=[studentId]){lastGuardianSecret={studentId:String(studentId),studentIds:[...new Set((studentIds||[]).map(String).filter(Boolean))],phone:phoneDisplay(phone),pin:String(pin),loginUrl:guardianLoginUrl()};renderGuardianSecret();}
+  function currentGuardianSecret(){
+    const id=pickedId();
+    return pendingReactivationSecrets.get(id)||((lastGuardianSecret?.studentId===id)?lastGuardianSecret:null);
+  }
   function clearGuardianSecret(){lastGuardianSecret=null;renderGuardianSecret();}
-  function guardianCredentialsMessage(secret=lastGuardianSecret){
+  function forgetReactivationSecret(studentId){pendingReactivationSecrets.delete(String(studentId));renderGuardianSecret();}
+  async function restoreForStudentReactivation(studentId){
+    if(!studentId)throw new Error('STUDENT_REQUIRED');
+    if(!liveAvailable())throw new Error('GUARDIAN_REACTIVATION_OFFLINE');
+    const st=studentById(studentId);
+    if(!st)throw new Error('STUDENT_NOT_FOUND');
+    const phone=studentPhone(studentId);
+    if(!validEgyptPhone(phone))throw new Error('GUARDIAN_PHONE_INVALID');
+    const before=await accessStatus(studentId);
+    if(!before.available)throw new Error('GUARDIAN_REACTIVATION_STATUS_UNAVAILABLE');
+    const samePhone=before.linked&&before.active&&before.phoneLast4===phone.slice(-4);
+    if(samePhone)return {ok:true,changed:false,pinChanged:false};
+    // Stage the future active student's snapshot without changing local studentStatus.
+    // A normal public snapshot still rejects inactive students.
+    const snapshot=buildSnapshot(studentId,{forReactivation:true});
+    const pin=generatePin();
+    let enabled=false;
+    try{
+      const ref=await studentRef(studentId);
+      const data=await rpc(ACCESS_RPC.enable,{p_student_ref:ref,p_phone:phone,p_pin:pin,p_snapshot:snapshot,p_reset_pin:false});
+      const result=Array.isArray(data)?data[0]:data;
+      if(!result?.ok)throw new Error('GUARDIAN_REACTIVATION_NOT_ACCEPTED');
+      enabled=true;
+      const after=await accessStatus(studentId);
+      if(!after.available||!after.linked||!after.active||after.phoneLast4!==phone.slice(-4))throw new Error('GUARDIAN_REACTIVATION_NOT_CONFIRMED');
+      if(result.pin_changed){
+        pendingReactivationSecrets.set(String(studentId),{studentId:String(studentId),studentIds:[String(studentId)],phone:phoneDisplay(phone),pin:String(pin),loginUrl:guardianLoginUrl()});
+      }
+      return {ok:true,changed:!before.linked||!before.active||before.phoneLast4!==phone.slice(-4),pinChanged:!!result.pin_changed,accountCreated:!!result.account_created};
+    }catch(err){
+      // Best-effort compensation if the grant was created but verification failed.
+      if(enabled&&!samePhone){
+        try{await revokeForStudentDeletion(studentId);}catch(rollbackError){err.rollbackFailed=true;console.error('[guardian reactivation rollback]',rollbackError);}
+      }
+      forgetReactivationSecret(studentId);
+      throw err;
+    }
+  }
+  function showReactivationCredentials(ids){
+    const pending=(ids||[]).map(String).filter(id=>pendingReactivationSecrets.has(id));
+    if(!pending.length)return false;
+    openPicker(pending[0]);
+    renderGuardianSecret();
+    toastSafe(pending.length>1?'تم إنشاء رموز جديدة. راجع كل طالب من القائمة قبل إغلاق إدارة ولي الأمر.':'تم إنشاء رمز دخول جديد؛ انسخه أو أرسله لولي الأمر الآن.','info');
+    return true;
+  }
+
+  function guardianCredentialsMessage(secret=currentGuardianSecret()){
     const st=secret?studentById(secret.studentId):null;if(!secret||!st)return '';
     const academy=stateSettings().circle||'أكاديمية الإمام لتحفيظ القرآن الكريم';
     const names=(secret.studentIds||[secret.studentId]).map(studentById).filter(Boolean).map(x=>x.name).filter(Boolean);
@@ -422,6 +474,7 @@
       <section class="v1010-portal-section v1010-access-section" id="v1010AccessSection" aria-label="حالة دخول ولي الأمر">
         <div class="v1010-portal-info"><b>١ — حالة الدخول</b><p>يستخدم ولي الأمر رقم الهاتف المسجل ورمز دخول من ٦ أرقام. إذا نسي الرمز، يمكن إنشاء رمز جديد بأمان.</p></div>
         <div id="v1010PhoneStatus" class="v1010-portal-status">اختر طالبًا لعرض حالة دخول الهاتف.</div>
+        <div id="v1010ReactivationNotice" role="status" hidden></div>
         <div id="v1010GuardianSecret" class="v1010-guardian-secret" hidden></div>
         <div class="v1010-portal-info"><b>٢ — الدخول والتواصل</b><p>إن لم يكن الدخول مفعّلًا، أنشئ رمزًا وشاركه. وإن كان مفعّلًا، أرسل رابط الدخول مباشرة.</p></div><div class="v1010-portal-actions v1010-access-actions">
           <button id="v1010EnablePhoneBtn" class="btn btn-g" onclick="v1010EnablePhoneAccess()">🔐 إنشاء رمز دخول لولي الأمر</button>
@@ -480,7 +533,13 @@
   }
   function renderGuardianSecret(){
     const el=g.document?.getElementById?.('v1010GuardianSecret');if(!el)return;
-    const id=pickedId();const x=lastGuardianSecret;
+    const id=pickedId(),x=currentGuardianSecret();
+    const notice=g.document?.getElementById?.('v1010ReactivationNotice');
+    if(notice){
+      const pending=[...pendingReactivationSecrets.keys()].filter(sid=>activeStudents().some(st=>st.id===sid));
+      notice.hidden=!pending.length;
+      notice.textContent=pending.length?'⚠️ رموز جديدة للطلاب: '+pending.map(sid=>studentById(sid)?.name||'الطالب').join('، ')+' — اختر كل طالب وانسخ رمزه قبل إغلاق النافذة.':'';
+    }
     if(!x||x.studentId!==id){el.hidden=true;el.innerHTML='';return;}
     el.hidden=false;el.innerHTML=`<div><small>رمز جديد — يظهر الآن فقط</small><strong dir="ltr">${esc(x.pin)}</strong><span>الهاتف: <b dir="ltr">${esc(x.phone)}</b></span></div><div class="v1010-secret-actions"><button class="btn btn-g btn-sm" onclick="v1010CopyGuardianCredentials()">📋 نسخ بيانات الدخول</button><button class="btn btn-wa btn-sm" onclick="v1010SendGuardianCredentials()">📲 إرسال عبر WhatsApp</button></div>`;
   }
@@ -508,11 +567,11 @@
   async function copyGuardianLogin(){try{await copyText(guardianLoginUrl());toastSafe('تم نسخ رابط صفحة دخول ولي الأمر','success');return true;}catch(_){toastSafe('تعذر نسخ رابط الدخول','error');return false;}}
   function openGuardianLogin(){return navigatePopup(openPlaceholder(),guardianLoginUrl());}
   async function copyGuardianCredentials(){
-    const id=pickedId();if(!lastGuardianSecret||lastGuardianSecret.studentId!==id){toastSafe('لا يوجد PIN ظاهر الآن. أنشئ PIN جديدًا أولًا.','info');return false;}
+    const id=pickedId();if(!currentGuardianSecret()){toastSafe('لا يوجد PIN ظاهر الآن. أنشئ PIN جديدًا أولًا.','info');return false;}
     try{await copyText(guardianCredentialsMessage());toastSafe('تم نسخ بيانات الدخول','success');return true;}catch(_){toastSafe('تعذر نسخ بيانات الدخول','error');return false;}
   }
   function sendGuardianCredentials(){
-    const id=pickedId();if(!lastGuardianSecret||lastGuardianSecret.studentId!==id){toastSafe('أنشئ PIN جديدًا أولًا ثم أرسل البيانات','info');return false;}
+    const id=pickedId();if(!currentGuardianSecret()){toastSafe('أنشئ PIN جديدًا أولًا ثم أرسل البيانات','info');return false;}
     const st=studentById(id),msg=guardianCredentialsMessage();if(typeof g.openWhatsApp==='function')return g.openWhatsApp(st,msg);
     if(!st?.phone)return false;const u=(g.navigator?.onLine===false?'whatsapp://send?phone=':'https://wa.me/')+st.phone+'?text='+encodeURIComponent(msg);if(g.navigator?.onLine===false){g.location.href=u;}else{g.open?.(u,'_blank','noopener');}return true;
   }
@@ -636,7 +695,7 @@
     guardianOpenedFromMore=!!fromMore;
     guardianReturnFocus=g.document.activeElement;
     guardianLastScroll=g.scrollY||0;
-    const id=fillPicker(selected);clearGuardianSecret();
+    const id=fillPicker(selected);clearGuardianSecret();renderGuardianSecret();
     modal?.classList.add('open');modal?.setAttribute('aria-hidden','false');
     g.document.body?.classList.add('ia26-guardian-open');
     const area=g.document.getElementById('ia26GuardianContent');if(area)area.scrollTop=0;
@@ -647,7 +706,7 @@
   function closePicker(){
     const modal=g.document.getElementById('v1010PortalModal');
     if(!modal?.classList.contains('open'))return;
-    clearGuardianSecret();modal.classList.remove('open');modal.setAttribute('aria-hidden','true');
+    pendingReactivationSecrets.clear();clearGuardianSecret();modal.classList.remove('open');modal.setAttribute('aria-hidden','true');
     g.document.body?.classList.remove('ia26-guardian-open');
     const returnMore=guardianOpenedFromMore;guardianOpenedFromMore=false;
     if(returnMore&&typeof g.openV9More==='function')g.openV9More();
@@ -656,7 +715,7 @@
   }
   function pickedId(){return g.document.getElementById('v1010PortalStudent')?.value||'';}
   function studentChanged(){
-    clearGuardianSecret();const id=pickedId();
+    clearGuardianSecret();const id=pickedId();renderGuardianSecret();
     const calls=[refreshPhoneAccessStatus(id),refreshPickerStatus(id)];
     if(g.document.getElementById('v1010EngagementSection')?.open)calls.push(refreshEngagement({silent:true}));
     Promise.all(calls);
@@ -722,6 +781,6 @@
     v1010OpenGuardianLogin:openGuardianLogin,v1010CopyGuardianLogin:copyGuardianLogin,v1010CopyGuardianCredentials:copyGuardianCredentials,v1010SendGuardianCredentials:sendGuardianCredentials,v1010SendGuardianLoginLink:sendGuardianLoginLink,v1010RefreshResetRequests:refreshResetRequests,v1010ResolveResetRequest:resolveResetRequest,v1010DismissResetRequest:dismissResetRequest,v1010RefreshEngagement:refreshEngagement,v1010EngagementDaysChanged:engagementDaysChanged
   });
   g.ImamApp=g.ImamApp||{};
-  g.ImamApp.GuardianPortal=Object.freeze({buildSnapshot,portalUrl,liveUrl,studentRef,loginUrl:guardianLoginUrl,publish:publishLive,status:liveStatus,revoke:revokePortal,open:openPortal,copyLink:copyPortalLink,copySnapshot:copySnapshotLink,accessStatus,enablePhoneAccess,resetPhonePin,unlinkPhoneAccess,revokeForStudentDeletion,revokeForStudentDeactivation:revokeForStudentDeletion,refreshPhoneSnapshot,refreshResetRequests,resolveResetRequest,dismissResetRequest,engagementSummary,refreshEngagement});
+  g.ImamApp.GuardianPortal=Object.freeze({buildSnapshot,portalUrl,liveUrl,studentRef,loginUrl:guardianLoginUrl,publish:publishLive,status:liveStatus,revoke:revokePortal,open:openPortal,copyLink:copyPortalLink,copySnapshot:copySnapshotLink,accessStatus,enablePhoneAccess,resetPhonePin,unlinkPhoneAccess,revokeForStudentDeletion,revokeForStudentDeactivation:revokeForStudentDeletion,restoreForStudentReactivation,showReactivationCredentials,forgetReactivationSecret,refreshPhoneSnapshot,refreshResetRequests,resolveResetRequest,dismissResetRequest,engagementSummary,refreshEngagement});
   if(g.document?.readyState==='loading')g.document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0),{once:true});else setTimeout(init,0);
 })(globalThis);
