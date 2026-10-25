@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <!-- v11.5 stage1 compatibility markers: student-finance.css?v=11.5.0-s1 | js/features/student-finance.js?v=11.5.0-s1 -->
+<!-- Historical original V8 asset: v8.js?v=11.2.0-s2 | v8.js?v=11.2.0-s3 -->
 <!-- v11.2 regression compatibility refs: teacher-error-marking.css?v=11.2.0-s2 | js/features/teacher-error-marking.js?v=11.2.0-s2 | guardian-portal-share.js?v=11.2.0-s2 | v8.js?v=11.2.0-s2 -->
 
 <meta charset="UTF-8">
@@ -24,6 +25,7 @@
 <link rel="stylesheet" href="css/platform/legacy-features.css?v=11.12.1-beta.27">
 <link rel="stylesheet" href="quran-engine.css?v=11.0.0">
 <link rel="stylesheet" href="teacher-error-marking.css?v=11.8.0">
+<link rel="stylesheet" href="error-followup.css?v=11.12.1-beta.27-error-followup-candidate">
 <link rel="stylesheet" href="correction-document.css?v=11.7.4.5">
 <link rel="stylesheet" href="smart-revision.css?v=11.3.0-s1">
 <link rel="stylesheet" href="goal-planning.css?v=11.4.2-s2">
@@ -341,9 +343,12 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
       <div id="prevContent"><div class="txt-mut" style="text-align:center;padding:10px">اختر الطالب لعرض تكليف الحصة السابقة</div></div>
     </div>
 
+    <section class="card ia27-followup-card" id="ia27ErrorFollowup" data-v9-step="assessment" aria-live="polite" hidden></section>
+
     <div class="card session-errors-card" id="sessionErrorsCard">
       <div class="fb mb8"><div class="ch" style="margin:0">🧭 سجل أخطاء التسميع</div><span class="txt-mut" id="errorCountLabel">0 خطأ</span></div>
       <div class="fld ia25-error-context"><label for="ia25ErrorContext">سياق الخطأ الذي يسجله المحفظ</label><select id="ia25ErrorContext" aria-label="سياق الخطأ"><option value="التسميع">التسميع</option><option value="الحفظ الجديد">الحفظ الجديد</option><option value="المراجعة القريبة">المراجعة القريبة</option><option value="المراجعة البعيدة">المراجعة البعيدة</option><option value="مراجعة السور">مراجعة السور</option><option value="مراجعة الأجزاء">مراجعة الأجزاء</option><option value="مراجعة الأرباع">مراجعة الأرباع</option><option value="مراجعة الأحزاب">مراجعة الأحزاب</option><option value="التصحيح على النص الجديد">التصحيح على النص الجديد</option></select><small>اختر موضع الخطأ قبل تسجيله؛ يُحفظ مع الخطأ ويظهر في التقرير ورسالة ولي الأمر.</small></div>
+      <div class="fld ia27-error-position"><label for="ia27ErrorPosition">موضع الخطأ أو الكلمة (اختياري للأخطاء السريعة)</label><input type="text" id="ia27ErrorPosition" maxlength="160" placeholder="مثال: سورة الملك، الآية ٣، كلمة تبارك"></div>
       <div class="error-chip-grid" id="errorChipGrid">
         <button type="button" onclick="addRecitationError('حفظ')">🧠 حفظ</button>
         <button type="button" onclick="addRecitationError('تردد')">⏸️ تردد</button>
@@ -1069,7 +1074,8 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/academy-workspaces.js?v=11.7.4-foundation" defer></script>
 <script src="sync-core.js?v=11.0.0" defer></script>
 <script src="app.js?v=11.12.1-beta.27" defer></script>
-<script src="v8.js?v=11.2.0-s3" defer></script>
+<script src="v8.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
+<script src="js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
 <script src="v9.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4" defer></script>
 <script src="js/features/mushaf-offline.js?v=11.7.4.2" defer></script>
 <script src="js/features/quran-engine.js?v=11.0.0" defer></script>

@@ -54,6 +54,15 @@ function v8NormalizeErrorRecord(x,fallbackAt=''){
   const out={type,at:v8SafeText(x.at||fallbackAt||v8Now(),40)};
   // Keep manual-chip context through migration, draft saving, exports and restores.
   if(!isQuranWord&&V8_ERROR_CONTEXTS.includes(x.section))out.section=x.section;
+  // Optional position and same-session correction are retained for manual errors too.
+  if(!isQuranWord){
+    if(/^[A-Za-z0-9._:-]{1,160}$/.test(String(x.id||'')))out.id=String(x.id);
+    if(x.note)out.note=v8SafeText(x.note,160);
+    if(Object.prototype.hasOwnProperty.call(x,'resolved')){
+      out.resolved=!!x.resolved;
+      if(out.resolved)out.resolvedAt=v8SafeText(x.resolvedAt||x.at||fallbackAt||v8Now(),40);
+    }
+  }
   if(isQuranWord){
     out.id=/^[A-Za-z0-9._:-]{1,160}$/.test(String(x.id||''))?String(x.id):`qe-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
     out.source='quran-word';
@@ -170,20 +179,30 @@ function planBadge(st){const p=v8Plan(st);return `<span class="plan-chip">${p.ic
 // ──────────────────────────────────────
 // Session wrappers, journey and draft extensions
 // ──────────────────────────────────────
-function initSession(){__IMAM_BASE__.initSession();renderSessionJourney();renderSessionErrors();renderVoiceNoteUI();}
+function ia27RenderErrorFollowups(){
+  globalThis.ImamErrorFollowup?.paint({studentId:curStId,day:document.getElementById('sesDate')?.value||localDateKey(),sessionId:editingSessionId||'',sessions});
+}
+function initSession(){__IMAM_BASE__.initSession();renderSessionJourney();renderSessionErrors();renderVoiceNoteUI();ia27RenderErrorFollowups();}
 function onSesSt(){
   V8.sessionErrors=[];V8.voiceNoteId='';V8.pendingVoiceBlob=null;
+  globalThis.ImamErrorFollowup?.reset();
+  const errorPosition=document.getElementById('ia27ErrorPosition');if(errorPosition)errorPosition.value='';
   __IMAM_BASE__.onSesSt();
   if(curStId){applyStudentPlanToSession(false);renderSessionJourney();renderReviewSuggestions();renderSessionErrors();renderVoiceNoteUI();}
   else{document.getElementById('sessionJourneyCard')?.style.setProperty('display','none');}
+  ia27RenderErrorFollowups();
 }
 function applySessionToEditor(ses){
-  __IMAM_BASE__.applySessionToEditor(ses);V8.sessionErrors=(ses?.recitationErrors||[]).map(x=>({...x}));V8.voiceNoteId=ses?.voiceNoteId||'';V8.pendingVoiceBlob=null;renderSessionErrors();renderVoiceNoteUI();renderSessionJourney();
+  __IMAM_BASE__.applySessionToEditor(ses);V8.sessionErrors=(ses?.recitationErrors||[]).map(x=>({...x}));V8.voiceNoteId=ses?.voiceNoteId||'';V8.pendingVoiceBlob=null;
+  globalThis.ImamErrorFollowup?.load(ses?.errorFollowups);
+  renderSessionErrors();renderVoiceNoteUI();renderSessionJourney();ia27RenderErrorFollowups();
 }
-function captureDraft(){const d=__IMAM_BASE__.captureDraft();d.recitationErrors=V8.sessionErrors.map(x=>({...x}));d.voiceNoteId=V8.voiceNoteId||'';return d;}
-function applyDraft(d){__IMAM_BASE__.applyDraft(d);V8.sessionErrors=Array.isArray(d?.recitationErrors)?d.recitationErrors.map(x=>({...x})):[];V8.voiceNoteId=d?.voiceNoteId||V8.voiceNoteId||'';renderSessionErrors();renderVoiceNoteUI();renderSessionJourney();}
-function buildSesData(){const d=__IMAM_BASE__.buildSesData();d.recitationErrors=V8.sessionErrors.map(x=>({...x}));if(V8.voiceNoteId)d.voiceNoteId=V8.voiceNoteId;return d;}
-function saveSession(opts={}){const ses=__IMAM_BASE__.saveSession(opts);if(ses){renderSessionJourney();renderReviewSuggestions();scheduleAutoBackup();if(settings.sync?.auto)scheduleCloudPush();}return ses;}
+function captureDraft(){const d=__IMAM_BASE__.captureDraft();d.recitationErrors=V8.sessionErrors.map(x=>({...x}));d.voiceNoteId=V8.voiceNoteId||'';d.errorFollowups=globalThis.ImamErrorFollowup?.capture()||[];return d;}
+function applyDraft(d){__IMAM_BASE__.applyDraft(d);V8.sessionErrors=Array.isArray(d?.recitationErrors)?d.recitationErrors.map(x=>({...x})):[];V8.voiceNoteId=d?.voiceNoteId||V8.voiceNoteId||'';
+  globalThis.ImamErrorFollowup?.load(Array.isArray(d?.errorFollowups)?d.errorFollowups:globalThis.ImamErrorFollowup?.capture());
+  renderSessionErrors();renderVoiceNoteUI();renderSessionJourney();ia27RenderErrorFollowups();}
+function buildSesData(){const d=__IMAM_BASE__.buildSesData();d.recitationErrors=V8.sessionErrors.map(x=>({...x}));if(V8.voiceNoteId)d.voiceNoteId=V8.voiceNoteId;d.errorFollowups=globalThis.ImamErrorFollowup?.capture()||[];return d;}
+function saveSession(opts={}){const ses=__IMAM_BASE__.saveSession(opts);if(ses){renderSessionJourney();renderReviewSuggestions();ia27RenderErrorFollowups();scheduleAutoBackup();if(settings.sync?.auto)scheduleCloudPush();}return ses;}
 
 function getStopPoints(studentId){
   const ordered=v8SortedSessions(studentId).filter(x=>x.status==='حضر');
@@ -278,12 +297,23 @@ function applyReviewSuggestion(i){const x=V8.currentDue?.[i];if(!x)return;const 
 // ──────────────────────────────────────
 // Error logging
 // ──────────────────────────────────────
-function addRecitationError(type){if(!V8_ERROR_TYPES.includes(type))return;const section=document.getElementById('ia25ErrorContext')?.value;V8.sessionErrors.push({type,at:v8Now(),...(V8_ERROR_CONTEXTS.includes(section)?{section}:{})});renderSessionErrors();scheduleDraftSave();}
+function addRecitationError(type){
+  if(!V8_ERROR_TYPES.includes(type))return;
+  const section=document.getElementById('ia25ErrorContext')?.value;
+  const note=v8SafeText(document.getElementById('ia27ErrorPosition')?.value,160).trim();
+  V8.sessionErrors.push({id:makeId('err'),type,at:v8Now(),...(V8_ERROR_CONTEXTS.includes(section)?{section}:{}),...(note?{note}:{})});
+  renderSessionErrors();scheduleDraftSave();
+}
+function toggleRecitationErrorCorrected(index){
+  const error=V8.sessionErrors[index];if(!error||error.source==='quran-word')return;
+  error.resolved=!error.resolved;error.resolvedAt=error.resolved?v8Now():'';
+  renderSessionErrors();scheduleDraftSave();
+}
 function removeRecitationError(i){V8.sessionErrors.splice(i,1);renderSessionErrors();scheduleDraftSave();}
 function renderSessionErrors(){
   const n=V8.sessionErrors.length,l=document.getElementById('errorCountLabel'),el=document.getElementById('sessionErrorList');if(l)l.textContent=n===1?'خطأ واحد':`${n} أخطاء`;if(!el)return;
   const modeLabel=m=>m==='new_read'?'الحفظ الجديد':m==='talaqqin'?'التلقين':m==='review'?'المراجعة':'التسميع';
-  el.innerHTML=V8.sessionErrors.map((x,i)=>{if(x?.source==='quran-word'){const where=[x.surah?`سورة ${v8Esc(x.surah)}`:'',x.ayah?`آية ${v8Esc(x.ayah)}`:'',x.word?`«${v8Esc(x.word)}»`:'',x.targetLevel==='char'&&x.charText?`الحرف «${v8Esc(x.charText)}»`:''].filter(Boolean).join(' · ');return `<span class="error-log-item qmark-rich ${x.resolved?'resolved':''}"><b>${v8Esc(x.type)}</b><small>${v8Esc(modeLabel(x.mode))}${where?' · '+where:''}</small>${x.resolved?'<span class="qmark-status">تم التصحيح</span>':''}<button type="button" onclick="removeRecitationError(${i})">✕</button></span>`;}return `<span class="error-log-item">${v8Esc(x.type)}${x.section?` <small>(${v8Esc(x.section)})</small>`:''} <button type="button" onclick="removeRecitationError(${i})">✕</button></span>`;}).join('')||'<span class="txt-mut" style="font-size:10px">اضغط على نوع الخطأ أو افتح النص القرآني وفعّل وضع التصحيح التفاعلي.</span>';
+  el.innerHTML=V8.sessionErrors.map((x,i)=>{if(x?.source==='quran-word'){const where=[x.surah?`سورة ${v8Esc(x.surah)}`:'',x.ayah?`آية ${v8Esc(x.ayah)}`:'',x.word?`«${v8Esc(x.word)}»`:'',x.targetLevel==='char'&&x.charText?`الحرف «${v8Esc(x.charText)}»`:''].filter(Boolean).join(' · ');return `<span class="error-log-item qmark-rich ${x.resolved?'resolved':''}"><b>${v8Esc(x.type)}</b><small>${v8Esc(modeLabel(x.mode))}${where?' · '+where:''}</small>${x.resolved?'<span class="qmark-status">تم التصحيح</span>':''}<button type="button" onclick="removeRecitationError(${i})">✕</button></span>`;}return `<span class="error-log-item ia27-quick-error"><b>${v8Esc(x.type)}</b>${x.section?` <small>(${v8Esc(x.section)})</small>`:''}${x.note?` <small>· ${v8Esc(x.note)}</small>`:''}<button type="button" class="ia27-quick-correct" aria-pressed="${!!x.resolved}" onclick="toggleRecitationErrorCorrected(${i})">${x.resolved?'✓ صُحّح في الحصة':'✓ تم التصحيح الآن'}</button><button type="button" aria-label="حذف الخطأ" onclick="removeRecitationError(${i})">✕</button></span>`;}).join('')||'<span class="txt-mut" style="font-size:10px">اضغط على نوع الخطأ أو افتح النص القرآني وفعّل وضع التصحيح التفاعلي.</span>';
   try{globalThis.ImamTeacherErrorMarking?.paintAllWords?.();}catch(_){}
 }
 function studentErrorSummary(studentId){const m={};sessions.filter(s=>s.studentId===studentId).forEach(s=>(s.recitationErrors||[]).forEach(e=>m[e.type]=(m[e.type]||0)+1));return Object.entries(m).sort((a,b)=>b[1]-a[1]);}
@@ -562,7 +592,13 @@ async function autoCloudSync(){if(!settings.sync?.auto||!syncConfigValid())retur
 // ──────────────────────────────────────
 function sanitizeBackupData(d){
   const safe=__IMAM_BASE__.sanitizeBackupData(d);safe.students.forEach((st,i)=>{const raw=d.students?.[i]||{};st.plan=V8_PLANS[raw.plan]?raw.plan:'balanced';st.nextMode=['same','next'].includes(raw.nextMode)?raw.nextMode:'same';});
-  safe.sessions.forEach((se,i)=>{const raw=(d.sessions||[])[i]||{};se.recitationErrors=(raw.recitationErrors||[]).slice(0,1000).map(x=>v8NormalizeErrorRecord(x,se.updatedAt||se.date||v8Now())).filter(Boolean);if(/^[A-Za-z0-9._:-]{1,160}$/.test(String(raw.voiceNoteId||'')))se.voiceNoteId=raw.voiceNoteId;if(Array.isArray(raw.reviewAssignments))se.reviewAssignments=JSON.parse(JSON.stringify(raw.reviewAssignments));if(Array.isArray(raw.reviewResults))se.reviewResults=JSON.parse(JSON.stringify(raw.reviewResults));if(raw.assessmentScores&&typeof raw.assessmentScores==='object'){const scores={};for(const k of ['new','rec','far','juz','surahReview']){if(raw.assessmentScores[k]===null||raw.assessmentScores[k]===undefined||raw.assessmentScores[k]==='')continue;const n=Math.round(Number(raw.assessmentScores[k]));if(Number.isFinite(n))scores[k]=Math.max(0,Math.min(100,n));}if(Object.keys(scores).length)se.assessmentScores=scores;}});return safe;
+  // Base sanitizer discards orphan sessions. Match its filtered ordering rather
+  // than indexing unfiltered source data, or a different student's follow-ups
+  // could be assigned to the next accepted session during backup import.
+  const inputStudentIds=new Set((d.students||[]).map(st=>String(st?.id??'')));
+  const acceptedSessions=(d.sessions||[]).filter(se=>inputStudentIds.has(String(se?.studentId??'')));
+  safe.sessions.forEach((se,i)=>{const raw=acceptedSessions[i]||{};se.recitationErrors=(raw.recitationErrors||[]).slice(0,1000).map(x=>v8NormalizeErrorRecord(x,se.updatedAt||se.date||v8Now())).filter(Boolean);if(/^[A-Za-z0-9._:-]{1,160}$/.test(String(raw.voiceNoteId||'')))se.voiceNoteId=raw.voiceNoteId;se.errorFollowups=globalThis.ImamErrorFollowup?.normalizeDecisions(raw.errorFollowups)||[];
+    if(Array.isArray(raw.reviewAssignments))se.reviewAssignments=JSON.parse(JSON.stringify(raw.reviewAssignments));if(Array.isArray(raw.reviewResults))se.reviewResults=JSON.parse(JSON.stringify(raw.reviewResults));if(raw.assessmentScores&&typeof raw.assessmentScores==='object'){const scores={};for(const k of ['new','rec','far','juz','surahReview']){if(raw.assessmentScores[k]===null||raw.assessmentScores[k]===undefined||raw.assessmentScores[k]==='')continue;const n=Math.round(Number(raw.assessmentScores[k]));if(Number.isFinite(n))scores[k]=Math.max(0,Math.min(100,n));}if(Object.keys(scores).length)se.assessmentScores=scores;}});return safe;
 }
 function importData(e){
   const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!d||!Array.isArray(d.students)||!Array.isArray(d.sessions||[]))throw new Error('بنية الملف غير صحيحة');const safe=sanitizeBackupData(d);if(!confirm(`سيتم استبدال البيانات الحالية واستيراد ${safe.students.length} طالب و${safe.sessions.length} حصة.\nيفضل أخذ نسخة احتياطية أولاً.\n\nهل تريد الاستمرار؟`))return;const localSync=settings.sync,localSecurity=settings.security;students=safe.students;sessions=safe.sessions;tasks=safe.tasks||[];const cfg=d.settings&&typeof d.settings==='object'?d.settings:{};settings={...settings,...cfg,sync:localSync,security:localSecurity};migrateV8Data();if(typeof globalThis.v10Migrate==='function')globalThis.v10Migrate();__IMAM_BASE__.save();renderHome();renderV8Settings();v8Toast('تم استيراد البيانات وترقيتها إلى v10.1','success');goPage('home');}catch(err){v8Toast(`ملف غير صالح: ${err.message||'تعذر القراءة'}`,'error');}finally{e.target.value='';}};reader.readAsText(file);

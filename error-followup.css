@@ -1,0 +1,21 @@
+/* Scoped teaching follow-up. Does not change the stable session layout. */
+#ia27ErrorFollowup[hidden]{display:none!important}
+#pg-session .ia27-followup-card{margin-block:10px;border:1px solid color-mix(in srgb,var(--gold,#b88c4a) 30%,transparent);overflow:hidden;min-width:0}
+.ia27-followup-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ia27-followup-heading b{font-size:14px;display:block}
+.ia27-followup-heading small,.ia27-followup-info small{display:block;color:var(--muted,#6f7580);font-size:11px;line-height:1.6}
+.ia27-followup-count{font-weight:700;font-size:11px;border-radius:100px;padding:5px 9px;background:rgba(178,125,38,.12);white-space:nowrap}
+.ia27-followup-entries{display:grid;gap:9px;margin-top:10px}
+.ia27-followup-row{border:1px solid rgba(127,127,127,.2);background:rgba(127,127,127,.035);border-radius:12px;padding:11px;min-width:0}
+.ia27-followup-info strong{font-size:13px;display:block;margin-bottom:2px;overflow-wrap:anywhere}
+.ia27-followup-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.ia27-followup-actions button{appearance:none;flex:1 1 auto;min-width:85px;min-height:38px;padding:7px 6px;background:transparent;border:1px solid rgba(127,127,127,.32);border-radius:8px;color:inherit;font:inherit;font-size:11px;cursor:pointer}
+.ia27-followup-actions button.selected{background:rgba(25,120,80,.12);border-color:rgba(25,120,80,.6);font-weight:700}
+.ia27-followup-actions button:focus-visible{outline:2px solid var(--gold,#b88c4a);outline-offset:2px}
+.ia27-followup-row.ia27-followup-done{opacity:.78}
+.ia27-followup-save-hint,.ia27-followup-empty{font-size:11px;color:var(--muted,#6f7580);line-height:1.7;margin:10px 0 0}
+.ia27-quick-error{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.ia27-quick-correct{border:1px solid rgba(25,120,80,.35)!important;border-radius:7px!important;padding:5px 8px!important;white-space:normal}
+.ia27-quick-correct[aria-pressed="true"]{background:rgba(25,120,80,.12)!important}
+.ia27-error-position input{max-width:100%;width:100%;box-sizing:border-box}
+@media(max-width:380px){.ia27-followup-actions button{min-width:75px;flex-basis:calc(50% - 4px)}}

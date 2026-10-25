@@ -1,3 +1,4 @@
+/* Historical prior V8 offline ref: './v8.js?v=11.2.0-s3' */
 /* Compatibility v11.4.0: quran-pwa-v11.4.0-goal-planning1-complete */
 /* v11.3 compatibility marker: quran-pwa-v11.3.0-smart-revision1 */
 /* Stage 3 compatibility: quran-pwa-v11.2.0-error3 | uiStage:'11.2-error-marking-3' */
@@ -10,7 +11,7 @@
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Candidate hotfix cache is separate from beta.27, so failed installation cannot alter its offline shell.
-const LIVE_CACHE_NAME = CACHE_NAME + '-guardian-reactivation-hotfix4';
+const LIVE_CACHE_NAME = CACHE_NAME + '-error-followup-candidate1';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -28,6 +29,9 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
   './js/features/assignment-audio-share.js?v=11.12.1-beta.27',
   './v9.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
+  './v8.js?v=11.12.1-beta.27-error-followup-candidate',
+  './js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate',
+  './error-followup.css?v=11.12.1-beta.27-error-followup-candidate',
   './app.js?v=11.12.1-beta.27',
   './js/core/runtime.js?v=11.12.1-beta.27',
   './js/core/boot-health.js?v=11.12.1-beta.27',
@@ -80,7 +84,9 @@ const APP_SHELL = [
 
 
   './app.js?v=11.12.1-beta.27',
-  './v8.js?v=11.2.0-s3',
+  './v8.js?v=11.12.1-beta.27-error-followup-candidate',
+  './js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate',
+  './error-followup.css?v=11.12.1-beta.27-error-followup-candidate',
   './v9.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
   './js/features/mushaf-offline.js?v=11.7.4.2',
 
