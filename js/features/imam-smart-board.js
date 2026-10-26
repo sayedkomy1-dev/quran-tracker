@@ -70,10 +70,38 @@ function dropPrivateBoardOnAccountChange(){
 function accountStillValid(){return active&&!!sessionUser&&currentUser()===sessionUser&&canTeach();}
 
 function chooseStudent(id){if(id===b.studentId)return;if(b.dirty&&!flush())return; const st=students().find(s=>String(s.id)===String(id));if(!st&&id)return notify('هذا الطالب غير موجود في كشف الحساب','error');// A display opened for a previous student must never receive the new student's content.
-closeStudentDisplay();shutdownAudio();quranRequest++;resetView();b.preview=false;b.studentId=id;b.sessionId=newId();b.drawings=[];b.notes=[];b.lesson=[];b.activePrepId='';b.stepIndex=0;b.rangeParts=[];b.partIndex=0;b.publicExplanation='';b.privateNote='';b.verses=[];b.verse=b.from;b.teacherWord='';b.dirty=!!id;const priv=$('ib-private'),pub=$('ib-public');if(priv)priv.value='';if(pub)pub.value='';updateStudents();updateAssignments();renderScience();updateSummary();updateTimeline();if($('ib-verses'))$('ib-verses').textContent='اختر نطاق الآيات للطالب الحالي.';drawCanvas();}
+closeStudentDisplay();shutdownAudio();quranRequest++;resetView();b.preview=false;b.studentId=id;b.sessionId=newId();b.drawings=[];b.notes=[];b.lesson=[];b.activePrepId='';b.stepIndex=0;b.rangeParts=[];b.partIndex=0;b.publicExplanation='';b.privateNote='';b.verses=[];b.verse=b.from;b.teacherWord='';b.dirty=!!id;const priv=$('ib-private'),pub=$('ib-public');if(priv)priv.value='';if(pub)pub.value='';updateStudents();updateAssignments();renderScience();updateSummary();updateTimeline();if($('ib-verses'))$('ib-verses').textContent='اختر نطاق الآيات للطالب الحالي.';drawCanvas();if(id)loadStudentAssignmentOnBoard();}
 
 function recentStudentSession(id){return [...(state().sessions||[])].filter(s=>String(s.studentId)===String(id)&&s.status==='حضر').sort((a,b)=>String(b.date||b.updatedAt||'').localeCompare(String(a.date||a.updatedAt||'')))[0]||null;}
 function activeAssignment(type){const ses=recentStudentSession(b.studentId);if(!ses)return null;const key=type==='الحفظ الجديد'?'new':type==='المراجعة القريبة'?'rec':type==='المراجعة البعيدة'?'far':null;if(!key)return null;const row=ses[key];if(!row?.surah)return null;const list=typeof S!=='undefined'?S:[];const ix=list.findIndex(s=>s.n===String(row.surah).replace(/^سورة /,''));if(ix<0)return null;let from=row.full?1:Number(row.from),to=row.full?list[ix].a:Number(row.to);if(!(from>=1&&to>=from&&to<=list[ix].a))return null;return{chapter:ix+1,from,to};}
+// A teacher opening the board for a student sees that student's LAST SAVED
+// assignment immediately. No write to the official session or guardian portal.
+function loadStudentAssignmentOnBoard(){
+ if(!b.studentId||!accountStillValid())return false;
+ const list=typeof S!=='undefined'?S:[];
+ const choices=['الحفظ الجديد','المراجعة القريبة','المراجعة البعيدة'];
+ for(const label of choices){
+  const range=activeAssignment(label);
+  if(!range||!list[range.chapter-1])continue;
+  const limitedTo=Math.min(range.to,range.from+100); // Board reader's safe window.
+  if(!validRange(range.chapter,range.from,limitedTo))continue;
+  b.activity=label;b.chapter=range.chapter;b.from=range.from;b.to=limitedTo;b.verse=range.from;
+  const chapter=$('ib-chapter'),from=$('ib-from'),to=$('ib-to');
+  if(chapter)chapter.value=String(range.chapter);if(from)from.value=String(range.from);if(to)to.value=String(limitedTo);
+  updateActivity();loadVerses();
+  if(limitedTo<range.to)notify('التكليف أطول من ١٠١ آية؛ تعرض السبورة المقطع الأول ويمكن متابعة بقية الآيات لاحقًا','info');
+  return true;
+ }
+ const reviews=['مراجعة السور','مراجعة الأجزاء'];
+ for(const label of reviews){const r=reviewRanges(label)?.[0];if(!r||!validRange(r.chapter,r.from,r.to))continue;
+  b.activity=label;b.chapter=r.chapter;b.from=r.from;b.to=r.to;
+  if($('ib-chapter'))$('ib-chapter').value=String(r.chapter);
+  if($('ib-from'))$('ib-from').value=String(r.from);
+  if($('ib-to'))$('ib-to').value=String(r.to);
+  updateActivity();loadVerses();return true;
+ }
+ return false;
+}
 function reviewRanges(type){
  const ses=recentStudentSession(b.studentId), list=typeof S!=='undefined'?S:[];
  if(!ses)return [];
@@ -322,7 +350,7 @@ function input(e){if(e.target.id==='ib-private'){b.privateNote=e.target.value;di
 function keyboard(e){if(e.target.matches('input,textarea,select,[contenteditable]'))return;if(e.key==='Escape'){reading();return;}if(e.key==='ArrowLeft'){b.verse=Math.max(b.from,b.verse-1);b.teacherWord='';renderScience();broadcast();}if(e.key==='ArrowRight'){b.verse=Math.min(b.to,b.verse+1);b.teacherWord='';renderScience();broadcast();}}
 g.addEventListener?.('pagehide',()=>{if(active&&b.dirty&&sessionUser===currentUser())flush();closeStudentDisplay();shutdownAudio();});
 document.addEventListener?.('visibilitychange',()=>{if(active&&document.visibilityState==='hidden'&&b.dirty&&sessionUser===currentUser())flush();});
-function open(){try{assertUser();}catch(err){return notify(err.message,'error');}if(active){$('imam-board-root')?.scrollIntoView();return;}active=true;sessionUser=currentUser();b.sessionId=newId();b.groupFilter='';renderShell();clearInterval(accountWatch);accountWatch=setInterval(dropPrivateBoardOnAccountChange,1000);}
+function open(){try{assertUser();}catch(err){return notify(err.message,'error');}if(active){$('imam-board-root')?.scrollIntoView();return;}active=true;sessionUser=currentUser();b.sessionId=newId();b.groupFilter='';renderShell();const current=$('pg-session')?.classList.contains('on')?String($('sesSt')?.value||''):'';if(current&&visibleStudents().some(st=>String(st.id)===current))chooseStudent(current);clearInterval(accountWatch);accountWatch=setInterval(dropPrivateBoardOnAccountChange,1000);}
 function openForCurrentSession(){
  ia20ReturnState={scrollY:Math.max(0,g.scrollY||0),studentId:String($('sesSt')?.value||'')};
  const id=String($('sesSt')?.value||'');

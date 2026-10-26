@@ -8,7 +8,7 @@ const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const html=read('index.html'),js=read('js/features/revision-quran-text.js'),app=read('app.js'),v10=read('v10.js'),sw=read('sw.js');
 assert(html.includes('revision-quran-text.js?v=11.8.1'));
 assert(sw.includes("'./js/features/revision-quran-text.js?v=11.8.1'"));
-for(const stage of ['rec','far'])assert(html.includes(`v1181OpenCurrentSection('${stage}')`));
+for(const stage of ['rec','far'])assert(html.includes(`ia27OpenAssignmentText('${stage}')`));
 assert(v10.includes('v1181OpenQuarterText')&&v10.includes('v1181OpenJuzChipText'));
 assert(app.includes('v1181OpenSurahReviewChip'));
 const fakeS=Array.from({length:114},(_,i)=>({n:`س${i+1}`,a:300}));

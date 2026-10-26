@@ -78,5 +78,5 @@ for(const ref of ['js/features/error-followup-engine.js?v=11.12.1-beta.27-error-
 for(const token of ['ia27ErrorFollowup','ia27ErrorPosition'])assert(page.includes(`id="${token}"`));
 for(const token of ['d.errorFollowups=','se.errorFollowups=','toggleRecitationErrorCorrected','ia27RenderErrorFollowups()'])assert(v8.includes(token),token);
 assert(!page.includes('<script src="v8.js?v=11.2.0-s3" defer></script>'),'stale V8 cache ref');
-assert(worker.includes('error-followup-candidate1'),'candidate must have isolated service-worker cache');
+assert(worker.includes('quran-picker-candidate1'),'candidate must have isolated service-worker cache');
 console.log('PASS beta27: error follow-up queue, corrected-in-lesson, manual/Quran, isolation, recurrence, mastery, decisions, import and offline assets');

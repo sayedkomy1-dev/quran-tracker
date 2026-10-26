@@ -27,6 +27,6 @@ assert(sound.includes("pref(LESSON,'off')!=='on'")&&sound.includes("pref(KEY,'of
 assert(!v9.includes('initImamClickFeedback()'),'legacy click beeps must not overlap new engine');
 assert(!css.includes('.ia20-save-jump-button'),'obsolete fixed shortcut styles eliminated');
 for(const rel of ['index.html','sw.js'])assert(read(rel).includes('11.12.1-beta.27'),rel+' not updated');
-assert(sw.includes("'./js/features/imam-smart-board.js?v=11.12.1-beta.27'"),'board shell offline pinning');
+assert(sw.includes("'./js/features/imam-smart-board.js?v=11.12.1-beta.27-quran-picker1'"),'board shell offline pinning');
 assert(sw.includes("'./js/features/platform-workflow.js?v=11.12.1-beta.27'"),'lesson navigation shell offline pinning');
 console.log('beta20-lesson-board-ux-check: PASS — real save actions, notes audio, collapsed extras, board tools, session context, touch sound, cache');

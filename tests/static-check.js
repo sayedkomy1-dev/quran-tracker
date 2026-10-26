@@ -113,10 +113,11 @@ assert(fs.statSync(file('branding/academy-badge-source.png')).size>1000000,'bran
 
 // All inline handlers must resolve to an application function or browser builtin.
 const revisionText=fs.readFileSync(file('js/features/revision-quran-text.js'),'utf8');
-const js=revisionText+'\n'+runtime+'\n'+v10Data+'\n'+quranStructure+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+mushafOffline+'\n'+quranEngine+'\n'+v10+'\n'+guardianCommunication+'\n'+studentProgress+'\n'+teacherFollowup+'\n'+circleAnalytics+'\n'+guardianPortalShare;
+const js=fs.readFileSync(file('js/features/teacher-quran-range-picker.js'),'utf8')+'\n'+revisionText+'\n'+runtime+'\n'+v10Data+'\n'+quranStructure+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+mushafOffline+'\n'+quranEngine+'\n'+v10+'\n'+guardianCommunication+'\n'+studentProgress+'\n'+teacherFollowup+'\n'+circleAnalytics+'\n'+guardianPortalShare;
 const defs=new Set([...js.matchAll(/\b(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]));
 for(const m of v10.matchAll(/\b([A-Za-z_$][\w$]*)\s*:\s*v10[A-Za-z_$][\w$]*/g))defs.add(m[1]);
 for(const m of revisionText.matchAll(/g\.(v1181\w+)\s*=\s*\w+/g))defs.add(m[1]);
+for(const m of fs.readFileSync(file('js/features/teacher-quran-range-picker.js'),'utf8').matchAll(/g\.(ia27\w+)\s*=\s*\w+/g))defs.add(m[1]);
 const builtins=new Set(['if','for','while','switch','confirm','prompt','alert','setTimeout','setInterval','clearTimeout','clearInterval','parseInt','parseFloat','Number','String','Boolean','Date','Math','JSON','encodeURIComponent','decodeURIComponent']);
 for(const hm of html.matchAll(/\bon(?:click|change|input|submit|contextmenu|keydown|keyup|blur|focus)=["']([^"']+)["']/gi)){
   for(const fm of hm[1].matchAll(/(?<![.\w])([A-Za-z_$][\w$]*)\s*\(/g)){

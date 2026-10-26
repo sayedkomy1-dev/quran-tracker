@@ -1,0 +1,16 @@
+/* Teacher Quran range selection. Scoped to the existing reader; no lesson reflow. */
+#ia27RangePicker[hidden]{display:none!important}
+#ia27RangePicker{border:1px solid color-mix(in srgb,var(--gold,#c7a23b) 45%,transparent);background:var(--v9-surface,#fff);color:var(--v9-text,#173f2e);border-radius:12px;padding:10px;margin-block:8px;display:grid;gap:8px;flex:0 0 auto}
+#ia27RangePicker>b{font-size:13px}
+#ia27PickerHint{margin:0;font-size:12px;line-height:1.6;color:var(--v9-muted,#596e61)}
+.ia27-picker-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ia27-picker-fields label{display:grid;gap:3px;font-size:11px;font-weight:700}
+.ia27-picker-fields input{font-size:16px;min-width:0;max-width:100%;height:38px;border:1px solid var(--v9-border,#cad8ce);background:var(--v9-surface,#fff);color:inherit;border-radius:8px;text-align:center}
+.ia27-picker-actions{display:flex;gap:6px;flex-wrap:wrap}
+.ia27-picker-actions button{flex:1 1 auto;min-height:38px;border-radius:8px;padding:5px 8px;border:1px solid var(--v9-border,#cad8ce);background:var(--v9-surface-2,#f3f6f2);color:var(--v9-text,#173f2e);font-size:11px;font-weight:700}
+.ia27-picker-actions button[aria-pressed=true],.ia27-picker-actions .ia27-picker-approve{background:#126242;color:#fff}
+.ia27-picker-actions button:disabled{opacity:.5;cursor:not-allowed}
+#quranVerseContent .quran-ayah-num{cursor:pointer;touch-action:manipulation}
+#quranVerseContent .quran-ayah.ia27-picked{background:rgba(17,120,75,.13);border-radius:4px}
+#quranVerseContent .quran-ayah.ia27-picked-start .quran-ayah-num,#quranVerseContent .quran-ayah.ia27-picked-end .quran-ayah-num{background:#146f4a;color:white;border-color:#146f4a}
+@media(max-width:420px){.ia27-picker-actions button{flex-basis:calc(50% - 6px)}#ia27RangePicker{padding:8px}}

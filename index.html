@@ -48,6 +48,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <link rel="stylesheet" href="academic-exams-1111.css?v=11.11.1">
 <link rel="stylesheet" href="progress-bridge-1111.css?v=11.11.1">
 <link rel="stylesheet" href="imam-smart-board.css?v=11.12.1-beta.27">
+<link rel="stylesheet" href="teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker1">
 <link rel="stylesheet" href="css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2">
 <link rel="stylesheet" href="css/platform/responsive.css?v=11.12.1-beta.27">
 <link rel="stylesheet" href="css/platform/surah-picker.css?v=11.12.1-beta.27">
@@ -346,7 +347,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
     <section class="card ia27-followup-card" id="ia27ErrorFollowup" data-v9-step="assessment" aria-live="polite" hidden></section>
 
     <div class="card session-errors-card" id="sessionErrorsCard">
-      <div class="fb mb8"><div class="ch" style="margin:0">🧭 سجل أخطاء التسميع</div><span class="txt-mut" id="errorCountLabel">0 خطأ</span></div>
+      <div class="fb mb8"><div class="ch" style="margin:0">🧭 سجل أخطاء التسميع</div><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenAssessmentText()">📖 النص</button><span class="txt-mut" id="errorCountLabel">0 خطأ</span></div>
       <div class="fld ia25-error-context"><label for="ia25ErrorContext">سياق الخطأ الذي يسجله المحفظ</label><select id="ia25ErrorContext" aria-label="سياق الخطأ"><option value="التسميع">التسميع</option><option value="الحفظ الجديد">الحفظ الجديد</option><option value="المراجعة القريبة">المراجعة القريبة</option><option value="المراجعة البعيدة">المراجعة البعيدة</option><option value="مراجعة السور">مراجعة السور</option><option value="مراجعة الأجزاء">مراجعة الأجزاء</option><option value="مراجعة الأرباع">مراجعة الأرباع</option><option value="مراجعة الأحزاب">مراجعة الأحزاب</option><option value="التصحيح على النص الجديد">التصحيح على النص الجديد</option></select><small>اختر موضع الخطأ قبل تسجيله؛ يُحفظ مع الخطأ ويظهر في التقرير ورسالة ولي الأمر.</small></div>
       <div class="fld ia27-error-position"><label for="ia27ErrorPosition">موضع الخطأ أو الكلمة (اختياري للأخطاء السريعة)</label><input type="text" id="ia27ErrorPosition" maxlength="160" placeholder="مثال: سورة الملك، الآية ٣، كلمة تبارك"></div>
       <div class="error-chip-grid" id="errorChipGrid">
@@ -364,7 +365,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
     <div class="card">
       <div class="fb mb8">
-        <div class="session-badge-actions"><span class="badge b-new">📖 حفظ جديد</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="openQuranTextModal()">📖 النص</button></div>
+        <div class="session-badge-actions"><span class="badge b-new">📖 حفظ جديد</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenAssignmentText('new')">📖 النص</button></div>
         <div class="tog on" id="tog-new" onclick="togSec('new')"></div>
       </div>
       <div id="bod-new">
@@ -398,7 +399,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
     <div class="card">
       <div class="fb mb8">
-        <div class="session-badge-actions"><span class="badge b-rec">📚 مراجعة قريبة</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="v1181OpenCurrentSection('rec')">📖 النص</button></div>
+        <div class="session-badge-actions"><span class="badge b-rec">📚 مراجعة قريبة</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenAssignmentText('rec')">📖 النص</button></div>
         <div class="tog" id="tog-rec" onclick="togSec('rec')"></div>
       </div>
       <div id="bod-rec" style="display:none">
@@ -432,7 +433,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
     <div class="card">
       <div class="fb mb8">
-        <div class="session-badge-actions"><span class="badge b-far">📘 مراجعة بعيدة</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="v1181OpenCurrentSection('far')">📖 النص</button></div>
+        <div class="session-badge-actions"><span class="badge b-far">📘 مراجعة بعيدة</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenAssignmentText('far')">📖 النص</button></div>
         <div class="tog" id="tog-far" onclick="togSec('far')"></div>
       </div>
       <div id="bod-far" style="display:none">
@@ -466,7 +467,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
     <div class="card">
       <div class="fb mb8">
-        <span class="badge b-juz">📜 مراجعة الأجزاء</span>
+        <div class="session-badge-actions"><span class="badge b-juz">📜 مراجعة الأجزاء</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenReviewListText('juz')">📖 النص</button></div>
         <div class="tog" id="tog-juz" onclick="togSec('juz')"></div>
       </div>
       <div id="bod-juz" style="display:none">
@@ -504,7 +505,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
     <div class="card">
       <div class="fb mb8">
-        <span class="badge b-juz">🕌 مراجعة السور</span>
+        <div class="session-badge-actions"><span class="badge b-juz">🕌 مراجعة السور</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenReviewListText('surah')">📖 النص</button></div>
         <div class="tog" id="tog-surahReview" onclick="togSec('surahReview')"></div>
       </div>
       <div id="bod-surahReview" style="display:none">
@@ -935,7 +936,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
   <div class="mo-box quran-box">
     <div class="mo-title"><span id="quranModalTitle">📖 النص القرآني</span><button class="mo-x" onclick="closeQuranTextModal()">✕</button></div>
     <div id="quranSourceNote" class="quran-source-note">الرسم: QPC Hafs / الرسم العثماني. الصوت يحتاج اتصالاً بالإنترنت.</div>
-    <div id="quranVerseContent" class="quran-verse-content"><div class="empty"><p>اختر سورة ونطاق آيات في الحفظ الجديد ثم اضغط «النص».</p></div></div>
+    <div id="quranVerseContent" class="quran-verse-content"><div class="empty"><p>اختر السورة وافتح النص، ثم حدّد آية النهاية من داخل المصحف.</p></div></div>
     <div class="quran-toolbar"><div class="fld"><label>القارئ</label><select id="quranReciter"><option value="Husary_128kbps">الشيخ محمود خليل الحصري</option><option value="Alafasy_128kbps">الشيخ مشاري راشد العفاسي</option></select></div><button class="btn btn-g btn-sm" id="quranPlayAllBtn" onclick="playQuranRange()">▶ تشغيل الآيات</button><button class="btn btn-out btn-sm" onclick="stopQuranAudio()">■ إيقاف</button></div>
     <audio id="quranAudioPlayer" preload="none"></audio>
   </div>
@@ -1114,10 +1115,11 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
 <script src="js/features/imam-board-tafsir.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/imam-board-corpus.js?v=11.12.1-beta.27" defer></script>
-<script src="js/features/imam-smart-board.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/imam-smart-board.js?v=11.12.1-beta.27-quran-picker1" defer></script>
 <script src="js/features/platform-ux.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/platform-workflow.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/surah-picker-17.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/beta19-experience.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker1" defer></script>
 </body>
 </html>
