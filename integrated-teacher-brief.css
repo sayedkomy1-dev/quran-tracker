@@ -1,0 +1,22 @@
+/* Additive teacher preparation panel — no changes to the official session editor. */
+#integratedTeacherBrief[hidden]{display:none!important}
+#integratedTeacherBrief{margin:0 0 12px;max-width:100%;min-width:0;direction:rtl}
+.itb-disclosure{overflow:hidden;border:1px solid var(--border,#d6e4df);border-radius:15px;background:var(--card,#fff)}
+.itb-disclosure>summary{padding:13px 15px;cursor:pointer;font-weight:800;list-style-position:inside;line-height:1.65}
+.itb-disclosure>summary small{display:block;font-size:12px;font-weight:400;color:var(--muted,#64746e)}
+.itb-body{padding:4px 14px 14px}
+.itb-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.itb-metrics>div{background:var(--bg,#f5f9f6);padding:10px;border-radius:9px;min-width:0;overflow-wrap:anywhere}
+.itb-metrics small{display:block;color:var(--muted,#586b64);font-size:12px}
+.itb-metrics strong{display:block;font-size:13px;margin-top:4px}
+.itb-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.itb-sections section{border:1px solid var(--border,#e3eae5);padding:10px;border-radius:10px;min-width:0}
+.itb-sections h4{font-size:14px;margin:0 0 7px}
+.itb-sections ul{margin:0;padding-right:18px;font-size:13px;line-height:1.75}
+.itb-sections li{overflow-wrap:anywhere}
+.itb-muted,.itb-note,.itb-attention,.itb-footnote{font-size:12px;line-height:1.75;margin:8px 0}
+.itb-muted,.itb-footnote{color:var(--muted,#586b64)}
+.itb-attention{padding:10px;border-radius:9px;background:rgba(214,147,42,.10)}
+.itb-alerts{margin-top:10px;border-top:1px solid var(--border,#e4e9e5);padding-top:5px}
+.itb-alerts p{margin:5px 0;font-size:12px;line-height:1.6}
+@media(max-width:620px){.itb-sections{grid-template-columns:minmax(0,1fr)}.itb-body{padding:4px 11px 11px}}

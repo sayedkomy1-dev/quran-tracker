@@ -11,13 +11,15 @@
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Candidate hotfix cache is separate from beta.27, so failed installation cannot alter its offline shell.
-const LIVE_CACHE_NAME = CACHE_NAME + '-quran-picker-hotfix2';
+const LIVE_CACHE_NAME = CACHE_NAME + '-integration-review1';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
+  './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
+  './js/features/integrated-teacher-brief.js?v=11.12.1-beta.27-integration-review1',
   './index.html',
   './css/platform/tokens.css?v=11.12.1-beta.27',
   './css/platform/legacy-features.css?v=11.12.1-beta.27',
@@ -57,6 +59,8 @@ const CRITICAL_FRESH_SHELL = [
 
 
 const APP_SHELL = [
+  './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
+  './js/features/integrated-teacher-brief.js?v=11.12.1-beta.27-integration-review1',
   './css/platform/tokens.css?v=11.12.1-beta.27',
   './css/platform/legacy-features.css?v=11.12.1-beta.27',
   './css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2',
