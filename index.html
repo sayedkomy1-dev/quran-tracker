@@ -27,6 +27,7 @@
 <link rel="stylesheet" href="teacher-error-marking.css?v=11.8.0">
 <link rel="stylesheet" href="error-followup.css?v=11.12.1-beta.27-error-followup-candidate">
 <link rel="stylesheet" href="integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1">
+<link rel="stylesheet" href="imam-absence-makeup.css?v=11.12.1-beta.27-absence-review2">
 <link rel="stylesheet" href="correction-document.css?v=11.7.4.5">
 <link rel="stylesheet" href="smart-revision.css?v=11.3.0-s1">
 <link rel="stylesheet" href="goal-planning.css?v=11.4.2-s2">
@@ -329,6 +330,8 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
     <div class="absent-notice">⚠️ الطالب غائب — سيتم نقل التكليف السابق للحصة القادمة</div>
     <button class="btn btn-wa mb8" onclick="sendAbsenceWA()">📲 إبلاغ ولي الأمر بالغياب</button>
   </div>
+
+  <details id="imamAbsenceMakeup" class="card" aria-label="تنظيم الغياب والتعويض" hidden></details>
 
   <div id="sesContent">
     <div class="sec-div">📋 القسم الأول: تقييم التسميع</div>
@@ -1077,7 +1080,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/ux-guidance.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/academy-workspaces.js?v=11.7.4-foundation" defer></script>
 <script src="sync-core.js?v=11.0.0" defer></script>
-<script src="app.js?v=11.12.1-beta.27" defer></script>
+<script src="app.js?v=11.12.1-beta.27-absence-review2" defer></script>
 <script src="v8.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
 <script src="js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
 <script src="v9.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4" defer></script>
@@ -1125,5 +1128,6 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/beta19-experience.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker-hotfix2" defer></script>
 <script src="js/features/integrated-teacher-brief.js?v=11.12.1-beta.27-integration-review1" defer></script>
+<script src="js/features/imam-absence-makeup.js?v=11.12.1-beta.27-absence-review2" defer></script>
 </body>
 </html>

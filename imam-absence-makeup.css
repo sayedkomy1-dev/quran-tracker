@@ -1,0 +1,13 @@
+/* Standalone additive attendance controls. No overrides to existing session cards. */
+#imamAbsenceMakeup[hidden],#imamAbsenceMakeup [hidden]{display:none!important}
+#imamAbsenceMakeup{padding:12px 14px;direction:rtl;max-width:100%;overflow-wrap:anywhere}
+#imamAbsenceMakeup>summary{cursor:pointer;font-weight:750;color:var(--gd);font-size:14px;list-style-position:inside}
+#imamAbsenceMakeup .iam-optional{font-weight:400;color:var(--mut);font-size:12px}
+#imamAbsenceMakeup .iam-description,#imamAbsenceMakeup .iam-hint{font-size:12px;line-height:1.8;color:var(--mut);margin:9px 0}
+#imamAbsenceMakeup [id$="Fields"]{display:grid;gap:10px;margin-top:12px}
+#imamAbsenceMakeup label{display:grid;gap:6px;font-size:13px;font-weight:650;min-width:0}
+#imamAbsenceMakeup label.iam-check{display:flex;align-items:center;gap:8px;cursor:pointer}
+#imamAbsenceMakeup label.iam-check input{width:18px;height:18px;flex:0 0 auto}
+#imamAbsenceMakeup input:not([type="checkbox"]),#imamAbsenceMakeup select{box-sizing:border-box;width:100%;max-width:100%;min-width:0;min-height:44px;border:1px solid var(--border,#d5ddd5);border-radius:10px;background:var(--card,#fff);color:var(--txt,#193226);padding:8px;font:inherit;font-size:14px}
+#imamAbsenceMakeup .iam-linked{background:var(--gp,#eef8ef);border-radius:10px;padding:10px;font-size:12px;line-height:1.7}
+@media(max-width:390px){#imamAbsenceMakeup{padding:10px}#imamAbsenceMakeup>summary{font-size:13px}}

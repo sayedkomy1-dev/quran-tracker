@@ -1248,6 +1248,7 @@ function setStatus(s){
   document.getElementById('sesContent').style.display=isAbsent?'none':'block';
   const n=document.querySelector('#absentNotice .absent-notice');
   if(n)n.textContent=s==='غاب'?'⚠️ الطالب غائب — سيبقى التكليف السابق للحصة القادمة':'🌙 الطالب في إجازة — سيبقى التكليف السابق للحصة القادمة';
+  globalThis.ImamAbsenceMakeup?.updateStatus(s);
   scheduleDraftSave();
 }
 function setStatusUI(s){
@@ -2350,7 +2351,7 @@ function sanitizeBackupData(d){
       }))}:{}),
     };
   });
-  const safeSessions=[];
+  const safeSessions=[],sessionSourceIds=[],sessionSourceLinks=[];
   (d.sessions||[]).forEach(raw=>{
     const mapped=idMap.get(String(raw.studentId));if(!mapped)return; // تجاهل السجلات اليتيمة في النسخة المستوردة
     const status=['حضر','غاب','إجازة'].includes(raw.status)?raw.status:'حضر';
@@ -2361,7 +2362,13 @@ function sanitizeBackupData(d){
       date:cleanText(raw.date,40),createdAt:cleanText(raw.createdAt,40),updatedAt:cleanText(raw.updatedAt,40),
       notes:cleanText(raw.notes,8000),prevGrades:pg,source:cleanText(raw.source,30),completed:!!raw.completed,
       ...(raw.groupBatchId?{groupBatchId:cleanText(raw.groupBatchId,120)}:{}),
-      absenceExcused:raw.absenceExcused===true,excuseReason:cleanText(raw.excuseReason,300),
+      absenceExcused:status==='غاب'&&raw.absenceExcused===true,
+      excuseReason:status==='غاب'&&raw.absenceExcused===true?cleanText(raw.excuseReason,300):'',
+      ...(status==='غاب'?{
+        absenceArrangement:['none','postponed','makeup'].includes(raw.absenceArrangement)?raw.absenceArrangement:'none',
+        makeupPlannedDate:globalThis.ImamAbsenceMakeup?.validDay(raw.makeupPlannedDate)&&String(raw.makeupPlannedDate)>String(raw.sessionDate||raw.date||'').slice(0,10)?String(raw.makeupPlannedDate):'',
+        learningCompleted:false
+      }:{}),
       ...(raw.teacher119?{teacher119:sanitizeTeacherSessionMeta(raw.teacher119)}:{}),
       ...(Array.isArray(raw.recitationErrors)?{recitationErrors:sanitizeRecitationErrors(raw.recitationErrors)}:{})
     };
@@ -2377,7 +2384,29 @@ function sanitizeBackupData(d){
     }
     const dirs=raw.directions&&typeof raw.directions==='object'?raw.directions:{};
     ses.directions={};['new','rec','far','juz','surahReview'].forEach(k=>{ses.directions[k]=Number(dirs[k])===-1?-1:1;});
+    if(ses.status==='غاب'&&ses.absenceArrangement!=='none'&&!ses.makeupPlannedDate)ses.absenceArrangement='none';
     safeSessions.push(ses);
+    sessionSourceIds.push(String(raw.id??''));
+    sessionSourceLinks.push(status==='حضر'?String(raw.makeupForSessionId||''):'');
+  });
+  // Restore makeup links only after all source IDs have been validated/remapped.
+  // Ambiguous duplicate source IDs are never guessed: avoid linking the wrong child/session.
+  const aliasMap=new Map();
+  sessionSourceIds.forEach((sourceId,i)=>{
+    if(!sourceId)return;
+    const mapped=aliasMap.get(sourceId)||[];mapped.push(safeSessions[i]);aliasMap.set(sourceId,mapped);
+  });
+  const usedMakeupOrigins=new Set();
+  safeSessions.forEach((ses,i)=>{
+    const oldRef=sessionSourceLinks[i];if(!oldRef)return;
+    const candidates=aliasMap.get(oldRef)||[];
+    if(candidates.length!==1)return;
+    const absence=candidates[0];
+    if(absence.status!=='غاب'||absence.studentId!==ses.studentId||
+       !globalThis.ImamAbsenceMakeup?.validDay(absence.sessionDate)||
+       !(absence.sessionDate<ses.sessionDate)||usedMakeupOrigins.has(absence.id))return;
+    ses.makeupForSessionId=absence.id;
+    usedMakeupOrigins.add(absence.id);
   });
   const usedTasks=new Set();
   const safeTasks=(Array.isArray(d.tasks)?d.tasks:[]).map(raw=>{
@@ -2913,7 +2942,12 @@ function saveSession(opts={}){
   const sid=document.getElementById('sesSt').value,dateKey=document.getElementById('sesDate')?.value||localDateKey();if(!sid){toast('اختر الطالب أولاً','error');return null;}if(!dateKey){toast('اختر تاريخ الحصة','error');return null;}
   if(sesStatus==='حضر'){const err=validateSessionSections();if(err){toast(err,'error');return null;}}
   const data=sesStatus==='حضر'?buildSesData():{},now=new Date().toISOString(),existing=(editingSessionId&&sessions.find(x=>x.id===editingSessionId))||findDailySession(sid,dateKey);
-  const core={id:existing?.id||makeId('ses'),studentId:sid,sessionDate:dateKey,date:existing?.date||makeSessionISO(dateKey),status:sesStatus,createdAt:existing?.createdAt||now,updatedAt:now,source:'session',completed:true,...data};core.summary=buildSumText(core);
+  const attendance=globalThis.ImamAbsenceMakeup?.prepare({studentId:sid,dateKey,status:sesStatus,existing,records:sessions});
+  if(attendance&&!attendance.ok){toast(attendance.error,'error');return null;}
+  if(attendance?.fields?.makeupForSessionId&&!globalThis.ImamAbsenceMakeup?.hasRecitationEvidence(data)){toast('لتسجيل التعويض المنفذ، سجّل تسميعًا أو تقييمًا فعليًا أولًا','error');return null;}
+  // Attendances stay as recorded attendance, not earned Quran progress. A linked makeup
+  // is only attached to an actually attended session; its original absence remains.
+  const core={id:existing?.id||makeId('ses'),studentId:sid,sessionDate:dateKey,date:existing?.date||makeSessionISO(dateKey),status:sesStatus,createdAt:existing?.createdAt||now,updatedAt:now,source:'session',completed:true,...data,...(attendance?.fields||{})};core.summary=buildSumText(core);
   if(existing){const idx=sessions.findIndex(x=>x.id===existing.id);sessions[idx]=core;}else sessions.push(core);editingSessionId=core.id;
   if(save()===false){if(existing){const idx=sessions.findIndex(x=>x.id===core.id);if(idx>=0)sessions[idx]=existing;}else sessions=sessions.filter(x=>x.id!==core.id);editingSessionId=existing?.id||null;toast('تعذر حفظ الحصة على الجهاز، احتفظ ببيانات المسودة وحاول مرة أخرى','error');return null;}
   clearDraft();const btn=document.getElementById('saveSessionBtn');if(btn)btn.textContent='💾 تحديث الحصة';setDraftState('تم حفظ الحصة ✓','saved');
@@ -3286,6 +3320,7 @@ function resetSession(){
   renderChips();renderSurahChecklist();updateTogs();setStatusUI('حضر');
   document.getElementById('absentNotice').style.display='none';document.getElementById('sesContent').style.display='block';document.getElementById('repeatBar').style.display='none';
   const btn=document.getElementById('saveSessionBtn');if(btn)btn.textContent='💾 حفظ الحصة';setDraftState('جاهز','');draftSuspend=false;
+  globalThis.ImamAbsenceMakeup?.reset();
 }
 function paintPrevGrades(){
   Object.entries(prevGrades||{}).forEach(([key,g])=>document.querySelectorAll(`#pgr-${key} .gb`).forEach(b=>b.classList.toggle('sel',b.dataset.g===g)));
@@ -3296,7 +3331,10 @@ function onSesSt(){
   const existing=findDailySession(curStId,dateKey);editingSessionId=existing?.id||null;loadPrevTask(existing?.id||'');
   const prev=getPreviousPresentSession(curStId,dateKey,existing?.id||'');if(prev?.directions)reviewDirections={...reviewDirections,...prev.directions};renderDirections();
   const rb=document.getElementById('repeatBar');if(prev&&(prev.new||prev.rec||prev.far||prev.juz||prev.surahReview)){const d=new Date(prev.date).toLocaleDateString('ar-EG',{month:'short',day:'numeric'});document.getElementById('repeatHint').textContent=`آخر حصة: ${d} — اضغط لملء الحقول`;rb.style.display='flex';}else rb.style.display='none';
-  draftSuspend=true;if(existing)applySessionToEditor(existing);const restored=restoreDraft(existing);draftSuspend=false;
+  draftSuspend=true;if(existing)applySessionToEditor(existing);
+  globalThis.ImamAbsenceMakeup?.setRecord(existing);
+  const restored=restoreDraft(existing);draftSuspend=false;
+  globalThis.ImamAbsenceMakeup?.render({studentId:curStId,dateKey,status:sesStatus,records:sessions,existing});
   if(restored)setDraftState('تم استعادة مسودة أحدث','editing');else if(existing)setDraftState('تعديل حصة مسجلة','editing');else setDraftState(prev?'قيّم التسميع وسيُقترح التكليف التالي تلقائياً':'جاهز — ابدأ بإدخال التكليف','saved');
 }
 function applySessionToEditor(ses){
@@ -3313,13 +3351,14 @@ function applySessionToEditor(ses){
 function captureDraft(){
   const fields={};['new','rec','far'].forEach(k=>{fields[k]={surah:document.getElementById(k+'-s')?.value||'',from:document.getElementById(k+'-f')?.value||'',to:document.getElementById(k+'-t')?.value||'',full:!!document.getElementById(k+'-full')?.checked};});
   const actual={};['new','rec','far'].forEach(k=>{const x=readActualSection(k);if(x)actual[k]=x;});
-  return{savedAt:new Date().toISOString(),editingSessionId,sesStatus,secOn:{...secOn},prevGrades:{...prevGrades},actualRecitation:actual,juzChips:[...juzChips],surahReviewChips:[...surahReviewChips],directions:{...reviewDirections},notes:document.getElementById('sesNotes')?.value||'',fields};
+  return{savedAt:new Date().toISOString(),editingSessionId,sesStatus,secOn:{...secOn},prevGrades:{...prevGrades},actualRecitation:actual,juzChips:[...juzChips],surahReviewChips:[...surahReviewChips],directions:{...reviewDirections},notes:document.getElementById('sesNotes')?.value||'',fields,absenceMakeup:globalThis.ImamAbsenceMakeup?.capture()||null};
 }
 function applyDraft(d){
   if(!d)return;sesStatus=d.sesStatus||'حضر';setStatusUI(sesStatus);const isAbsent=sesStatus!=='حضر';document.getElementById('absentNotice').style.display=isAbsent?'block':'none';document.getElementById('sesContent').style.display=isAbsent?'none':'block';
   secOn={new:true,rec:false,far:false,juz:false,surahReview:false,...(d.secOn||{})};prevGrades={new:'',rec:'',far:'',juz:'',surahReview:'',...(d.prevGrades||{})};actualRecitation={new:null,rec:null,far:null,...(d.actualRecitation||{})};juzChips=[...(d.juzChips||[])].map(normalizeJuzChip).filter(Boolean);surahReviewChips=[...(d.surahReviewChips||[])].map(normalizeSurahReviewChip).filter(Boolean);reviewDirections={new:1,rec:1,far:1,juz:1,surahReview:1,...(d.directions||{})};updateTogs();
   ['new','rec','far'].forEach(k=>{const f=d.fields?.[k]||{},se=document.getElementById(k+'-s');if(!se)return;se.value=f.surah??'';se.dataset.userTouched=se.value?'1':'0';if(se.value!=='')fillAyah(k);const fc=document.getElementById(k+'-full');if(fc)fc.checked=!!f.full;toggleFull(k);if(document.getElementById(k+'-f'))document.getElementById(k+'-f').value=f.from||'';if(document.getElementById(k+'-t'))document.getElementById(k+'-t').value=f.to||'';});
   renderChips();renderSurahChecklist();paintPrevGrades();applyActualRecitationToFields(d.actualRecitation||{});document.getElementById('sesNotes').value=d.notes||'';
+  globalThis.ImamAbsenceMakeup?.setDraft(d.absenceMakeup);
 }
 function addJuz(){
   const v=document.getElementById('juz-j')?.value;if(v===''||!JZ[Number(v)])return;const name=JZ[Number(v)];if(!juzChips.includes(name))juzChips.push(name);document.getElementById('juz-j').value='';renderJuzChips();scheduleDraftSave();

@@ -18,8 +18,9 @@ for(const name of [...scripts,...css]){
  const ref=`${name}?v=${version}`;
  const versionedV9=`${name}?v=${version}-guardian-reactivation-hotfix4`;
  const versionedBoard=`${name}?v=${version}-quran-picker1`;
- assert(html.includes(ref)||html.includes(versionedV9)||html.includes(versionedBoard),`index missing fresh ${name}`);
- assert(sw.includes(`'./${ref}'`)||sw.includes(`'./${versionedV9}'`)||sw.includes(`'./${versionedBoard}'`),`SW missing fresh ${name}`);
+ const revision2=`${name}?v=${version}-absence-review2`;
+ assert(html.includes(ref)||html.includes(versionedV9)||html.includes(versionedBoard)||html.includes(revision2),`index missing fresh ${name}`);
+ assert(sw.includes(`'./${ref}'`)||sw.includes(`'./${versionedV9}'`)||sw.includes(`'./${versionedBoard}'`)||sw.includes(`'./${revision2}'`),`SW missing fresh ${name}`);
 }
 for(const name of ['v9.js','v10.js','role-home.css','teacher-rating.css']){
  assert(sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./${name}?v=${version}`)
