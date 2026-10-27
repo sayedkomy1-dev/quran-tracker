@@ -1,0 +1,19 @@
+/* Scope to the existing teacher follow-up center only. */
+#imamMakeupAgenda{margin:12px 0;direction:rtl}
+#imamMakeupAgenda .ima-agenda{background:var(--surface,#fff);border:1px solid #dbe7df;border-radius:15px;overflow:hidden}
+#imamMakeupAgenda summary{cursor:pointer;list-style:none;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#imamMakeupAgenda summary::-webkit-details-marker{display:none}
+#imamMakeupAgenda summary>span{display:flex;flex-direction:column;gap:4px}
+#imamMakeupAgenda summary small,#imamMakeupAgenda .ima-agenda-note{color:#64766c;font-size:.83em}
+#imamMakeupAgenda summary>strong{font-size:.89em;color:#2d6847}
+#imamMakeupAgenda .ima-agenda-body{padding:0 16px 14px}
+#imamMakeupAgenda .ima-agenda-metrics{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+#imamMakeupAgenda .ima-agenda-metrics span{padding:7px 10px;background:#f0f7f1;border-radius:8px;font-size:.88em}
+#imamMakeupAgenda .ima-agenda-list{list-style:none;padding:0;margin:0;display:grid;gap:7px}
+#imamMakeupAgenda .ima-agenda-list li{border:1px solid #e3ece5;border-radius:10px;padding:10px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+#imamMakeupAgenda .ima-agenda-list li>div{display:grid;gap:3px;min-width:0}
+#imamMakeupAgenda .ima-agenda-list small{color:#69766c}
+#imamMakeupAgenda .ima-overdue,#imamMakeupAgenda .ima-agenda-warning{color:#a23a2b}
+#imamMakeupAgenda .ima-agenda-warning{padding:9px;border-radius:8px;background:#fff3ec}
+#imamMakeupAgenda .ima-agenda-note{margin-bottom:0}
+@media(max-width:390px){#imamMakeupAgenda summary{padding:12px}#imamMakeupAgenda .ima-agenda-body{padding:0 12px 12px}}

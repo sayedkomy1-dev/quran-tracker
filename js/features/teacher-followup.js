@@ -91,6 +91,12 @@ function renderV108Followup(){
   v108SyncGroupOptions();
   document.querySelectorAll('[data-v108-filter]').forEach(b=>b.classList.toggle('on',b.dataset.v108Filter===V108_FOLLOWUP.filter));
   host.innerHTML=visible.length?visible.map(v108StudentCard).join(''):'<div class="v108-empty"><b>لا توجد نتائج بهذا الفلتر</b><span>غيّر الفلتر أو الحلقة أو كلمة البحث.</span></div>';
+  try{
+    globalThis.ImamMakeupAgenda?.renderInto?.(
+      document.getElementById('imamMakeupAgenda'),
+      Array.isArray(sessions)?sessions:[],visible.map(row=>row.st)
+    );
+  }catch(_){/* optional, read-only panel must not break the follow-up center */}
   v108UpdateBadge(rows);
 }
 function v108SetFilter(value){V108_FOLLOWUP.filter=String(value||'all');renderV108Followup();}
