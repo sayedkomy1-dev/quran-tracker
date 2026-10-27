@@ -168,6 +168,17 @@ function v107RenderAttention(items){
   if(!items.length)return '<div class="v107-good-state"><b>✅ لا توجد إشارات حديثة تستدعي التثبيت</b><span>آخر النتائج لا تحتوي على إعادة أو نسبة أقل من 65%.</span></div>';
   return `<div class="v107-attention-list">${items.map(x=>`<div class="v107-attention-item"><div><b>${v107Esc(x.label)}</b><small>${v107Esc(x.date)}</small></div><span>${x.score!==null?`${x.score}%`:v107Esc(v107GradeLabel(x.grade))}</span></div>`).join('')}</div>`;
 }
+function v107CumulativeCoverage(studentId){
+  // A broken optional coverage view must never block the existing progress card.
+  try{
+    const feature=globalThis.ImamApp?.QuranCoverageProgress;
+    if(typeof feature?.render!=='function')return '';
+    return feature.render(studentId,v107StudentSessions(studentId,Infinity),
+      typeof S!=='undefined'?S:null,
+      typeof getVerifiedNewSections==='function'?getVerifiedNewSections(studentId):null,
+      globalThis.ImamApp?.QuranStructure);
+  }catch(_){return '<div class="v107-empty">تعذر عرض التفصيل القرآني. لوحة التقدم الأصلية متاحة.</div>';}
+}
 function renderV107Progress(studentId=curStId){
   const host=document.getElementById('profProgressContent');if(!host||!studentId)return;
   const st=(Array.isArray(students)?students:[]).find(x=>x.id===studentId);if(!st)return;
@@ -204,6 +215,7 @@ function renderV107Progress(studentId=curStId){
       <div class="v107-panel-head"><div><b>⭐ توزيع التقييمات</b><small>${totalGrades?`${totalGrades} تقييمًا في ${period}`:'لا توجد تقييمات في الفترة'}</small></div></div>
       <div class="v107-grade-dist">${gradeRows.map(([label,icon,count])=>`<div><span>${icon}</span><b>${count}</b><small>${label}</small></div>`).join('')}</div>
     </div>
+    ${v107CumulativeCoverage(studentId)}
     <div class="v107-actions"><button class="btn btn-wa btn-sm" onclick="v107SendProgressWhatsApp()">📲 إرسال ملخص التقدم</button><button class="btn btn-out btn-sm" onclick="goPage('reports')">📊 التقرير الشهري</button></div>`;
 }
 function v107SendProgressWhatsApp(){

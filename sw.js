@@ -11,7 +11,7 @@
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Candidate hotfix cache is separate from beta.27, so failed installation cannot alter its offline shell.
-const LIVE_CACHE_NAME = CACHE_NAME + '-absence-review2';
+const LIVE_CACHE_NAME = CACHE_NAME + '-coverage-review3';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -20,8 +20,11 @@ const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 const CRITICAL_FRESH_SHELL = [
   './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
   './imam-absence-makeup.css?v=11.12.1-beta.27-absence-review2',
+  './quran-coverage-progress.css?v=11.12.1-beta.27-coverage-review3',
   './js/features/integrated-teacher-brief.js?v=11.12.1-beta.27-integration-review1',
   './js/features/imam-absence-makeup.js?v=11.12.1-beta.27-absence-review2',
+  './js/features/quran-coverage-progress.js?v=11.12.1-beta.27-coverage-review3',
+  './js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3',
   './index.html',
   './css/platform/tokens.css?v=11.12.1-beta.27',
   './css/platform/legacy-features.css?v=11.12.1-beta.27',
@@ -63,8 +66,10 @@ const CRITICAL_FRESH_SHELL = [
 const APP_SHELL = [
   './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
   './imam-absence-makeup.css?v=11.12.1-beta.27-absence-review2',
+  './quran-coverage-progress.css?v=11.12.1-beta.27-coverage-review3',
   './js/features/integrated-teacher-brief.js?v=11.12.1-beta.27-integration-review1',
   './js/features/imam-absence-makeup.js?v=11.12.1-beta.27-absence-review2',
+  './js/features/quran-coverage-progress.js?v=11.12.1-beta.27-coverage-review3',
   './css/platform/tokens.css?v=11.12.1-beta.27',
   './css/platform/legacy-features.css?v=11.12.1-beta.27',
   './css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2',
@@ -134,7 +139,7 @@ const APP_SHELL = [
   './js/features/teacher-error-marking.js?v=11.12.1-beta.27-quran-picker-hotfix2',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './js/features/guardian-communication.js?v=11.0.0',
-  './js/features/student-progress.js?v=11.0.0',
+  './js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3',
   './js/features/teacher-followup.js?v=11.0.0',
   './js/features/circle-analytics.js?v=11.0.0',
   './js/features/smart-revision.js?v=11.9.2',

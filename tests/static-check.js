@@ -322,8 +322,8 @@ console.log('Static checks passed for Imam Academy v11.2.0');
 
 // v11.0.0 student progress dashboard guards.
 assert(html.includes('id="profProgress"')&&html.includes('id="profProgressContent"')&&html.includes('id="v107Range"'),'student progress dashboard DOM missing');
-assert(html.includes('js/features/student-progress.js?v=11.0.0'),'student progress feature missing from HTML');
-assert(sw.includes("'./js/features/student-progress.js?v=11.0.0'"),'student progress feature missing from service worker');
+assert(html.includes('js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3'),'student progress feature missing from HTML');
+assert(sw.includes("'./js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3'"),'student progress feature missing from service worker');
 assert(html.includes('js/features/teacher-followup.js?v=11.0.0'),'teacher follow-up feature missing from HTML');
 assert(sw.includes("'./js/features/teacher-followup.js?v=11.0.0'"),'teacher follow-up feature missing from service worker');
 assert(studentProgress.includes('function v107Calculate')&&studentProgress.includes('function renderV107Progress'),'student progress analytics/render functions missing');

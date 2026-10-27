@@ -1,0 +1,12 @@
+/* Scoped read-only extension of existing student progress dashboard. */
+.qcp-panel{margin:16px 0;padding:14px;border:1px solid var(--line,#ddd);border-radius:14px;background:var(--card,#fff);color:var(--txt,#273144);direction:rtl;min-width:0}
+.qcp-heading{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px}
+.qcp-heading h3{font-size:16px;margin:0}.qcp-heading small,.qcp-note{font-size:12px;color:var(--mut,#667085);line-height:1.7}
+.qcp-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.qcp-kpis>div{padding:12px;border:1px solid var(--line,#ddd);border-radius:10px;display:flex;flex-direction:column;gap:5px;min-width:0;background:var(--bg,#f8f9fb)}
+.qcp-kpis small{font-size:11px}.qcp-kpis b{font-size:23px;font-variant-numeric:tabular-nums}.qcp-kpis span{color:var(--mut,#667085);font-size:11px}
+.qcp-details{border-top:1px solid var(--line,#ddd);margin-top:12px;padding-top:12px}.qcp-details>summary,.qcp-juz>summary{cursor:pointer;font-size:13px;font-weight:700;padding:8px 2px}
+.qcp-juz{border-bottom:1px solid var(--line,#ddd);padding:5px 0}.qcp-juz summary{display:list-item}.qcp-juz summary span{font-weight:400;margin-inline-start:8px;color:var(--mut,#667085)}
+.qcp-scroll{overflow:auto;max-width:100%;margin:8px 0}.qcp-scroll table{width:100%;border-collapse:collapse;font-size:12px;min-width:335px}.qcp-scroll th,.qcp-scroll td{text-align:right;border-bottom:1px solid var(--line,#ddd);padding:9px 8px;white-space:normal}.qcp-scroll th{font-weight:700}
+.qcp-note{margin:12px 0 0}
+@media(max-width:440px){.qcp-panel{padding:10px}.qcp-kpis{grid-template-columns:1fr 1fr}.qcp-kpis>div:last-child{grid-column:span 2}.qcp-heading small{width:100%}.qcp-kpis b{font-size:21px}}
