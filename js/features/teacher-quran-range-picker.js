@@ -9,6 +9,30 @@
   const asAyah=(n,max)=>Number.isInteger(Number(n))&&Number(n)>=1&&Number(n)<=max?Number(n):null;
   const escapeHTML=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   let draft=null,request=0, opening=false;
+  // Chapter data already comes from the existing verified QPC Hafs source. Keep the
+  // same chapter promise in this page to avoid another IndexedDB read or HTTP call.
+  const chapterReady=new Map(),chapterPending=new Map();
+  let prefetchTimer=0;
+  function cachedChapter(chapter){
+    chapter=Number(chapter);
+    if(!Number.isInteger(chapter)||chapter<1||chapter>114)return Promise.reject(new Error('Invalid chapter'));
+    if(chapterReady.has(chapter))return Promise.resolve(chapterReady.get(chapter));
+    if(chapterPending.has(chapter))return chapterPending.get(chapter);
+    const loader=g.__ia27OriginalQpcLoader||g.fetchQpcHafsChapter;
+    if(typeof loader!=='function')return Promise.reject(new Error('No Quran text source'));
+    const promise=Promise.resolve().then(()=>loader(chapter)).then(rows=>{
+      if(!Array.isArray(rows)||!rows.length)throw new Error('Empty Quran chapter');
+      chapterReady.set(chapter,rows);return rows;
+    }).finally(()=>chapterPending.delete(chapter));
+    chapterPending.set(chapter,promise);return promise;
+  }
+  function prefetchChapter(key){
+    const idx=resolveSurah($(key+'-s')?.value);
+    if(idx<0)return;
+    clearTimeout(prefetchTimer);
+    prefetchTimer=setTimeout(()=>cachedChapter(idx+1).catch(()=>{}),240);
+  }
+
   function snapshot(key){
     const name=$(key+'-s')?.value,idx=resolveSurah(name);
     if(idx<0)return null;
@@ -17,7 +41,12 @@
     const to=full?max:asAyah($(key+'-t')?.value,max);
     return{key,idx,surah:surahs()[idx].n,max,from:from||1,to:to&&to>=(from||1)?to:null,full};
   }
-  function dismiss(){draft=null;const box=$('ia27RangePicker');if(box)box.hidden=true;$('quranTextModal')?.classList.remove('ia27-selecting-range');}
+  function dismiss(skipDecoration=false){
+    if(!draft)return;
+    draft=null;const box=$('ia27RangePicker');if(box)box.hidden=true;
+    $('quranTextModal')?.classList.remove('ia27-selecting-range');
+    if(!skipDecoration)g.ImamTeacherErrorMarking?.decorate?.();
+  }
   function ensure(){
     let panel=$('ia27RangePicker');if(panel)return panel;
     const target=$('quranSourceNote');if(!target)return null;
@@ -27,7 +56,7 @@
     panel.addEventListener('click',e=>{const cmd=e.target.closest('[data-picker]')?.dataset.picker;if(cmd==='start'||cmd==='end'){if(draft){draft.mode=cmd;refresh();}}if(cmd==='approve')approve();if(cmd==='dismiss')dismiss();});
     for(const [id,field] of [['ia27PickerFrom','from'],['ia27PickerTo','to']])$(id).addEventListener('change',()=>{if(!draft)return;const value=asAyah($(id).value,draft.max);draft[field]=value;if(field==='from'&&!draft.from)draft.from=1;if(draft.to&&draft.to<draft.from)draft.to=null;refresh();if(field==='from')displayFromBeginning();});
     $('quranVerseContent')?.addEventListener('click',e=>{
-      if(!draft||!e.target.closest('.quran-ayah-num'))return;
+      if(!draft||!e.target.closest('.quran-ayah-num, .ia27-choose-end'))return;
       const verse=e.target.closest('.quran-ayah');const num=Number(verse?.dataset.ayah);
       if(!num||num<1||num>draft.max)return;
       e.stopPropagation(); // Verse-number selection must not register word/letter errors.
@@ -35,6 +64,11 @@
       else if(num<draft.from){g.toast?.('آية النهاية لا تسبق آية البداية','info');return;}
       else draft.to=num;
       refresh();
+      if(draft.to){
+        g.toast?.(`تم اختيار الآية ${draft.to} كنهاية. اضغط «اعتماد النطاق» لإكمال التكليف`,'success');
+        // On phones the approval button is above the long Quran passage.
+        g.requestAnimationFrame?.(()=>$('ia27RangePicker')?.scrollIntoView?.({block:'start',behavior:'smooth'}));
+      }
     },true);
     return panel;
   }
@@ -51,6 +85,15 @@
     for(const mode of ['start','end'])$('ia27Pick'+(mode==='start'?'Start':'End')).setAttribute('aria-pressed',String(draft.mode===mode));
     $('ia27ApprovePicker').disabled=!draft.to;
     $('quranVerseContent')?.querySelectorAll('.quran-ayah').forEach(el=>{
+      // A genuine large tap target. Word/letter error buttons remain unchanged.
+      const numEl=el.querySelector('.quran-ayah-num');
+      if(numEl&&numEl.tagName!=='BUTTON'){
+        const b=g.document.createElement('button');b.type='button';b.className=numEl.className+' ia27-choose-end';
+        b.textContent=numEl.textContent;b.setAttribute('aria-label',`اختيار الآية ${el.dataset.ayah} كنهاية أو بداية للتكليف`);
+        b.title='اضغط لاختيار الآية';numEl.replaceWith(b);
+      }
+      const number=el.querySelector('.quran-ayah-num');
+      if(number)number.setAttribute('aria-pressed',String(Number(el.dataset.ayah)===(draft.mode==='start'?draft.from:draft.to)));
       const ayah=Number(el.dataset.ayah);
       el.classList.toggle('ia27-picked',!!draft.to&&ayah>=draft.from&&ayah<=draft.to);
       el.classList.toggle('ia27-picked-start',ayah===draft.from);
@@ -74,7 +117,7 @@
     const prev=$('ia27RangePicker');if(prev)prev.hidden=true;
     draft={...item,mode:asAyah($(key+'-f')?.value,item.max)?'end':'start'};
     g.ImamTeacherErrorMarking?.setContext?.(key==='new'?'new_read':'review');
-    ensure();displayFromBeginning();
+    ensure();refresh();displayFromBeginning();
   }
   function approve(){
     const d=draft;if(!d)return;
@@ -88,7 +131,7 @@
     const enabled=$('tog-'+key);if(enabled&&!enabled.classList.contains('on'))g.togSec?.(key);
     for(const input of [start,end])input.dispatchEvent(new Event('change',{bubbles:true}));
     try{g.scheduleDraftSave?.();}catch(_){}
-    dismiss();g.toast?.(`تم تحديد ${kinds[key]} من ${d.from} إلى ${d.to} — احفظ الحصة لاعتماد التكليف`,'success');
+    dismiss(true);g.closeQuranTextModal?.();g.toast?.(`تم تحديد ${kinds[key]} من ${d.from} إلى ${d.to} — احفظ الحصة لاعتماد التكليف`,'success');
   }
   function openAssessment(){
     dismiss();let row=null;
@@ -111,10 +154,17 @@
     }
   }
   function init(){ensure();
+    // Warm the selected chapter while the teacher chooses the range. Failed
+    // prefetch never changes the session or blocks opening the reader.
+    if(typeof g.fetchQpcHafsChapter==='function'&&!g.__ia27OriginalQpcLoader){
+      g.__ia27OriginalQpcLoader=g.fetchQpcHafsChapter;
+      g.fetchQpcHafsChapter=cachedChapter;
+    }
+    for(const key of ['new','rec','far'])$(key+'-s')?.addEventListener('change',()=>prefetchChapter(key));
     // Other calls to the reader (errors, assessments, reviews, smart board) must never inherit editing controls.
     const base=g.openQuranRangeText;
-    if(typeof base==='function'&&!base.ia27RangeWrapped){const wrapped=function(...args){if(!opening)dismiss();return base.apply(this,args);};wrapped.ia27RangeWrapped=true;g.openQuranRangeText=wrapped;}
-    const close=g.closeQuranTextModal;if(typeof close==='function')g.closeQuranTextModal=function(...args){dismiss();return close.apply(this,args);};
+    if(typeof base==='function'&&!base.ia27RangeWrapped){const wrapped=function(...args){if(!opening)dismiss(true);return base.apply(this,args);};wrapped.ia27RangeWrapped=true;g.openQuranRangeText=wrapped;}
+    const close=g.closeQuranTextModal;if(typeof close==='function')g.closeQuranTextModal=function(...args){dismiss(true);return close.apply(this,args);};
     const container=$('quranVerseContent');if(container&&typeof MutationObserver!=='undefined')new MutationObserver(()=>{if(draft)refresh();}).observe(container,{childList:true,subtree:false});
   }
   g.ia27OpenAssignmentText=openAssignment;

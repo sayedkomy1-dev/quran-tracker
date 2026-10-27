@@ -14,3 +14,13 @@
 #quranVerseContent .quran-ayah.ia27-picked{background:rgba(17,120,75,.13);border-radius:4px}
 #quranVerseContent .quran-ayah.ia27-picked-start .quran-ayah-num,#quranVerseContent .quran-ayah.ia27-picked-end .quran-ayah-num{background:#146f4a;color:white;border-color:#146f4a}
 @media(max-width:420px){.ia27-picker-actions button{flex-basis:calc(50% - 6px)}#ia27RangePicker{padding:8px}}
+
+/* End-point buttons must be touchable on small phones and remain distinct from word errors. */
+#quranTextModal.ia27-selecting-range #quranVerseContent .quran-ayah-num.ia27-choose-end{
+  display:inline-flex;appearance:none;-webkit-appearance:none;box-sizing:border-box;
+  min-width:42px;min-height:42px;padding:6px;margin-inline:6px;vertical-align:middle;
+  background:#fffdf4;color:#28533b;border:2px solid #bb9341;border-radius:50%;
+  font-family:Arial,sans-serif;font-size:15px;font-weight:800;cursor:pointer;touch-action:manipulation;
+}
+#quranTextModal.ia27-selecting-range #quranVerseContent .quran-ayah-num.ia27-choose-end:focus-visible{outline:3px solid #14784a;outline-offset:2px}
+#quranTextModal.ia27-selecting-range #quranVerseContent .ia27-picked-end .quran-ayah-num.ia27-choose-end{background:#146f4a;color:#fff}

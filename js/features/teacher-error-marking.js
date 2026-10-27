@@ -99,7 +99,13 @@
     });
     if(num)ayahEl.appendChild(num);ayahEl.dataset.qmarkReady='1';ayahEl.dataset.qmarkRaw=raw;paintAllWords();
   }
-  function decorate(){const content=$('quranVerseContent');if(!content)return;content.querySelectorAll('.quran-ayah').forEach(decorateAyah);refreshPanel();}
+  function decorate(){
+    // End-point selection needs only verse numbers, not thousands of per-letter buttons.
+    // Restore full word/character marking when the teacher leaves range selection.
+    if(document.getElementById('quranTextModal')?.classList.contains('ia27-selecting-range'))return;
+    const content=$('quranVerseContent');if(!content)return;
+    content.querySelectorAll('.quran-ayah').forEach(decorateAyah);refreshPanel();
+  }
   function onWordClick(el,preferredCharIndex=null){
     if(!state.enabled){try{toast('فعّل وضع التصحيح أولًا','info');}catch(_){}return;}if(typeof curStId!=='undefined'&&!curStId){try{toast('اختر الطالب أولًا قبل تسجيل موضع الخطأ','error');}catch(_){}return;}
     const ayahEl=el.closest('.quran-ayah'),word=el.dataset.word||el.textContent.trim(),chars=graphemes(word),ci=Number(preferredCharIndex);const hasChar=preferredCharIndex!==null&&preferredCharIndex!==undefined&&Number.isInteger(ci)&&ci>=0&&ci<chars.length;

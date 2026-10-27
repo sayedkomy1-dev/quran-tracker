@@ -11,7 +11,7 @@
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Candidate hotfix cache is separate from beta.27, so failed installation cannot alter its offline shell.
-const LIVE_CACHE_NAME = CACHE_NAME + '-quran-picker-candidate1';
+const LIVE_CACHE_NAME = CACHE_NAME + '-quran-picker-hotfix2';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -46,11 +46,11 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/academy-analytics-1112.js?v=11.12.1-beta.27',
   './academy-analytics-1112.css?v=11.12.1-beta.27',
   './imam-smart-board.css?v=11.12.1-beta.27',
-  './teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker1',
+  './teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker-hotfix2',
   './js/features/imam-board-tafsir.js?v=11.12.1-beta.27',
   './js/features/imam-board-corpus.js?v=11.12.1-beta.27',
   './js/features/imam-smart-board.js?v=11.12.1-beta.27-quran-picker1',
-  './js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker1',
+  './js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker-hotfix2',
   './imam-board-display.html',
   './imam-board-display.js?v=11.12.1-beta.27'
 ];
@@ -68,11 +68,11 @@ const APP_SHELL = [
   './',
   './index.html',
   './imam-smart-board.css?v=11.12.1-beta.27',
-  './teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker1',
+  './teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker-hotfix2',
   './js/features/imam-board-tafsir.js?v=11.12.1-beta.27',
   './js/features/imam-board-corpus.js?v=11.12.1-beta.27',
   './js/features/imam-smart-board.js?v=11.12.1-beta.27-quran-picker1',
-  './js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker1',
+  './js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker-hotfix2',
   './imam-board-display.html',
   './imam-board-display.js?v=11.12.1-beta.27',
   './guest-practice.html',
@@ -123,7 +123,7 @@ const APP_SHELL = [
   './v10.js?v=11.12.1-beta.27',
   './revision-quran-text.css?v=11.8.1',
   './js/features/revision-quran-text.js?v=11.8.1',
-  './js/features/teacher-error-marking.js?v=11.8.0',
+  './js/features/teacher-error-marking.js?v=11.12.1-beta.27-quran-picker-hotfix2',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './js/features/guardian-communication.js?v=11.0.0',
   './js/features/student-progress.js?v=11.0.0',
@@ -217,7 +217,7 @@ const CORE_SHELL = [
   './js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/student-finance.js?v=11.5.1-s2',
   './js/features/v11-ui.js?v=11.12.1-beta.27',
-  './js/features/teacher-error-marking.js?v=11.8.0',
+  './js/features/teacher-error-marking.js?v=11.12.1-beta.27-quran-picker-hotfix2',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './app.js?v=11.12.1-beta.27',
   './revision-quran-text.css?v=11.8.1',

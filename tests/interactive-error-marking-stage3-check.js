@@ -20,6 +20,6 @@ ok(portal.includes('portalCorrectionFocus')&&portal.includes('بطاقة الت�
 ok(view.includes('renderCorrectionFocus')&&view.includes('renderVerseWithMarks')&&view.includes('practiceCorrectionRange'),'guardian correction review renderer missing');
 ok(portalCss.includes('.portal-correction-verse-text mark')&&portalCss.includes('.portal-correction-practice'),'guardian correction card styles missing');
 ok(tahfeez.includes('function openCorrectionRange')&&tahfeez.includes("practiceMode||'stabilize'")&&tahfeez.includes('g.openGuardianCorrectionRange=openCorrectionRange'),'correction-to-Tahfeez bridge missing');
-ok(index.includes('teacher-error-marking.js?v=11.8.0')&&portal.includes('guardian-portal-view.js?v=11.2.0-s3'),'Stage 3 cache-busting refs missing');
+ok(index.includes('teacher-error-marking.js?v=11.12.1-beta.27-quran-picker-hotfix2')&&portal.includes('guardian-portal-view.js?v=11.2.0-s3'),'Stage 3 cache-busting refs missing');
 ok(sw.includes("quran-pwa-v11.2.0-error3")&&sw.includes("uiStage:'11.2-error-marking-3'"),'Stage 3 service-worker generation missing');
 console.log('PASS interactive-error-marking-stage3-check');
