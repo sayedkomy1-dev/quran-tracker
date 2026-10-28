@@ -1,0 +1,166 @@
+/* Imam Design Bridge — 2026. Based on the supplied React/Vite visual reference.
+   Presentation only. No replacement of the canonical student/session/guardian data engines.
+   Can be disabled per-device from the header. */
+body.imam-design-bridge {
+  --ui-primary:#145a3a;--ui-primary-deep:#0e402d;--ui-primary-bright:#187c52;
+  --ui-ink:#20372b;--ui-muted:#6b7c71;--ui-line:#dbe8e0;
+  --ui-canvas:#f6f7f2;--ui-surface:#fff;--ui-raised:#fff;
+  --ui-soft:#eef6f0;--ui-gold:#c59b27;--ui-gold-soft:#fff8e4;
+  --ui-radius:18px;--ui-radius-sm:12px;
+  --ui-shadow:0 7px 22px rgba(22,78,54,.058);
+  background:var(--ui-canvas);color:var(--ui-ink);
+  font-family:Tahoma,'Segoe UI',Arial,sans-serif;
+}
+html[data-theme="dark"] body.imam-design-bridge {
+  --ui-primary:#83dfaa;--ui-primary-deep:#103729;--ui-primary-bright:#9bebbb;
+  --ui-ink:#e8f4ec;--ui-muted:#b1c5b7;--ui-line:#304d3b;
+  --ui-canvas:#0c1a13;--ui-surface:#16271d;--ui-raised:#203429;
+  --ui-soft:#20392a;--ui-gold:#e9c575;--ui-gold-soft:#363122;
+  --ui-shadow:0 7px 22px rgba(0,0,0,.22);
+}
+body.imam-design-bridge .hdr,body.imam-design-bridge.v11-ready .hdr {
+  background:var(--ui-surface)!important;
+  border-bottom:1px solid var(--ui-line)!important;
+  color:var(--ui-ink)!important;
+  box-shadow:0 2px 12px rgba(16,49,29,.045)!important;
+}
+body.imam-design-bridge .hdr-title,body.imam-design-bridge.v11-ready .hdr-title {color:var(--ui-primary)!important}
+body.imam-design-bridge .hdr-sub,body.imam-design-bridge.v11-ready .hdr-sub {color:var(--ui-muted)!important}
+body.imam-design-bridge .hdr-btn,body.imam-design-bridge .back-btn,
+body.imam-design-bridge.v11-ready .hdr-btn,body.imam-design-bridge.v11-ready .back-btn {
+  background:var(--ui-soft)!important;color:var(--ui-primary)!important;border-color:var(--ui-line)!important;
+  box-shadow:none!important;
+}
+body.imam-design-bridge .hdr-btn:hover,body.imam-design-bridge .back-btn:hover{background:var(--ui-gold-soft)!important}
+body.imam-design-bridge .hdr .hdr-badge {background:#b53436;color:white}
+body.imam-design-bridge :is(.card,.sc,.stc,.v9-section,.v10-library-card,.v10-accordion,.v92-stats>div) {
+  border:1px solid var(--ui-line);border-radius:19px;
+  box-shadow:var(--ui-shadow);background:var(--ui-surface);
+}
+body.imam-design-bridge .pg :is(.card,.v9-section,.v10-card,.cm-panel,.aa-card,.analytics-card,.finance-card,.goal-card,.stc){border-radius:18px}
+body.imam-design-bridge .sg {gap:12px}
+body.imam-design-bridge .sc {background:linear-gradient(136deg,var(--ui-surface),var(--ui-soft));box-shadow:none;}
+body.imam-design-bridge .sc::before{background:var(--ui-gold);width:4px;top:15px;height:30px}
+body.imam-design-bridge .sc .sn {color:var(--ui-primary);font-size:clamp(24px,3vw,35px)}
+body.imam-design-bridge :is(.quick-action,.v92-actions button,.v9-quick,.btn-out) {border-radius:14px;box-shadow:none}
+body.imam-design-bridge :is(.quick-action,.v92-actions button,.v9-quick):hover {border-color:var(--ui-gold)}
+body.imam-design-bridge .v92-primary-card,body.imam-design-bridge .v9-hero {
+  background:linear-gradient(117deg,#0e402d,#145a3a 72%,#176b4a);
+  border:1px solid rgba(197,155,39,.45);border-radius:24px;
+}
+body.imam-design-bridge .v92-primary-card .v92-start{background:#dfbd69;color:#1b3627}
+body.imam-design-bridge .pg :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){border-radius:12px}
+body.imam-design-bridge :is(.ui-workspace-heading,.portal-card,.guardian-login-card){box-shadow:var(--ui-shadow)}
+/* No typographic changes to Quran reference text; diacritics and canonical layout are untouched. */
+body.imam-design-bridge :is(.ayah-text,.quran-text,.ib-quran-text,[data-quran-ayah],.portal-correction-verse-text){
+  font-kerning:normal!important;letter-spacing:normal!important;word-break:normal!important;
+}
+body.imam-design-bridge .imam-bridge-hero{position:relative;display:flex;justify-content:space-between;align-items:center;
+  gap:18px;padding:clamp(18px,3vw,31px);margin-bottom:17px;border-radius:24px;
+  background:linear-gradient(115deg,#0e402d 0%,#176349 75%,#1a7150 100%);
+  border:1px solid rgba(197,155,39,.35);color:white;overflow:hidden;
+}
+body.imam-design-bridge .imam-bridge-hero::after{content:"";position:absolute;left:-50px;top:-75px;
+  width:220px;height:220px;border:28px solid rgba(239,205,135,.09);border-radius:50%;pointer-events:none}
+body.imam-design-bridge .imam-bridge-copy{position:relative;z-index:1;min-width:0}
+body.imam-design-bridge .imam-bridge-eyebrow{display:inline-flex;gap:7px;align-items:center;
+  color:#f4dca6;font-size:12px;font-weight:800;margin-bottom:8px}
+body.imam-design-bridge .imam-bridge-hero h2{font-size:clamp(20px,2.4vw,29px);color:#fff;margin:0 0 6px;font-weight:900;line-height:1.55}
+body.imam-design-bridge .imam-bridge-hero p{font-size:13px;line-height:1.8;color:#d8ece0;margin:0;max-width:540px}
+body.imam-design-bridge .imam-bridge-hero-actions{display:flex;gap:9px;flex-wrap:wrap;position:relative;z-index:1}
+body.imam-design-bridge .imam-bridge-hero-actions button,body.imam-design-bridge .imam-bridge-hero-actions a{
+  min-height:44px;border:1px solid rgba(255,255,255,.32);border-radius:12px;
+  color:white;background:rgba(255,255,255,.09);text-decoration:none;font-size:13px;
+  font-weight:800;padding:10px 14px;white-space:nowrap;cursor:pointer;
+}
+body.imam-design-bridge .imam-bridge-hero-actions button:first-child{background:#dfbd69;color:#1c3e2b;border-color:#dfbd69}
+body.imam-design-bridge .imam-bridge-section{margin:4px 0 20px}
+body.imam-design-bridge .imam-bridge-titleline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 11px}
+body.imam-design-bridge .imam-bridge-titleline h2{font-size:17px;margin:0;color:var(--ui-ink)}
+body.imam-design-bridge .imam-bridge-titleline a{font-size:12px;color:var(--ui-primary);font-weight:800}
+body.imam-design-bridge .imam-bridge-portal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+body.imam-design-bridge .imam-bridge-portal-link{display:flex;align-items:center;gap:12px;padding:15px;
+  background:var(--ui-surface);border:1px solid var(--ui-line);border-radius:17px;
+  min-width:0;text-decoration:none;color:var(--ui-ink);transition:transform .17s,border-color .17s}
+body.imam-design-bridge .imam-bridge-portal-link:hover{border-color:var(--ui-gold);transform:translateY(-1px)}
+body.imam-design-bridge .imam-bridge-portal-icon{font-size:22px;width:43px;height:43px;
+  border-radius:12px;background:var(--ui-soft);display:grid;place-items:center;flex-shrink:0}
+body.imam-design-bridge .imam-bridge-portal-link b{display:block;font-size:13px;line-height:1.65}
+body.imam-design-bridge .imam-bridge-portal-link small{display:block;font-size:11px;color:var(--ui-muted);line-height:1.6}
+body.imam-design-bridge .imam-ui-toggle{font-size:13px;white-space:nowrap;min-width:43px;padding:0 9px!important}
+body.imam-design-bridge .imam-bridge-portal-link:focus-visible,body.imam-design-bridge .imam-bridge-hero-actions :focus-visible{
+ outline:3px solid var(--ui-gold);outline-offset:3px;
+}
+body:not(.imam-design-bridge) .imam-bridge-hero,body:not(.imam-design-bridge) .imam-bridge-section{display:none!important}
+@media(min-width:1100px){
+  body.imam-design-bridge.v9-shell-ready{padding-inline-start:220px}
+  body.imam-design-bridge.v9-shell-ready .v9-nav{
+    width:198px;right:10px;top:calc(var(--ui-top-height) + 15px);bottom:15px;
+    border-radius:20px;background:var(--ui-surface);border:1px solid var(--ui-line);
+    box-shadow:var(--ui-shadow);padding:12px 9px;overflow-y:auto;
+  }
+  body.imam-design-bridge .v9-nav::before{content:"التنقل السريع";font-size:12px;font-weight:850;
+    color:var(--ui-muted);padding:7px 10px 12px;border-bottom:1px solid var(--ui-line);margin-bottom:10px}
+  body.imam-design-bridge .v9-nav-btn{min-height:48px;height:auto;flex-direction:row;
+    text-align:right;justify-content:flex-start;padding:9px 12px;border-radius:12px;
+    color:var(--ui-ink);font-weight:800;gap:11px}
+  body.imam-design-bridge .v9-nav-btn svg{width:19px;height:19px;flex-shrink:0}
+  body.imam-design-bridge .v9-nav-btn .v9-nav-label{font-size:13px;line-height:1.45}
+  body.imam-design-bridge .v9-nav-btn.on:not(.session-primary){background:var(--ui-soft);color:var(--ui-primary)}
+  body.imam-design-bridge .v9-nav-btn.session-primary{background:var(--ui-primary-deep);color:white;border:0;box-shadow:none}
+}
+@media(max-width:1099px){
+  body.imam-design-bridge .imam-bridge-hero{flex-direction:column;align-items:stretch}
+  body.imam-design-bridge .imam-bridge-portal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:799px){
+  body.imam-design-bridge.v9-shell-ready .v9-nav{background:var(--ui-surface);border-color:var(--ui-line);box-shadow:0 -3px 18px rgba(8,52,31,.09)}
+  body.imam-design-bridge .v9-nav-btn{color:var(--ui-muted)}
+  body.imam-design-bridge .v9-nav-btn.on:not(.session-primary){background:var(--ui-soft);color:var(--ui-primary)}
+  body.imam-design-bridge .v9-nav-btn.session-primary{background:var(--ui-primary-deep);color:#fff}
+  body.imam-design-bridge .imam-bridge-portal-link{padding:12px 10px;gap:9px}
+  body.imam-design-bridge .imam-bridge-portal-link b{font-size:12px}
+  body.imam-design-bridge .imam-bridge-portal-link small{font-size:10px}
+  body.imam-design-bridge .imam-bridge-portal-icon{width:35px;height:35px;font-size:20px}
+  body.imam-design-bridge .imam-bridge-hero h2{font-size:21px}
+}
+@media(max-width:370px){body.imam-design-bridge .imam-bridge-portal-grid{grid-template-columns:1fr}}
+@media print{.imam-bridge-hero,.imam-bridge-section,.imam-ui-toggle{display:none!important}}
+@media(prefers-reduced-motion:reduce){.imam-bridge-portal-link{transition:none!important}}
+
+/* Grouped workspace directory — reuses native actions, never authorizes access. */
+.imam-workspace-backdrop[hidden]{display:none!important}
+.imam-workspace-backdrop{position:fixed;inset:0;z-index:1600;display:flex;justify-content:flex-start;
+  background:rgba(10,35,24,.45);backdrop-filter:blur(3px);}
+.imam-workspace-panel{height:100dvh;width:min(445px,100vw);overflow:auto;overscroll-behavior:contain;
+  background:var(--ui-surface,#fff);color:var(--ui-ink,#20372b);
+  box-shadow:0 10px 55px rgba(0,0,0,.2);padding:25px clamp(16px,2vw,27px) 30px;}
+.imam-workspace-title-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.imam-workspace-title-row h2{font-size:20px;margin:0;color:var(--ui-primary,#145a3a)}
+.imam-workspace-close{font:800 13px Tahoma,Arial,sans-serif;background:var(--ui-soft,#edf5ee);
+  color:var(--ui-primary,#145a3a);border:1px solid var(--ui-line,#dae8dd);border-radius:10px;padding:9px;cursor:pointer}
+.imam-workspace-note{font-size:12px;line-height:1.9;color:var(--ui-muted,#6b7c71);padding-bottom:10px}
+.imam-workspace-group{margin:16px 0 25px}.imam-workspace-group h3{font-size:12px;font-weight:900;
+  color:var(--ui-muted,#6b7c71);margin:0 0 10px;border-bottom:1px solid var(--ui-line,#dae8dd);padding-bottom:9px}
+.imam-workspace-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.imam-workspace-link{min-height:59px;text-align:right;border:1px solid var(--ui-line,#dae8dd);
+  border-radius:13px;padding:12px;color:var(--ui-ink,#20372b);font:800 12px/1.6 Tahoma,Arial,sans-serif;
+  background:var(--ui-soft,#edf5ee);cursor:pointer;overflow-wrap:anywhere}
+.imam-workspace-link:hover{border-color:var(--ui-gold,#c59b27)}
+.imam-workspace-link:focus-visible,.imam-workspace-close:focus-visible{outline:3px solid var(--ui-gold,#c59b27);outline-offset:2px}
+body.imam-directory-open{overflow:hidden}
+@media(max-width:390px){.imam-workspace-links{grid-template-columns:1fr}}
+@media print{.imam-workspace-backdrop,.imam-workspace-open{display:none!important}}
+/* Home already has a desktop grid: the unified hero and portal section occupy a full row. */
+body.imam-design-bridge #pg-home > :is(.imam-bridge-hero,.imam-bridge-section){grid-column:1 / -1;width:100%;min-width:0}
+@media(max-width:600px){
+ body.imam-design-bridge .hdr-top{gap:5px}
+ body.imam-design-bridge .hdr-actions{gap:4px}
+ body.imam-design-bridge .hdr-btn,body.imam-design-bridge .back-btn,
+ body.imam-design-bridge.v11-ready .hdr-btn,body.imam-design-bridge.v11-ready .back-btn{
+    min-width:34px!important;width:34px!important;height:36px!important;padding:0 5px!important;border-radius:11px!important
+ }
+ body.imam-design-bridge .hdr-title,body.imam-design-bridge.v11-ready .hdr-title{font-size:13px!important;max-width:114px}
+ body.imam-design-bridge .hdr-sub,body.imam-design-bridge.v11-ready .hdr-sub{font-size:10px!important}
+ body.imam-design-bridge .v11-brand-logo{width:31px;height:31px}
+}

@@ -1,0 +1,16 @@
+/* Unified visual language for the existing authenticated guardian and public training pages.
+   Do not override their permission logic, theme selectors or Quran text typography. */
+body.imam-portal-refresh{font-family:Tahoma,'Segoe UI',Arial,sans-serif}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) body.imam-portal-refresh{background:linear-gradient(180deg,#ebf4ec,#f6f7f2 330px);}
+body.imam-portal-refresh :is(.guardian-login-card,.portal-card,.portal-hero,.portal-kpis article,.guest-card){
+ border-radius:20px;box-shadow:0 8px 28px rgba(17,70,40,.075);
+}
+body.imam-portal-refresh :is(.guardian-login-card,.portal-hero){border-top:3px solid #c59b27}
+body.imam-portal-refresh :is(.portal-header,.guardian-login-brand){border-radius:18px}
+body.imam-portal-refresh :is(.guardian-login-card form button,.guest-primary){border-radius:13px}
+body.imam-portal-refresh :is(input,select,textarea,button,a):focus-visible{outline:3px solid #c59b27;outline-offset:3px}
+body.imam-portal-refresh :is(input,select,textarea){min-width:0;max-width:100%}
+body.imam-portal-refresh :is(.portal-quick-nav,.portal-kpis,.portal-assignment){gap:10px}
+body.imam-portal-refresh :is(.quran-text,.ayah-text,.tahfeez-focus-text,[data-quran-ayah]){letter-spacing:normal;word-break:normal}
+@media(max-width:600px){body.imam-portal-refresh :is(.guardian-login-card,.portal-card,.guest-card){border-radius:16px}}
+@media print{body.imam-portal-refresh :is(.guardian-login-card,.portal-card,.guest-card){box-shadow:none!important}}

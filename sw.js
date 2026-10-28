@@ -12,13 +12,18 @@
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
-const LIVE_CACHE_NAME = CACHE_NAME + '-teaching-review5-hotfix1';
+const LIVE_CACHE_NAME = CACHE_NAME + '-design-bridge1';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
+  './css/platform/design-bridge.css?v=11.12.1-beta.27-design-bridge1',
+  './js/features/design-bridge.js?v=11.12.1-beta.27-design-bridge1',
+  './css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1',
+  './css/platform/academy-portals.css?v=11.12.1-beta.27-design-bridge1',
+  './academy-portals.html',
   './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5-hotfix1',
   './js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5',
   './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1',
@@ -70,6 +75,11 @@ const CRITICAL_FRESH_SHELL = [
 
 
 const APP_SHELL = [
+  './css/platform/design-bridge.css?v=11.12.1-beta.27-design-bridge1',
+  './js/features/design-bridge.js?v=11.12.1-beta.27-design-bridge1',
+  './css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1',
+  './css/platform/academy-portals.css?v=11.12.1-beta.27-design-bridge1',
+  './academy-portals.html',
   './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5-hotfix1',
   './js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5',
   './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1',

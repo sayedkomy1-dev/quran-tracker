@@ -18,7 +18,7 @@ check('panel loader does not silently hide rendering problems',()=>{
   assert(!feature.includes('if(panel)panel.hidden=true'));
 });
 check('fresh service worker release and asset versions are consistent',()=>{
-  assert(sw.includes("LIVE_CACHE_NAME = CACHE_NAME + '-teaching-review5-hotfix1'"));
+  assert(sw.includes("LIVE_CACHE_NAME = CACHE_NAME + '-design-bridge1'"));
   for(const f of ['js/features/teacher-followup.js','imam-teaching-insights.css']){
     assert(html.includes(f+'?v=11.12.1-beta.27-teaching-review5-hotfix1'));
     assert(sw.includes('./'+f+'?v=11.12.1-beta.27-teaching-review5-hotfix1'));
