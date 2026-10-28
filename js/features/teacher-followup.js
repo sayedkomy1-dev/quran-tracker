@@ -73,12 +73,13 @@ function v108Reasons(row){
   if(!row.reasons.length)return'<span class="v108-reason good">لا توجد إشارة قوية تستدعي التدخل الآن</span>';
   return row.reasons.slice(0,4).map(r=>`<span class="v108-reason">${v108Esc(r)}</span>`).join('');
 }
-function v108StudentCard(row){
+function v108StudentCard(row,insight){
   const st=row.st,attention=row.attention.slice(0,2).map(x=>x.label).filter(Boolean);
   return `<article class="v108-student ${row.priority}">
     <div class="v108-student-head"><div><b>${v108Esc(st.name)}</b><small>${v108Esc(st.group||'بدون حلقة')} · آخر حضور ${v108Esc(v108LastText(row))}</small></div><span class="v108-priority ${row.priority}">${v108PriorityLabel(row)}</span></div>
     <div class="v108-mini-kpis"><span><small>الإتقان</small><b>${v108MasteryText(row)}</b></span><span><small>الحضور</small><b>${v108AttendanceText(row)}</b></span><span><small>الإعادات</small><b>${row.repeats}</b></span><span><small>تثبيت</small><b>${row.attention.length}</b></span></div>
     <div class="v108-reasons">${v108Reasons(row)}</div>
+    ${globalThis.ImamTeachingInsights?.studentFocusCard?.(insight)||''}
     ${attention.length?`<div class="v108-focus"><b>أقرب مواضع للتثبيت:</b><span>${attention.map(v108Esc).join(' · ')}</span></div>`:''}
     <div class="v108-card-actions"><button class="btn btn-g btn-sm" onclick="openProf('${v108Esc(st.id)}')">ملف الطالب</button><button class="btn btn-out btn-sm" onclick="startFor('${v108Esc(st.id)}')">بدء حصة</button><button class="btn btn-wa btn-sm" onclick="v108ContactGuardian('${v108Esc(st.id)}')">واتساب</button></div>
   </article>`;
@@ -90,7 +91,15 @@ function renderV108Followup(){
   set('v108UrgentCount',summary.urgent);set('v108FollowCount',summary.follow);set('v108AttendanceCount',summary.lowAttendance);set('v108OverdueCount',summary.overdue);set('v108VisibleCount',visible.length);
   v108SyncGroupOptions();
   document.querySelectorAll('[data-v108-filter]').forEach(b=>b.classList.toggle('on',b.dataset.v108Filter===V108_FOLLOWUP.filter));
-  host.innerHTML=visible.length?visible.map(v108StudentCard).join(''):'<div class="v108-empty"><b>لا توجد نتائج بهذا الفلتر</b><span>غيّر الفلتر أو الحلقة أو كلمة البحث.</span></div>';
+  let insights=null;
+  try{
+    insights=globalThis.ImamTeachingInsights?.renderInto?.(
+      document.getElementById('imamTeachingInsights'),
+      Array.isArray(sessions)?sessions:[],visible
+    )||null;
+    const panel=document.getElementById('imamTeachingInsights');if(panel)panel.hidden=!insights;
+  }catch(_){const panel=document.getElementById('imamTeachingInsights');if(panel)panel.hidden=true;}
+  host.innerHTML=visible.length?visible.map(row=>v108StudentCard(row,insights?.byId?.get(String(row.st.id)))).join(''):'<div class="v108-empty"><b>لا توجد نتائج بهذا الفلتر</b><span>غيّر الفلتر أو الحلقة أو كلمة البحث.</span></div>';
   try{
     globalThis.ImamMakeupAgenda?.renderInto?.(
       document.getElementById('imamMakeupAgenda'),

@@ -7,8 +7,8 @@ function assert(cond,msg){if(!cond)throw new Error(msg);}
 const html=read('index.html'),sw=read('sw.js'),feature=read('js/features/teacher-followup.js'),css=read('archive/historical-css/v10.css'),pkg=JSON.parse(read('package.json'));
 assert(pkg.version==='11.12.1-beta.27','package version must be 10.10.0');
 assert(html.includes('id="pg-followup"')&&html.includes('مركز متابعة الطلاب'),'follow-up page missing');
-assert(html.includes('teacher-followup.js?v=11.0.0'),'follow-up feature missing from HTML');
-assert(sw.includes("'./js/features/teacher-followup.js?v=11.0.0'"),'follow-up feature missing from offline shell');
+assert(html.includes('teacher-followup.js?v=11.12.1-beta.27-teaching-review5'),'follow-up feature missing from HTML');
+assert(sw.includes("'./js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5'"),'follow-up feature missing from offline shell');
 assert(html.includes('data-v108-filter="urgent"')&&html.includes('data-v108-filter="mastery"')&&html.includes('data-v108-filter="attendance"'),'follow-up filters missing');
 assert(feature.includes("!st.studentStatus||st.studentStatus==='active'"),'follow-up must only rank active students');
 assert(feature.includes('StudentProgress?.calculate')&&feature.includes('(studentId,30)'),'follow-up must reuse 30-day student analytics');

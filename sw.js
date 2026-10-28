@@ -10,14 +10,18 @@
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
-// Candidate hotfix cache is separate from beta.27, so failed installation cannot alter its offline shell.
-const LIVE_CACHE_NAME = CACHE_NAME + '-combined-review4';
+// Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
+// Prior release marker: '-combined-review4'.
+const LIVE_CACHE_NAME = CACHE_NAME + '-teaching-review5';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
+  './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5',
+  './js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5',
+  './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5',
   './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
   './imam-absence-makeup.css?v=11.12.1-beta.27-absence-review2',
   './quran-coverage-progress.css?v=11.12.1-beta.27-coverage-review3',
@@ -66,6 +70,9 @@ const CRITICAL_FRESH_SHELL = [
 
 
 const APP_SHELL = [
+  './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5',
+  './js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5',
+  './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5',
   './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
   './imam-absence-makeup.css?v=11.12.1-beta.27-absence-review2',
   './quran-coverage-progress.css?v=11.12.1-beta.27-coverage-review3',
@@ -144,7 +151,6 @@ const APP_SHELL = [
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './js/features/guardian-communication.js?v=11.0.0',
   './js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3',
-  './js/features/teacher-followup.js?v=11.0.0',
   './js/features/circle-analytics.js?v=11.0.0',
   './js/features/smart-revision.js?v=11.9.2',
   './js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3',

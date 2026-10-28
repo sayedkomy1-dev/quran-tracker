@@ -1,0 +1,42 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const engine=require('../js/features/error-followup-engine.js');
+const insights=require('../js/features/imam-teaching-insights.js');
+const root=path.resolve(__dirname,'..');
+let n=0;function check(desc,fn){fn();n++;console.log('PASS',desc);}
+const students=[{id:'a',name:'أحمد',studentStatus:'active'},{id:'b',name:'عمر',studentStatus:'active'},{id:'x',name:'مؤرشف',studentStatus:'archived'}];
+function error(type='وقف وابتداء',props={}){return {id:'e1',type,section:'المراجعة',source:'quran-word',surahId:1,surah:'الفاتحة',ayah:2,wordIndex:2,word:'الحمد',...props};}
+function ses(id,studentId,date,recitationErrors=[],errorFollowups=[]){return {id,studentId,date,status:'حضر',recitationErrors,errorFollowups};}
+const base=[ses('s1','a','2026-10-01',[error()]),ses('s2','a','2026-10-08',[error('وقف وابتداء',{id:'e2'})]),ses('s3','b','2026-10-20',[error('مخرج',{surahId:2,ayah:1})])];
+check('reads only current visible students',()=>{const r=insights.build(base,[{st:students[0]}],'2026-10-28',engine);assert.equal(r.students,1);assert.equal(r.open,1);assert.equal(r.recurring,1);assert(!r.byId.has('b'));});
+check('counts open distinct error keys, not occurrences',()=>{const r=insights.build(base,students,'2026-10-28',engine);assert.equal(r.open,2);assert.equal(r.recurring,1);assert.equal(r.peopleWithErrors,2);});
+check('detects old unanswered errors by last observed day',()=>{const r=insights.build(base,students,'2026-10-28',engine);assert.equal(r.aged,1);assert.equal(r.byId.get('a').items[0].age,20);});
+check('does not group separate surah-verse locations',()=>{const rows=[ses('s1','a','2026-10-10',[error(),error('وقف وابتداء',{ayah:3,id:'e3'})])];assert.equal(insights.build(rows,students,'2026-10-28',engine).open,2);});
+check('records today included but not future-dated sessions',()=>{const rows=[ses('s1','a','2026-10-28',[error()]),ses('s2','a','2026-10-29',[error('مخرج')])];const r=insights.build(rows,students,'2026-10-28',engine);assert.equal(r.open,1);assert.equal(r.byId.get('a').items[0].type,'وقف وابتداء');});
+check('mastered followup closes historical error',()=>{const key=engine.errorKey(error());const rows=[ses('s1','a','2026-10-10',[error()]),ses('s2','a','2026-10-11',[],[{key,decision:'mastered',at:'2026-10-11'}])];assert.equal(insights.build(rows,students,'2026-10-28',engine).open,0);});
+check('new occurrence after mastery reopens the error',()=>{const key=engine.errorKey(error());const rows=[ses('s1','a','2026-10-10',[error()]),ses('s2','a','2026-10-11',[],[{key,decision:'mastered'}]),ses('s3','a','2026-10-12',[error()])];const r=insights.build(rows,students,'2026-10-28',engine);assert.equal(r.open,1);assert.equal(r.recurring,1);});
+check('stabilize retains error open',()=>{const key=engine.errorKey(error());const rows=[ses('s1','a','2026-10-10',[error()]),ses('s2','a','2026-10-11',[],[{key,decision:'stabilize'}])];assert.equal(insights.build(rows,students,'2026-10-28',engine).open,1);});
+check('absent session errors are not counted',()=>{const rows=[{...ses('s1','a','2026-10-10',[error()]),status:'غاب'}];assert.equal(insights.build(rows,students,'2026-10-28',engine).open,0);});
+check('no sharing sibling data by parent or phone',()=>{const r=insights.build(base,[{st:students[1]}],'2026-10-28',engine);assert.equal(r.open,1);assert(!r.byId.has('a'));});
+check('excludes archived and stopped students supplied by caller',()=>{const rows=[ses('x1','x','2026-10-05',[error()])];assert.equal(insights.build(rows,students,'2026-10-28',engine).open,0);});
+check('deduplicates visible student IDs',()=>{const r=insights.build(base,[students[0],students[0]],'2026-10-28',engine);assert.equal(r.students,1);assert.equal(r.open,1);});
+check('no data source returns no phantom errors',()=>{const r=insights.build([],students,'2026-10-28',engine);assert.equal(r.open,0);assert.equal(r.peopleWithErrors,0);});
+check('does not mutate student or session source arrays',()=>{const se=Object.freeze(ses('s1','a','2026-10-10',Object.freeze([Object.freeze(error())])));const data=Object.freeze([se]);insights.build(data,Object.freeze([Object.freeze(students[0])]),'2026-10-28',engine);assert.equal(data[0].id,'s1');});
+check('respects unknown day by choosing local current day',()=>{const r=insights.build([],students,'not a date',engine);assert(insights.validDay(r.date));});
+check('calendar rejects invalid days',()=>{assert.equal(insights.validDay('2026-02-30'),'');assert.equal(insights.validDay('2026-10-28'),'2026-10-28');});
+check('missing error engine is visible as unavailable, not a false zero',()=>{const r=insights.build(base,students,'2026-10-28',null);assert.equal(r.available,false);assert(insights.render(r).includes('تعذر تحميل محرك'));});
+check('type distribution is derived only from open errors',()=>{const r=insights.build(base,students,'2026-10-28',engine);assert.equal(r.types.length,2);assert.equal(r.types.find(t=>t.label==='وقف وابتداء').count,1);});
+check('no student names or numbers in copyable academy summary',()=>{const r=insights.build(base,students,'2026-10-28',engine);const t=insights.copySummary(r);assert(t.includes('أخطاء متكررة'));assert(!t.includes('أحمد'));assert(!t.includes('عمر'));assert(!t.includes('0123456789'));assert(!t.includes('وقف وابتداء'));assert(!t.includes('مخرج'));});
+check('HTML escapes malicious student or error names',()=>{const evil='<img src=x onerror=alert(1)>';const rows=[ses('s1','evil','2026-10-10',[error(evil)])];const r=insights.build(rows,[{id:'evil',name:evil}],'2026-10-28',engine);const html=insights.render(r);assert(!html.includes(evil));assert(html.includes('&lt;img'));});
+check('student next-action tip is escaped and teacher-controlled',()=>{const r=insights.build(base,students,'2026-10-28',engine);const html=insights.studentFocusCard(r.byId.get('a'));assert(html.includes('سؤال مقترح'));assert(html.includes('قرار التقييم للمحفظ'));});
+check('empty tip does not add misleading action',()=>{assert.equal(insights.studentFocusCard({items:[]}), '');});
+check('focus prioritizes repeated errors',()=>{const r=insights.build(base,students,'2026-10-28',engine);assert.equal(r.focus[0].studentId,'a');});
+check('visible filter context appears in method note',()=>{assert(insights.render(insights.build(base,students,'2026-10-28',engine)).includes('فلتر مركز المتابعة الحالي'));});
+check('center uses its visible filtered rows and not entire student registry',()=>{const src=fs.readFileSync(path.join(root,'js/features/teacher-followup.js'),'utf8');assert(src.includes("document.getElementById('imamTeachingInsights')"));assert(src.includes('Array.isArray(sessions)?sessions:[],visible'));assert(src.includes('insights?.byId?.get(String(row.st.id))'));});
+check('only one new panel exists inside the existing center',()=>{const html=fs.readFileSync(path.join(root,'index.html'),'utf8');assert.equal(html.split('id="imamTeachingInsights"').length-1,1);assert(html.includes('id="pg-followup"'));});
+check('new assets loaded in correct order',()=>{const h=fs.readFileSync(path.join(root,'index.html'),'utf8');assert(h.indexOf('js/features/imam-teaching-insights.js')<h.indexOf('js/features/teacher-followup.js'));assert(h.includes('imam-teaching-insights.css?v='));});
+check('new module contains no storage, network, mutation, or secret use',()=>{const src=fs.readFileSync(path.join(root,'js/features/imam-teaching-insights.js'),'utf8');assert(!/\b(fetch\s*\(|localStorage\s*\.|indexedDB\s*\.|XMLHttpRequest|\.setItem\s*\(|\.delete\s*\(|\.push\s*\(.*student)/.test(src));});
+check('there is no automatic Quran or tajweed grading',()=>{const src=fs.readFileSync(path.join(root,'js/features/imam-teaching-insights.js'),'utf8');assert(!/\b(assessmentScores|prevGrades)\s*=/.test(src));assert(src.includes('ImamErrorFollowup'));});
+console.log(`OK teaching intervention insights: ${n}/${n}`);
