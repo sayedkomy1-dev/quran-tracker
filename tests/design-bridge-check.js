@@ -15,7 +15,8 @@ check('native student/session/error/guardian feature assets preserved',()=>{
 });
 check('public and guardian portals linked without student ID or PIN',()=>{
  const hub=read('academy-portals.html');
- for(const file of ['index.html','guardian-login.html','guest-practice.html','imam-board-display.html']) assert(hub.includes(`href="${file}"`));
+ for(const file of ['index.html','guardian-login.html','guest-practice.html']) assert(read('js/features/academy-portal-suite.js').includes(`href:'${file}'`));
+ assert(!hub.includes('href="imam-board-display.html"'), 'student board needs teacher-issued session');
  assert(!/loginAsGuardianDirect|student\.id|st-1|token=|pin=|PIN\s*:\s*\d{6}/.test(hub));
 });
 check('no imported mock student, teacher, circle data',()=>{
@@ -43,7 +44,7 @@ check('cache-safe offline assets listed in both groups',()=>{
  for(const asset of ['css/platform/design-bridge.css','js/features/design-bridge.js','css/platform/portal-design-bridge.css','css/platform/academy-portals.css','academy-portals.html']){
   assert(sw.includes(`'./${asset}`),asset);
  }
- assert(sw.includes("LIVE_CACHE_NAME = CACHE_NAME + '-design-bridge1'"));
+ assert(sw.includes("LIVE_CACHE_NAME = CACHE_NAME + '-academy-suite-review7'"));
 });
 check('guardian/guest existing pages receive only a style layer',()=>{
  for(const file of ['guardian-login.html','guardian-portal.html','guest-practice.html']){

@@ -12,13 +12,26 @@
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
-const LIVE_CACHE_NAME = CACHE_NAME + '-design-bridge1';
+const LIVE_CACHE_NAME = CACHE_NAME + '-academy-suite-review7';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
+  './academy-mushaf.html',
+  './css/platform/academy-mushaf.css?v=11.12.1-beta.27-review7',
+  './js/features/academy-mushaf.js?v=11.12.1-beta.27-review7',
+
+  './css/platform/academy-suite.css?v=11.12.1-beta.27-visual-suite-review7',
+  './js/features/academy-suite.js?v=11.12.1-beta.27-visual-suite-review7',
+  './academy-learning.html',
+  './css/platform/academy-learning.css?v=11.12.1-beta.27-review7',
+  './js/features/academy-learning.js?v=11.12.1-beta.27-review7',
+  './data/academy-learning-materials.json',
+  './css/platform/academy-portal-suite.css?v=11.12.1-beta.27-review7',
+  './js/features/academy-portal-suite.js?v=11.12.1-beta.27-review7',
+
   './css/platform/design-bridge.css?v=11.12.1-beta.27-design-bridge1',
   './js/features/design-bridge.js?v=11.12.1-beta.27-design-bridge1',
   './css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1',
@@ -75,6 +88,19 @@ const CRITICAL_FRESH_SHELL = [
 
 
 const APP_SHELL = [
+  './academy-mushaf.html',
+  './css/platform/academy-mushaf.css?v=11.12.1-beta.27-review7',
+  './js/features/academy-mushaf.js?v=11.12.1-beta.27-review7',
+
+  './css/platform/academy-suite.css?v=11.12.1-beta.27-visual-suite-review7',
+  './js/features/academy-suite.js?v=11.12.1-beta.27-visual-suite-review7',
+  './academy-learning.html',
+  './css/platform/academy-learning.css?v=11.12.1-beta.27-review7',
+  './js/features/academy-learning.js?v=11.12.1-beta.27-review7',
+  './data/academy-learning-materials.json',
+  './css/platform/academy-portal-suite.css?v=11.12.1-beta.27-review7',
+  './js/features/academy-portal-suite.js?v=11.12.1-beta.27-review7',
+
   './css/platform/design-bridge.css?v=11.12.1-beta.27-design-bridge1',
   './js/features/design-bridge.js?v=11.12.1-beta.27-design-bridge1',
   './css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1',
