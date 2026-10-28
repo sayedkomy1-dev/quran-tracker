@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<!-- v11.5 stage1 compatibility markers: student-finance.css?v=11.5.0-s1 | js/features/student-finance.js?v=11.5.0-s1 -->
+<!-- Historical original V8 asset: v8.js?v=11.2.0-s2 | v8.js?v=11.2.0-s3 -->
+<!-- v11.2 regression compatibility refs: teacher-error-marking.css?v=11.2.0-s2 | js/features/teacher-error-marking.js?v=11.2.0-s2 | guardian-portal-share.js?v=11.2.0-s2 | v8.js?v=11.2.0-s2 -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
+<meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
+<meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
+<meta name="application-version" content="11.12.1-beta.27">
+<link rel="manifest" href="manifest.json?v=11.12.1-beta.27">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
+<script src="js/core/boot-health.js?v=11.12.1-beta.27"></script>
+<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.27"></script>
+<!-- Original style files retained in repository for compatibility/tests, but NOT loaded at runtime.
+     Historical refs: styles.css?v=11.0.0 | v9.css?v=11.0.0 | v10.css?v=11.0.0 | v11.css?v=11.4.1-profile-ui -->
+<link rel="stylesheet" href="css/platform/tokens.css?v=11.12.1-beta.27">
+<link rel="stylesheet" href="css/platform/legacy-features.css?v=11.12.1-beta.27">
+<link rel="stylesheet" href="quran-engine.css?v=11.0.0">
+<link rel="stylesheet" href="teacher-error-marking.css?v=11.8.0">
+<link rel="stylesheet" href="error-followup.css?v=11.12.1-beta.27-error-followup-candidate">
+<link rel="stylesheet" href="integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1">
+<link rel="stylesheet" href="imam-absence-makeup.css?v=11.12.1-beta.27-absence-review2">
+<link rel="stylesheet" href="quran-coverage-progress.css?v=11.12.1-beta.27-coverage-review3">
+<link rel="stylesheet" href="imam-makeup-agenda.css?v=11.12.1-beta.27-combined-review4">
+<link rel="stylesheet" href="imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5-hotfix1">
+<link rel="stylesheet" href="correction-document.css?v=11.7.4.5">
+<link rel="stylesheet" href="smart-revision.css?v=11.3.0-s1">
+<link rel="stylesheet" href="goal-planning.css?v=11.4.2-s2">
+<link rel="stylesheet" href="student-finance.css?v=11.5.1-s2">
+<link rel="stylesheet" href="guardian-messages.css?v=11.6.0-s1">
+<link rel="stylesheet" href="teacher-rating.css?v=11.12.1-beta.27">
+<link rel="stylesheet" href="auth.css?v=11.0.0">
+<link rel="stylesheet" href="role-home.css?v=11.12.1-beta.27">
+<link rel="stylesheet" href="ux-guidance.css?v=11.7.4.2">
+<link rel="stylesheet" href="academy-workspaces.css?v=11.7.4-foundation">
+<style id="wlqCriticalOfflineStyle">
+html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
+</style>
+<link rel="stylesheet" href="achievement-certificates.css?v=11.8.0">
+<link rel="stylesheet" href="revision-quran-text.css?v=11.8.1">
+<link rel="stylesheet" href="academy-analytics-1112.css?v=11.12.1-beta.27">
+<link rel="stylesheet" href="session-intelligence-119.css?v=11.9.2">
+<link rel="stylesheet" href="placement-center-1191.css?v=11.9.2">
+<link rel="stylesheet" href="circle-management-1110.css?v=11.11.1">
+<link rel="stylesheet" href="academic-exams-1111.css?v=11.11.1">
+<link rel="stylesheet" href="progress-bridge-1111.css?v=11.11.1">
+<link rel="stylesheet" href="imam-smart-board.css?v=11.12.1-beta.27">
+<link rel="stylesheet" href="teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker-hotfix2">
+<link rel="stylesheet" href="css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2">
+<link rel="stylesheet" href="css/platform/responsive.css?v=11.12.1-beta.27">
+<link rel="stylesheet" href="css/platform/surah-picker.css?v=11.12.1-beta.27">
+</head>
+<body class="imam-global-redesign">
+
+<!-- ════════════ OFFLINE BANNER ════════════ -->
+<div id="offline-bar">📵 لا يوجد اتصال — التطبيق يعمل من الذاكرة المحلية</div>
+<div id="update-banner" role="status" aria-live="polite">
+  <span>⬆️ يوجد إصدار جديد من التطبيق</span>
+  <button onclick="applyUpdate()">تحديث الآن</button>
+</div>
+
+<!-- ════════════ INSTALL BANNER ════════════ -->
+<div id="install-banner">
+  <div style="width:40px;height:40px;background:var(--gp);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📿</div>
+  <div style="flex:1">
+    <div style="font-weight:700;font-size:14px">أضف إلى الشاشة الرئيسية</div>
+    <div style="font-size:12px;color:var(--mut)">وصول سريع بدون متصفح</div>
+  </div>
+  <button class="btn btn-g btn-sm" onclick="installPWA()" style="white-space:nowrap">تثبيت</button>
+  <button onclick="dismissInstall()" style="background:none;border:none;font-size:22px;color:var(--mut);cursor:pointer;padding:4px 8px;line-height:1">✕</button>
+</div>
+
+<!-- ════════════ SPLASH ════════════ -->
+<div id="splash">
+  <div class="splash-icon"><img src="icon-192.png" alt="شعار أكاديمية الإمام" class="brand-icon"></div>
+  <div class="splash-title">أكاديمية الإمام لتحفيظ القرآن الكريم</div>
+  <div class="splash-sub">بالقرآن نحيا</div>
+  <div class="splash-sub" style="font-size:12px;opacity:.7;margin-top:4px">نظام متابعة طلاب التحفيظ</div>
+  <div class="splash-bar"><div class="splash-bar-inner"></div></div>
+</div>
+
+<!-- ════════════ HEADER ════════════ -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="v11-brand">
+      <img src="icon-96.png" alt="" class="v11-brand-logo" aria-hidden="true">
+      <div class="v11-brand-copy">
+        <div class="hdr-title" id="hdrTitle">أكاديمية الإمام</div>
+        <div class="hdr-sub" id="hdrSub">بالقرآن نحيا</div>
+      </div>
+    </div>
+    <div class="hdr-actions">
+      <button class="hdr-btn hdr-search" onclick="openQuickSearch()" title="بحث سريع — Ctrl+K" aria-label="بحث سريع"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.4-3.4"></path></svg></button>
+      <button class="hdr-btn v108-followup-head" onclick="goPage('followup')" title="مركز متابعة الطلاب" aria-label="مركز متابعة الطلاب"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path></svg><span class="hdr-badge" id="followupBadge" hidden>0</span></button>
+      <button class="hdr-btn hdr-task" onclick="goPage('tasks')" title="المهام والمتابعة" aria-label="المهام والمتابعة"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"></rect><path d="m8 12 2.3 2.3L16 9"></path></svg><span class="hdr-badge" id="taskBadge" hidden>0</span></button>
+      <button class="hdr-btn" onclick="toggleTheme()" id="themeBtn" title="تبديل المظهر" aria-label="تبديل المظهر">🌙</button>
+      <button class="back-btn" id="backBtn" onclick="goBack()">→ رجوع</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ NAV ════════════ -->
+<div class="nav" id="mainNav">
+  <div class="nav-t on" onclick="goPage('home')"><span class="ni">🏠</span>الرئيسية</div>
+  <div class="nav-t" id="imamSmartBoardTab" role="button" tabindex="0" onclick="window.ImamApp?.SmartBoard?.open?.()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="ni">🖍️</span>السبورة التفاعلية</div>
+  <div class="nav-t" onclick="goPage('students')"><span class="ni">👥</span>الطلاب</div>
+  <!-- Accessible, static placement entry: not lost if an optional feature script loads late. -->
+  <div class="nav-t pc-nav" id="pcNavTab" role="button" tabindex="0" onclick="if (window.ImamApp?.PlacementCenter?.open) { window.ImamApp.PlacementCenter.open(); } else if (typeof toast === 'function') { toast('تبويب تحديد المستوى لم يكتمل تحميله. حدّث التطبيق ثم أعد المحاولة.','error'); }" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="ni">📋</span>تحديد المستوى</div>
+  <div class="nav-t" id="ac1111Nav" onclick="window.ImamApp?.AcademicExams?.open?.()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="ni">🎓</span>الاختبارات والإجازات</div>
+  <div class="nav-t" id="cmNavTab" onclick="if(window.ImamApp?.CircleManager?.open){window.ImamApp.CircleManager.open()}else if(typeof toast==='function'){toast('إدارة الحلقات لم تكتمل تحميلها. حدّث التطبيق ثم أعد المحاولة.','error')}" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click()}"><span class="ni">🏫</span>إدارة الحلقات</div>
+  <div class="nav-t" onclick="goPage('checkin')"><span class="ni">✅</span>الحضور</div>
+  <div class="nav-t" onclick="goPage('session')"><span class="ni">📖</span>الحصة</div>
+  <div class="nav-t" onclick="goPage('reports')"><span class="ni">📊</span>التقارير</div>
+  <div class="nav-t" onclick="goPage('settings')"><span class="ni">⚙️</span>الإعدادات</div>
+</div>
+<div id="uxPageStrip" class="ux-page-strip" hidden aria-live="off"><div class="ux-page-context"><span>مساحة العمل</span><span class="ux-crumb-sep" aria-hidden="true">/</span><strong id="uxCurrentPage">الرئيسية</strong></div><span class="ux-page-help">أكاديمية الإمام · إدارة التعليم والمتابعة</span></div>
+
+<!-- ══════════════ HOME ══════════════ -->
+<div class="pg on" id="pg-home">
+  <!-- إحصائيات سريعة -->
+  <div class="sg">
+    <div class="sc"><div class="sn" id="stTotal">0</div><div class="sl">إجمالي الطلاب</div></div>
+    <div class="sc"><div class="sn" id="stToday">0</div><div class="sl">حصص اليوم</div></div>
+    <div class="sc"><div class="sn" id="stMonth">0</div><div class="sl">حصص الشهر</div></div>
+    <div class="sc"><div class="sn" id="stAbsent">0</div><div class="sl">غياب اليوم</div></div>
+  </div>
+
+  <!-- تحليل مبسط في أعلى الواجهة -->
+  <div class="card home-analysis" id="homeAnalysis">
+    <div class="fb mb8">
+      <div class="ch" style="margin:0">📊 تحليل مبسط</div>
+      <span class="analysis-note" id="homeTrend">آخر 7 أيام</span>
+    </div>
+    <div class="insight-grid">
+      <div class="insight-item"><strong id="anWeekPresent">0</strong><span>حضور آخر 7 أيام</span></div>
+      <div class="insight-item"><strong id="anWeekAbsent">0</strong><span>غياب آخر 7 أيام</span></div>
+      <div class="insight-item"><strong id="anAvgGrade">—</strong><span>متوسط التسميع</span></div>
+      <div class="insight-item"><strong id="anNewAyat">0</strong><span>آيات حفظ جديد هذا الشهر</span></div>
+    </div>
+  </div>
+
+  <div class="card goal-card" id="weeklyGoalsCard">
+    <div class="fb mb8"><div class="ch" style="margin:0">🎯 أهداف هذا الأسبوع</div><button class="btn btn-out btn-xs" onclick="goPage('settings');setTimeout(()=>document.getElementById('goalNewAyat')?.focus(),80)">تعديل</button></div>
+    <div class="goal-grid">
+      <div class="goal-item"><strong id="goalNewAyatNow">0</strong><span>آية حفظ جديد</span><small id="goalNewAyatTarget">من 0</small></div>
+      <div class="goal-item"><strong id="goalReviewNow">0</strong><span>مراجعات</span><small id="goalReviewTarget">من 0</small></div>
+      <div class="goal-item"><strong id="goalSessionsNow">0</strong><span>حصص</span><small id="goalSessionsTarget">من 0</small></div>
+      <div class="goal-item"><strong id="goalAttendanceNow">0</strong><span>حضور</span><small id="goalAttendanceTarget">من 0</small></div>
+    </div>
+  </div>
+
+  <div class="smart-actions home-actions">
+    <button class="quick-action" onclick="goPage('checkin')"><span>✅</span><b>الحضور</b></button>
+    <button class="quick-action" onclick="goPage('session')"><span>📖</span><b>بدء حصة</b></button>
+    <button class="quick-action" onclick="openAddSt()"><span>➕</span><b>طالب جديد</b></button>
+    <button class="quick-action" onclick="openQuickSearch()"><span>🔎</span><b>بحث سريع</b></button>
+    <button class="quick-action" id="teacherInboxHomeButton"><span>💬</span><b>رسائل أولياء الأمور</b></button>
+  </div>
+
+  <!-- بطاقة الإنجاز اليومي (streak) -->
+  <div id="streakCard" class="streak-card" style="display:none">
+    <div class="streak-num" id="streakNum">0</div>
+    <div class="streak-info">
+      <div class="s-title">🔥 أيام نشاط متواصل</div>
+      <div class="s-sub" id="streakSub">استمر في التميز!</div>
+    </div>
+  </div>
+
+  <!-- نشاط الأسبوع -->
+  <div class="card">
+    <div class="ch">📈 نشاط آخر 7 أيام</div>
+    <div class="chart-wrap"><canvas id="weekChart"></canvas></div>
+  </div>
+
+  <!-- حصة سريعة -->
+  <div class="card">
+    <div class="ch">⚡ بدء حصة سريعة</div>
+    <div class="fld">
+      <select id="quickSt" onchange="quickPick()">
+        <option value="">— اختر الطالب —</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-g mt8" style="flex:2" onclick="goToSession()">ابدأ الحصة 📖</button>
+      <button class="btn btn-out mt8" style="flex:1" onclick="openBroadcastComposer()">💬 مركز التواصل</button>
+    </div>
+  </div>
+
+  <!-- متابعة اليوم -->
+  <div class="card">
+    <div class="fb mb8">
+      <div class="ch" style="margin-bottom:0">🗓️ متابعة اليوم</div>
+      <span class="today-progress" id="todayProgress">0 / 0</span>
+    </div>
+    <div id="todayQueue"></div>
+  </div>
+
+  <!-- آخر الحصص -->
+  <div class="card">
+    <div class="ch">📅 آخر الحصص</div>
+    <div id="recentSes"></div>
+  </div>
+</div>
+
+<!-- ══════════════ CHECK-IN ══════════════ -->
+<div class="pg" id="pg-checkin">
+  <div class="ci-done-bar" id="ciDoneBar">✅ تم تسجيل الحضور لجميع الطلاب اليوم</div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="ch">📋 تسجيل حضور اليوم</div>
+    <div id="ciDate" style="font-size:12px;color:var(--mut);margin-top:4px"></div>
+  </div>
+  <div id="ciList"></div>
+  <button class="btn btn-wa mt8" onclick="sendAllWA()">📤 إرسال تقارير لجميع الحاضرين</button>
+  <div style="height:20px"></div>
+</div>
+
+<!-- ══════════════ CIRCLE MANAGEMENT ══════════════ -->
+<div class="pg" id="pg-circle-manager" dir="rtl">
+  <div class="cm-header"><h2>🏫 إدارة الحلقات</h2><p>التسميع الجماعي · الحضور · متابعة الانضباط · الجداول</p></div>
+  <div class="cm-tabs" id="cmTabs" role="group" aria-label="أقسام إدارة الحلقات">
+    <button type="button" data-tab="group">📖 التسميع الجماعي</button>
+    <button type="button" data-tab="attendance">✅ كشف الحضور</button>
+    <button type="button" data-tab="discipline">🔔 الانضباط</button>
+    <button type="button" data-tab="schedule">📅 الجداول</button>
+  </div>
+  <div class="cm-toolbar">
+    <label>الحلقة / المجموعة<select id="cmGroup" aria-label="الحلقة"></select></label>
+    <label>تاريخ الحصة<input id="cmDate" type="date" aria-label="تاريخ الحصة"></label>
+  </div>
+  <div id="cmPanel" aria-live="polite"></div>
+</div>
+
+<!-- ══════ ACADEMIC EXAMINATIONS AND INTERNAL IJAZAH RECORD ══════ -->
+<div class="pg" id="pg-academic-exams" dir="rtl">
+  <div class="ac1111-head card"><div><h2>🎓 الاختبارات والإجازات القرآنية</h2><p>لجان التقييم · سجل الإجازات الداخلي · التحليلات · متابعة ولي الأمر</p></div><label>الطالب<select id="ac1111Student"></select></label></div>
+  <div class="ac1111-tabs" id="ac1111Tabs" role="group" aria-label="أقسام الاختبارات">
+    <button type="button" data-tab="exams" class="active">الاختبارات</button>
+    <button type="button" data-tab="licenses">الإجازات والأسانيد</button>
+    <button type="button" data-tab="analytics">التحليلات</button>
+    <button type="button" data-tab="contacts">التواصل مع ولي الأمر</button>
+  </div>
+  <label>الشهر <input type="month" id="ac1111Month"></label>
+  <div id="ac1111Panel" aria-live="polite"></div>
+</div>
+
+<!-- ══════════════ STUDENTS ══════════════ -->
+<div class="pg" id="pg-students">
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <div style="flex:1;position:relative">
+      <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--mut)">🔍</span>
+      <input type="text" id="searchIn" placeholder="ابحث عن طالب..." oninput="filterSt()" style="padding-right:38px;width:100%;padding:10px 38px 10px 12px;border:1.5px solid var(--bdr);border-radius:10px;font-size:14px;font-family:inherit;background:var(--wh);color:var(--txt);direction:rtl">
+    </div>
+    <select id="filterLevel" onchange="filterSt()" class="student-filter">
+      <option value="">كل المستويات</option>
+      <option value="مبتدئ">مبتدئ</option>
+      <option value="متوسط">متوسط</option>
+      <option value="متقدم">متقدم</option>
+    </select>
+    <select id="filterGroup" onchange="filterSt()" class="student-filter">
+      <option value="">كل المجموعات</option>
+    </select>
+  </div>
+  <button class="btn btn-wa mb8" onclick="openBroadcastComposer()">💬 مركز التواصل مع أولياء الأمور</button>
+  <button class="btn btn-g st-add-inline" type="button" onclick="openAddSt()" aria-label="إضافة طالب جديد">➕ إضافة طالب جديد</button>
+  <div id="stList"></div>
+</div>
+
+<!-- ══════════════ SESSION ══════════════ -->
+<div class="pg" id="pg-session">
+  <div class="card ia21-student-card" id="ia21SessionStudent">
+    <div class="ch">👤 الطالب</div>
+    <div class="fld">
+      <select id="sesSt" onchange="onSesSt()">
+        <option value="">— اختر الطالب —</option>
+      </select>
+    </div>
+    <button type="button" id="beta19SessionBoard" class="btn btn-out beta19-session-board" onclick="window.ImamApp?.SmartBoard?.openForCurrentSession?.()">🖍️ افتح سبورة الإمام لهذا الطالب</button>
+    <div class="frow">
+      <div class="fld">
+        <label>تاريخ الحصة</label>
+        <input type="date" id="sesDate" onchange="onSesDateChange()">
+      </div>
+      <div class="fld">
+        <label>الحفظ التلقائي</label>
+        <div class="draft-state" id="draftState">جاهز</div>
+      </div>
+    </div>
+    <div class="fld mb4"><label>حالة الحضور</label></div>
+    <div class="status-btns">
+      <button class="st-btn sel-h" id="sb-h" onclick="setStatus('حضر')">✅ حضر</button>
+      <button class="st-btn" id="sb-a" onclick="setStatus('غاب')">❌ غاب</button>
+      <button class="st-btn" id="sb-v" onclick="setStatus('إجازة')">🌙 إجازة</button>
+    </div>
+  </div>
+
+  <section id="integratedTeacherBrief" aria-label="ملخص الاستعداد للحصة" hidden></section>
+
+  <div class="card session-journey-card v1059-session-insights" id="sessionJourneyCard" style="display:none">
+    <details id="ia22FollowupDisclosure" class="ia22-followup-disclosure">
+      <summary class="ia21-followup-heading">📍 متابعة الطالب <span>تفاصيل الطالب عند الحاجة</span></summary>
+    <section class="v1059-insight" id="v1059StopPanel">
+      <div class="v10510-insight-head">
+        <span class="v1059-insight-title"><b>📍 أين توقفنا؟</b><small id="v1059StopHint">آخر مواضع الطالب والتكليف القادم</small></span>
+        <button type="button" class="v10510-insight-button" id="v1059StopToggle" aria-expanded="false" onclick="toggleV1059SessionPanel('stop')"><span id="v1059StopBadge" class="v1059-count-badge" hidden></span><span id="v1059StopAction">عرض التفاصيل</span><span id="v1059StopIcon" aria-hidden="true">＋</span></button>
+      </div>
+      <div class="v1059-insight-body" id="v1059StopBody" hidden>
+        <div id="v1059JourneyMeta" class="v1059-journey-meta"></div>
+        <div id="sessionJourneyStrip" class="journey-strip v1059-journey-grid"></div>
+        
+      </div>
+    </section>
+    <section class="v1059-insight" id="v1059ReviewPanel">
+      <div class="v10510-insight-head">
+        <span class="v1059-insight-title"><b>🧠 اقتراح المراجعة</b><small id="v1059ReviewHint">الأولوية حسب الاستحقاق والأداء</small></span>
+        <button type="button" class="v10510-insight-button" id="v1059ReviewToggle" aria-expanded="false" onclick="toggleV1059SessionPanel('review')"><span id="v1059ReviewBadge" class="v1059-count-badge" hidden></span><span id="v1059ReviewAction">عرض الاقتراحات</span><span id="v1059ReviewIcon" aria-hidden="true">＋</span></button>
+      </div>
+      <div class="v1059-insight-body" id="v1059ReviewBody" hidden>
+        <div id="smartReviewSuggestions" class="review-suggestions v1059-review-suggestions"></div>
+      </div>
+    </section>
+    </details>
+  </div>
+
+  <div id="absentNotice" style="display:none">
+    <div class="absent-notice">⚠️ الطالب غائب — سيتم نقل التكليف السابق للحصة القادمة</div>
+    <button class="btn btn-wa mb8" onclick="sendAbsenceWA()">📲 إبلاغ ولي الأمر بالغياب</button>
+  </div>
+
+  <details id="imamAbsenceMakeup" class="card" aria-label="تنظيم الغياب والتعويض" hidden></details>
+
+  <div id="sesContent">
+    <div class="sec-div">📋 القسم الأول: تقييم التسميع</div>
+  <button type="button" id="repeatBar" class="repeat-bar ia21-repeat-primary card" data-v9-step="assessment" onclick="fillFromLast()" style="display:none" aria-label="كرّر تكليف آخر حصة داخل التسميع">
+    <span style="font-size:18px">♻️</span>
+    <span class="repeat-bar-text">
+      <span style="font-weight:700">كرر تكليف آخر حصة</span>
+      <span class="repeat-bar-hint" id="repeatHint">اضغط لملء الحقول تلقائياً</span>
+    </span>
+    <span style="font-size:16px;color:var(--gold)">←</span>
+  </button>
+
+
+    <div class="card" id="prevCard">
+      <div class="ch">📋 تسميع الحصة السابقة</div>
+      <div id="prevContent"><div class="txt-mut" style="text-align:center;padding:10px">اختر الطالب لعرض تكليف الحصة السابقة</div></div>
+    </div>
+
+    <section class="card ia27-followup-card" id="ia27ErrorFollowup" data-v9-step="assessment" aria-live="polite" hidden></section>
+
+    <div class="card session-errors-card" id="sessionErrorsCard">
+      <div class="fb mb8"><div class="ch" style="margin:0">🧭 سجل أخطاء التسميع</div><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenAssessmentText()">📖 النص</button><span class="txt-mut" id="errorCountLabel">0 خطأ</span></div>
+      <div class="fld ia25-error-context"><label for="ia25ErrorContext">سياق الخطأ الذي يسجله المحفظ</label><select id="ia25ErrorContext" aria-label="سياق الخطأ"><option value="التسميع">التسميع</option><option value="الحفظ الجديد">الحفظ الجديد</option><option value="المراجعة القريبة">المراجعة القريبة</option><option value="المراجعة البعيدة">المراجعة البعيدة</option><option value="مراجعة السور">مراجعة السور</option><option value="مراجعة الأجزاء">مراجعة الأجزاء</option><option value="مراجعة الأرباع">مراجعة الأرباع</option><option value="مراجعة الأحزاب">مراجعة الأحزاب</option><option value="التصحيح على النص الجديد">التصحيح على النص الجديد</option></select><small>اختر موضع الخطأ قبل تسجيله؛ يُحفظ مع الخطأ ويظهر في التقرير ورسالة ولي الأمر.</small></div>
+      <div class="fld ia27-error-position"><label for="ia27ErrorPosition">موضع الخطأ أو الكلمة (اختياري للأخطاء السريعة)</label><input type="text" id="ia27ErrorPosition" maxlength="160" placeholder="مثال: سورة الملك، الآية ٣، كلمة تبارك"></div>
+      <div class="error-chip-grid" id="errorChipGrid">
+        <button type="button" onclick="addRecitationError('حفظ')">🧠 حفظ</button>
+        <button type="button" onclick="addRecitationError('تردد')">⏸️ تردد</button>
+        <button type="button" onclick="addRecitationError('تلقين')">💬 تلقين</button>
+        <button type="button" onclick="addRecitationError('تجويد')">🎙️ تجويد</button>
+        <button type="button" onclick="addRecitationError('تشكيل')">🔤 تشكيل</button>
+        <button type="button" onclick="addRecitationError('نسيان آية')">↩️ نسيان آية</button>
+      </div>
+      <div id="sessionErrorList" class="error-log-list"></div>
+    </div>
+
+    <div class="sec-div">📝 القسم الثاني: تكليف الحصة القادمة</div>
+
+    <div class="card">
+      <div class="fb mb8">
+        <div class="session-badge-actions"><span class="badge b-new">📖 حفظ جديد</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenAssignmentText('new')">📖 النص</button></div>
+        <div class="tog on" id="tog-new" onclick="togSec('new')"></div>
+      </div>
+      <div id="bod-new">
+        <div class="voice-row">
+          <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
+            <div class="surah-combo"><input type="search" id="new-s" autocomplete="off" placeholder="اختر السورة أو اكتب اسمها" onfocus="openSurahDropdown('new')" oninput="filterSurahDropdown('new');fillAyah('new')" onchange="fillAyah('new')"><button type="button" class="surah-drop-btn" onclick="toggleSurahDropdown('new')" aria-label="فتح قائمة السور">⌄</button><div class="surah-dropdown" id="new-surah-dropdown"></div></div>
+            <div class="auto-surah-hint" id="new-auto-hint"></div>
+          </div>
+          <button type="button" class="voice-btn ia-surah-mic" id="vb-new" onclick="startVoice('new')" title="انطق اسم السورة" aria-label="إملاء اسم السورة بالصوت">🎙️</button>
+        </div>
+        <div class="full-row">
+          <input type="checkbox" id="new-full" onchange="toggleFull('new')">
+          <label for="new-full">سورة كاملة</label>
+        </div>
+        <div class="frow" id="new-range" style="display:none">
+          <div class="fld"><label>من آية</label><input type="number" id="new-f" min="1" inputmode="numeric" placeholder="من" style="text-align:center"></div>
+          <div class="fld"><label>إلى آية</label><input type="number" id="new-t" min="1" inputmode="numeric" placeholder="إلى" style="text-align:center"></div>
+        </div>
+        <div class="direction-picker">
+          <span class="direction-label">اتجاه الاستمرار</span>
+          <button type="button" id="dir-new-up" class="direction-btn" onclick="setDirection('new',-1)" title="نحو السورة السابقة في ترتيب المصحف">↑</button>
+          <button type="button" id="dir-new-down" class="direction-btn" onclick="setDirection('new',1)" title="نحو السورة التالية في ترتيب المصحف">↓</button>
+          <small id="dir-new-text">اختر اتجاه المتابعة</small>
+        </div>
+        <div class="assignment-actions">
+          <button type="button" class="btn btn-out btn-xs" onclick="markSectionComplete('new')">✓ تمت السورة</button>
+          <button type="button" class="btn btn-out btn-xs" onclick="repeatSectionOnly('new')">♻️ كرر نفس التكليف</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fb mb8">
+        <div class="session-badge-actions"><span class="badge b-rec">📚 مراجعة قريبة</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenAssignmentText('rec')">📖 النص</button></div>
+        <div class="tog" id="tog-rec" onclick="togSec('rec')"></div>
+      </div>
+      <div id="bod-rec" style="display:none">
+        <div class="voice-row">
+          <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
+            <div class="surah-combo"><input type="search" id="rec-s" autocomplete="off" placeholder="اختر السورة أو اكتب اسمها" onfocus="openSurahDropdown('rec')" oninput="filterSurahDropdown('rec');fillAyah('rec')" onchange="fillAyah('rec')"><button type="button" class="surah-drop-btn" onclick="toggleSurahDropdown('rec')" aria-label="فتح قائمة السور">⌄</button><div class="surah-dropdown" id="rec-surah-dropdown"></div></div>
+            <div class="auto-surah-hint" id="rec-auto-hint"></div>
+          </div>
+          <button type="button" class="voice-btn ia-surah-mic" id="vb-rec" onclick="startVoice('rec')" title="انطق اسم السورة" aria-label="إملاء اسم السورة بالصوت">🎙️</button>
+        </div>
+        <div class="full-row">
+          <input type="checkbox" id="rec-full" onchange="toggleFull('rec')">
+          <label for="rec-full">سورة كاملة</label>
+        </div>
+        <div class="frow" id="rec-range" style="display:none">
+          <div class="fld"><label>من آية</label><input type="number" id="rec-f" min="1" inputmode="numeric" placeholder="من" style="text-align:center"></div>
+          <div class="fld"><label>إلى آية</label><input type="number" id="rec-t" min="1" inputmode="numeric" placeholder="إلى" style="text-align:center"></div>
+        </div>
+        <div class="direction-picker">
+          <span class="direction-label">اتجاه الاستمرار</span>
+          <button type="button" id="dir-rec-up" class="direction-btn" onclick="setDirection('rec',-1)" title="نحو السورة السابقة في ترتيب المصحف">↑</button>
+          <button type="button" id="dir-rec-down" class="direction-btn" onclick="setDirection('rec',1)" title="نحو السورة التالية في ترتيب المصحف">↓</button>
+          <small id="dir-rec-text">اختر اتجاه المتابعة</small>
+        </div>
+        <div class="assignment-actions">
+          <button type="button" class="btn btn-out btn-xs" onclick="markSectionComplete('rec')">✓ تمت السورة</button>
+          <button type="button" class="btn btn-out btn-xs" onclick="repeatSectionOnly('rec')">♻️ كرر نفس التكليف</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fb mb8">
+        <div class="session-badge-actions"><span class="badge b-far">📘 مراجعة بعيدة</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenAssignmentText('far')">📖 النص</button></div>
+        <div class="tog" id="tog-far" onclick="togSec('far')"></div>
+      </div>
+      <div id="bod-far" style="display:none">
+        <div class="voice-row">
+          <div class="fld" style="flex:1;margin-bottom:0"><label>السورة</label>
+            <div class="surah-combo"><input type="search" id="far-s" autocomplete="off" placeholder="اختر السورة أو اكتب اسمها" onfocus="openSurahDropdown('far')" oninput="filterSurahDropdown('far');fillAyah('far')" onchange="fillAyah('far')"><button type="button" class="surah-drop-btn" onclick="toggleSurahDropdown('far')" aria-label="فتح قائمة السور">⌄</button><div class="surah-dropdown" id="far-surah-dropdown"></div></div>
+            <div class="auto-surah-hint" id="far-auto-hint"></div>
+          </div>
+          <button type="button" class="voice-btn ia-surah-mic" id="vb-far" onclick="startVoice('far')" title="انطق اسم السورة" aria-label="إملاء اسم السورة بالصوت">🎙️</button>
+        </div>
+        <div class="full-row">
+          <input type="checkbox" id="far-full" onchange="toggleFull('far')">
+          <label for="far-full">سورة كاملة</label>
+        </div>
+        <div class="frow" id="far-range" style="display:none">
+          <div class="fld"><label>من آية</label><input type="number" id="far-f" min="1" inputmode="numeric" placeholder="من" style="text-align:center"></div>
+          <div class="fld"><label>إلى آية</label><input type="number" id="far-t" min="1" inputmode="numeric" placeholder="إلى" style="text-align:center"></div>
+        </div>
+        <div class="direction-picker">
+          <span class="direction-label">اتجاه الاستمرار</span>
+          <button type="button" id="dir-far-up" class="direction-btn" onclick="setDirection('far',-1)" title="نحو السورة السابقة في ترتيب المصحف">↑</button>
+          <button type="button" id="dir-far-down" class="direction-btn" onclick="setDirection('far',1)" title="نحو السورة التالية في ترتيب المصحف">↓</button>
+          <small id="dir-far-text">اختر اتجاه المتابعة</small>
+        </div>
+        <div class="assignment-actions">
+          <button type="button" class="btn btn-out btn-xs" onclick="markSectionComplete('far')">✓ تمت السورة</button>
+          <button type="button" class="btn btn-out btn-xs" onclick="repeatSectionOnly('far')">♻️ كرر نفس التكليف</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fb mb8">
+        <div class="session-badge-actions"><span class="badge b-juz">📜 مراجعة الأجزاء</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenReviewListText('juz')">📖 النص</button></div>
+        <div class="tog" id="tog-juz" onclick="togSec('juz')"></div>
+      </div>
+      <div id="bod-juz" style="display:none">
+        <div class="v1051-juz-picker">
+          <div class="fld"><label>الجزء</label>
+            <select id="juz-j" onchange="v1052OnJuzChanged()"><option value="">— اختر الجزء باسمه —</option></select>
+          </div>
+          <div class="fld"><label>المقدار</label>
+            <select id="v1051-juz-quarter">
+              <option value="all">الجزء كاملًا — حزبان — 8 أرباع</option>
+              <option value="h1">الحزب الأول — 4 أرباع</option>
+              <option value="h2">الحزب الثاني — 4 أرباع</option>
+              <option value="q1">الربع الأول 1/8</option>
+              <option value="q2">الربع الثاني 2/8</option>
+              <option value="q3">الربع الثالث 3/8</option>
+              <option value="q4">الربع الرابع 4/8</option>
+              <option value="q5">الربع الخامس 5/8</option>
+              <option value="q6">الربع السادس 6/8</option>
+              <option value="q7">الربع السابع 7/8</option>
+              <option value="q8">الربع الثامن 8/8</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-g btn-sm v1051-add-juz" onclick="addJuz()">+ إضافة للمراجعة</button>
+        </div>
+        <div class="v1051-quarter-note">كل جزء = حزبان = 8 أرباع. يمكنك اختيار الجزء كاملًا أو حزبًا أو ربعًا بعينه، وكل ربع يظهر كتقييم مستقل.</div>
+        <div id="juz-chips" style="margin:8px 0 10px"></div>
+        <div class="direction-picker">
+          <span class="direction-label">اتجاه مراجعة الأجزاء</span>
+          <button type="button" id="dir-juz-up" class="direction-btn" onclick="setDirection('juz',-1)" title="نحو الجزء السابق">↑</button>
+          <button type="button" id="dir-juz-down" class="direction-btn" onclick="setDirection('juz',1)" title="نحو الجزء التالي">↓</button>
+          <small id="dir-juz-text">اختر اتجاه المتابعة</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="fb mb8">
+        <div class="session-badge-actions"><span class="badge b-juz">🕌 مراجعة السور</span><button type="button" class="btn btn-out btn-xs quran-text-btn" onclick="ia27OpenReviewListText('surah')">📖 النص</button></div>
+        <div class="tog" id="tog-surahReview" onclick="togSec('surahReview')"></div>
+      </div>
+      <div id="bod-surahReview" style="display:none">
+        <div class="fld"><label>اختر سورة أو أكثر <span class="txt-mut">(مستقل عن مراجعة الأجزاء)</span></label>
+          <input type="search" id="surah-review-search" placeholder="اكتب اسم السورة للبحث..." oninput="renderSurahChecklist()">
+          <div class="multi-actions">
+            <button type="button" class="btn btn-out btn-xs" onclick="selectJuzAmmaSurahs()">✓ سور جزء عم</button>
+            <button type="button" class="btn btn-out btn-xs" onclick="clearSelectedSurahs()">مسح التحديد</button>
+            <span class="selected-count" id="surah-review-count">0 سورة محددة</span>
+          </div>
+          <div id="surah-review-list" class="surah-checklist"></div>
+        </div>
+        <div id="surah-review-chips" style="margin:4px 0 10px"></div>
+        <div class="direction-picker">
+          <span class="direction-label">اتجاه مراجعة السور</span>
+          <button type="button" id="dir-surahReview-up" class="direction-btn" onclick="setDirection('surahReview',-1)" title="نحو السورة السابقة في ترتيب المصحف">↑</button>
+          <button type="button" id="dir-surahReview-down" class="direction-btn" onclick="setDirection('surahReview',1)" title="نحو السورة التالية في ترتيب المصحف">↓</button>
+          <small id="dir-surahReview-text">اختر اتجاه المتابعة</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">💬 ملاحظات لولي الأمر</div>
+      <div class="note-templates">
+        <button type="button" onclick="appendNoteTemplate('الحفظ جيد ويحتاج تثبيت.')">الحفظ يحتاج تثبيت</button>
+        <button type="button" onclick="appendNoteTemplate('يرجى مراجعة المتشابهات قبل الحصة القادمة.')">راجع المتشابهات</button>
+        <button type="button" onclick="appendNoteTemplate('الطالب لم يراجع المطلوب كاملًا.')">لم يراجع المطلوب</button>
+        <button type="button" onclick="appendNoteTemplate('أداء ممتاز اليوم، بارك الله فيه.')">أداء ممتاز</button>
+      </div>
+      <div class="fld">
+        <textarea id="sesNotes" placeholder="توجيهات، ملاحظات، نصائح..."></textarea>
+      </div>
+      <div class="voice-note-row">
+        <button type="button" class="btn btn-out btn-sm" id="voiceNoteBtn" onclick="toggleVoiceNoteRecording()">🎤 تسجيل ملاحظة صوتية</button>
+        <span id="voiceNoteState" class="txt-mut">حد أقصى 30 ثانية</span>
+        <audio id="voiceNotePreview" controls style="display:none"></audio>
+        <button type="button" class="btn btn-red btn-xs" id="voiceNoteDeleteBtn" onclick="deletePendingVoiceNote()" style="display:none">حذف</button>
+      </div>
+      <details class="assignment-audio-details"><summary>🎧 مشاركة صوت التكليف (اختياري)</summary><div class="assignment-audio-share"><select id="teacherAssignmentAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري العفاسي</option><option value="husary">الحصري</option><option value="muaiqly">المعيقلي</option></select><button type="button" class="btn btn-out" id="teacherAssignmentAudioBtn" onclick="shareCurrentAssignmentAudio()">مشاركة صوت الحفظ الجديد</button></div></details>
+    </div>
+
+    <button class="btn btn-g mb8" id="saveSessionBtn" onclick="saveSession()">💾 حفظ الحصة</button>
+    <button class="btn btn-wa" id="saveSendSessionBtn" onclick="saveAndSendWA()">📲 حفظ وإرسال لولي الأمر</button>
+    <div class="wa-mode-row" id="sessionWaModes"><button class="btn btn-out btn-sm" onclick="saveAndSendWAMode('short')">رسالة مختصرة</button><button class="btn btn-out btn-sm" onclick="saveAndSendWAMode('detailed')">رسالة تفصيلية</button></div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<datalist id="surahList"></datalist>
+
+<!-- ══════════════ MUSHAF LIBRARY v9 ══════════════ -->
+<div class="pg" id="pg-mushaf">
+  <div id="v9MushafApp"></div>
+</div>
+
+<!-- ══════════════ REPORTS ══════════════ -->
+<div class="pg" id="pg-reports">
+  <section class="card v109-entry-card">
+    <div class="v109-entry-copy"><span class="v109-entry-icon">📊</span><div><b>تحليلات وتقارير الحلقة</b><small>متوسط الإتقان، الحضور، اتجاهات الطلاب، نقاط التثبيت، وترتيب الأداء حسب الفترة.</small></div></div>
+    <button class="btn btn-g" onclick="goPage('analytics')">فتح تحليلات الحلقة</button>
+  </section>
+  <div class="card">
+    <div class="ch">📊 التقرير الشهري للطالب</div>
+    <div class="fld">
+      <label>اختر الطالب</label>
+      <select id="repSt" onchange="renderReport()">
+        <option value="">— اختر الطالب —</option>
+      </select>
+    </div>
+    <div class="fld">
+      <label>الشهر</label>
+      <select id="repMonth" onchange="renderReport()"></select>
+    </div>
+  </div>
+  <!-- أدوات التصدير -->
+  <div class="export-row">
+    <button class="btn btn-out btn-sm" onclick="exportCSV()">📥 CSV</button>
+    <button class="btn btn-out btn-sm" onclick="printReport()">🖨️ طباعة</button>
+    <button class="btn btn-out btn-sm" onclick="goPage('compare')">🏅 مقارنة</button>
+  </div>
+  <!-- التقويم الشهري -->
+  <div class="card" id="calCard" style="display:none">
+    <div class="ch">📅 التقويم الشهري</div>
+    <div id="calGrid"></div>
+    <div class="cal-legend">
+      <span><div class="cal-dot" style="background:var(--gm)"></div> حضور</span>
+      <span><div class="cal-dot" style="background:var(--red)"></div> غياب</span>
+      <span><div class="cal-dot" style="background:var(--gold)"></div> إجازة</span>
+    </div>
+  </div>
+  <!-- الرسوم البيانية -->
+  <div id="reportCharts"></div>
+  <!-- محتوى التقرير -->
+  <div id="reportContent"></div>
+</div>
+
+<!-- ══════════════ SETTINGS ══════════════ -->
+<div class="pg" id="pg-settings">
+  <div class="card">
+    <div class="ch">👤 بيانات المحفظ</div>
+    <div class="fld"><label>اسم المحفظ</label>
+      <input type="text" id="setName" placeholder="الشيخ / الأستاذ..." oninput="saveSettings()">
+    </div>
+    <div class="fld"><label>اسم الحلقة</label>
+      <input type="text" id="setCircle" placeholder="مسجد / مكان..." oninput="saveSettings()">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch">🔡 حجم الخط</div>
+    <div class="fsize-row">
+      <button class="fsize-btn active" id="fsmd" onclick="setFontSize('md')" style="font-size:14px">أ صغير</button>
+      <button class="fsize-btn" id="fslg" onclick="setFontSize('lg')" style="font-size:16px">أ متوسط</button>
+      <button class="fsize-btn" id="fsxl" onclick="setFontSize('xl')" style="font-size:18px">أ كبير</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch">📱💻 الجهاز والتثبيت</div>
+    <div id="platformStatus" class="platform-grid"></div>
+    <div class="settings-actions"><button class="btn btn-out btn-sm" type="button" onclick="showRestartDiagnostics()">تشخيص إعادة تشغيل التطبيق</button><button class="btn btn-out btn-sm" type="button" onclick="copyRestartDiagnostics()">نسخ التشخيص</button></div>
+    <pre id="pwaRestartDiagnostics" hidden dir="ltr" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:250px;overflow:auto;font:12px/1.6 monospace;text-align:left" aria-live="polite"></pre>
+    <div class="settings-actions">
+      <button class="btn btn-g btn-sm" onclick="installPWA()">⬇️ تثبيت التطبيق</button>
+      <button class="btn btn-out btn-sm" onclick="requestPersistentStorage()">🛡️ حماية التخزين المحلي</button>
+    </div>
+    <p class="txt-mut mt8" style="font-size:11px">على Android ثبّت التطبيق من Chrome، وعلى Windows من Edge/Chrome ليعمل في نافذة مستقلة وباختصارات لوحة المفاتيح.</p>
+  </div>
+
+  <div class="card">
+    <div class="ch">🔔 الإشعارات</div>
+    <button class="btn btn-out" id="notifBtn" onclick="requestNotif()">🔔 تفعيل تذكير المتابعة</button>
+    <p class="txt-mut mt8" style="font-size:12px">يظهر تذكير عند فتح التطبيق إذا لم تُسجَّل متابعة اليوم</p>
+  </div>
+
+  <div class="card">
+    <div class="ch">📈 سجل الحفظ التراكمي</div>
+    <div class="fld">
+      <select id="trackSt" onchange="renderTrack()">
+        <option value="">— اختر الطالب —</option>
+      </select>
+    </div>
+    <div id="trackContent"></div>
+  </div>
+
+  <div class="card">
+    <div class="ch">✉️ قالب رسالة الواتساب</div>
+    <p class="txt-mut mb8" style="font-size:12px">يمكنك تخصيص الرسالة. اضغط على المتغير لإدراجه:</p>
+    <div class="tmpl-vars">
+      <button class="tmpl-var" onclick="insertVar('{{اسم_الطالب}}')">{{اسم_الطالب}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{التاريخ}}')">{{التاريخ}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{الحفظ_الجديد}}')">{{الحفظ_الجديد}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{المراجعة_القريبة}}')">{{المراجعة_القريبة}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{المراجعة_البعيدة}}')">{{المراجعة_البعيدة}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{الملاحظات}}')">{{الملاحظات}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{اسم_المحفظ}}')">{{اسم_المحفظ}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{مستوى_التسميع}}')">{{مستوى_التسميع}}</button>
+      <button class="tmpl-var" onclick="insertVar('{{إجمالي_الآيات}}')">{{إجمالي_الآيات}}</button>
+    </div>
+    <div class="fld">
+      <textarea id="waTmpl" rows="7" placeholder="اتركه فارغاً لاستخدام القالب الافتراضي..." oninput="saveSettings()"></textarea>
+    </div>
+    <button class="btn btn-out btn-sm" onclick="resetTemplate()">↺ إعادة ضبط القالب الافتراضي</button>
+  </div>
+
+  <div class="card">
+    <div class="ch">🎯 أهداف المتابعة الأسبوعية</div>
+    <div class="frow"><div class="fld"><label>آيات حفظ جديد</label><input type="number" id="goalNewAyat" min="0" max="5000" oninput="saveV8Settings()"></div><div class="fld"><label>عدد المراجعات</label><input type="number" id="goalReviews" min="0" max="500" oninput="saveV8Settings()"></div></div>
+    <div class="frow"><div class="fld"><label>عدد الحصص</label><input type="number" id="goalSessions" min="0" max="500" oninput="saveV8Settings()"></div><div class="fld"><label>الحضور المستهدف</label><input type="number" id="goalAttendance" min="0" max="500" oninput="saveV8Settings()"></div></div>
+  </div>
+
+  <div class="card">
+    <div class="ch">🔐 قفل التطبيق</div>
+    <div class="settings-actions"><button class="btn btn-g btn-sm" onclick="setupPinLock()">تعيين / تغيير PIN</button><button class="btn btn-out btn-sm" onclick="disablePinLock()">إلغاء القفل</button><button class="btn btn-out btn-sm" onclick="setupDeviceBiometric()">بصمة / Windows Hello</button></div>
+    <p class="txt-mut mt8" style="font-size:11px">يعمل PIN محليًا. خيار البصمة/Windows Hello يظهر فقط إذا دعم الجهاز WebAuthn وكان الموقع يعمل عبر HTTPS.</p>
+    <div id="securityStatus" class="txt-mut mt8"></div>
+  </div>
+
+  <div class="card">
+    <div class="ch">☁️ نسخة سحابية للحساب <span class="beta-badge">Beta</span></div>
+    <p class="txt-mut mb8" style="font-size:12px">كل حساب معتمد يملك مساحة مزامنة منفصلة. قبل أي رفع آمن يتم تنزيل أحدث نسخة ودمجها أولًا، ثم يُرفع Snapshot جديد برقم Revision لمنع الكتابة فوق تغييرات أحدث.</p>
+    <div class="fld"><label>الحساب الحالي</label><input type="text" id="syncAccount" readonly></div>
+    <div class="fld"><label>كلمة تشفير النسخة السحابية</label><input type="password" id="syncPassphrase" autocomplete="new-password" placeholder="8 أحرف على الأقل — احتفظ بها لاستعادة البيانات على جهاز جديد" oninput="saveV8Settings()"></div>
+    <p class="txt-mut" style="font-size:11px">عند فتح الحساب على جهاز جديد، اكتب نفس كلمة التشفير ثم اختر «تنزيل ودمج». لا يتم إرسال كلمة التشفير إلى Supabase.</p>
+    <label class="switch-line"><input type="checkbox" id="syncAuto" onchange="saveV8Settings()"><span>مزامنة تلقائية آمنة بعد التغييرات</span></label>
+    <div class="settings-actions mt8"><button class="btn btn-g btn-sm" onclick="pushCloudSync()">⬆️ رفع نسخة مشفرة</button><button class="btn btn-out btn-sm" onclick="pullCloudSync()">⬇️ تنزيل ودمج</button></div>
+    <div id="syncStatus" class="txt-mut mt8"></div>
+  </div>
+
+  <div class="card">
+    <div class="ch">💾 النسخ الاحتياطي</div>
+    <p class="txt-mut mb8" style="font-size:11px">الملف الذي يتم تنزيله أو مشاركته نسخة محمولة ولا يتضمن PIN أو كلمات/أسرار المزامنة. النسخ التلقائية المحلية تبقى مخصصة للاستعادة على نفس الجهاز.</p>
+    <div class="settings-actions">
+      <button class="btn btn-g mb8" onclick="exportData()">📤 تنزيل نسخة JSON</button>
+      <button class="btn btn-out mb8" onclick="shareBackup()">📲 مشاركة نسخة احتياطية</button>
+    </div>
+    <div id="autoBackupStatus" class="txt-mut mb8">النسخ التلقائي: —</div>
+    <button class="btn btn-out btn-sm mb8" onclick="restoreAutoBackup()">↩️ استعادة نسخة تلقائية</button>
+    <div class="fld mt8">
+      <label>استيراد بيانات</label>
+      <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="border:1px dashed var(--bdr);background:#fafafa;border-radius:10px;padding:10px">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch">🧪 سلامة البيانات</div>
+    <div class="ir"><span class="ir-k">الإصدار</span><span id="appVersionText">7.0.0</span></div>
+    <div class="ir"><span class="ir-k">مخطط البيانات</span><span id="schemaVersionText">v8</span></div>
+    <button class="btn btn-out mt8" onclick="runDataHealthCheck()">فحص سلامة البيانات</button>
+    <div id="dataHealthResult" class="txt-mut mt8" style="font-size:12px"></div>
+  </div>
+
+  <div class="card">
+    <div class="ch" style="color:var(--red)">⚠️ خطر</div>
+    <button class="btn btn-red" onclick="clearAll()">🗑️ حذف جميع البيانات</button>
+  </div>
+</div>
+
+<!-- ══════════════ TASKS / FOLLOW-UP ══════════════ -->
+<div class="pg" id="pg-tasks">
+  <div class="task-hero card">
+    <div>
+      <div class="ch">☑️ المهام والمتابعة</div>
+      <div class="task-hero-title">متابعة لا تسقط من الذاكرة</div>
+      <div class="txt-mut">مهام للطلاب، تنبيهات للمراجعة، ومواعيد مستحقة — كلها محلية على جهازك.</div>
+    </div>
+    <button class="btn btn-g btn-sm" onclick="openTaskModal()">+ مهمة جديدة</button>
+  </div>
+  <div class="task-stats">
+    <button class="task-stat" onclick="setTaskFilter('open')"><b id="taskOpenCount">0</b><span>مفتوحة</span></button>
+    <button class="task-stat overdue" onclick="setTaskFilter('overdue')"><b id="taskOverdueCount">0</b><span>متأخرة</span></button>
+    <button class="task-stat" onclick="setTaskFilter('today')"><b id="taskTodayCount">0</b><span>اليوم</span></button>
+    <button class="task-stat" onclick="setTaskFilter('done')"><b id="taskDoneCount">0</b><span>مكتملة</span></button>
+  </div>
+  <div class="card">
+    <div class="task-toolbar">
+      <div class="segmented" id="taskFilters">
+        <button data-filter="open" class="on" onclick="setTaskFilter('open')">المفتوحة</button>
+        <button data-filter="today" onclick="setTaskFilter('today')">اليوم</button>
+        <button data-filter="overdue" onclick="setTaskFilter('overdue')">المتأخرة</button>
+        <button data-filter="done" onclick="setTaskFilter('done')">المكتملة</button>
+        <button data-filter="all" onclick="setTaskFilter('all')">الكل</button>
+      </div>
+      <input type="search" id="taskSearch" placeholder="ابحث في المهام..." oninput="renderTasks()">
+    </div>
+    <div id="taskList"></div>
+  </div>
+</div>
+
+<!-- ══════════════ TEACHER FOLLOW-UP CENTER v10.8 ══════════════ -->
+<div class="pg" id="pg-followup">
+  <section class="v108-hero">
+    <div><span class="v108-kicker">متابعة ذكية قابلة للتفسير</span><h2>🎯 مركز متابعة الطلاب</h2><p>يرتب الطلاب حسب إشارات واضحة من آخر 30 يومًا: الإتقان، الإعادات، الحضور، التثبيت، واتجاه الأداء.</p></div>
+    <div class="v108-hero-note">لا يغيّر أي بيانات — تحليل فقط</div>
+  </section>
+  <section class="v108-summary">
+    <button onclick="v108SetFilter('urgent')"><b id="v108UrgentCount">0</b><span>أولوية عالية</span></button>
+    <button onclick="v108SetFilter('all')"><b id="v108FollowCount">0</b><span>يحتاجون متابعة</span></button>
+    <button onclick="v108SetFilter('attendance')"><b id="v108AttendanceCount">0</b><span>حضور منخفض</span></button>
+    <button onclick="v108SetFilter('overdue')"><b id="v108OverdueCount">0</b><span>متابعة متأخرة</span></button>
+  </section>
+  <section id="imamTeachingInsights" aria-label="خطة التدخل التعليمي"><div class="iti-panel iti-unavailable" role="status"><b>🧭 خطة التدخل التعليمي</b><p>يتم تجهيز التحليل من سجل الأخطاء الحالي…</p></div></section>
+  <section id="imamMakeupAgenda" aria-label="مواعيد التعويض والتأجيل" hidden></section>
+  <section class="card v108-controls">
+    <div class="v108-filter-row" role="group" aria-label="فلترة مركز المتابعة">
+      <button class="on" data-v108-filter="all" onclick="v108SetFilter('all')">الكل</button>
+      <button data-v108-filter="urgent" onclick="v108SetFilter('urgent')">أولوية عالية</button>
+      <button data-v108-filter="mastery" onclick="v108SetFilter('mastery')">إتقان منخفض</button>
+      <button data-v108-filter="repeats" onclick="v108SetFilter('repeats')">إعادات</button>
+      <button data-v108-filter="attendance" onclick="v108SetFilter('attendance')">حضور</button>
+      <button data-v108-filter="overdue" onclick="v108SetFilter('overdue')">متأخر</button>
+      <button data-v108-filter="unscored" onclick="v108SetFilter('unscored')">بدون نسب</button>
+    </div>
+    <div class="v108-search-row">
+      <input type="search" id="v108Search" placeholder="ابحث باسم الطالب أو ولي الأمر..." oninput="v108SetQuery(this.value)">
+      <select id="v108Group" onchange="v108SetGroup(this.value)" aria-label="فلترة حسب الحلقة"><option value="">كل الحلقات</option></select>
+    </div>
+    <div class="v108-result-note">النتائج الظاهرة: <b id="v108VisibleCount">0</b></div>
+  </section>
+  <section id="v108List" class="v108-list"></section>
+  <section class="v108-method card"><b>كيف تُحسب الأولوية؟</b><p>تنخفض الأولوية تلقائيًا عندما تتحسن أحدث البيانات. الإتقان تحت 70%، الإعادات، الحضور الأقل من 75% بعد 3 سجلات على الأقل، التراجع، وتأخر الحصة كلها إشارات مرئية داخل بطاقة الطالب.</p></section>
+</div>
+
+<!-- ══════════════ CIRCLE ANALYTICS & REPORTS v10.9 ══════════════ -->
+<div class="pg" id="pg-analytics">
+  <section class="v109-hero">
+    <div><span class="v109-kicker">صورة شاملة للحلقة</span><h2>📊 تحليلات وتقارير الحلقة</h2><p>اقرأ أداء الحلقة ككل من بيانات الحصص الحالية، بدون تعديل أي بيانات أو اختراع نسب للحصص القديمة.</p></div>
+    <div class="v109-hero-note">Schema 12 · تحليل فقط</div>
+  </section>
+  <section class="card v109-controls">
+    <div class="v109-control-grid">
+      <div class="fld"><label for="v109Range">الفترة</label><select id="v109Range" onchange="v109SetRange(this.value)"><option value="7">آخر 7 أيام</option><option value="30" selected>آخر 30 يومًا</option><option value="90">آخر 90 يومًا</option><option value="all">كل الفترة</option></select></div>
+      <div class="fld"><label for="v109Group">الحلقة / المجموعة</label><select id="v109Group" onchange="v109SetGroup(this.value)"><option value="">كل الحلقات</option></select></div>
+    </div>
+    <div class="v109-actions"><button class="btn btn-out btn-sm" onclick="v109ExportCSV()">📥 CSV</button><button class="btn btn-out btn-sm" onclick="v109CopySummary()">📋 نسخ الملخص</button><button class="btn btn-out btn-sm" onclick="v109ShareSummary()">📤 مشاركة</button><button class="btn btn-g btn-sm" onclick="v109Print()">🖨️ طباعة / PDF</button></div>
+  </section>
+  <div id="v109Content"></div>
+  <section class="card v109-method"><b>طريقة الحساب</b><p>الإتقان يعتمد فقط على النسب التي أدخلها المحفظ. نسبة الحضور تستبعد الإجازة من المقام. الاتجاه يقارن أحدث النتائج بما قبلها، والمواضع الضعيفة تُستخرج من النسب الأقل من 65% أو «يحتاج متابعة / إعادة» خلال الفترة المختارة.</p></section>
+</div>
+
+<!-- ══════════════ PROFILE ══════════════ -->
+<div class="pg" id="pg-profile">
+  <div class="card" id="profHdr"></div>
+  <div class="card v107-progress-card" id="profProgress" style="display:none">
+    <div class="v107-dashboard-head">
+      <div><div class="ch" style="margin:0">📊 لوحة تقدم الطالب</div><small>الإتقان والحضور والإعادات ونقاط التثبيت</small></div>
+      <select id="v107Range" onchange="renderV107Progress(curStId)" aria-label="فترة لوحة التقدم">
+        <option value="30">آخر 30 يومًا</option>
+        <option value="90" selected>آخر 90 يومًا</option>
+        <option value="all">كل الفترة</option>
+      </select>
+    </div>
+    <div id="profProgressContent"></div>
+  </div>
+  <div class="card" id="profStop"><div class="ch">📍 أين توقفنا؟</div><div id="profStopContent"></div></div>
+  <div class="card" id="profMap"><div class="ch">🗺️ خريطة التقدم في المصحف</div><div id="profMapContent"></div></div>
+  <div class="card" id="profErrors"><div class="ch">🧭 سجل الأخطاء المتكررة</div><div id="profErrorsContent"></div></div>
+  <div class="card" id="profTrack"></div>
+  <div class="card" id="profChart" style="display:none">
+    <div class="ch">📈 مسار التقييم</div>
+    <div style="position:relative;height:180px"><canvas id="profChartCanvas"></canvas></div>
+  </div>
+  <div class="card" id="profWeak" style="display:none">
+    <div class="ch">🔍 نقاط تحتاج اهتمام</div>
+    <div id="profWeakContent"></div>
+  </div>
+  <div class="card" id="profHist"></div>
+  <div id="profileActions" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+    <button class="btn btn-wa btn-sm" data-v1010-portal-profile="1" onclick="v1010OpenPortalPicker(curStId)">👨‍👩‍👧 بوابة ولي الأمر</button>
+    <button class="btn btn-g btn-sm" onclick="openTaskModal(curStId)">☑️ إضافة مهمة</button>
+    <button class="btn btn-out btn-sm" onclick="editSt()">✏️ تعديل</button>
+    <button class="btn btn-out btn-sm" onclick="openCert()">🎓 شهادة</button>
+    <button class="btn btn-red btn-sm" onclick="deleteSt()">🗑️ حذف</button>
+  </div>
+</div>
+
+<!-- ══════════════ COMPARISON PAGE ══════════════ -->
+<div class="pg" id="pg-compare">
+  <div class="card">
+    <div class="ch">🏅 مقارنة الطلاب</div>
+    <div class="comp-wrap"><table class="comp-tbl" id="compTbl"></table></div>
+  </div>
+  <div style="height:20px"></div>
+</div>
+
+<!-- ══════════════ ADD/EDIT MODAL ══════════════ -->
+<div class="mo" id="stModal">
+  <div class="mo-box">
+    <div class="mo-title">
+      <span id="moTitle">إضافة طالب</span>
+      <button class="mo-x" onclick="closeMo()">✕</button>
+    </div>
+    <div class="fld"><label>اسم الطالب *</label><input type="text" id="m-name" placeholder="الاسم الكامل"></div>
+    <div class="fld"><label>اسم ولي الأمر</label><input type="text" id="m-par" placeholder="اسم الأب أو الأم"></div>
+    <div class="fld"><label>رقم واتساب ولي الأمر *</label><input type="tel" id="m-phone" placeholder="01xxxxxxxxx"></div>
+    <div class="fld"><label>تاريخ بداية الحفظ</label><input type="date" id="m-date"></div>
+    <div class="fld"><label>مستوى الطالب</label>
+      <select id="m-level">
+        <option value="مبتدئ">مبتدئ</option>
+        <option value="متوسط">متوسط</option>
+        <option value="متقدم">متقدم</option>
+      </select>
+    </div>
+    <div class="fld"><label>خطة الطالب</label><select id="m-plan"><option value="balanced">متوازنة — حفظ ومراجعة</option><option value="beginner">مبتدئ — جرعات صغيرة</option><option value="intensive">حفظ مكثف</option><option value="reviewOnly">مراجعة فقط</option><option value="stabilize">ختمة تثبيت</option><option value="shortSurahs">قصار السور</option></select></div>
+    <div class="fld"><label>بداية التكليف التالي بعد التسميع</label><select id="m-next-mode"><option value="same">ابدأ من آخر آية تم تسميعها للربط</option><option value="next">ابدأ من الآية التالية</option></select></div>
+    <div class="fld"><label>المجموعة / الحلقة <span class="txt-mut">(اختياري)</span></label><input type="text" id="m-group" list="groupList" placeholder="مثال: مجموعة السبت — المستوى الأول"></div>
+    <datalist id="groupList"></datalist>
+    <div class="fld">
+      <label>أيام الحصص الأسبوعية <span class="txt-mut">(اختياري)</span></label>
+      <div class="days-grid" id="m-days">
+        <label><input type="checkbox" class="m-day" value="0"> الأحد</label>
+        <label><input type="checkbox" class="m-day" value="1"> الإثنين</label>
+        <label><input type="checkbox" class="m-day" value="2"> الثلاثاء</label>
+        <label><input type="checkbox" class="m-day" value="3"> الأربعاء</label>
+        <label><input type="checkbox" class="m-day" value="4"> الخميس</label>
+        <label><input type="checkbox" class="m-day" value="5"> الجمعة</label>
+        <label><input type="checkbox" class="m-day" value="6"> السبت</label>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fld"><label>موعد الحصة</label><input type="time" id="m-time"></div>
+      <div class="fld"><label>مدة الحصة</label>
+        <select id="m-duration">
+          <option value="30">30 دقيقة</option>
+          <option value="45">45 دقيقة</option>
+          <option value="60">60 دقيقة</option>
+          <option value="90">90 دقيقة</option>
+        </select>
+      </div>
+    </div>
+    <div class="schedule-hint" id="scheduleHint">يظهر الطالب تلقائياً في «متابعة اليوم» في أيام حصصه.</div>
+    <div class="fld"><label>ملاحظات عامة</label><textarea id="m-notes" placeholder="أي معلومات..."></textarea></div>
+    <button class="btn btn-g" onclick="saveSt()">💾 حفظ</button>
+    <div style="height:8px"></div>
+    <button class="btn btn-out" onclick="closeMo()">إلغاء</button>
+  </div>
+</div>
+
+<!-- ════════════ TASK MODAL ════════════ -->
+<div class="mo" id="taskModal">
+  <div class="mo-box">
+    <div class="mo-title"><span id="taskModalTitle">مهمة جديدة</span><button class="mo-x" onclick="closeTaskModal()">✕</button></div>
+    <div class="fld"><label>المهمة *</label><input type="text" id="taskTitle" placeholder="مثال: مراجعة سورة الملك"></div>
+    <div class="fld"><label>الطالب <span class="txt-mut">(اختياري)</span></label><select id="taskStudent"><option value="">— مهمة عامة —</option></select></div>
+    <div class="frow">
+      <div class="fld"><label>تاريخ الاستحقاق</label><input type="date" id="taskDue"></div>
+      <div class="fld"><label>الأولوية</label><select id="taskPriority"><option value="normal">عادية</option><option value="high">عالية</option></select></div>
+    </div>
+    <div class="fld"><label>ملاحظات</label><textarea id="taskNotes" rows="3" placeholder="تفاصيل مختصرة..."></textarea></div>
+    <button class="btn btn-g" onclick="saveTask()">💾 حفظ المهمة</button>
+  </div>
+</div>
+
+<!-- ════════════ QUICK SEARCH / COMMAND PALETTE ════════════ -->
+<div class="mo command-modal" id="quickSearchModal">
+  <div class="mo-box command-box">
+    <div class="command-input-wrap">
+      <span>🔎</span>
+      <input type="search" id="quickSearchInput" placeholder="ابحث عن طالب أو مهمة أو اكتب: حصة، تقرير..." oninput="renderQuickSearch()" autocomplete="off">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="command-hint">Ctrl/⌘ + K للبحث · Alt + 1…6 للتنقل · Ctrl/⌘ + Enter لحفظ الحصة</div>
+    <div id="quickSearchResults" class="command-results"></div>
+  </div>
+</div>
+
+<!-- ════════════ QURAN TEXT MODAL ════════════ -->
+<div class="mo quran-modal" id="quranTextModal">
+  <div class="mo-box quran-box">
+    <div class="mo-title"><span id="quranModalTitle">📖 النص القرآني</span><button class="mo-x" onclick="closeQuranTextModal()">✕</button></div>
+    <div id="quranSourceNote" class="quran-source-note">الرسم: QPC Hafs / الرسم العثماني. الصوت يحتاج اتصالاً بالإنترنت.</div>
+    <div id="quranVerseContent" class="quran-verse-content"><div class="empty"><p>اختر السورة وافتح النص، ثم حدّد آية النهاية من داخل المصحف.</p></div></div>
+    <div class="quran-toolbar"><div class="fld"><label>القارئ</label><select id="quranReciter"><option value="Husary_128kbps">الشيخ محمود خليل الحصري</option><option value="Alafasy_128kbps">الشيخ مشاري راشد العفاسي</option></select></div><button class="btn btn-g btn-sm" id="quranPlayAllBtn" onclick="playQuranRange()">▶ تشغيل الآيات</button><button class="btn btn-out btn-sm" onclick="stopQuranAudio()">■ إيقاف</button></div>
+    <audio id="quranAudioPlayer" preload="none"></audio>
+  </div>
+</div>
+
+<div id="appLockOverlay" class="app-lock-overlay" style="display:none">
+  <div class="lock-card"><img src="icon-192.png" alt="شعار الأكاديمية"><h2>أكاديمية الإمام</h2><p>أدخل PIN لفتح التطبيق</p><input type="password" inputmode="numeric" id="lockPinInput" maxlength="8" placeholder="••••"><button class="btn btn-g" onclick="unlockWithPin()">فتح</button><button class="btn btn-out" id="biometricUnlockBtn" onclick="unlockWithBiometric()" style="display:none">استخدام البصمة / Windows Hello</button><div id="lockError" class="lock-error"></div></div>
+</div>
+
+<!-- ════════════ v9 EXPERIENCE LAYERS ════════════ -->
+<nav id="v9Nav" class="v9-nav" aria-label="التنقل الرئيسي"></nav>
+<div class="mo v9-more-sheet" id="v9MoreSheet" aria-hidden="true"><div class="mo-box"><div class="mo-title v9-more-title"><div><span>المزيد</span><small>أدوات سريعة وإعدادات الأكاديمية</small></div><button class="mo-x" onclick="closeV9More()" aria-label="إغلاق">✕</button></div><div id="v9MoreGrid" class="v9-more-grid"></div></div></div>
+<div class="mo" id="v9Onboarding"><div class="mo-box v9-onboarding-box"><div id="v9OnboardingBody"></div></div></div>
+<div id="v9ContextMenu" class="v9-context-menu" hidden></div>
+<div id="v9MiniPlayer" class="v9-mini-player" hidden></div>
+
+<!-- ════════════ TOAST ════════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ════════════ BULK SEND MODAL ════════════ -->
+<div class="mo" id="bulkModal">
+  <div class="mo-box">
+    <div class="mo-title">
+      <span>📤 إرسال لجميع الحاضرين اليوم</span>
+      <button class="mo-x" onclick="document.getElementById('bulkModal').classList.remove('open')">✕</button>
+    </div>
+    <div id="bulkList"></div>
+    <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- ════════════ GUARDIAN COMMUNICATION CENTER ════════════ -->
+<div class="mo" id="broadcastModal">
+  <div class="mo-box broadcast-box guardian-center">
+    <div class="mo-title guardian-center-title">
+      <div><span>💬 مركز التواصل مع أولياء الأمور</span><small>جهّز الرسالة وراجعها ثم افتح WhatsApp — الإرسال النهائي يدوي.</small></div>
+      <button class="mo-x" onclick="closeBroadcastComposer()">✕</button>
+    </div>
+
+    <div class="guardian-step">
+      <div class="guardian-step-head"><b>1. نوع الرسالة</b><span id="guardianModeHint"></span></div>
+      <div class="guardian-mode-grid">
+        <button type="button" data-guardian-mode="session" onclick="setGuardianMode('session')">📋<b>تقرير آخر حصة</b><small>التقييم + التكليف + ملاحظات المحفظ</small></button>
+        <button type="button" data-guardian-mode="absence" onclick="setGuardianMode('absence')">❌<b>إبلاغ بالغياب</b><small>غياب اليوم + المطلوب للمتابعة</small></button>
+        <button type="button" data-guardian-mode="assignment" onclick="setGuardianMode('assignment')">📌<b>تذكير بالتكليف</b><small>آخر تكليف مسجل للطالب</small></button>
+        <button type="button" data-guardian-mode="custom" onclick="setGuardianMode('custom')">✍️<b>رسالة مخصصة</b><small>قالب عام قابل للتعديل</small></button>
+      </div>
+    </div>
+
+    <div class="guardian-step">
+      <div class="guardian-step-head"><b>2. المستلمون</b><span class="selected-count" id="broadcastCount">0 محدد</span></div>
+      <div class="guardian-scope-grid">
+        <button type="button" data-guardian-scope="today" onclick="setBroadcastRecipients('today')">طلاب اليوم</button>
+        <button type="button" data-guardian-scope="absent" onclick="setBroadcastRecipients('absent')">غائبو اليوم</button>
+        <button type="button" data-guardian-scope="all" onclick="setBroadcastRecipients('all')">كل الطلاب</button>
+        <button type="button" data-guardian-scope="none" onclick="setBroadcastRecipients('none')">إلغاء التحديد</button>
+      </div>
+      <div class="guardian-group-row">
+        <select id="guardianGroup" onchange="guardianGroupChanged()"><option value="">اختر مجموعة...</option></select>
+        <button type="button" class="btn btn-out btn-sm" onclick="setBroadcastRecipients('group')">اختيار المجموعة</button>
+      </div>
+      <div class="guardian-recipient-stats">
+        <div><b id="guardianValidCount">0</b><span>رقم صالح</span></div>
+        <div class="warn"><b id="guardianInvalidCount">0</b><span>يحتاج مراجعة</span></div>
+      </div>
+      <div id="guardianPhoneIssues" class="guardian-phone-issues" hidden></div>
+      <input type="search" id="broadcastSearch" placeholder="ابحث باسم الطالب أو ولي الأمر أو المجموعة..." oninput="renderBroadcastRecipients()">
+      <div id="broadcastRecipients" class="recipient-list guardian-recipient-list"></div>
+    </div>
+
+    <div class="guardian-step" id="guardianCustomPanel" hidden>
+      <div class="guardian-step-head"><b>3. نص الرسالة المخصصة</b><span>يمكن تخصيصها تلقائيًا لكل طالب</span></div>
+      <div class="guardian-custom-grid">
+        <div class="fld">
+          <label>قالب سريع</label>
+          <select id="broadcastPreset" onchange="applyBroadcastPreset()">
+            <option value="general">رسالة عامة</option>
+            <option value="schedule">تغيير موعد حصة</option>
+            <option value="holiday">إجازة / تعليق الحصص</option>
+            <option value="greeting">تهنئة بمناسبة</option>
+            <option value="reminder">تذكير مهم</option>
+          </select>
+        </div>
+        <div class="fld guardian-message-field">
+          <label>نص الرسالة</label>
+          <textarea id="broadcastText" rows="7" oninput="updateBroadcastPreview()"></textarea>
+        </div>
+      </div>
+      <div class="tmpl-vars">
+        <button type="button" class="tmpl-var" onclick="insertBroadcastVar('{{اسم_الطالب}}')">{{اسم_الطالب}}</button>
+        <button type="button" class="tmpl-var" onclick="insertBroadcastVar('{{اسم_ولي_الأمر}}')">{{اسم_ولي_الأمر}}</button>
+        <button type="button" class="tmpl-var" onclick="insertBroadcastVar('{{اسم_المحفظ}}')">{{اسم_المحفظ}}</button>
+        <button type="button" class="tmpl-var" onclick="insertBroadcastVar('{{اسم_الأكاديمية}}')">{{اسم_الأكاديمية}}</button>
+      </div>
+    </div>
+
+    <div class="guardian-step">
+      <div class="guardian-step-head"><b>3. المعاينة</b><span>راجع رسالة طالب قبل بدء القائمة</span></div>
+      <select id="guardianPreviewStudent" onchange="guardianSelectPreview()"></select>
+      <div class="broadcast-preview guardian-preview" id="broadcastPreview"></div>
+      <div id="broadcastProgress" class="broadcast-progress" style="display:none"></div>
+      <div class="guardian-send-actions">
+        <button class="btn btn-wa" onclick="startBroadcastQueue()">📲 بدء الإرسال عبر WhatsApp</button>
+        <button class="btn btn-out" onclick="copyBroadcastMessage()">📋 نسخ المعاينة</button>
+        <button class="btn btn-out guardian-review-phone" onclick="guardianOpenInvalidStudents()">☎️ مراجعة الأرقام</button>
+        <button class="btn btn-out" data-v1010-portal-guardian="1" onclick="v1010OpenSelectedGuardianPortal()">🌐 بوابة الطالب</button>
+      </div>
+      <p class="guardian-privacy-note">لا يرسل التطبيق الرسائل في الخلفية؛ يفتح WhatsApp لكل ولي أمر على حدة وتؤكد الإرسال بنفسك.</p>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════ CERTIFICATE MODAL ════════════ -->
+<div class="mo" id="certModal">
+  <div class="mo-box" id="certPrintWrap">
+    <div class="mo-title">
+      <span>🎓 شهادة الطالب</span>
+      <button class="mo-x" onclick="document.getElementById('certModal').classList.remove('open')">✕</button>
+    </div>
+    <div id="certContent"></div>
+    <button class="btn btn-g mb8" onclick="printCertificate()">🖨️ طباعة / حفظ PDF</button>
+    <button class="btn btn-out" onclick="document.getElementById('certModal').classList.remove('open')">إغلاق</button>
+  </div>
+</div>
+
+
+<!-- ════════════ SCRIPTS ════════════ -->
+<!-- v11.2.0 Stage 2 interactive error marking -->
+
+<script src="js/core/runtime.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/v10-data.js?v=11.0.0" defer></script>
+<script src="auth.js?v=11.7.4-foundation" defer></script>
+<script src="js/features/role-home.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/ux-guidance.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/academy-workspaces.js?v=11.7.4-foundation" defer></script>
+<script src="sync-core.js?v=11.0.0" defer></script>
+<script src="app.js?v=11.12.1-beta.27-absence-review2" defer></script>
+<script src="v8.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
+<script src="js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
+<script src="v9.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4" defer></script>
+<script src="js/features/mushaf-offline.js?v=11.7.4.2" defer></script>
+<script src="js/features/quran-engine.js?v=11.0.0" defer></script>
+<script src="js/features/quran-structure.js?v=11.0.0" defer></script>
+<script src="js/features/recitation-carry.js?v=11.0.0" defer></script>
+<script src="v10.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/revision-quran-text.js?v=11.8.1" defer></script>
+<script src="js/features/teacher-error-marking.js?v=11.12.1-beta.27-quran-picker-hotfix2" defer></script>
+<script src="js/features/teacher-correction-document.js?v=11.7.4.5" defer></script>
+<script src="js/features/guardian-communication.js?v=11.0.0" defer></script>
+<script src="js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3" defer></script>
+<script src="js/features/quran-coverage-progress.js?v=11.12.1-beta.27-coverage-review3" defer></script>
+<script src="js/features/imam-makeup-agenda.js?v=11.12.1-beta.27-combined-review4" defer></script>
+<script src="js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5" defer></script>
+<script src="js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1" defer></script>
+<script src="js/features/circle-analytics.js?v=11.0.0" defer></script>
+<script src="js/features/smart-revision.js?v=11.9.2" defer></script>
+<script src="js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3" defer></script>
+<script src="js/features/student-finance.js?v=11.5.1-s2" defer></script>
+<script src="js/features/teacher-inbox.js?v=11.6.0-s1" defer></script>
+<script src="js/features/supervisor-dashboard.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4" defer></script>
+<script src="js/features/quran-audio-export.js?v=11.2.0-s4" defer></script>
+<script src="js/features/assignment-audio-share.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/v11-ui.js?v=11.12.1-beta.27" defer></script>
+<script src="js/core/mobile-navigation.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/achievement-certificates.js?v=11.9.0" defer></script>
+
+<script src="js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3" defer></script>
+
+<script src="js/features/placement-center-1191.js?v=11.9.2" defer></script>
+
+<script src="js/features/circle-management-1110.js?v=11.11.1" defer></script>
+
+<script src="js/features/academic-exams-1111.js?v=11.11.1" defer></script>
+
+<script src="js/features/progress-bridge-1111.js?v=11.11.1" defer></script>
+<script src="js/features/academy-analytics-1112.js?v=11.12.1-beta.27" defer></script>
+
+<script src="js/features/imam-board-tafsir.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/imam-board-corpus.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/imam-smart-board.js?v=11.12.1-beta.27-quran-picker1" defer></script>
+<script src="js/features/platform-ux.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/platform-workflow.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/surah-picker-17.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/beta19-experience.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker-hotfix2" defer></script>
+<script src="js/features/integrated-teacher-brief.js?v=11.12.1-beta.27-integration-review1" defer></script>
+<script src="js/features/imam-absence-makeup.js?v=11.12.1-beta.27-absence-review2" defer></script>
+</body>
+</html>
