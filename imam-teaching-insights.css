@@ -25,3 +25,7 @@
 #pg-followup .iti-next b{color:#245e40}
 #pg-followup .iti-next small{color:#64766c;font-size:.9em}
 @media(max-width:390px){#imamTeachingInsights summary{padding:12px}#imamTeachingInsights .iti-body{padding:0 12px 12px}#imamTeachingInsights .iti-kpis small{font-size:.7rem}}
+
+#imamTeachingInsights[hidden]{display:none!important}
+#imamTeachingInsights .iti-unavailable{padding:14px 16px;line-height:1.7;color:var(--txt,#173b2a)}
+#imamTeachingInsights .iti-unavailable p{margin:8px 0;color:var(--v9-muted,#64766c)}

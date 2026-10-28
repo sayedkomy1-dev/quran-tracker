@@ -84,6 +84,23 @@ function v108StudentCard(row,insight){
     <div class="v108-card-actions"><button class="btn btn-g btn-sm" onclick="openProf('${v108Esc(st.id)}')">ملف الطالب</button><button class="btn btn-out btn-sm" onclick="startFor('${v108Esc(st.id)}')">بدء حصة</button><button class="btn btn-wa btn-sm" onclick="v108ContactGuardian('${v108Esc(st.id)}')">واتساب</button></div>
   </article>`;
 }
+function v108EnsureInsightsHost(){
+  const page=document.getElementById('pg-followup');if(!page)return null;
+  let host=document.getElementById('imamTeachingInsights');
+  if(!host){
+    // Recover from a partially updated page shell without creating another center.
+    host=document.createElement('section');host.id='imamTeachingInsights';
+    host.setAttribute('aria-label','خطة التدخل التعليمي');
+    const anchor=page.querySelector('.v108-summary')||page.querySelector('.v108-hero');
+    if(anchor)anchor.insertAdjacentElement('afterend',host);else page.prepend(host);
+  }
+  return host;
+}
+function v108InsightsUnavailable(host){
+  if(!host)return;
+  host.hidden=false;
+  host.innerHTML='<div class="iti-panel iti-unavailable" role="status"><b>🧭 خطة التدخل التعليمي</b><p>تعذر عرض التحليل الآن. باقي مركز متابعة الطلاب يعمل بصورة طبيعية. أغلق المركز وافتحه مجددًا بعد التأكد من اتصال التطبيق بالإنترنت.</p><button type="button" class="btn btn-out btn-sm" onclick="renderV108Followup()">إعادة المحاولة</button></div>';
+}
 function renderV108Followup(){
   const host=document.getElementById('v108List');if(!host)return;
   const rows=v108Rows(),summary=v108Summary(rows),visible=v108FilterRows(rows);
@@ -91,14 +108,24 @@ function renderV108Followup(){
   set('v108UrgentCount',summary.urgent);set('v108FollowCount',summary.follow);set('v108AttendanceCount',summary.lowAttendance);set('v108OverdueCount',summary.overdue);set('v108VisibleCount',visible.length);
   v108SyncGroupOptions();
   document.querySelectorAll('[data-v108-filter]').forEach(b=>b.classList.toggle('on',b.dataset.v108Filter===V108_FOLLOWUP.filter));
+  // The panel is optional, but failure must not be silently disguised as "not installed".
+  // Keep this read-only: no student, session or error state is modified here.
   let insights=null;
-  try{
-    insights=globalThis.ImamTeachingInsights?.renderInto?.(
-      document.getElementById('imamTeachingInsights'),
-      Array.isArray(sessions)?sessions:[],visible
-    )||null;
-    const panel=document.getElementById('imamTeachingInsights');if(panel)panel.hidden=!insights;
-  }catch(_){const panel=document.getElementById('imamTeachingInsights');if(panel)panel.hidden=true;}
+  const panel=v108EnsureInsightsHost();
+  if(panel){
+    panel.hidden=false;
+    try{
+      if(typeof globalThis.ImamTeachingInsights?.renderInto==='function'){
+        insights=globalThis.ImamTeachingInsights.renderInto(
+          panel,Array.isArray(sessions)?sessions:[],visible
+        )||null;
+      }
+      if(!insights)v108InsightsUnavailable(panel);
+    }catch(err){
+      console.warn('[teacher-followup] optional intervention panel failed to render');
+      v108InsightsUnavailable(panel);
+    }
+  }
   host.innerHTML=visible.length?visible.map(row=>v108StudentCard(row,insights?.byId?.get(String(row.st.id)))).join(''):'<div class="v108-empty"><b>لا توجد نتائج بهذا الفلتر</b><span>غيّر الفلتر أو الحلقة أو كلمة البحث.</span></div>';
   try{
     globalThis.ImamMakeupAgenda?.renderInto?.(
@@ -159,7 +186,7 @@ function v108PatchNavigation(){
   if(typeof V108_FOLLOWUP.baseRenderHome==='function')globalThis.renderV9Home=function(){const r=V108_FOLLOWUP.baseRenderHome();v108InjectHomeCard();return r;};
   if(typeof V108_FOLLOWUP.baseInjectNav==='function')globalThis.injectV9Navigation=function(){const r=V108_FOLLOWUP.baseInjectNav();setTimeout(v108EnsureMoreItem,0);return r;};
 }
-function v108Init(){v108PatchNavigation();v108EnsureMoreItem();v108InjectHomeCard();v108UpdateBadge();}
+function v108Init(){v108PatchNavigation();v108EnsureMoreItem();v108InjectHomeCard();v108UpdateBadge();if(document.getElementById('pg-followup')?.classList.contains('on'))renderV108Followup();}
 
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(v108Init,0),{once:true});else setTimeout(v108Init,0);
 

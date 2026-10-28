@@ -12,16 +12,16 @@
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
-const LIVE_CACHE_NAME = CACHE_NAME + '-teaching-review5';
+const LIVE_CACHE_NAME = CACHE_NAME + '-teaching-review5-hotfix1';
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
-  './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5',
+  './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5-hotfix1',
   './js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5',
-  './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5',
+  './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1',
   './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
   './imam-absence-makeup.css?v=11.12.1-beta.27-absence-review2',
   './quran-coverage-progress.css?v=11.12.1-beta.27-coverage-review3',
@@ -70,9 +70,9 @@ const CRITICAL_FRESH_SHELL = [
 
 
 const APP_SHELL = [
-  './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5',
+  './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5-hotfix1',
   './js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5',
-  './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5',
+  './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1',
   './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
   './imam-absence-makeup.css?v=11.12.1-beta.27-absence-review2',
   './quran-coverage-progress.css?v=11.12.1-beta.27-coverage-review3',
