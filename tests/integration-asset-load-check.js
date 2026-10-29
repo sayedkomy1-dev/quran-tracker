@@ -7,5 +7,5 @@ for(const rel of required){const escaped=rel.replace(/[.*+?^${}()|[\]\\]/g,'\\$&
 for(const rel of ['quran-coverage-progress.css','imam-makeup-agenda.css','imam-teaching-insights.css']){assert(html.includes(`<link rel="stylesheet" href="${rel}?`));assert(fs.existsSync(path.join(root,rel)));n++;}
 assert(!/src="[^"<>]+"\s*\n\s*<script\b/.test(html),'malformed script declaration found');n++;
 for(const rel of ['imam-makeup-agenda.css','js/features/imam-makeup-agenda.js','js/features/imam-teaching-insights.js','imam-teaching-insights.css','quran-coverage-progress.css','js/features/quran-coverage-progress.js']){assert(sw.includes(`./${rel}?`));n++;}
-assert(sw.includes("LIVE_CACHE_NAME = CACHE_NAME + '-academy-suite-review7'"));n++;
+assert(sw.includes("LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8'"));n++;
 console.log(`OK assets declaration checks: ${n}/${n}`);

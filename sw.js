@@ -12,7 +12,8 @@
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
-const LIVE_CACHE_NAME = CACHE_NAME + '-academy-suite-review7';
+const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8';
+// Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -20,10 +21,12 @@ const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
   './academy-mushaf.html',
-  './css/platform/academy-mushaf.css?v=11.12.1-beta.27-review7',
-  './js/features/academy-mushaf.js?v=11.12.1-beta.27-review7',
+  './css/platform/academy-mushaf.css?v=11.12.1-beta.27-life-review8',
+  './js/features/academy-mushaf.js?v=11.12.1-beta.27-life-review8',
 
   './css/platform/academy-suite.css?v=11.12.1-beta.27-visual-suite-review7',
+  './css/platform/academy-life.css?v=11.12.1-beta.27-life-review8',
+  './js/features/academy-life.js?v=11.12.1-beta.27-life-review8',
   './js/features/academy-suite.js?v=11.12.1-beta.27-visual-suite-review7',
   './academy-learning.html',
   './css/platform/academy-learning.css?v=11.12.1-beta.27-review7',
@@ -89,10 +92,12 @@ const CRITICAL_FRESH_SHELL = [
 
 const APP_SHELL = [
   './academy-mushaf.html',
-  './css/platform/academy-mushaf.css?v=11.12.1-beta.27-review7',
-  './js/features/academy-mushaf.js?v=11.12.1-beta.27-review7',
+  './css/platform/academy-mushaf.css?v=11.12.1-beta.27-life-review8',
+  './js/features/academy-mushaf.js?v=11.12.1-beta.27-life-review8',
 
   './css/platform/academy-suite.css?v=11.12.1-beta.27-visual-suite-review7',
+  './css/platform/academy-life.css?v=11.12.1-beta.27-life-review8',
+  './js/features/academy-life.js?v=11.12.1-beta.27-life-review8',
   './js/features/academy-suite.js?v=11.12.1-beta.27-visual-suite-review7',
   './academy-learning.html',
   './css/platform/academy-learning.css?v=11.12.1-beta.27-review7',

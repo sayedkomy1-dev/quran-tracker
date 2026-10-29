@@ -44,7 +44,7 @@ check('cache-safe offline assets listed in both groups',()=>{
  for(const asset of ['css/platform/design-bridge.css','js/features/design-bridge.js','css/platform/portal-design-bridge.css','css/platform/academy-portals.css','academy-portals.html']){
   assert(sw.includes(`'./${asset}`),asset);
  }
- assert(sw.includes("LIVE_CACHE_NAME = CACHE_NAME + '-academy-suite-review7'"));
+ assert(sw.includes("LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8'"));
 });
 check('guardian/guest existing pages receive only a style layer',()=>{
  for(const file of ['guardian-login.html','guardian-portal.html','guest-practice.html']){

@@ -13,5 +13,5 @@ check('No Quran canonical text styled with letter distortion',()=>{assert(!/\.qu
 check('Portal center lists functioning existing routes',()=>{assert(portal.includes('apsContent'));assert(js.includes('guest-practice.html'));assert(js.includes('guardian-login.html'));assert(js.includes('academy-learning.html'))});
 check('No publication of demo or direct guardian login',()=>{assert(!js.includes('loginAsGuardianDirect'));assert(!js.includes('WAQF_MEMORIAL_NAMES_LIST'))});
 check('All new assets are in both offline shell lists',()=>{const a=['academy-learning.html','data/academy-learning-materials.json','css/platform/academy-portal-suite.css','js/features/academy-suite.js'];for(const path of a)assert(sw.split(path).length>=3,`Missing ${path} from one shell list`)});
-check('Cache namespace changed to prevent stale asset reuse',()=>{assert(sw.includes("'-academy-suite-review7'"))});
+check('Cache namespace changed to prevent stale asset reuse',()=>{assert(sw.includes("'-academy-life-review8'"))});
 console.log(`academy suite ${tests}/11`);if(tests!==11)process.exitCode=1;
