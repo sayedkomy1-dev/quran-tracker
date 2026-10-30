@@ -55,3 +55,92 @@ body.imam-design-bridge #pg-home .sc:hover{transform:translateY(-3px)!important;
 @media(max-width:640px){.ial-moment{grid-template-columns:1fr}.ial-moment-card{padding:15px}.ial-moment-card strong{font-size:15px}body.imam-design-bridge .ias-visual-book{font-size:36px}}
 @media(prefers-reduced-motion:reduce){.ias-hero:after,.ias-hero-visual{animation:none!important}.ias-card,.ias-icon,.aps-card,.aps-icon,.al-nav button,.al-info-card,.al-word,.sc{transition:none!important}}
 @media print{.ial-moment{display:none!important}}
+/* Review 8 Mobile Header Hotfix 1 — scoped, responsive header/nav only.
+   Fallback nav is horizontally scrollable instead of compressing ten items into one row.
+   After app initialization the regular bottom navigation remains the sole mobile nav. */
+@media (max-width:799px) {
+  body.imam-design-bridge .hdr-top {
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px 8px;
+    min-width:0;
+    max-width:100%;
+  }
+  body.imam-design-bridge .v11-brand {
+    flex:1 1 118px;
+    min-width:0;
+    gap:7px;
+  }
+  body.imam-design-bridge .v11-brand-copy {
+    min-width:0;
+    flex:1 1 auto;
+  }
+  body.imam-design-bridge .hdr-title,
+  body.imam-design-bridge.v11-ready .hdr-title {
+    max-width:100%!important;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  body.imam-design-bridge .hdr-actions {
+    display:flex;
+    flex:0 1 auto;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+    max-width:100%;
+    min-width:0;
+    gap:4px;
+  }
+  body.imam-design-bridge .hdr-actions > :is(.hdr-btn,.back-btn) {
+    flex-shrink:0;
+  }
+  body.imam-design-bridge .hdr-actions > #backBtn {
+    width:auto!important;
+    min-width:66px!important;
+    padding-inline:9px!important;
+    white-space:nowrap;
+  }
+  /* The old navigation is a fallback before v9-shell-ready; allow sideways scrolling
+     so each icon/label keeps its own tap target and never overlays its neighbours. */
+  body.imam-design-bridge:not(.v9-shell-ready) #mainNav {
+    display:flex!important;
+  }
+  body.imam-design-bridge #mainNav {
+    max-width:100%;
+    width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    flex-wrap:nowrap;
+    justify-content:flex-start;
+    overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-x;
+    scrollbar-width:thin;
+  }
+  body.imam-design-bridge #mainNav .nav-t {
+    flex:0 0 auto;
+    min-width:max-content;
+    white-space:nowrap;
+    padding-inline:11px;
+  }
+  body.imam-design-bridge.v9-shell-ready #mainNav {
+    display:none!important;
+  }
+}
+@media (max-width:359px) {
+  body.imam-design-bridge .hdr-top {
+    flex-direction:column;
+    align-items:stretch;
+  }
+  body.imam-design-bridge .v11-brand {
+    flex:none;
+    width:100%;
+    justify-content:center;
+  }
+  body.imam-design-bridge .hdr-actions {
+    flex:none;
+    width:100%;
+    justify-content:center;
+  }
+}
