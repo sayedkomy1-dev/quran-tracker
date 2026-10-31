@@ -1,0 +1,25 @@
+/* Review8 mobile header hotfix 2: brand must not be clipped by dynamic tools. */
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const rd=n=>fs.readFileSync(path.join(root,n),'utf8');
+const css=rd('css/platform/academy-life.css');
+const html=rd('index.html');
+const sw=rd('sw.js');
+const v='11.12.1-beta.27-life-review8-mobile-hotfix2';
+assert(html.includes('css/platform/academy-life.css?v='+v));
+assert.equal(sw.split('css/platform/academy-life.css?v='+v).length-1,2);
+assert(sw.includes("'-academy-life-review8' + '-mobile-hotfix2'"));
+assert(css.includes('Review 8 Mobile Header Hotfix 2'));
+assert(/@media\s*\(max-width:600px\)/.test(css));
+assert(css.includes('body.imam-design-bridge .v11-brand-copy'));
+assert(css.includes('white-space:normal;'));
+assert(css.includes('text-overflow:clip;'));
+assert(css.includes('flex-direction:column;'));
+assert(css.includes('justify-content:space-evenly;'));
+assert(css.includes('flex-wrap:wrap;'));
+assert(!css.includes('.ayah-text{'));
+assert(html.includes('id="hdrTitle"'));
+console.log('academy-mobile-header-hotfix2-check: PASS');

@@ -144,3 +144,68 @@ body.imam-design-bridge #pg-home .sc:hover{transform:translateY(-3px)!important;
     justify-content:center;
   }
 }
+
+/* Review 8 Mobile Header Hotfix 2: give the academy name its own row on phones.
+   Live JS adds more header actions than the static markup contains, so a
+   one-line header must not rely on an arbitrary remaining width for the name.
+   No action is hidden or removed; small screens may wrap the action row. */
+@media (max-width:600px) {
+  body.imam-design-bridge .hdr-top {
+    flex-direction:column;
+    flex-wrap:nowrap;
+    align-items:stretch;
+    gap:8px;
+  }
+  body.imam-design-bridge .v11-brand {
+    flex:0 0 auto;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    justify-content:flex-start;
+    gap:10px;
+  }
+  body.imam-design-bridge .v11-brand-copy {
+    flex:1 1 auto;
+    min-width:0;
+    max-width:100%;
+  }
+  body.imam-design-bridge .hdr-title,
+  body.imam-design-bridge.v11-ready .hdr-title {
+    width:auto;
+    max-width:100%!important;
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+    overflow-wrap:break-word;
+    font-size:14px!important;
+    line-height:1.35;
+  }
+  body.imam-design-bridge .hdr-actions {
+    flex:0 0 auto;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-evenly;
+    flex-wrap:wrap;
+    gap:5px;
+    padding-top:7px;
+    border-top:1px solid rgba(255,255,255,.15);
+  }
+  /* Make icon targets usable even on a narrow Android PWA. */
+  body.imam-design-bridge .hdr-actions > :is(.hdr-btn,.back-btn),
+  body.imam-design-bridge.v11-ready .hdr-actions > :is(.hdr-btn,.back-btn) {
+    width:40px!important;
+    min-width:40px!important;
+    height:40px!important;
+    min-height:40px;
+    flex-shrink:0;
+  }
+  body.imam-design-bridge .hdr-actions > #backBtn,
+  body.imam-design-bridge.v11-ready .hdr-actions > #backBtn {
+    width:auto!important;
+    min-width:66px!important;
+    padding-inline:9px!important;
+  }
+}
