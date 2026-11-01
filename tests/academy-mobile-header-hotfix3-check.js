@@ -1,0 +1,34 @@
+/* Review 8 Mobile Header Hotfix 3 — structural regression.
+ * Exact device geometry is tested in a separate headless browser harness;
+ * this check must run with the project's built-in Node tests. */
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const html=read('index.html');
+const sw=read('sw.js');
+const css=read('css/platform/academy-life.css');
+const match=html.match(/<style id="imam-mobile-header-hotfix3">([\s\S]*?)<\/style>/);
+assert(match,'Critical mobile header CSS must be embedded in index.html');
+const rules=match[1];
+assert(rules.includes('@media (max-width:799px)'),'Mobile and narrow tablet widths must be included');
+assert(rules.includes('body .hdr .hdr-top'),'Header layout must not require optional design bridge class');
+assert(rules.includes('display:grid!important'),'Header must have independent brand/actions rows');
+assert(rules.includes('grid-template-columns:minmax(0,1fr)!important'));
+assert(rules.includes('body .hdr .hdr-top > .v11-brand'));
+assert(rules.includes('body .hdr .hdr-top > .hdr-actions'));
+assert(rules.includes('flex-wrap:wrap!important'),'Dynamic actions must wrap');
+assert(rules.includes('white-space:normal!important'),'Brand name must be able to wrap');
+assert(rules.includes('width:100%!important'),'Action row must use available width');
+assert(rules.includes('wlq-user-menu'),'Runtime account button needs explicit safe width');
+assert(rules.includes('v11-connectivity'),'Runtime connection status must be covered');
+assert(rules.includes('#backBtn'),'Back control needs a mobile layout');
+assert(!rules.includes('display:none!important;\n  }\n  body .hdr .hdr-actions > #backBtn'),'Back control must not be hidden');
+assert(rules.indexOf('body.imam-design-bridge')<0 || rules.includes('body .hdr .hdr-top'), 'Rules must work with bridge disabled');
+assert(sw.includes("const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';"),'SW must expose new cache identity');
+assert(html.includes('css/platform/academy-life.css?v=11.12.1-beta.27-life-review8-mobile-hotfix2'),'Retain existing Review8 stylesheet intact');
+assert(html.includes('id="hdrTitle"')&&html.includes('class="hdr-actions"'),'Original header IDs preserved');
+assert(!rules.includes('.ayah-text'),'No Quran text overrides');
+console.log('academy-mobile-header-hotfix3-check: PASS');

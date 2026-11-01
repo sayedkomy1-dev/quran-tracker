@@ -11,7 +11,7 @@ const sw=rd('sw.js');
 const v='11.12.1-beta.27-life-review8-mobile-hotfix2';
 assert(html.includes('css/platform/academy-life.css?v='+v));
 assert.equal(sw.split('css/platform/academy-life.css?v='+v).length-1,2);
-assert(sw.includes("'-academy-life-review8' + '-mobile-hotfix2'"));
+assert(sw.includes("'-academy-life-review8' + '-mobile-hotfix3'"));
 assert(css.includes('Review 8 Mobile Header Hotfix 2'));
 assert(/@media\s*\(max-width:600px\)/.test(css));
 assert(css.includes('body.imam-design-bridge .v11-brand-copy'));
