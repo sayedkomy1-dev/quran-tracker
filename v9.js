@@ -117,7 +117,7 @@ function injectV9Navigation(){
   ].map(([p,i,l,a])=>`<button class="v9-nav-btn ${p==='session'?'session-primary':''}" data-page="${p}" onclick="${a}" aria-label="${l}">${v9Icon(i)}<span class="v9-nav-label">${l}</span></button>`).join('');
   const g=document.getElementById('v9MoreGrid');if(g){
     g.innerHTML=[
-      ['search','بحث في الأكاديمية','العثور على الأدوات والطلاب المخولين',`closeV9More();openQuickSearch()`],['users','الطلاب','ملفات الطلاب والحضور',`goPage('students');closeV9More()`],['chart','التقارير','تقارير الحفظ والمتابعة',`goPage('reports');closeV9More()`],['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة وحزمة العمل دون إنترنت',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
+      ['search','بحث في الأكاديمية','العثور على الأدوات والطلاب المخولين',`closeV9More();openQuickSearch()`],['users','الطلاب','ملفات الطلاب والحضور',`goPage('students');closeV9More()`],['chart','التقارير','تقارير الحفظ والمتابعة',`goPage('reports');closeV9More()`],['calendar','الحضور','تسجيل سريع لحضور اليوم',`goPage('checkin');closeV9More()`],['tasks','المهام','متابعة المهام والمواعيد',`goPage('tasks');closeV9More()`],['book','المصحف','مصحف المدينة عالي الدقة',`goPage('mushaf');closeV9More()`],['group','المجموعات','عرض الحلقات والطلاب',`openGroupOverview()`],['settings','الإعدادات','التخصيص، النسخ والمزامنة',`goPage('settings');closeV9More()`],['shield','سلامة البيانات','فحص سريع للبيانات',`closeV9More();goPage('settings');setTimeout(()=>runDataHealthCheck(),150)`]
     ].map(([i,t,s,a])=>`<button class="v9-more-item" onclick="${a}">${v9Icon(i)}<b>${t}</b><small>${s}</small></button>`).join('');
     g.insertAdjacentHTML('beforeend',`<button class="v9-more-item" data-v1010-portal-more="1" onclick="closeV9More();v1010OpenPortalPicker('',true)">${v9Icon('group')}<b>إدارة ولي الأمر</b><small>الدخول والرمز والتواصل ومتابعة المذاكرة</small></button>`);
   }
@@ -175,11 +175,15 @@ function openV9More(){
 function closeV9More(){const m=document.getElementById('v9MoreSheet');if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');}}
 function updateV9Nav(p){document.querySelectorAll('#v9Nav .v9-nav-btn').forEach(b=>{b.classList.toggle('on',b.dataset.page===p||(b.dataset.page==='more'&&['students','reports','checkin','tasks','settings','mushaf'].includes(p)));if(b.dataset.page==='session'){const text=p==='session'?'الحصة الحالية':'ابدأ حصة';const label=b.querySelector('.v9-nav-label');if(label)label.textContent=text;b.setAttribute('aria-label',text);}});}
 function goPage(p){
-  closeV9More();
+  // Review 9 Entry Fix 1: all reading shortcuts go to the ONE HD public Mushaf.
+  // Preserve the offline lesson engine for teacher range/board tools; its old page is not opened.
   if(p==='mushaf'){
-    document.querySelectorAll('.pg').forEach(x=>x.classList.remove('on'));document.getElementById('pg-mushaf')?.classList.add('on');curPage='mushaf';
-    document.getElementById('backBtn').style.display='none';document.getElementById('hdrTitle').textContent='المصحف';document.getElementById('hdrSub').textContent='مصحف المدينة النبوية';if(globalThis.ImamApp?.MushafOffline?.render)globalThis.ImamApp.MushafOffline.render();else renderV9Mushaf();if(typeof injectMushafDirectDownload==='function')setTimeout(injectMushafDirectDownload,40);
-  }else V9_BASE.goPage(p);
+    closeV9More();
+    window.location.assign('academy-mushaf.html');
+    return;
+  }
+  closeV9More();
+  V9_BASE.goPage(p);
   updateV9Nav(p);
   window.scrollTo({top:0,behavior:settings.v9?.reduceMotion?'auto':'smooth'});
 }

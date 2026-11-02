@@ -70,7 +70,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
    return;
  }
  await installation;
- const newCache=await cachesMock.open('quran-pwa-v11.12.1-beta.27-workspace-workflow-academy-life-review8-mobile-hotfix3-mushaf-hd-only');
+ const newCache=await cachesMock.open('quran-pwa-v11.12.1-beta.27-workspace-workflow-academy-life-review8-mobile-hotfix3-mushaf-hd-only-unified-entry1');
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
  assert(currentRoot && currentHtml,'both root and index paths must have current HTML');

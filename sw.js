@@ -14,7 +14,7 @@ const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
 // New reader-only shell must not overwrite an already-installed offline release.
-const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only';
+const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1';
 // Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';

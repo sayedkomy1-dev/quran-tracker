@@ -14,7 +14,7 @@ assert(section.includes('max-height:88dvh')&&section.includes('overflow-y:auto')
 assert(css.includes('max-height:92dvh')&&css.includes('env(safe-area-inset-bottom)'),'mobile safe-area scroll required');
 assert.equal((app.match(/document\.querySelector\?\.\('#stModal > \.mo-box'\)/g)||[]).length,2,'add and edit must reset scroll');
 assert(/const LIVE_CACHE_NAME = CACHE_NAME \+ '-[a-z0-9-]+'(?: \+ '-[a-z0-9-]+')*;/.test(sw),'distinct offline cache required after subsequent hotfixes');
-assert(sw.includes("const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only';"),'new public reader must have its own cache version');
+assert(sw.includes("const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1';"),'new public reader must have its own cache version');
 assert(sw.includes('caches.open(ACTIVE_CACHE_NAME)'),'install should never overwrite old release cache');
 assert(sw.includes('k!==ACTIVE_CACHE_NAME'),'activate must preserve new cache');
 console.log('PASS student modal: bounded scrolling, start-at-top, one field set, distinct offline release cache');
