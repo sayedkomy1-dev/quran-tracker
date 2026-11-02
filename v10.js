@@ -427,21 +427,7 @@ function v1052HomeSummary(cfg,section){
 }
 async function v1052RefreshMushafQuickStatus(){
   const status=document.getElementById('v1053HomeMushafStatus')||document.getElementById('v1052MushafStatus');
-  const download=document.getElementById('v1053HomeMushafDownload');
-  const downloadText=document.getElementById('v1053HomeMushafDownloadText');
-  try{
-    const api=globalThis.ImamApp?.MushafOffline;
-    const s=api?.stats?await api.stats():{count:0,bytes:0};
-    const count=Number(s?.count||0),total=Number(api?.pageCount||604);
-    if(status){
-      status.textContent=count>=total?`المصحف كامل محفوظ Offline · ${total} صفحة`:count?`${count}/${total} صفحة محفوظة — الباقي يُعرض من الإنترنت`:'جاهز للقراءة من الإنترنت — يمكنك تنزيل الصفحات للعمل Offline';
-      status.dataset.ready=count>=total?'1':'0';
-    }
-    if(download){
-      download.hidden=count>=total;download.style.display=count>=total?'none':'';
-      if(downloadText)downloadText.textContent=count?`استكمال التنزيل ${count}/${total}`:'تنزيل المصحف Offline';
-    }
-  }catch(_){if(status)status.textContent='افتح المصحف أو نزّل صفحاته عند الحاجة';}
+  if(status)status.textContent='مصحف المدينة عالي الدقة · يحتاج إلى اتصال الإنترنت';
 }
 function v1052OpenMushafQuick(){
   const api=globalThis.ImamApp?.MushafOffline;

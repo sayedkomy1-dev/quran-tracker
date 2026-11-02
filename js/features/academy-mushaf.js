@@ -11,6 +11,7 @@
  function get(k){try{return g.localStorage.getItem(k)}catch(e){return null}}
  function put(k,v){try{g.localStorage.setItem(k,v)}catch(e){}}
  function readPage(){const n=Number(get(KEY));return Number.isInteger(n)&&n>=1&&n<=MAX?n:1}
+ function launchPage(){const n=Number(new URLSearchParams(g.location.search).get('page'));return Number.isInteger(n)&&n>=1&&n<=MAX?n:readPage()}
  // Any previously saved source preference is ignored: the reader has one HD source.
  function prefs(){try{const x=JSON.parse(get(PREF)||'{}');if(Number.isFinite(x.zoom))zoom=Math.max(80,Math.min(160,x.zoom));night=!!x.night}catch(e){}}
  function savePrefs(){put(PREF,JSON.stringify({zoom,night}))}
@@ -37,7 +38,7 @@
  function keyboard(e){const t=e.target;if(t?.closest?.('input,select,textarea,button,a,[contenteditable="true"]'))return;
   if(e.key==='ArrowLeft'){e.preventDefault();change(Math.min(MAX,current+1))}
   else if(e.key==='ArrowRight'){e.preventDefault();change(Math.max(1,current-1))}}
- async function init(){prefs();syncReader();
+ async function init(){if(new URLSearchParams(g.location.search).get('embedded')==='1')d.body.classList.add('am-embedded');prefs();syncReader();
   el('amTheme').addEventListener('click',()=>{night=!night;syncReader();savePrefs()});
   el('amFocus').addEventListener('click',()=>{focus=!focus;syncReader()});
   el('amZoomIn').addEventListener('click',()=>zoomChange(10));
@@ -65,7 +66,7 @@
    el('amPrev').onclick=()=>change(current-1);el('amNext').onclick=()=>change(current+1);
    el('amBookmark').onclick=()=>{put(KEY,String(current));status(`تم حفظ موضع القراءة على هذا الجهاز: صفحة ${fmt(current)}.`)};
    el('amPageNumber').addEventListener('keydown',e=>{if(e.key==='Enter')change(e.target.value)});
-   change(readPage());
+   change(launchPage());
   }catch(e){status('تعذّر تحميل فهرس المصحف، يرجى تحديث التطبيق أو الاتصال بالإنترنت.')}
  }
  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',init,{once:true});else init();

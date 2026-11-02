@@ -1,0 +1,8 @@
+/* Review 9 Hotfix 2: preserve the active lesson while showing ONLY the public HD reader. */
+.imam-hd-reader-layer[hidden]{display:none!important}
+.imam-hd-reader-layer{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;min-width:0;min-height:0;background:#f6f7f2;color:#12362a;direction:rtl}
+.imam-hd-reader-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:none;background:#145a3a;color:white;padding:10px max(12px, env(safe-area-inset-right)) 10px max(12px, env(safe-area-inset-left));font:600 14px/1.5 Tahoma,Arial,sans-serif}
+.imam-hd-reader-close{flex:none;border:1px solid rgba(255,255,255,.5);border-radius:9px;padding:9px 12px;background:#fff;color:#164a36;cursor:pointer;font:600 13px Tahoma,Arial,sans-serif;min-height:42px}
+.imam-hd-reader-frame{width:100%;flex:1;min-height:0;border:0;background:#f6f7f2}
+body.imam-hd-reader-open{overflow:hidden!important}
+@media(max-width:360px){.imam-hd-reader-top{padding:8px;gap:5px;font-size:12px}.imam-hd-reader-close{padding:8px;font-size:11px}}

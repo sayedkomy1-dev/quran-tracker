@@ -750,7 +750,7 @@ function renderV9Home(){
 
     <section class="v1052-mushaf-launcher" aria-label="مصحف المحفظ">
       <div class="v1052-mushaf-copy"><span class="v1052-mushaf-icon">${v9Icon('book')}</span><div><b>مصحف المحفظ</b><span id="v1053HomeMushafStatus">صفحات مصحف المدينة من الإنترنت — بدون PDF.</span></div></div>
-      <div class="v1052-mushaf-actions"><button class="v1052-mushaf-open" onclick="openTeacherMushaf()">${v9Icon('book')} فتح المصحف</button><button id="v1053HomeMushafDownload" class="v1052-mushaf-download" onclick="downloadMadinahMushafDirect()">${v9Icon('download')} <span id="v1053HomeMushafDownloadText">تنزيل المصحف</span></button></div>
+      <div class="v1052-mushaf-actions"><button class="v1052-mushaf-open" onclick="openTeacherMushaf()">${v9Icon('book')} فتح المصحف</button></div>
     </section>
 
     <section class="v92-today-card v1052-today-card ${todayOpen?'open':''}">

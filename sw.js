@@ -14,7 +14,7 @@ const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
 // New reader-only shell must not overwrite an already-installed offline release.
-const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1';
+const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2';
 // Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
@@ -25,6 +25,8 @@ const CRITICAL_FRESH_SHELL = [
   './academy-mushaf.html',
   './css/platform/academy-mushaf.css?v=11.12.1-beta.27-hd-only',
   './js/features/academy-mushaf.js?v=11.12.1-beta.27-hd-only',
+  './css/platform/mushaf-entry-unifier.css?v=11.12.1-beta.27-review9-hotfix2',
+  './js/features/mushaf-entry-unifier.js?v=11.12.1-beta.27-review9-hotfix2',
 
   './css/platform/academy-suite.css?v=11.12.1-beta.27-visual-suite-review7',
   './css/platform/academy-life.css?v=11.12.1-beta.27-life-review8-mobile-hotfix2',
@@ -96,6 +98,8 @@ const APP_SHELL = [
   './academy-mushaf.html',
   './css/platform/academy-mushaf.css?v=11.12.1-beta.27-hd-only',
   './js/features/academy-mushaf.js?v=11.12.1-beta.27-hd-only',
+  './css/platform/mushaf-entry-unifier.css?v=11.12.1-beta.27-review9-hotfix2',
+  './js/features/mushaf-entry-unifier.js?v=11.12.1-beta.27-review9-hotfix2',
 
   './css/platform/academy-suite.css?v=11.12.1-beta.27-visual-suite-review7',
   './css/platform/academy-life.css?v=11.12.1-beta.27-life-review8-mobile-hotfix2',

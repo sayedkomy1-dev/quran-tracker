@@ -32,3 +32,7 @@ body{background:radial-gradient(circle at 2% 4%,#e6e1c6 0,transparent 35%),#f4f4
 .am-retry-wrap button[hidden]{display:none!important}
 .am-page-wrap img[hidden]{display:none!important}
 .am-night .am-retry-wrap button{background:#d9c28d;color:#183d2e}
+
+/* The shared HD reader appears inside the teacher workspace without duplicating the old reader. */
+body.am-embedded .am-head,body.am-embedded .am-intro,body.am-embedded footer,body.am-embedded .am-details{display:none!important}
+body.am-embedded main{padding-top:10px}
