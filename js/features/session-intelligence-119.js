@@ -121,7 +121,35 @@
     }
     return result(checks,base.kind);
   }
-  function focusMissing(target){const t=by(target)||(target?.startsWith('pgr-')?by(target.slice(4)+'-s'):null);if(!t)return;let parent=t.parentElement;while(parent){if(parent.tagName==='DETAILS')parent.open=true;parent=parent.parentElement;}t.scrollIntoView?.({block:'center'});if(!t.matches?.('input,select,textarea,button,a,[tabindex]'))t.setAttribute('tabindex','-1');t.focus?.();t.classList.add('ia28-missing-focus');setTimeout(()=>t.classList.remove('ia28-missing-focus'),3500);}
+  function focusMissing(target){
+    const id=String(target||'');
+    const grade=id.match(/^pgr-(new|rec|far|juz|surahReview)$/);
+    const section=id.match(/^(new|rec|far)-(?:s|f|t|full)$/);
+    // Guided session mode hides non-current sections, even when a target exists.
+    const step=grade?'assessment':section?(section[1]==='new'?'new':'review'):'assessment';
+    try{g.setSessionStep?.(step,false);}catch(_){}
+    if(section&&by('tog-'+section[1])&&!by('tog-'+section[1]).classList.contains('on')){
+      try{g.togSec?.(section[1]);}catch(_){}
+    }
+    if(section&&/-(f|t)$/.test(id)){
+      const range=by(section[1]+'-range');if(range)range.style.display='';
+    }
+    // Open all nested DETAILS, then focus a real choice for grade panels.
+    const t=by(id)||(grade?by('prev-task-'+grade[1]):null);
+    if(!t){g.toast?.('تعذر تحديد الحقل تلقائيًا؛ افتح قسم النواقص لتعديله','info');return false;}
+    let node=t;while(node){if(node.tagName==='DETAILS')node.open=true;node=node.parentElement;}
+    const focusTarget=grade?(t.querySelector?.('.gb')||t):t;
+    if(!focusTarget.matches?.('input,select,textarea,button,a,[tabindex]'))focusTarget.setAttribute?.('tabindex','-1');
+    const visible=()=>{
+      try{focusTarget.scrollIntoView?.({block:'center',behavior:'smooth'});}catch(_){}
+      try{focusTarget.focus?.({preventScroll:true});}catch(_){focusTarget.focus?.();}
+      t.classList?.add?.('ia28-missing-focus');
+      setTimeout(()=>t.classList?.remove?.('ia28-missing-focus'),3500);
+    };
+    // Let the guided-mode and disclosure DOM settle first.
+    setTimeout(visible,60);
+    return true;
+  }
 
   function touchDraft(){try{g.scheduleDraftSave?.();}catch(_){}}
   function render(){
@@ -175,7 +203,7 @@
     by('im119DecisionFar').addEventListener('change',e=>{state.decisions.far=e.target.value;touchDraft();render();});
     by('im119NoRecitation').addEventListener('input',e=>{state.skipReason=e.target.value;touchDraft();render();});
     by('im119AddRange').addEventListener('click',openRange);
-    by('im119Requirements').addEventListener('click',e=>{const target=by(e.target.closest('button')?.dataset.target);if(target){target.scrollIntoView({block:'center',behavior:'smooth'});target.focus?.();}});
+    by('im119Requirements').addEventListener('click',e=>{const target=e.target.closest('button')?.dataset.target;if(target)focusMissing(target);});
     by('im119ExtraList').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.remove!==undefined){state.extra.splice(Number(b.dataset.remove),1);touchDraft();render();}if(b.dataset.view!==undefined){const x=state.extra[Number(b.dataset.view)];g.openQuranRangeText?.({surah:x.surah,from:x.from,to:x.to});}});
     head.addEventListener('input',e=>{if(e.target.closest('#im119Completion'))return;queueMicrotask(render);},true);
     head.addEventListener('change',()=>queueMicrotask(render),true);
@@ -215,15 +243,16 @@
   function showWarning(result,action){
     if(state.warning)return;state.warning=true;
     const prev=by('im119Warning');prev?.remove();const critical=result.critical.length>0;
-    const auth=g.WeLiveQuranAuth;const canOverride=!['send','short','detailed'].includes(action)&&!!auth?.isActive?.()&&['owner','teacher'].includes(String(auth.getAccess?.()?.role||''));
+    // The underlying save/send action enforces permissions; a noncritical reminder
+    // must not become an extra permission gate, including in offline lessons.
+    const canOverride=!critical;
     const box=document.createElement('div');box.id='im119Warning';box.className='mo open im119-dialog';
-    box.innerHTML=`<div class="mo-box" role="alertdialog" aria-modal="true" aria-labelledby="im119WarningTitle"><h3 id="im119WarningTitle">⚠️ ${['send','short','detailed'].includes(action)?'تحذير: تقرير ولي الأمر غير مكتمل':'تنبيه مهم: بيانات الحصة غير مكتملة'}</h3><p>انتبه يا شيخنا، راجع النواقص التالية قبل المتابعة:</p><div class="im119-warning-list">${result.outstanding.map(x=>`<button type="button" data-missing-target="${escape(x.target)}">${escape(x.label)} ${x.severity==='critical'?'(نقص حرج)':''} ← فتح الحقل</button>`).join('')}</div>${!critical&&canOverride?'<label>سبب اعتماد النواقص (مطلوب للتجاوز)<textarea id="im119OverrideReason" rows="2" maxlength="250"></textarea></label>':''}<div class="im119-actions"><button type="button" class="btn btn-g" data-action="review">استكمال البيانات</button><button type="button" class="btn btn-out" data-action="draft">حفظ كمسودة</button>${critical||!canOverride?'':`<button type="button" class="btn btn-wa" data-action="approve">${['send','short','detailed'].includes(action)?'متابعة بعد التأكيد':'اعتماد رغم التنبيه'}</button>`}<button type="button" class="btn btn-out" data-action="cancel">إلغاء</button></div></div>`;document.body.appendChild(box);
+    box.innerHTML=`<div class="mo-box" role="alertdialog" aria-modal="true" aria-labelledby="im119WarningTitle"><h3 id="im119WarningTitle">⚠️ ${['send','short','detailed'].includes(action)?'تحذير: تقرير ولي الأمر غير مكتمل':'تنبيه مهم: بيانات الحصة غير مكتملة'}</h3><p>انتبه يا شيخنا، راجع النواقص التالية قبل المتابعة:</p><div class="im119-warning-list">${result.outstanding.map(x=>`<button type="button" data-missing-target="${escape(x.target)}">${escape(x.label)} ${x.severity==='critical'?'(نقص حرج)':''} ← فتح الحقل</button>`).join('')}</div>${canOverride?'<label>سبب التخطي (اختياري، يُحفظ مع الحصة)<textarea id="im119OverrideReason" rows="2" maxlength="250" placeholder="مثال: لم يتم التقييم في هذه الحصة"></textarea></label>':''}<div class="im119-actions"><button type="button" class="btn btn-g" data-action="review">استكمال البيانات</button><button type="button" class="btn btn-out" data-action="draft">حفظ كمسودة</button>${canOverride?'<button type="button" class="btn btn-wa" data-action="approve">تخطي التنبيه والمتابعة</button>':''}<button type="button" class="btn btn-out" data-action="cancel">إلغاء</button></div></div>`;document.body.appendChild(box);
     function close(){box.remove();state.warning=false;}
     box.querySelectorAll('[data-missing-target]').forEach(btn=>btn.onclick=()=>{const target=btn.dataset.missingTarget;close();focusMissing(target);});
     box.querySelectorAll('[data-action]').forEach(btn=>btn.onclick=()=>{
       const choice=btn.dataset.action,reason=by('im119OverrideReason')?.value.trim()||'';
       if(choice==='approve'&&!canOverride){g.toast?.('ليس لديك تصريح لتجاوز التنبيه','error');return;}
-      if(choice==='approve'&&!reason){g.toast?.('اكتب سبب التجاوز أولًا','error');return;}
       if(choice==='draft'){
         const key=typeof g.draftKey==='function'?g.draftKey():'';
         if(!key){g.toast?.('اختر الطالب والتاريخ لحفظ المسودة','error');return;}
@@ -237,7 +266,7 @@
       }
       if(choice==='review'){const target=result.outstanding[0]?.target;close();focusMissing(target);return;}
       if(choice==='cancel'){close();return;}
-      if(choice==='approve'){state.overrideReason=reason;state.overrideAt=new Date().toISOString();state.overrideIssues=result.outstanding.map(x=>x.id);close();execute(action);}
+      if(choice==='approve'){state.overrideReason=reason||'تم تخطي تنبيه النواقص باختيار المحفظ';state.overrideAt=new Date().toISOString();state.overrideIssues=result.outstanding.map(x=>x.id);close();execute(action);}
     });
   }
   function execute(action){

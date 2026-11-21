@@ -6,9 +6,8 @@
 // SECURITY — XSS PREVENTION
 // ══════════════════════════════════════
 function esc(str){
-  const d=document.createElement('div');
-  d.textContent=String(str==null?'':str);
-  return d.innerHTML;
+  // Safe in both text nodes and quoted HTML attributes.
+  return String(str==null?'':str).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
 }
 
 // ══════════════════════════════════════
@@ -332,7 +331,21 @@ function legacySnapshotFromLocalStorage(){
     settings:parseJSONSafe(localStorage.getItem('qt_cfg'),{})
   };
 }
+// RC8: a single localStorage value is an atomic recovery checkpoint.
+// Legacy per-collection keys remain readable, but newly written snapshots
+// cannot be half students / half sessions after a process crash.
+function readAccountAtomicSnapshot(){
+  try{
+    const record=JSON.parse(localStorage.getItem(accountLocalKey('snapshot.v2'))||'null');
+    if(!record||record.format!==2||record.userId!==storageScopeUserId||!Number.isSafeInteger(record.stamp)||record.stamp<=0)return null;
+    const data=record.snapshot;
+    if(!data||!Array.isArray(data.students)||!Array.isArray(data.sessions)||!Array.isArray(data.tasks)||!data.settings||typeof data.settings!=='object'||Array.isArray(data.settings))return null;
+    return record;
+  }catch(_){return null;}
+}
 function accountSnapshotFromLocalStorage(){
+  const atomic=readAccountAtomicSnapshot();
+  if(atomic)return atomic.snapshot;
   const present=['students','sessions','tasks','settings'].some(k=>localStorage.getItem(accountLocalKey(k))!=null);
   if(!present)return null;
   return{
@@ -504,7 +517,7 @@ async function initDB(){
     const localSnapshot=accountSnapshotFromLocalStorage();
     accountSnapshot=chooseAccountBootSnapshot(idbSnapshot,localSnapshot,
       Number(map[accountIdbKey('savedAt')])||0,
-      Number(localStorage.getItem(accountLocalKey('savedAt')))||0,
+      (readAccountAtomicSnapshot()?.stamp||Number(localStorage.getItem(accountLocalKey('savedAt')))||0),
       Number(localStorage.getItem(accountLocalKey('explicitEmptyAt')))||0);
     legacySnapshot=snapshotFromMap(map,'')||legacySnapshotFromLocalStorage();
   }catch(e){
@@ -562,22 +575,41 @@ function showAccountMigrationNotice(){
   else if(n.type==='empty')toast('تم فتح مساحة بيانات فارغة لهذا الحساب، والبيانات القديمة لم تُحذف.','info');
 }
 function save(){
-  // كل حساب يملك نسخة محلية منفصلة. مفاتيح v10.1.4 القديمة لا تُكتب بعد الآن.
-  let stamp=0;
+  // RC8: one atomic account-scoped local recovery snapshot, then one IndexedDB
+  // readwrite transaction. Never remove a last-good copy before commit.
+  const stamp=nextSnapshotStamp();
+  let medium='atomic-localStorage';
   try{
-    localStorage.setItem(accountLocalKey('students'),JSON.stringify(students));
-    localStorage.setItem(accountLocalKey('sessions'),JSON.stringify(sessions));
-    localStorage.setItem(accountLocalKey('tasks'),JSON.stringify(tasks));
-    localStorage.setItem(accountLocalKey('settings'),JSON.stringify(settings));
-    stamp=nextSnapshotStamp();
-    localStorage.setItem(accountLocalKey('savedAt'),String(stamp));
-    if(snapshotHasData({students,sessions,tasks}))localStorage.removeItem(accountLocalKey('explicitEmptyAt'));
-  }catch(e){console.warn('تعذر حفظ نسخة localStorage الخاصة بالحساب',e); try{globalThis.ImamApp.SaveHealth={ok:false,error:String(e?.name||'StorageError'),at:Date.now()};}catch(_){};return false;}
-  globalThis.ImamApp.SaveHealth={ok:true,medium:'localStorage',at:stamp};
+    const snapshot={students,sessions,tasks,settings};
+    localStorage.setItem(accountLocalKey('snapshot.v2'),JSON.stringify({format:2,userId:storageScopeUserId,stamp,snapshot}));
+    // Best-effort metadata only. The complete committed record is authoritative.
+    try{localStorage.setItem(accountLocalKey('savedAt'),String(stamp));}catch(_){}
+    if(snapshotHasData(snapshot))try{localStorage.removeItem(accountLocalKey('explicitEmptyAt'));}catch(_){}
+    // Old four-key mirror is retired AFTER a full atomic value exists; migration
+    // and recovery code still reads it if an older install didn't finish migration.
+    ['students','sessions','tasks','settings'].forEach(k=>{try{localStorage.removeItem(accountLocalKey(k));}catch(_){}});
+  }catch(e){
+    // Space-constrained browsers may fail allocation of the new key while older
+    // mirrors still occupy quota. Retain a safe fallback rather than losing work.
+    try{
+      if(readAccountAtomicSnapshot())throw e; // do not replace a newer atomic checkpoint with legacy pieces
+      localStorage.setItem(accountLocalKey('students'),JSON.stringify(students));
+      localStorage.setItem(accountLocalKey('sessions'),JSON.stringify(sessions));
+      localStorage.setItem(accountLocalKey('tasks'),JSON.stringify(tasks));
+      localStorage.setItem(accountLocalKey('settings'),JSON.stringify(settings));
+      localStorage.setItem(accountLocalKey('savedAt'),String(stamp));
+      medium='legacy-localStorage-fallback';
+    }catch(err){
+      console.error('تعذر حفظ بيانات الحصة على الجهاز',err);
+      globalThis.ImamApp.SaveHealth={ok:false,error:String(err?.name||'StorageError'),at:Date.now()};
+      queueMicrotask(()=>{try{document.dispatchEvent(new Event('imam:local-save-failed'));}catch(_){}});
+      return false;
+    }
+  }
+  globalThis.ImamApp.SaveHealth={ok:true,medium,at:stamp};
   idbWriteSnapshot(stamp);
   writeOfflineSafetySnapshot();
   queueMicrotask(()=>{try{updateTaskBadge();}catch(_){} });
-  // Read-only admin roster sync is scheduled after saves; never block the local save.
   queueMicrotask(()=>{try{document.dispatchEvent(new Event('imam:local-save'));}catch(_){} });
   return true;
 }
@@ -597,7 +629,7 @@ function applyTheme(){
   const dark=settings.theme==='dark';
   document.documentElement.setAttribute('data-theme',dark?'dark':'light');
   document.getElementById('themeBtn').textContent=dark?'☀️':'🌙';
-  document.getElementById('themeColorMeta').setAttribute('content',dark?'#0d1a11':'#1a4a2e');
+  document.getElementById('themeColorMeta').setAttribute('content',dark?'#0d1a11':'#126044');
 }
 function toggleTheme(){
   settings.theme=settings.theme==='dark'?'light':'dark';
@@ -1134,12 +1166,11 @@ function editSt(){
   if(box)box.scrollTop=0;
 }
 function deleteSt(){
-  if(!confirm('هل تريد حذف هذا الطالب وجميع بياناته؟')) return;
-  markStudentCascadeDeletion(curStId);
-  students=students.filter(s=>s.id!==curStId);
-  sessions=sessions.filter(s=>s.studentId!==curStId);
-  tasks=tasks.filter(t=>t.studentId!==curStId);
-  save(); toast('تم الحذف','success'); goPage('students');
+  // The later v9 handler supplies guardian-access revocation before archiving.
+  // Fail closed here rather than accidentally deleting student history if v9
+  // fails to load, or if an old cached index calls this base handler.
+  toast('الأرشفة الآمنة تحتاج تحميل أدوات إدارة الطلاب بالكامل. أعد فتح التطبيق.','error');
+  return false;
 }
 
 // ══════════════════════════════════════

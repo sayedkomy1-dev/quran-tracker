@@ -516,7 +516,7 @@ function save(){if(!V8.syncing)stampLocalSyncChanges();const stored=__IMAM_BASE_
 // passphrase is required on another device; it never leaves the browser.
 // ──────────────────────────────────────
 function syncConfigValid(){const s=settings.sync||{};return !!globalThis.WeLiveQuranAuth?.isActive?.()&&String(s.passphrase||'').length>=8;}
-function renderSyncStatus(msg='',isErr=false){const el=document.getElementById('syncStatus');if(!el)return;const s=settings.sync||{},dev=String(s.deviceId||'').replace(/^device-/,'').slice(0,8)||'—',rev=Number(s.serverRevision)||0;el.className=isErr?'sync-err':'txt-mut';el.textContent=msg||(s.lastPull||s.lastPush?`مزامنة آمنة · الجهاز ${dev} · إصدار السحابة ${rev} · رفع: ${s.lastPush?new Date(s.lastPush).toLocaleString('ar-EG'):'—'} · تنزيل: ${s.lastPull?new Date(s.lastPull).toLocaleString('ar-EG'):'—'}`:`مزامنة آمنة جاهزة · الجهاز ${dev}. ضع كلمة تشفير من 8 أحرف على الأقل، ثم ارفع نسخة مشفرة للحساب.`);}
+function renderSyncStatus(msg='',isErr=false){const el=document.getElementById('syncStatus');if(!el)return;const s=settings.sync||{},dev=String(s.deviceId||'').replace(/^device-/,'').slice(0,8)||'—',rev=Number(s.serverRevision)||0;const reviews=Array.isArray(s.financeReview)?s.financeReview:[];const clockIssues=Array.isArray(s.clockSkewReview)?s.clockSkewReview:[];el.className=isErr||reviews.length||clockIssues.length?'sync-err':'txt-mut';const base=msg||(s.lastPull||s.lastPush?`مزامنة آمنة · الجهاز ${dev} · إصدار السحابة ${rev} · رفع: ${s.lastPush?new Date(s.lastPush).toLocaleString('ar-EG'):'—'} · تنزيل: ${s.lastPull?new Date(s.lastPull).toLocaleString('ar-EG'):'—'}`:`مزامنة آمنة جاهزة · الجهاز ${dev}. ضع كلمة تشفير من 8 أحرف على الأقل، ثم ارفع نسخة مشفرة للحساب.`);el.textContent=base+(reviews.length?` ⚠️ توجد ${reviews.length} دورة مالية مغلقة تحتاج مراجعة دفعات بعد المزامنة: ${reviews.map(r=>r.month).join('، ')}. لم يتم تغيير كشوفها المغلقة.`:'')+(clockIssues.length?` ⚠️ ساعة جهاز غير مضبوطة: ${clockIssues.length} سجلًا بتوقيت مستقبلي يحتاج مراجعة. لا تعتمد على ترتيب الجهاز لحل التعارضات.`:'');}
 function bytesToB64(arr){let s='';const u=arr instanceof Uint8Array?arr:new Uint8Array(arr);for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode(...u.subarray(i,i+0x8000));return btoa(s);}
 function b64ToBytes(s){const b=atob(s);return Uint8Array.from(b,c=>c.charCodeAt(0));}
 async function deriveSyncKey(pass,salt){const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:200000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
@@ -539,14 +539,22 @@ function mergeCloudPayload(remote,revision){
   const core=globalThis.WLQSyncCore;if(!core)throw new Error('SYNC_CORE_MISSING');
   if(remote.ownerUserId&&remote.ownerUserId!==storageScopeUserId)throw new Error('ACCOUNT_MISMATCH');
   const localSync=settings.sync,localSecurity=settings.security,owner=settings.accountOwner;
+  const clockSkewReview=core.clockSkewReview({
+    students:[...students,...(remote.students||[])],
+    sessions:[...sessions,...(remote.sessions||[])],
+    tasks:[...tasks,...(remote.tasks||[])]
+  });
   const mergedTombstones=core.mergeTombstones(settings.syncTombstones,remote.tombstones||remote.settings?.syncTombstones);
   students=core.mergeById(students,remote.students,'students',mergedTombstones);
+  const financeReview=core.financeReview(students);
   const deletedStudents=core.deletedStudentIds(students,mergedTombstones);
   sessions=core.filterDeletedChildren(core.mergeById(sessions,remote.sessions,'sessions',mergedTombstones),deletedStudents);
   tasks=core.filterDeletedChildren(core.mergeById(tasks,remote.tasks,'tasks',mergedTombstones),deletedStudents);
   const remoteSettings={...(remote.settings&&typeof remote.settings==='object'?remote.settings:{})};
   delete remoteSettings.sync;delete remoteSettings.security;delete remoteSettings.accountOwner;delete remoteSettings.syncTombstones;
   settings={...settings,...remoteSettings,sync:localSync,security:localSecurity,accountOwner:owner,syncTombstones:mergedTombstones};
+  settings.sync.financeReview=financeReview;
+  settings.sync.clockSkewReview=clockSkewReview;
   migrateV8Data();if(typeof globalThis.v10Migrate==='function')globalThis.v10Migrate();
   settings.sync.serverRevision=Number(revision)||0;settings.sync.lastPull=v8Now();
 }

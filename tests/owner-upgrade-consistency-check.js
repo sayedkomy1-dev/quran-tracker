@@ -12,7 +12,7 @@ const app=read('app.js');
 const bootstrap=read('js/core/offline-bootstrap.js');
 const version='11.12.1-beta.27';
 assert(html.includes(`name="application-version" content="${version}"`));
-assert(html.includes(`app.js?v=${version}`));
+assert(html.includes("app.js?v=beta28-rc7-data-safety"));
 assert(html.includes(`runtime.js?v=${version}`));
 assert(html.includes(`offline-bootstrap.js?v=${version}`));
 assert(sw.includes(`const APP_VERSION = '${version}'`));
@@ -78,7 +78,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  const currentHtml=await newCache.match(base+'index.html');
  assert(currentRoot && currentHtml,'both root and index paths must have current HTML');
  assert((await currentRoot.text()).includes('name="application-version" content="11.12.1-beta.27"'),'root may not serve stale HTML');
- assert((await currentHtml.text()).includes('app.js?v=11.12.1-beta.27'),'index may not serve old app.js');
+ assert((await currentHtml.text()).includes('app.js?v=beta28-rc7-data-safety'),'index may not serve old app.js');
 }
 (async()=>{
  await testWorker({staleIndex:true});

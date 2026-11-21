@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
-<meta name="theme-color" content="#1a4a2e" id="themeColorMeta">
+<meta name="theme-color" content="#126044" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
 <meta name="application-version" content="11.12.1-beta.27">
 <link rel="manifest" href="manifest.json?v=11.12.1-beta.27">
@@ -132,8 +132,11 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 }
 </style>
 
-<link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-stage1">
+<link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-rc4">
 <link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc3">
+<link rel="stylesheet" href="css/platform/rc5-teacher-actions.css?v=beta28-rc5">
+<link rel="stylesheet" href="css/platform/quiet-lesson-rc6.css?v=beta28-rc6">
+<link rel="stylesheet" href="css/platform/rc8-premium-workspace.css?v=beta28-rc8">
 </head>
 <body class="imam-global-redesign imam-design-bridge">
 
@@ -202,7 +205,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
 <!-- ══════════════ HOME ══════════════ -->
 <div class="pg on" id="pg-home">
-  <div id="rc3HomeIntro" class="rc3-home-intro"><div><span>أكاديمية الإمام / منصة العمل · rc.3</span><h1>مساحة العمل اليومية</h1><p>الحصص، المتابعة، إدارة الحلقة والطلاب في مكان واحد.</p></div><a href="academy-portals.html">دليل الخدمات ←</a></div>
+  <div id="rc3HomeIntro" class="rc3-home-intro"><div><span>أكاديمية الإمام / منصة العمل · rc.8 (اختباري)</span><h1>مساحة العمل اليومية</h1><p>الحصص، المتابعة، إدارة الحلقة والطلاب في مكان واحد.</p></div><a href="academy-portals.html">دليل الخدمات ←</a></div>
   <!-- إحصائيات سريعة -->
   <div class="sg">
     <div class="sc"><div class="sn" id="stTotal">0</div><div class="sl">إجمالي الطلاب</div></div>
@@ -928,7 +931,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
     <button class="btn btn-g btn-sm" onclick="openTaskModal(curStId)">☑️ إضافة مهمة</button>
     <button class="btn btn-out btn-sm" onclick="editSt()">✏️ تعديل</button>
     <button class="btn btn-out btn-sm" onclick="openCert()">🎓 شهادة</button>
-    <button class="btn btn-red btn-sm" onclick="deleteSt()">🗑️ حذف</button>
+    <button class="btn btn-out btn-sm" onclick="deleteSt()" title="أرشفة قابلة للاستعادة، دون حذف السجلات">🗂️ أرشفة الطالب</button>
   </div>
 </div>
 
@@ -1160,13 +1163,13 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
 <script src="js/core/runtime.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/v10-data.js?v=11.0.0" defer></script>
-<script src="auth.js?v=11.7.4-foundation" defer></script>
+<script src="auth.js?v=beta28-rc7-data-safety" defer></script>
 <script src="js/features/role-home.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/ux-guidance.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/academy-workspaces.js?v=11.7.4-foundation" defer></script>
-<script src="sync-core.js?v=11.0.0" defer></script>
-<script src="app.js?v=11.12.1-beta.27-absence-review2" defer></script>
-<script src="v8.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
+<script src="sync-core.js?v=beta28-rc7-data-safety" defer></script>
+<script src="app.js?v=beta28-rc7-data-safety" defer></script>
+<script src="v8.js?v=beta28-rc7-data-safety" defer></script>
 <script src="js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
 <script src="v9.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4" defer></script>
 <script src="js/features/mushaf-offline.js?v=11.7.4.2" defer></script>
@@ -1193,14 +1196,14 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4" defer></script>
 
 <script src="js/features/offline-audio-library.js?v=beta28-stage1" defer></script>
-<script src="js/features/temporary-media-share.js?v=beta28-stage1" defer></script>
+<script src="js/features/temporary-media-share.js?v=beta28-rc4" defer></script>
 <script src="js/features/quran-audio-export.js?v=11.2.0-s4" defer></script>
-<script src="js/features/assignment-audio-share.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/assignment-audio-share.js?v=beta28-rc4" defer></script>
 <script src="js/features/v11-ui.js?v=11.12.1-beta.27" defer></script>
 <script src="js/core/mobile-navigation.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/achievement-certificates.js?v=11.9.0" defer></script>
 
-<script src="js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3" defer></script>
+<script src="js/features/session-intelligence-119.js?v=beta28-rc4" defer></script>
 
 <script src="js/features/placement-center-1191.js?v=11.9.2" defer></script>
 
@@ -1217,7 +1220,8 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/platform-ux.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/platform-workflow.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/surah-picker-17.js?v=11.12.1-beta.27" defer></script>
-<script src="js/features/beta19-experience.js?v=11.12.1-beta.27" defer></script>
+<!-- Previous safe sound engine: beta19-experience.js?v=11.12.1-beta.27; RC5 retains its opt-in tap contract. -->
+<script src="js/features/beta19-experience.js?v=beta28-rc5" defer></script>
 <script src="js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker-hotfix2" defer></script>
 <script src="js/features/integrated-teacher-brief.js?v=11.12.1-beta.27-integration-review1" defer></script>
 <script src="js/features/imam-absence-makeup.js?v=11.12.1-beta.27-absence-review2" defer></script>
@@ -1225,5 +1229,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/academy-suite.js?v=11.12.1-beta.27-visual-suite-review7" defer></script>
 <script src="js/features/academy-life.js?v=11.12.1-beta.27-life-review8" defer></script>
 <script src="js/features/rc3-experience.js?v=beta28-rc3" defer></script>
+<script src="js/features/quiet-lesson-rc6.js?v=beta28-rc6" defer></script>
+<script src="js/features/rc8-premium-workspace.js?v=beta28-rc8" defer></script>
 </body>
 </html>

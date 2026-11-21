@@ -1,0 +1,56 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const read=p=>fs.readFileSync(p,'utf8');
+const elements={sesSt:{value:'s1'},sesDate:{value:'2026-11-21'},'new-full':{checked:false},'new-f':{value:'1'},'new-t':{value:'3'},teacherAssignmentAudioReciter:{value:'mishary'},teacherAssignmentAudioBtn:{textContent:'مشاركة',disabled:false}};
+const student={id:'s1',name:'طالب الاختبار',phone:'01012345678',guardianName:'ولي اختبار'};
+let buildCount=0,uploads=[],messages=[];
+const context={console,Date,Math,document:{getElementById:id=>elements[id]||null},ImamApp:{State:{students:[student]}},ImamOfflineAudio:{SURAHS:[[0,7]]},readSection:()=>({surahId:1,surah:'الفاتحة',from:1,to:3}),normalizeWhatsAppPhone:p=>p.startsWith('01')?'20'+p.slice(1):p,ImamQuranAudioExport:{async buildFile(){buildCount++;return {size:2000,name:'test.mp3'}},async shareFile(f,opts){uploads.push(opts);return{shared:true}}},toast:(m)=>messages.push(m)};
+context.globalThis=context;
+vm.runInNewContext(read('js/features/assignment-audio-share.js'),context);
+(async()=>{
+ await context.shareCurrentAssignmentAudio();assert.equal(buildCount,1);assert.equal(uploads.length,1);assert.equal(uploads[0].recipient.phone,'201012345678');assert.equal(uploads[0].recipient.studentName,student.name);assert.equal(elements.teacherAssignmentAudioBtn.disabled,false);
+ student.phone='';await context.shareCurrentAssignmentAudio();assert.equal(buildCount,1,'missing phone blocks MP3 build and untargeted share');assert.equal(uploads.length,1);assert(messages.some(x=>x.includes('رقم واتساب')));
+ student.phone='01012345678';elements.sesSt.value='';await context.shareCurrentAssignmentAudio();assert.equal(buildCount,1,'no student prevents audio generation');
+ const media=read('js/features/temporary-media-share.js');assert(media.includes('https://wa.me/${phone}?text=')&&media.includes('مشاركة MP3')&&media.includes('فتح محادثة ولي الأمر'));assert(!media.includes('download(file)'));
+ // Exercise the actual WhatsApp chat target in the dialog when native file sharing is unavailable.
+ let dialog=null,openedUrl='',chat;
+ const nodes=new Map();
+ const mediaDoc={createElement:tag=>{
+   assert.equal(tag,'dialog');
+   dialog={className:'',dir:'',innerHTML:'',querySelector(key){
+     if(!nodes.has(key))nodes.set(key,{hidden:false,disabled:false,textContent:'',onclick:null});
+     return nodes.get(key);
+   },addEventListener(){},showModal(){},remove(){dialog=null;}};return dialog;
+ },body:{append(d){dialog=d;}}};
+ const mediaCtx={document:mediaDoc,navigator:{onLine:true},open:(url)=>{openedUrl=url;return true}};
+ mediaCtx.globalThis=mediaCtx;vm.runInNewContext(media,mediaCtx);
+ const mediaPromise=mediaCtx.ImamTemporaryMedia.share([{size:2500}],{title:'تكليف',text:'سورة الفاتحة',recipient:{phone:'201012345678',name:'ولي اختبار',studentName:'طالب الاختبار'}});
+ assert(dialog,'recipient fallback must show dialog even without Web Share files');
+ chat=nodes.get('[data-chat]');assert.equal(chat.hidden,false);
+ chat.onclick();assert(openedUrl.startsWith('https://wa.me/201012345678?text='),'chat opens the exact linked guardian number');
+ assert.equal(nodes.get('[data-share]').hidden,true,'unsupported native share must not pretend to attach audio');
+ nodes.get('[data-cancel]').onclick();assert.equal((await mediaPromise).cancelled,true);
+ const original=read('js/features/session-intelligence-119.js');
+ const instrumented=original.replace('root.SessionIntelligence={evaluate,','root.SessionIntelligence={showWarning,focusMissing,evaluate,');
+ const fake={};let modal,step='',saveCount=0,focusCount=0,opened=false;
+ const parent={tagName:'DETAILS',open:false,parentElement:null};
+ fake['pgr-new']={id:'pgr-new',tagName:'DIV',parentElement:parent,classList:{add(){},remove(){}},querySelector:()=>({matches:()=>false,setAttribute(){},focus(){focusCount++},scrollIntoView(){}}),setAttribute(){},scrollIntoView(){}};
+ const btns=[];
+ const wdoc={readyState:'loading',getElementById:id=>fake[id]||null,addEventListener(){},createElement:()=>{modal={innerHTML:'',querySelectorAll(q){if(q==='[data-missing-target]')return [];if(q==='[data-action]')return btns;return[]},remove(){},};return modal;},body:{appendChild(m){this.last=m}}};
+ const ctx={console,Date,Math,document:wdoc,ImamApp:{Utils:{escapeHtml:x=>String(x)},State:{students:[],sessions:[]}},setSessionStep:s=>step=s,saveAndSendWA:()=>saveCount++,setTimeout:fn=>{fn();return 1},localStorage:{getItem:()=>null},toast:()=>{}};ctx.globalThis=ctx;
+ vm.runInNewContext(instrumented,ctx);
+ assert(ctx.ImamApp.SessionIntelligence.focusMissing('pgr-new'));assert.equal(step,'assessment');assert.equal(parent.open,true);assert.equal(focusCount,1);
+ const api=ctx.ImamApp.SessionIntelligence;
+ const important={outstanding:[{id:'grade-new',target:'pgr-new',label:'تقييم الحفظ',severity:'important'}],critical:[]};
+ fake.im119OverrideReason={value:''};
+ btns.push({dataset:{action:'approve'}});
+ api.showWarning(important,'send');assert(modal.innerHTML.includes('تخطي التنبيه والمتابعة'));
+ btns[0].onclick();assert.equal(saveCount,1,'teacher can override a noncritical send warning');
+ btns.length=0;btns.push({dataset:{action:'cancel'}});
+ api.showWarning({outstanding:[{id:'student',label:'اختر الطالب',target:'sesSt',severity:'critical'}],critical:[{id:'student'}]},'send');
+ assert(!modal.innerHTML.includes('تخطي التنبيه والمتابعة'),'critical issues still block sending');
+ const index=read('index.html'),sw=read('sw.js');for(const name of ['assignment-audio-share.js','session-intelligence-119.js','temporary-media-share.js'])assert(index.includes(`${name}?v=beta28-rc4`)&&sw.includes(`${name}?v=beta28-rc4`));
+ console.log('PASS RC4: scoped guardian recipient, missing phone guard, direct WhatsApp text fallback, guided focus, allowed noncritical override, critical block, offline assets');
+})().catch(e=>{console.error(e);process.exitCode=1});

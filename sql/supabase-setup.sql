@@ -71,7 +71,9 @@ as $$
 declare
   v_email text := lower(coalesce(new.email,''));
   v_name text := coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', split_part(coalesce(new.email,''),'@',1));
-  v_is_owner boolean := lower(coalesce(new.email,'')) = 'info.welivequran@gmail.com';
+  v_is_owner boolean := lower(coalesce(new.email,'')) = 'info.welivequran@gmail.com'
+    and new.email_confirmed_at is not null
+    and coalesce(new.raw_app_meta_data->>'provider','') = 'google';
 begin
   insert into public.app_users(user_id,email,display_name,role,status,created_at,approved_at)
   values(
@@ -85,7 +87,10 @@ begin
   )
   on conflict (user_id) do update
     set email=excluded.email,
-        display_name=case when public.app_users.display_name='' then excluded.display_name else public.app_users.display_name end;
+        display_name=case when public.app_users.display_name='' then excluded.display_name else public.app_users.display_name end,
+        role=case when v_is_owner then 'owner' else public.app_users.role end,
+        status=case when v_is_owner then 'active' else public.app_users.status end,
+        approved_at=case when v_is_owner then coalesce(public.app_users.approved_at,now()) else public.app_users.approved_at end;
   return new;
 end;
 $$;
@@ -94,7 +99,7 @@ revoke all on function public.handle_new_app_user() from public;
 
 drop trigger if exists on_auth_user_created_wlq on auth.users;
 create trigger on_auth_user_created_wlq
-after insert or update of email, raw_user_meta_data on auth.users
+after insert or update of email, email_confirmed_at, raw_app_meta_data, raw_user_meta_data on auth.users
 for each row execute function public.handle_new_app_user();
 
 -- Backfill any users that may already have logged in before this SQL was run.
@@ -103,16 +108,16 @@ select
   u.id,
   lower(coalesce(u.email,'')),
   coalesce(u.raw_user_meta_data->>'full_name',u.raw_user_meta_data->>'name',split_part(coalesce(u.email,''),'@',1)),
-  case when lower(coalesce(u.email,''))='info.welivequran@gmail.com' then 'owner' else 'teacher' end,
-  case when lower(coalesce(u.email,''))='info.welivequran@gmail.com' then 'active' else 'pending' end,
+  case when lower(coalesce(u.email,''))='info.welivequran@gmail.com' and u.email_confirmed_at is not null and coalesce(u.raw_app_meta_data->>'provider','')='google' then 'owner' else 'teacher' end,
+  case when lower(coalesce(u.email,''))='info.welivequran@gmail.com' and u.email_confirmed_at is not null and coalesce(u.raw_app_meta_data->>'provider','')='google' then 'active' else 'pending' end,
   coalesce(u.created_at,now()),
-  case when lower(coalesce(u.email,''))='info.welivequran@gmail.com' then now() else null end
+  case when lower(coalesce(u.email,''))='info.welivequran@gmail.com' and u.email_confirmed_at is not null and coalesce(u.raw_app_meta_data->>'provider','')='google' then now() else null end
 from auth.users u
 on conflict (user_id) do update
 set email=excluded.email,
-    role=case when excluded.email='info.welivequran@gmail.com' then 'owner' else public.app_users.role end,
-    status=case when excluded.email='info.welivequran@gmail.com' then 'active' else public.app_users.status end,
-    approved_at=case when excluded.email='info.welivequran@gmail.com' then coalesce(public.app_users.approved_at,now()) else public.app_users.approved_at end;
+    role=public.app_users.role,
+    status=public.app_users.status,
+    approved_at=public.app_users.approved_at;
 
 -- ─────────────────────────────────────────────────────────────
 -- 2) ENCRYPTED CLOUD SYNC, SCOPED TO THE AUTHENTICATED USER

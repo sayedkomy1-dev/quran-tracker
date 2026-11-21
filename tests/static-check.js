@@ -105,7 +105,7 @@ assert(v8.includes('verifyStoredPin')&&v8.includes('pinLockedUntil'),'PIN migrat
 assert(!v9.includes("addEventListener('timeupdate',renderMiniPlayer)"),'mini-player must not rebuild DOM on every timeupdate');
 assert(v9.includes('تعذر تحديد رقم الصفحة بدقة')&&v9.includes('return null;'),'Mushaf page lookup must fail safely instead of opening page 1');
 assert(v9.includes("bulkSetStatus('active')")&&v9.includes('إعادة تنشيط'),'student reactivation flow missing');
-assert(v9.includes('Promise.allSettled(voiceIds.map(x=>mediaDelete(x)))'),'student deletion must clean local voice notes');
+assert(v9.includes("await setStudentStatusWithUndo(id,'archived')")&&!v9.includes('Promise.allSettled(voiceIds.map(x=>mediaDelete(x)))'),'student archival must preserve historical voice notes and use safe guardian status flow');
 assert(v9.includes('v9MediaKeys')&&v9.includes('ملف صوتي محلي غير مرتبط بحصة'),'data health must inspect local voice-note lifecycle');
 assert(v9.includes("setAttribute('aria-current','step')"),'guided session stepper must expose aria-current');
 ['branding/academy-icon-source.png','branding/academy-badge-source.png','sql/supabase-sync.sql','screenshots/desktop-home.png','screenshots-v9.1/session-mobile-fixed.png'].forEach(f=>assert(fs.existsSync(file(f)),`missing full-project asset ${f}`));
@@ -203,7 +203,7 @@ assert(sw.includes("quran-pwa-v11.2.0-error1"),'service worker cache must match 
 
 
 // v10.1.2 Google Auth and access-control regression guards.
-assert(html.includes('src="auth.js?v=11.7.4-foundation"')&&auth.includes("SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'"),'Supabase auth bootstrap missing');
+assert(html.includes('src="auth.js?v=beta28-rc7-data-safety"')&&auth.includes("SUPABASE_CDN='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'"),'Supabase auth bootstrap missing');
 assert(html.includes('href="auth.css?v=11.0.0"'),'auth stylesheet missing');
 assert(auth.includes("supabaseUrl:'https://svtcntalwfmexthcnvqe.supabase.co'"),'Supabase project URL mismatch');
 assert(auth.includes("publishableKey:'sb_publishable_qYw8VdT1IXQ5WsdB2rhtEA_F6dSAN-j'"),'Supabase publishable key mismatch');
@@ -255,8 +255,8 @@ assert(!/grant execute on function public\.account_sync_(?:push|pull)(?:_v2)?[^\
 assert(manifest.short_name==='أكاديمية الإمام'&&manifest.display==='standalone','PWA install identity mismatch');
 
 // v10.1.4 safe multi-device sync behavior.
-assert(html.includes('src="sync-core.js?v=11.0.0"'),'safe sync core script missing from HTML');
-assert(app.includes('function markStudentCascadeDeletion')&&v9.includes('markStudentCascadeDeletion(id)'),'student deletion tombstones missing');
+assert(html.includes('src="sync-core.js?v=beta28-rc7-data-safety"'),'safe sync core script missing from HTML');
+assert(app.includes('function markStudentCascadeDeletion')&&!v9.includes('markStudentCascadeDeletion(id)'),'student archive must never create a deletion tombstone');
 assert(app.includes("markSyncDeletion('tasks',t)"),'task deletion tombstone missing');
 assert(v8.includes('safeSyncVersion:2')&&v8.includes('settings.sync.auto=false'),'safe-sync migration must disable legacy auto-sync once');
 assert(v8.includes("callAccountSyncRpc('account_sync_pull_v2'")&&v8.includes("callAccountSyncRpc('account_sync_push_v2'"),'v2 sync RPC calls missing');

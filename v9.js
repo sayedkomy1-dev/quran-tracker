@@ -408,32 +408,18 @@ async function setStudentStatusWithUndo(id,status){
 
 
 
+// Archive-only policy: students, payments, lessons, errors and audio references
+// are permanent history. Access revocation is delegated to the existing
+// fail-closed status workflow, which supports later reactivation.
 async function deleteSt(){
-  const id=curStId,st=students.find(x=>x.id===id);if(!id||!st)return;
-  if(!confirm(`هل تريد حذف ${st.name} وجميع حصصه ومهامه؟
-سيتم أيضًا حذف الملاحظات الصوتية المحلية التابعة لحصصه.`))return;
-  // The live guardian portal is independent of local student storage.
-  // Do not remove a student if either phone/PIN access or direct-link revoke
-  // cannot be verified. This also preserves sibling access on shared numbers.
-  const portal=globalThis.ImamApp?.GuardianPortal;
-  if(typeof portal?.revokeForStudentDeletion!=='function'){
-    v9Toast('تعذر تأمين بوابة ولي الأمر؛ لم يُحذف الطالب. أعد فتح التطبيق مع الاتصال بالإنترنت.','error');
-    return;
+  const id=curStId,st=students.find(x=>x.id===id);if(!id||!st)return false;
+  if(v9StudentStatus(st)==='archived'){
+    v9Toast('الطالب مؤرشف بالفعل، ويمكن إعادة تنشيطه من قائمة المؤرشفين.','info');return true;
   }
-  try{
-    const guard=await portal.revokeForStudentDeletion(id);
-    if(!guard?.ok)throw new Error('GUARDIAN_REVOCATION_NOT_CONFIRMED');
-  }catch(err){
-    console.warn('[student delete] guardian access not revoked',err);
-    v9Toast('تعذر التأكد من إيقاف بوابة ولي الأمر؛ لم يُحذف الطالب. تحقق من الإنترنت أو صلاحيات الحساب.','error');
-    return;
-  }
-  const voiceIds=[...new Set(sessions.filter(s=>s.studentId===id&&s.voiceNoteId).map(s=>s.voiceNoteId))];
-  if(typeof mediaDelete==='function')await Promise.allSettled(voiceIds.map(x=>mediaDelete(x)));
-  if(V8.voiceNoteId&&voiceIds.includes(V8.voiceNoteId)){V8.voiceNoteId='';V8.pendingVoiceBlob=null;}
-  markStudentCascadeDeletion(id);
-  students=students.filter(s=>s.id!==id);sessions=sessions.filter(s=>s.studentId!==id);tasks=tasks.filter(t=>t.studentId!==id);
-  curStId='';save();renderHome();renderSt();v9Toast('تم حذف الطالب وبياناته المحلية','success');goPage('students');
+  if(!confirm(`هل تريد أرشفة ${st.name}؟\nستبقى جميع الحصص والأخطاء والمستحقات والملاحظات الصوتية محفوظة، ويمكن إعادة تنشيطه لاحقًا.`))return false;
+  await setStudentStatusWithUndo(id,'archived');
+  if(v9StudentStatus(st)!=='archived')return false;
+  curStId='';goPage('students');return true;
 }
 function v9MediaKeys(){return new Promise(resolve=>{try{if(!db?.objectStoreNames?.contains('media'))return resolve([]);const tx=db.transaction('media','readonly'),req=tx.objectStore('media').getAllKeys();req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>resolve([]);}catch(_){resolve([]);}});}
 async function runDataHealthCheck(){

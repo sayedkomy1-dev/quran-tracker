@@ -1,0 +1,25 @@
+/* IMAM beta.28-rc.6 / Premium Educational Design System — lesson-first, no color noise */
+body.imam-design-bridge #pg-session{--ia28-primary:#17684d;--ia28-primary-soft:#e8f2ed;--ia28-text:#213b32;--ia28-border:#d3e1d9;--ia28-surface:#fff;}
+body.imam-design-bridge #pg-session :is(.v9-session-steps,.ia21-student-card,.v9-session-footer){border-radius:16px!important;border:1px solid var(--ia28-border)!important;box-shadow:none!important;}
+body.imam-design-bridge #pg-session .v9-session-steps{background:var(--rc3-card,#fff)!important;}
+/* Keep secondary actions neutral. Use color only for the next primary operation and danger. */
+body.imam-design-bridge #pg-session .v9-step-btn{background:var(--rc3-card,#fff)!important;color:var(--rc3-ink,#284337)!important;border:1px solid var(--ia28-border)!important;box-shadow:none!important;min-height:46px;}
+body.imam-design-bridge #pg-session .v9-step-btn.on{background:var(--ia28-primary)!important;color:white!important;border-color:var(--ia28-primary)!important;box-shadow:none!important;}
+body.imam-design-bridge #pg-session #saveSessionBtn{background:var(--ia28-primary)!important;color:#fff!important;border-color:var(--ia28-primary)!important;}
+body.imam-design-bridge #pg-session #saveSendSessionBtn{background:var(--rc3-card,#fff)!important;color:var(--rc3-green,#17684d)!important;border:2px solid var(--ia28-primary)!important;}
+body.imam-design-bridge #pg-session :is(#teacherAssignmentAudioBtn,#ia25ShareErrorsButton){background:var(--rc3-card,#fff)!important;color:var(--rc3-ink,#214539)!important;border:1px solid var(--ia28-border)!important;}
+/* Focus is visible with textual and structural cues, not by color alone. */
+body.imam-design-bridge #pg-session :is(#saveSessionBtn,#saveSendSessionBtn,.v9-step-btn,#ia28QuietFocusToggle):focus-visible{outline:3px solid #c38c29!important;outline-offset:3px!important;}
+.ia28-quiet-lesson{display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:100%;}
+body.imam-design-bridge #pg-session .ia28-quiet-toggle{font:inherit;font-weight:800;font-size:12px;line-height:1.4;min-height:42px;border:1px solid #9ebbac;border-radius:12px;padding:8px 13px;cursor:pointer;background:var(--rc3-card,#fff);color:var(--rc3-ink,#214539)}
+body.imam-design-bridge #pg-session .ia28-quiet-toggle[aria-pressed="true"]{background:var(--ia28-primary-soft)!important;color:#17684d!important;border-color:#91bcaa!important;}
+.ia28-focus-status{max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--rc3-ink,#214539);font-weight:650;opacity:.85;font-size:11px;}
+/* Quiet focus only removes decorative help, never fields, controls, or reports. */
+body.imam-design-bridge #pg-session.ia28-quiet-focus :is(.ui-workspace-heading,.v9-session-help,.ia20-step-help,.v9-action-safe){display:none!important;}
+body.imam-design-bridge #pg-session.ia28-quiet-focus :is(.card,.v9-session-footer){box-shadow:none!important;}
+body.imam-design-bridge #pg-session.ia28-quiet-focus :is(.ia21-student-card,.v9-session-steps){margin-bottom:10px!important;}
+body.imam-design-bridge #pg-session.ia28-quiet-focus .v9-session-steps .v9-session-mode{gap:8px;}
+@media(min-width:1000px){body.imam-design-bridge #pg-session.ia28-quiet-focus #v9SessionSteps{position:sticky;top:8px;z-index:12;}}
+@media(max-width:650px){.ia28-quiet-lesson{width:100%;justify-content:space-between}.ia28-focus-status{max-width:58%;font-size:10px}body.imam-design-bridge #pg-session .v9-step-btn{min-height:44px;}}
+@media(prefers-reduced-motion:reduce){body.imam-design-bridge #pg-session :is(.v9-step-btn,#ia28QuietFocusToggle){animation:none!important;transition:none!important;}}
+@media print{#ia28QuietLesson{display:none!important}body.imam-design-bridge #pg-session.ia28-quiet-focus :is(.ui-workspace-heading,.v9-session-help,.ia20-step-help){display:block!important}}

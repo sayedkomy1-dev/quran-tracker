@@ -15,6 +15,8 @@
   const PROFILE_VERIFY_TIMEOUT=3500;
   let supabaseLoadPromise=null;
   const TRUST_KEY='wlq.auth.trusted.v1';
+  const TRUST_MAX_AGE_MS=14*24*60*60*1000; // Explicit security policy: verify at least every 14 days.
+  const TRUST_CLOCK_SKEW_MS=5*60*1000;
   const PROJECT_REF='svtcntalwfmexthcnvqe';
   let client=null;
   let access=null;
@@ -28,6 +30,8 @@
     try{
       const x=JSON.parse(localStorage.getItem(TRUST_KEY)||'null');
       if(!x||x.status!=='active'||!x.userId||!x.email)return null;
+      const at=Date.parse(x.verifiedAt||''),age=Date.now()-at;
+      if(!Number.isFinite(at)||!Number.isFinite(age)||age>TRUST_MAX_AGE_MS||age < -TRUST_CLOCK_SKEW_MS)return null;
       return x;
     }catch(_){return null;}
   }
@@ -207,7 +211,8 @@
     setGate({state:'جارٍ التحقق من الحساب…',kind:'loading'});
 
     if(navigator.onLine===false){
-      setGate({state:'يلزم الاتصال بالإنترنت لتسجيل الدخول أول مرة.',note:'بعد اعتماد هذا الجهاز يمكن فتح التطبيق بدون إنترنت.',retry:true,kind:'offline'});
+      const previouslyTrusted=!!localStorage.getItem(TRUST_KEY);
+      setGate({state:previouslyTrusted?'انتهت صلاحية الثقة بهذا الجهاز':'يلزم الاتصال بالإنترنت لتسجيل الدخول أول مرة.',note:previouslyTrusted?'اتصل بالإنترنت مرة واحدة لتجديد صلاحية الدخول، دون حذف أي بيانات محفوظة.':'بعد اعتماد هذا الجهاز يمكن فتح التطبيق بدون إنترنت.',retry:true,kind:'offline'});
       return false;
     }
 
@@ -296,7 +301,22 @@
     adminCard.innerHTML=`<div class="ch">👥 صلاحيات الدخول</div><p class="txt-mut mb8" style="font-size:12px">أي حساب Google جديد يبدأ بحالة «في الانتظار». فعّل فقط المحفظين المصرح لهم باستخدام التطبيق.</p><div class="settings-actions mb8"><button type="button" class="btn btn-out btn-sm" data-auth-refresh>تحديث المستخدمين</button></div><div data-auth-users></div>`;
     pg.prepend(adminCard);adminCard.querySelector('[data-auth-refresh]').addEventListener('click',loadAdminUsers);loadAdminUsers();
   }
-  async function afterAppInit(){injectHeaderUser();injectAdminCard();try{globalThis.ImamApp?.RoleHome?.refresh?.();}catch(_){}try{globalThis.ImamApp?.AcademyTenancy?.initialize?.();}catch(err){console.warn("[academy workspace init]",err);}try{await globalThis.ImamApp?.Supervision?.initialize?.();}catch(err){console.warn("[supervisor startup]",err);}}
+  let persistenceAttempted=false;
+  async function requestDurableStorage(){
+    // Browser-controlled storage durability request. Never blocks authentication;
+    // cannot promise that the browser will grant persistence.
+    if(persistenceAttempted)return;
+    persistenceAttempted=true;
+    try{
+      const api=navigator?.storage;
+      if(!api?.persisted||!api?.persist)return;
+      const already=await api.persisted();
+      const granted=already||await api.persist();
+      globalThis.ImamApp=globalThis.ImamApp||{};
+      globalThis.ImamApp.StoragePersistence={requested:true,granted:!!granted};
+    }catch(_){/* private browsers may reject; keep normal local-first storage */}
+  }
+  async function afterAppInit(){requestDurableStorage();injectHeaderUser();injectAdminCard();try{globalThis.ImamApp?.RoleHome?.refresh?.();}catch(_){}try{globalThis.ImamApp?.AcademyTenancy?.initialize?.();}catch(err){console.warn("[academy workspace init]",err);}try{await globalThis.ImamApp?.Supervision?.initialize?.();}catch(err){console.warn("[supervisor startup]",err);}}
   async function getAccessToken(){
     const sb=getClient();if(!sb)return '';
     try{return (await sb.auth.getSession())?.data?.session?.access_token||'';}catch(_){return '';}

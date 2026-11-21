@@ -9,7 +9,7 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette' + '-rc3-experience';
+const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette' + '-rc3-experience' + '-rc4-share-warning' + '-rc5-teacher-feedback' + '-rc6-quiet-lesson' + '-rc7-data-safety' + '-rc8-reliability-workspace';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
@@ -22,7 +22,21 @@ const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
+  './auth.js?v=beta28-rc7-data-safety',
+  './sync-core.js?v=beta28-rc7-data-safety',
+  './app.js?v=beta28-rc7-data-safety',
+  './v8.js?v=beta28-rc7-data-safety',
+  './css/platform/rc8-premium-workspace.css?v=beta28-rc8',
+  './js/features/rc8-premium-workspace.js?v=beta28-rc8',
+  './css/platform/quiet-lesson-rc6.css?v=beta28-rc6',
+  './js/features/quiet-lesson-rc6.js?v=beta28-rc6',
+  './css/platform/rc5-teacher-actions.css?v=beta28-rc5',
+  './js/features/beta19-experience.js?v=beta28-rc5',
   './css/platform/reference-palette.css?v=beta28-candidate2',
+  './css/platform/temporary-media.css?v=beta28-rc4',
+  './js/features/temporary-media-share.js?v=beta28-rc4',
+  './js/features/assignment-audio-share.js?v=beta28-rc4',
+  './js/features/session-intelligence-119.js?v=beta28-rc4',
   './css/platform/rc3-experience.css?v=beta28-rc3',
   './js/features/rc3-experience.js?v=beta28-rc3',
   './js/features/guest-palette.js?v=beta28-candidate2',
@@ -360,13 +374,15 @@ async function cacheVerifiedCurrentShell(cache,url){
   const body=await response.clone().text();
   if(url==='./index.html' &&
      (!body.includes(`name="application-version" content="${APP_VERSION}"`)
-      ||!body.includes(`app.js?v=${APP_VERSION}`)
+      ||!body.includes('app.js?v=beta28-rc7-data-safety')
       ||!body.includes(`runtime.js?v=${APP_VERSION}`)))
     throw new Error('[SW] index.html is an older release');
   if(['./index.html','./guardian-portal.html','./guest-practice.html'].includes(url) && !body.includes('offline-audio-library.js?v=beta28-stage1'))
     throw new Error('[SW] media stage1 HTML is not available');
   if(['./index.html','./guardian-portal.html','./guest-practice.html'].includes(url) && !body.includes('css/platform/rc3-experience.css?v=beta28-rc3'))
     throw new Error('[SW] RC3 HTML is not available');
+  if(url==='./index.html' && (!body.includes('rc8-premium-workspace.css?v=beta28-rc8')||!body.includes('rc8-premium-workspace.js?v=beta28-rc8')))
+    throw new Error('[SW] RC8 workspace assets missing from current HTML');
   if(url.startsWith('./js/core/runtime.js') && !body.includes(`version:'${APP_VERSION}'`))
     throw new Error('[SW] runtime.js is an older release');
   if(url.startsWith('./app.js') && !body.includes(`WLQ_RELEASE_${APP_VERSION}`))

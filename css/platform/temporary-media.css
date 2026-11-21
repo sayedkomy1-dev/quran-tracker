@@ -23,3 +23,12 @@
 .fin-cycle-note{display:grid;gap:6px;padding:12px;margin:10px 0;background:#e9f6ef;color:#174b36;border:1px solid #b9d8c6;border-radius:10px}.fin-cycle-note progress{width:100%;accent-color:#17674b}
 @media(max-width:360px){.ia28-start-actions,.ia28-mode-switch{grid-template-columns:1fr}}
 @media print{.ia28-portal-start,.ia28-practice-assignment,.ia28-guest-modes{display:none!important}}
+
+/* rc.4: clear guardian target and accessible correction navigation */
+.ia28-media-dialog [data-recipient]{padding:12px;border:1px solid #afd5c0;background:#ecf7f0;border-radius:10px;font-weight:750;color:#15543c}
+.ia28-media-dialog [data-guidance]{line-height:1.8}
+.ia28-media-dialog [data-chat]{background:#eef8f2;color:#155a39;border-color:#b2dac4}
+.im119-warning-list button:focus-visible,.ia28-media-dialog button:focus-visible{outline:3px solid #247e54;outline-offset:2px}
+#im119Warning .im119-actions{display:flex;flex-wrap:wrap;gap:8px}
+#im119Warning .im119-actions button{min-height:44px;flex:1 1 138px}
+#im119Warning .im119-warning-list{max-height:min(38vh,320px);overflow:auto}

@@ -1,0 +1,72 @@
+/* RC5 — Teacher actions: semantic color coding, not decorative rainbow buttons.
+   Green = save; turquoise = guardian handoff; blue = navigate;
+   amber = review; red = destructive. Colors always accompany text/icons. */
+body.imam-design-bridge{
+ --ia28-act-save:#137447;--ia28-act-save-ink:#fff;
+ --ia28-act-send:#087f74;--ia28-act-send-ink:#fff;
+ --ia28-act-nav:#155eaa;--ia28-act-nav-ink:#fff;
+ --ia28-act-warn:#f5d77e;--ia28-act-warn-ink:#49340b;
+ --ia28-act-danger:#b43b37;--ia28-act-danger-ink:#fff;
+ --ia28-act-neutral:#e8f0ee;--ia28-act-neutral-ink:#23493e;
+}
+html[data-theme="dark"] body.imam-design-bridge{
+ --ia28-act-neutral:#263d35;--ia28-act-neutral-ink:#e4f2eb;
+ --ia28-act-nav:#1d6aaf;--ia28-act-save:#188159;--ia28-act-send:#0f8278;
+}
+/* Main toolbar and workspaces. Attribute selectors are tied to existing
+   destinations, never infer permissions or add unauthorized actions. */
+body.imam-design-bridge #pg-home .home-actions .quick-action{
+ border:1px solid transparent!important;border-radius:13px!important;min-height:66px;
+ font-weight:850!important;box-shadow:0 5px 14px #142e2c15!important;
+}
+body.imam-design-bridge #pg-home .home-actions .quick-action:nth-child(1){background:#e3f1ff!important;color:#145595!important;border-color:#b7d9f6!important}
+body.imam-design-bridge #pg-home .home-actions .quick-action:nth-child(2){background:#146c4a!important;color:#fff!important;border-color:#146c4a!important}
+body.imam-design-bridge #pg-home .home-actions .quick-action:nth-child(3){background:#dff4e8!important;color:#125e3b!important;border-color:#afe0c6!important}
+body.imam-design-bridge #pg-home .home-actions .quick-action:nth-child(4){background:#e9eff4!important;color:#294d68!important;border-color:#c3d4e0!important}
+body.imam-design-bridge #pg-home .home-actions .quick-action:nth-child(5){background:#e9e7fb!important;color:#493b94!important;border-color:#ccc3f2!important}
+body.imam-design-bridge #roleHomeHub .role-hero-next{background:#146b4a!important;color:#fff!important;border:1px solid #146b4a!important}
+body.imam-design-bridge #roleHomeHub .role-hero-board{background:#e6f0ff!important;color:#164d8d!important;border:1px solid #bdd5f9!important}
+body.imam-design-bridge #roleHomeHub .role-home-action{border-radius:12px!important;transition:border-color .15s ease,background-color .15s ease!important}
+body.imam-design-bridge #roleHomeHub .role-home-action[data-destination="session"],
+body.imam-design-bridge #roleHomeHub .role-home-action[data-destination="checkin"]{background:#e2f4e8!important;color:#165b39!important;border-color:#b5e0c6!important}
+body.imam-design-bridge #roleHomeHub .role-home-action[data-destination="inbox"],
+body.imam-design-bridge #roleHomeHub .role-home-action[data-destination="reports"]{background:#e7effc!important;color:#1b578e!important;border-color:#c0d6f2!important}
+body.imam-design-bridge #roleHomeHub .role-home-action[data-destination="add-student"]{background:#fff3cb!important;color:#63440b!important;border-color:#e9d18d!important}
+/* Session wizard: blue marks the current step; all four steps remain usable. */
+body.imam-design-bridge #pg-session .v9-step-btn{min-height:46px;font-size:12px!important;border:1px solid #bcd2df!important;background:#e9f2f8!important;color:#1a4f78!important;font-weight:850!important}
+body.imam-design-bridge #pg-session .v9-step-btn.on{background:var(--ia28-act-nav)!important;color:var(--ia28-act-nav-ink)!important;border-color:var(--ia28-act-nav)!important;box-shadow:inset 0 -3px 0 #092e5540!important}
+body.imam-design-bridge #pg-session .v9-mode-toggle button.on{background:#dcebea!important;color:#135740!important}
+body.imam-design-bridge #pg-session #saveSessionBtn{background:var(--ia28-act-save)!important;color:var(--ia28-act-save-ink)!important;border:1px solid var(--ia28-act-save)!important}
+body.imam-design-bridge #pg-session #saveSendSessionBtn{background:var(--ia28-act-send)!important;color:var(--ia28-act-send-ink)!important;border:1px solid var(--ia28-act-send)!important}
+body.imam-design-bridge #pg-session #teacherAssignmentAudioBtn{background:var(--ia28-act-nav)!important;color:#fff!important;border-color:var(--ia28-act-nav)!important}
+body.imam-design-bridge #pg-session #ia25ShareErrorsButton{background:#fff1ce!important;color:#69450f!important;border:1px solid #dbb65d!important}
+/* Existing secondary actions stay secondary; no automatic recoloring of
+   toggles, delete confirmations, status pills, Quran words or text inputs. */
+body.imam-design-bridge .pg .btn-red{background:var(--ia28-act-danger)!important;color:var(--ia28-act-danger-ink)!important;border-color:var(--ia28-act-danger)!important}
+body.imam-design-bridge .pg .btn-gold{background:var(--ia28-act-warn)!important;color:var(--ia28-act-warn-ink)!important;border-color:#d5b15a!important}
+body.imam-design-bridge .pg :is(.btn-g,.v9-save-primary){background:var(--ia28-act-save);color:#fff}
+body.imam-design-bridge .pg .btn-out{border:1px solid #a9c4b8;background:var(--ia28-act-neutral);color:var(--ia28-act-neutral-ink)}
+/* Accessible interactions: clear focus/disabled states, no forced animations. */
+body.imam-design-bridge :is(.v9-step-btn,.quick-action,#saveSessionBtn,#saveSendSessionBtn,#teacherAssignmentAudioBtn,#ia25ShareErrorsButton,.role-hero-next,.role-home-action,.ia28-session-sound):focus-visible{
+ outline:3px solid #edaa32!important;outline-offset:2px!important;
+}
+body.imam-design-bridge :is(.v9-step-btn,.quick-action,.btn,.role-home-action):disabled{opacity:.53!important;cursor:not-allowed!important;box-shadow:none!important;filter:none!important}
+body.imam-design-bridge :is(.v9-step-btn,.quick-action,.btn,.role-home-action):not(:disabled):active{filter:brightness(.94)}
+/* Compact sound control inside the existing session header. */
+body.imam-design-bridge #pg-session .ia28-session-sound{
+ flex:0 0 auto;min-height:37px;padding:7px 11px;border-radius:11px;border:1px solid #a6d4c0;
+ background:#e7f6ee;color:#155b3d;cursor:pointer;font-size:12px;font-weight:800;
+}
+body.imam-design-bridge #pg-session .ia28-session-sound[aria-pressed="false"]{background:var(--ia28-act-neutral);color:var(--ia28-act-neutral-ink);border-color:var(--rc3-line)}
+body.imam-design-bridge #pg-session .v9-session-mode{flex-wrap:wrap;gap:7px}
+/* Settings preference is visible in both themes and manageable on small phones. */
+.ia28-feedback-settings{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;align-items:center;padding:12px;border:1px solid var(--rc3-line,#dce7e0);border-radius:12px;background:var(--rc3-card,#fff);margin-bottom:9px}
+.ia28-feedback-settings>b,.ia28-feedback-settings>small,.ia28-feedback-settings>.ia28-transition-option{grid-column:1/-1}
+.ia28-feedback-settings .ia28-transition-option{display:flex!important;align-items:center;gap:8px;font-weight:750;color:var(--rc3-ink,#1b4232);cursor:pointer}
+.ia28-feedback-settings input[type=checkbox]{width:20px;height:20px;accent-color:#167347;flex:0 0 auto}
+.ia28-feedback-settings input[type=range]{width:100%;min-width:90px;accent-color:#1974b8}
+.ia28-feedback-settings .ia28-try-sound{min-height:38px;border:1px solid #aecfdf;border-radius:10px;background:#e1f0fa;color:#165b90;font:inherit;font-weight:750;padding:7px 12px;cursor:pointer}
+.ia28-feedback-settings>small{line-height:1.65;color:var(--rc3-ink,#4d6358)}
+@media(max-width:600px){body.imam-design-bridge #pg-session .v9-session-mode{align-items:flex-start}body.imam-design-bridge #pg-session .ia28-session-sound{min-height:40px;font-size:11px}}
+@media print{.ia28-session-sound,.ia28-feedback-settings{display:none!important}}
+@media(prefers-reduced-motion:reduce){body.imam-design-bridge :is(.quick-action,.role-home-action,.v9-step-btn){transition:none!important}}

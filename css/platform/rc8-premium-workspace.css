@@ -1,0 +1,51 @@
+/* IMAM RC8 — Premium Educational Design System: quiet, predictable teacher workspace.
+ * Never hide controls or override the application's security/role visibility.
+ * Consolidate NEW styles in one layer rather than stacking arbitrary patches.
+ */
+:root{
+ --ia-work-surface:var(--ui-surface,#fff);
+ --ia-work-border:var(--ui-line,#d9e5df);
+ --ia-work-primary:var(--ui-primary,#126044);
+ --ia-work-muted:var(--ui-muted,#607570);
+ --ia-work-radius:14px;
+ --ia-work-gap:16px;
+}
+body.imam-design-bridge .pg.on{scroll-margin-top:12px}
+body.imam-design-bridge #pg-session .ia28-quiet-lesson{padding-block:4px}
+/* Reduce visual noise and improve scanability on large teacher screens. */
+@media (min-width:1000px){
+ body.imam-design-bridge #pg-home.on{max-width:1370px;margin-inline:auto}
+ body.imam-design-bridge #pg-session.on{max-width:1120px;margin-inline:auto}
+ body.imam-design-bridge #pg-students.on,body.imam-design-bridge #pg-reports.on,
+ body.imam-design-bridge #pg-settings.on{max-width:1320px;margin-inline:auto}
+ body.imam-design-bridge #pg-session .v9-session-steps{top:12px}
+}
+.ia8-teacher-status{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 14px;
+ margin:0 0 12px;background:var(--ia-work-surface);border:1px solid var(--ia-work-border);border-radius:var(--ia-work-radius);
+ color:var(--ui-ink,#172b29)}
+.ia8-teacher-status>div{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ia8-teacher-status .ia8-status-label{font-size:12px;color:var(--ia-work-muted);font-weight:650}
+.ia8-teacher-status [data-ia8-save]{font-size:12px;font-weight:750}
+.ia8-teacher-status [data-ia8-save][data-level=error]{color:var(--ui-danger,#a33)}
+.ia8-teacher-status [data-ia8-save][data-level=good]{color:var(--ui-good,#187b4f)}
+.ia8-teacher-status [data-ia8-online]{font-size:12px;border-radius:999px;padding:4px 10px;border:1px solid var(--ia-work-border);color:var(--ia-work-muted)}
+.ia8-teacher-status [data-ia8-online][data-level=offline]{background:var(--ui-gold-soft,#fff6de);color:#745111;border-color:#dbc180}
+body.imam-design-bridge #pg-session .ia8-session-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+ padding:12px 14px;background:var(--ui-soft,#ebf5ef);border:1px solid var(--ia-work-border);border-radius:var(--ia-work-radius);margin-bottom:12px}
+.ia8-session-toolbar strong{font-size:15px;line-height:1.5}.ia8-session-toolbar small{display:block;color:var(--ia-work-muted);font-size:12px}
+.ia8-session-toolbar .ia8-step-count{font-weight:750;font-size:12px;color:var(--ia-work-primary);white-space:nowrap}
+body.imam-design-bridge #pg-session :is(#sesSt,#sesDate){min-height:46px}
+body.imam-design-bridge #pg-session :is(#saveSessionBtn,#saveSendSessionBtn){min-height:48px;font-weight:800;line-height:1.4}
+body.imam-design-bridge #pg-session :is(.st-btn,.v9-step-btn){min-height:44px}
+body.imam-design-bridge #pg-session .fld:focus-within{scroll-margin-top:110px}
+body.imam-design-bridge :is(button,a,input,textarea,select,[role=button]):focus-visible{outline:3px solid var(--ui-gold,#bb8b2d);outline-offset:3px}
+body.imam-design-bridge :is(button,.btn,.quick-action){touch-action:manipulation}
+@media(max-width:699px){
+ .ia8-teacher-status{align-items:flex-start;flex-direction:column;gap:6px;padding:10px}
+ .ia8-session-toolbar{flex-wrap:wrap}
+ body.imam-design-bridge #pg-session .v9-session-footer{scroll-margin-top:115px}
+ body.imam-design-bridge #pg-session .v9-step-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+ body.imam-design-bridge #pg-session .v9-step-row .v9-step-btn{padding-inline:3px;min-width:0;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){body.imam-design-bridge #pg-session :is(button,.btn){transition:none;animation:none}}
+@media print{.ia8-teacher-status,.ia8-session-toolbar{display:none}}

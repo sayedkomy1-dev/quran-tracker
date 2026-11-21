@@ -37,25 +37,26 @@ async function checkCleanup({link=false,phone=false,offline=false,statusFails=fa
  assert.equal((await checkCleanup({link:true,phone:true,unlinkFails:true})).success,false,'uncertain revocation blocks local deletion');
  assert.equal((await checkCleanup({offline:true})).success,false,'offline cannot claim safe cleanup');
  assert.equal((await checkCleanup({statusFails:true})).success,false,'status failure cannot claim safe cleanup');
- // Verify the live app's deletion handler delegates to guardian cleanup before
- // marking tombstones, removing sessions, or deleting attached media.
+ // Archive-only policy: user history is NEVER deleted by this UI action.
  const deletion=method(v9,'async function deleteSt(){','function v9MediaKeys()');
- assert(deletion.indexOf('revokeForStudentDeletion(id)')<deletion.indexOf('markStudentCascadeDeletion(id)'));
- assert(deletion.indexOf('revokeForStudentDeletion(id)')<deletion.indexOf('mediaDelete(x)'));
+ assert(deletion.includes("await setStudentStatusWithUndo(id,'archived')"));
+ assert(!deletion.includes('markStudentCascadeDeletion')&&!deletion.includes('mediaDelete'));
  const calls=[];
- const ctx={curStId:'s1',students:[{id:'s1',name:'A'},{id:'s2',name:'B'}],sessions:[{studentId:'s1'}],tasks:[{studentId:'s1'}],
-  confirm:()=>true,
-  globalThis:{ImamApp:{GuardianPortal:{revokeForStudentDeletion:async()=>{calls.push('cleanup');return {ok:true}}}}},
-  markStudentCascadeDeletion:()=>calls.push('tombstone'),mediaDelete:()=>calls.push('media'),
-  V8:{voiceNoteId:'',pendingVoiceBlob:null},save:()=>calls.push('save'),renderHome:()=>{},renderSt:()=>{},v9Toast:()=>{},goPage:()=>{},console};
+ const student={id:'s1',name:'A',studentStatus:'active'};
+ const sessions=[{studentId:'s1'}],tasks=[{studentId:'s1'}],students=[student];
+ const ctx={curStId:'s1',students,sessions,tasks,confirm:()=>true,v9StudentStatus:st=>st.studentStatus,
+  setStudentStatusWithUndo:async(id,status)=>{calls.push('archive');student.studentStatus=status;},
+  v9Toast:()=>{},goPage:()=>calls.push('students-page')};
  vm.createContext(ctx);vm.runInContext(deletion+'\nglobalThis.runDeletion=deleteSt;',ctx);
- await ctx.globalThis.runDeletion();
- assert.deepEqual(ctx.students.map(x=>x.id),['s2']);
- assert.deepEqual(calls,['cleanup','tombstone','save']);
- const failCtx={...ctx,students:[{id:'s1',name:'A'},{id:'s2',name:'B'}],sessions:[{studentId:'s1'}],tasks:[{studentId:'s1'}],
-  globalThis:{ImamApp:{GuardianPortal:{revokeForStudentDeletion:async()=>{throw new Error('offline')}}}},curStId:'s1'};
- const failCalls=[];failCtx.markStudentCascadeDeletion=()=>failCalls.push('tombstone');failCtx.save=()=>failCalls.push('save');
+ assert.equal(await ctx.runDeletion(),true);
+ assert.equal(student.studentStatus,'archived');
+ assert.equal(students.length,1);assert.equal(sessions.length,1);assert.equal(tasks.length,1);
+ assert.deepEqual(calls,['archive','students-page']);
+ const failCtx={curStId:'s1',students:[{id:'s1',name:'A',studentStatus:'active'}],sessions:[{studentId:'s1'}],tasks:[{studentId:'s1'}],
+  confirm:()=>true,v9StudentStatus:st=>st.studentStatus,v9Toast:()=>{},goPage:()=>{throw Error('should not navigate');},
+  setStudentStatusWithUndo:async()=>{ /* guardian revoke failed upstream; status unchanged */ }};
  vm.createContext(failCtx);vm.runInContext(deletion+'\nglobalThis.runDeletion=deleteSt;',failCtx);
- await failCtx.globalThis.runDeletion();assert.equal(failCtx.students.length,2);assert.deepEqual(failCalls,[],'failure keeps students and children intact');
- console.log('PASS beta27 guardian delete + More scroll hotfix (mocked RPC and deletion)');
+ assert.equal(await failCtx.runDeletion(),false);
+ assert.equal(failCtx.students.length,1);assert.equal(failCtx.sessions.length,1);assert.equal(failCtx.tasks.length,1);
+ console.log('PASS guardian revoke and archive-only flow; student/session/media retained');
 })().catch(e=>{console.error(e);process.exitCode=1});

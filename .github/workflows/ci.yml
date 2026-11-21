@@ -20,3 +20,7 @@ jobs:
           node-version: '22'
       - name: Run release checks
         run: npm test
+      - name: Verify release hashes
+        run: node scripts/release-integrity.mjs
+      - name: Check linked payload budget
+        run: node scripts/release-budget.mjs
