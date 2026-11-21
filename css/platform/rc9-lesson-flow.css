@@ -1,0 +1,68 @@
+/* IMAM beta.28-rc.9 — Clear hierarchy on narrow screens. Existing controls stay mounted. */
+body.imam-design-bridge #pg-session,
+body.imam-design-bridge #pg-home {min-width:0;max-width:100%;overflow-x:clip;}
+body.imam-design-bridge #pg-session :is(.card,.fld,.frow,.v9-session-steps,.im119-card,.v9-step-row){box-sizing:border-box;min-width:0;max-width:100%;}
+body.imam-design-bridge #pg-session .ia8-teacher-status{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:3px 8px!important;flex-wrap:wrap!important;margin:0 0 8px!important;padding:4px 8px!important;border-radius:9px!important;min-height:36px;background:var(--ui-surface,#fff);}
+body.imam-design-bridge #pg-session .ia8-teacher-status [data-ia8-online]{font-size:11px;padding:2px 7px;}
+body.imam-design-bridge #pg-session #v9SessionSteps{margin:6px 0 9px!important;padding:8px!important;position:sticky;top:0;z-index:12;background:var(--ui-surface,#fff)!important;border:1px solid var(--ui-line,#dbe6e0)!important;border-radius:14px!important;}
+body.imam-design-bridge #pg-session #v9SessionSteps .v9-step-row{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;}
+body.imam-design-bridge #pg-session #v9SessionSteps .v9-step-btn{min-width:0!important;width:100%;min-height:48px!important;padding:5px 2px!important;white-space:normal!important;line-height:1.35!important;font-size:clamp(11px,3vw,14px)!important;}
+body.imam-design-bridge #pg-session .v9-session-help,
+body.imam-design-bridge #pg-session #ia20StepHelp{display:none!important;}
+body.imam-design-bridge #pg-session .ia29-lesson-extras {margin:0 0 10px;padding:0 10px;border:1px solid var(--ui-line,#dbe6e0);border-radius:12px;background:var(--ui-surface,#fff);}
+body.imam-design-bridge .ia29-lesson-extras > summary,
+body.imam-design-bridge .ia29-role-tools > summary,
+body.imam-design-bridge .ia29-home-more > summary,
+body.imam-design-bridge .ia29-view-options > summary,
+body.imam-design-bridge .ia29-reader-tools > summary{padding:12px 6px;cursor:pointer;list-style-position:inside;font-size:14px;font-weight:750;line-height:1.5;min-height:44px;}
+body.imam-design-bridge #pg-session .ia29-lesson-extras > :not(summary){margin-bottom:10px;}
+body.imam-design-bridge #pg-session .ia29-view-options {border:1px solid var(--ui-line,#dbe6e0);border-radius:10px;padding:0 9px;}
+body.imam-design-bridge #pg-session .ia29-view-options .v9-session-mode{padding:6px!important;display:flex!important;align-items:center!important;gap:10px!important;flex-wrap:wrap!important;}
+body.imam-design-bridge #pg-session .ia29-view-options .ia28-session-sound{width:auto!important;flex:0 1 auto!important;font-size:12px!important;line-height:1.3!important;writing-mode:horizontal-tb!important;white-space:normal!important;min-width:0;}
+body.imam-design-bridge #pg-session .ia29-view-options .ia28-quiet-lesson{gap:6px;}
+body.imam-design-bridge #pg-session.v9-guided #sesContent > .sec-div{display:none!important;}
+body.imam-design-bridge #pg-session .ia29-download-btn{width:100%;margin:5px 0 9px;min-height:44px;padding:9px 12px;border-radius:11px;border:1px solid #98bbad;background:#e8f4ee;color:#17543d;font:inherit;font-weight:760;cursor:pointer;}
+body.imam-design-bridge #pg-session .ia29-download-btn:focus-visible{outline:3px solid #d0a44d;outline-offset:3px;}
+body.imam-design-bridge #pg-home #roleHomeHub{margin-bottom:8px!important;}
+body.imam-design-bridge #pg-home #roleHomeHub .role-hero-actions{margin-bottom:6px;}
+body.imam-design-bridge #pg-home :is(.ia29-role-tools,.ia29-home-more){border:1px solid var(--ui-line,#dbe6e0);border-radius:13px;background:var(--ui-surface,#fff);padding:0 10px;margin:10px 0;}
+body.imam-design-bridge #pg-home #ia29RoleTools .role-home-actions{display:grid;}
+body.imam-design-bridge #pg-home .home-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:9px 0;}
+body.imam-design-bridge #pg-home .home-actions .quick-action{min-width:0!important;min-height:54px!important;}
+body.imam-design-bridge #pg-home #ia29HomeMore .card{margin:8px 0;}
+body.imam-design-bridge #pg-home #rc3HomeIntro{margin-bottom:8px;padding:8px 12px;}
+/* Quran: text immediately, correction toolbar optional. Not disabling correction engine. */
+#quranTextModal .ia29-reader-tools{border:1px solid var(--ui-line,#dbe6e0);border-radius:11px;margin:8px 0;background:var(--ui-surface,#fff);padding:0 9px;}
+#quranTextModal .ia29-reader-tools #quranCorrectionPanel{margin:0 0 9px!important;}
+#quranTextModal .quran-box{box-sizing:border-box;width:min(100%,100vw)!important;max-width:100vw!important;padding:clamp(10px,3vw,18px)!important;}
+#quranTextModal #quranVerseContent{min-width:0;max-width:100%;overscroll-behavior:contain;}
+/* Modal for offline verse library; close cannot delete an existing download. */
+.ia29-audio-dialog{width:min(92vw,530px);max-height:88dvh;overflow:auto;box-sizing:border-box;border:1px solid #a7c9b7;border-radius:19px;background:#fff;color:#1a4332;padding:16px;font:inherit;direction:rtl;}
+.ia29-audio-dialog::backdrop{background:#11291bc7;}
+.ia29-audio-dialog>header{display:flex;gap:12px;align-items:center;justify-content:space-between;}
+.ia29-audio-dialog>header button{min-height:42px;min-width:42px;border:1px solid #bcd2c4;border-radius:9px;background:#ebf4ed;color:#174936;font-size:19px;}
+.ia29-audio-dialog>[data-ia29-audio-host]{display:block;min-width:0;}
+@media (max-width:620px){
+ body.imam-design-bridge #pg-session .ia21-student-card{margin-bottom:6px!important;}
+ body.imam-design-bridge #pg-session #v9SessionSteps{top:0!important;}
+ body.imam-design-bridge #pg-home .sg{grid-template-columns:repeat(2,minmax(0,1fr));}
+ body.imam-design-bridge #pg-session .ia8-teacher-status{font-size:11px;}
+ #quranTextModal .quran-box{width:100vw!important;min-width:0!important;margin:0!important;}
+}
+@media(prefers-reduced-motion:reduce){body.imam-design-bridge #pg-session #v9SessionSteps{scroll-behavior:auto;}}
+
+/* Legacy v9 homepage shows only #v9Home; keep it directly visible and expose optional extras on demand. */
+body.imam-design-bridge #pg-home.v9-home-ready > #ia29HomeMore{display:block!important;}
+body.imam-design-bridge #pg-home #v9Home > #ia29V9More{grid-column:1/-1;min-width:0;}
+body.imam-design-bridge #pg-home #ia29V9More .v92-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+@media(max-width:620px){body.imam-design-bridge #pg-home #v9Home{grid-template-columns:minmax(0,1fr)!important;}}
+
+/* The working header already supplies academy branding; keep the main action immediately visible. */
+body.imam-design-bridge #pg-home.v9-home-ready>#rc3HomeIntro{display:none!important;}
+body.imam-design-bridge #pg-home #v9Home>.v92-primary-card{order:-5!important;margin:0!important;}
+body.imam-design-bridge #pg-home #v9Home>.v92-home-head{order:-6!important;margin:0 0 4px!important;}
+body.imam-design-bridge #pg-home #v9Home>.v92-stats{order:-4!important;}
+body.imam-design-bridge #pg-home #v9Home>.ia29-home-more{order:9!important;}
+#ia29AudioDialog [data-imam-audio-library]{display:block;margin:10px 0;}
+#ia29AudioDialog [data-imam-audio-library] select{font-size:16px;}
+@media (max-width:620px){body.imam-design-bridge #pg-home #v9Home>.v92-primary-card{padding:14px!important;}body.imam-design-bridge #pg-home #v9Home>.v92-primary-card .v92-start{width:100%!important;min-height:50px!important;}}
