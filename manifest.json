@@ -13,7 +13,7 @@
   ],
   "background_color": "#F5F8F5",
   "theme_color": "#126044",
-  "orientation": "any",
+  "orientation": "portrait-primary",
   "lang": "ar",
   "dir": "rtl",
   "categories": [

@@ -9,13 +9,13 @@
   function chapterOf(name){const n=String(name||'').replace(/^سورة\s+/,'').trim();const i=SURAS.indexOf(n);return i<0?0:i+1;}
   function normalizeArabic(v){return String(v||'').normalize('NFKD').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[^ء-ي]/g,'');}
   async function shareAssignmentAudio(){
-    const a=context?.learning?.newAssignment;if(!a)return toast('لا يوجد تكليف حفظ جديد لإرساله صوتيًا');const chapter=chapterOf(a.surah);if(!chapter)return toast('تعذر تحديد سورة التكليف');if(navigator.onLine===false)return toast('يلزم الإنترنت لتجهيز ملف الصوت أول مرة');
+    const a=context?.learning?.newAssignment;if(!a)return toast('لا يوجد تكليف حفظ جديد لإرساله صوتيًا');const chapter=chapterOf(a.surah);if(!chapter)return toast('تعذر تحديد سورة التكليف');
     const select=$('portalAudioReciter'),reciter=select?.value||'mishary',btn=$('portalAudioShareBtn'),status=$('portalAudioStatus');if(btn)btn.disabled=true;
     try{
       status.textContent='جارٍ تجهيز ملف الصوت…';const file=await g.ImamQuranAudioExport.buildFile({chapter,surah:a.surah,from:a.full?1:a.from,to:a.full?(context?.learning?.newAssignment?.to||a.to):a.to,reciter},p=>{if(status&&p.total)status.textContent=`جارٍ تجهيز الصوت ${Math.min(p.done+1,p.total)}/${p.total}…`;});
-      const out=await g.ImamQuranAudioExport.shareFile(file,{title:`تكليف ${context?.student?.name||'الطالب'}`,text:`التكليف الصوتي — سورة ${a.surah} ${a.from||1}–${a.to||a.from||1}`});status.textContent=out.downloaded?'تم تنزيل الملف؛ أرسله عبر WhatsApp من الملفات.':'تم فتح المشاركة — اختر WhatsApp.';
-      try{g.ImamGuardianEngagement?.log?.('assignment_audio_share',1,{surah:String(a.surah||''),from:Number(a.from)||1,to:Number(a.to)||Number(a.from)||1,reciter});}catch(_){}
-    }catch(err){if(err?.name==='AbortError'){status.textContent='تم إلغاء المشاركة';}else{console.warn('[guardian assignment audio]',err);status.textContent='تعذر تجهيز الملف الآن';toast(/TOO_LARGE/.test(String(err))?'التكليف طويل جدًا لملف واحد؛ قلل نطاق الآيات':'تعذر تجهيز ملف الصوت؛ حاول مع اتصال أقوى');}}
+      const out=await g.ImamQuranAudioExport.shareFile(file,{title:`تكليف ${context?.student?.name||'الطالب'}`,text:`التكليف الصوتي — سورة ${a.surah} ${a.from||1}–${a.to||a.from||1}`});status.textContent=out.shared?'تمت المشاركة مع التطبيق المختار.':out.cancelled?'أُلغيت المشاركة':'المشاركة المباشرة غير مدعومة؛ لم يتم تنزيل ملف.';
+      try{if(out.shared)g.ImamGuardianEngagement?.log?.('assignment_audio_share',1,{surah:String(a.surah||''),from:Number(a.from)||1,to:Number(a.to)||Number(a.from)||1,reciter});}catch(_){}
+    }catch(err){if(err?.name==='AbortError'){status.textContent='تم إلغاء المشاركة';}else{console.warn('[guardian assignment audio]',err);status.textContent='تعذر تجهيز الملف الآن';toast(g.ImamOfflineAudio?.message(err)||'تعذر تجهيز الملف');}}
     finally{if(btn)btn.disabled=false;}
   }
   async function timingSlug(){

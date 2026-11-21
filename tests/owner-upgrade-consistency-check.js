@@ -45,6 +45,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  const sourceFor=url=>{
   const p=new URL(key(url)).pathname;
   if(p==='/index.html')return staleIndex?html.replaceAll(version,'11.9.0'):html;
+  if(p==='/guardian-portal.html'||p==='/guest-practice.html')return read(p.slice(1));
   if(p==='/app.js')return app;
   if(p==='/js/core/runtime.js')return runtime;
   if(p==='/js/core/offline-bootstrap.js')return bootstrap;
@@ -70,7 +71,9 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
    return;
  }
  await installation;
- const newCache=await cachesMock.open('quran-pwa-v11.12.1-beta.27-workspace-workflow-academy-life-review8-mobile-hotfix3-mushaf-hd-only-unified-entry1-entry2');
+ const currentName=vm.runInContext('ACTIVE_CACHE_NAME',ctx);
+ assert(currentName.endsWith('-beta28-stage1'),'must test the new cache namespace');
+ const newCache=await cachesMock.open(currentName);
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
  assert(currentRoot && currentHtml,'both root and index paths must have current HTML');

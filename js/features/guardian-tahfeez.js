@@ -192,6 +192,7 @@
   function buildSequence(){const b=repeatBounds(),arr=[];for(let a=b.from;a<=b.to;a++)arr.push(a);return arr;}
   async function audioSource(ch,ayah,rec){
     const url=remoteAudio(rec,ch,ayah);revokeObject();
+    try{const lib=g.ImamOfflineAudio,k=lib?.reciterKey(rec);if(k){const blob=await lib.get(k,ch,ayah);if(blob){state.objectUrl=URL.createObjectURL(blob);return{src:state.objectUrl,offline:true};}}}catch(_){}
     try{const cache=await caches.open(AUDIO_CACHE),hit=await cache.match(url);if(hit){const blob=await hit.blob();if(blob.size){state.objectUrl=URL.createObjectURL(blob);return{src:state.objectUrl,offline:true};}}}catch(_){}
     return{src:url,offline:false};
   }
@@ -246,7 +247,7 @@
     const cache=await caches.open(AUDIO_CACHE),bar=$('tahfeezDownloadBar');state.downloading=true;state.downloadCancel=false;let done=0,total=to-from+1;
     for(let a=from;a<=to;a++){
       if(state.downloadCancel)break;const url=remoteAudio(rec,chapter,a);const hit=await cache.match(url);
-      if(!hit){const res=await fetch(url,{mode:'cors',cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);await cache.put(url,res.clone());}
+      if(!hit){const lib=g.ImamOfflineAudio,k=lib?.reciterKey(rec);if(k)await lib.verse(k,chapter,a,{store:true});else{const res=await fetch(url,{mode:'cors',cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);await cache.put(url,res.clone());}}
       done++;if(bar)bar.style.width=`${Math.round(done/total*100)}%`;$('tahfeezOfflineStatus').textContent=`تم تنزيل ${done} من ${total}`;
     }
     state.downloading=false;return{done,total};
@@ -261,10 +262,10 @@
     try{const x=await cacheAudioRange(1,r.max,r.chapter,rec);toast(`تم حفظ سورة ${r.surah} (${x.done} آية)`);await refreshOfflineStatus();}catch(e){state.downloading=false;toast('تعذر إكمال تنزيل السورة');await refreshOfflineStatus();}
   }
   async function clearDownloads(){
-    const r=currentRange(),rec=$('tahfeezReciter').value,cache=await caches.open(AUDIO_CACHE);let n=0;for(let a=1;a<=r.max;a++){if(await cache.delete(remoteAudio(rec,r.chapter,a)))n++;}toast(n?`تم حذف ${n} ملفًا صوتيًا من الجهاز`:'لا توجد ملفات محفوظة لهذه السورة');refreshOfflineStatus();
+    const r=currentRange(),rec=$('tahfeezReciter').value,cache=await caches.open(AUDIO_CACHE);let n=0;const lib=g.ImamOfflineAudio,k=lib?.reciterKey(rec);if(k){try{n=await lib.removeRange(k,r.chapter);toast(n?`تم حذف ${n} ملفًا صوتيًا لهذه السورة`:'لا توجد ملفات محفوظة لهذه السورة');refreshOfflineStatus();}catch(e){toast(lib.message(e));}return;}for(let a=1;a<=r.max;a++){if(await cache.delete(remoteAudio(rec,r.chapter,a)))n++;}toast(n?`تم حذف ${n} ملفًا صوتيًا من الجهاز`:'لا توجد ملفات محفوظة لهذه السورة');refreshOfflineStatus();
   }
   async function refreshOfflineStatus(){
-    const r=currentRange(),rec=$('tahfeezReciter')?.value;if(!rec)return;try{const cache=await caches.open(AUDIO_CACHE);let count=0;for(let a=1;a<=r.max;a++)if(await cache.match(remoteAudio(rec,r.chapter,a)))count++;$('tahfeezOfflineStatus').textContent=count===r.max?`✓ السورة محفوظة كاملة (${count} آية)`:count?`${count} من ${r.max} آية محفوظة`:'يمكن تنزيل التكليف على هذا الجهاز';}catch(_){$('tahfeezOfflineStatus').textContent='التنزيل غير متاح في هذا المتصفح';}
+    const r=currentRange(),rec=$('tahfeezReciter')?.value;if(!rec)return;try{const cache=await caches.open(AUDIO_CACHE);let count=0;for(let a=1;a<=r.max;a++)if(await cache.match(remoteAudio(rec,r.chapter,a))||await (async()=>{try{const lib=g.ImamOfflineAudio,k=lib?.reciterKey(rec);return k?!!await lib.get(k,r.chapter,a):false;}catch(_){return false;}})())count++;$('tahfeezOfflineStatus').textContent=count===r.max?`✓ السورة محفوظة كاملة (${count} آية)`:count?`${count} من ${r.max} آية محفوظة`:'يمكن تنزيل التكليف على هذا الجهاز';}catch(_){$('tahfeezOfflineStatus').textContent='التنزيل غير متاح في هذا المتصفح';}
   }
   function setNet(){const el=$('tahfeezNetState');if(!el)return;const on=navigator.onLine!==false;el.textContent=on?'متصل':'دون إنترنت';el.classList.toggle('offline',!on);}
   function configureAssignment(data){

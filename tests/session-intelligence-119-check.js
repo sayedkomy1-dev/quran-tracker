@@ -33,6 +33,14 @@ assert(check({...base,kind:'new',studentId:''}).critical.some(x=>x.id==='student
 assert.equal(check({...base,status:'غاب'}).percent,100,'absent students do not need recitation information');
 assert.equal(api.normalizedRange({...placement,id:'a'}).surahId,2);
 assert.equal(api.normalizedRange({...placement,score:null}).score,null,'unknown score is not zero');
+// A partially populated block can vanish from buildSesData; report the exact raw missing field.
+fake.sesSt={value:'test-student'};fake['tog-new']={classList:{contains:x=>x==='on'}};
+fake['new-s']={value:'البقرة'};fake['new-full']={checked:false};fake['new-f']={value:'2'};fake['new-t']={value:''};
+ctx.buildSesData=()=>({notes:'اختبار'});
+let raw=api.validateCurrent();assert(raw.critical.some(x=>x.target==='new-t'&&x.id==='raw-t-new'));
+fake['new-t'].value='999';raw=api.validateCurrent();assert(raw.critical.some(x=>x.target==='new-t'));
+fake['new-t'].value='5';assert(!api.validateCurrent().critical.some(x=>x.id==='raw-t-new'));
+fake['sb-a']={classList:{contains:x=>x==='sel-a'}};fake['new-t'].value='';assert(!api.validateCurrent().critical.some(x=>x.id==='raw-t-new'));
 const html=read('index.html'),sw=read('sw.js'),runtime=read('js/core/runtime.js'),app=read('app.js');
 assert(html.includes('session-intelligence-119.js?v=11.12.1-beta.27'));
 assert(sw.includes("'./js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3'"));

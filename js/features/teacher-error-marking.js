@@ -242,19 +242,17 @@
   }
   async function shareSnapshotFile(files,st,msg=''){
     const arr=Array.isArray(files)?files:[files];if(!arr.length)return false;
-    try{if(navigator.share&&(!navigator.canShare||navigator.canShare({files:arr}))){await navigator.share({files:arr,title:`بطاقات التصحيح — ${st?.name||''}`,text:String(msg||'')});return true;}}
-    catch(e){if(e?.name==='AbortError')return true;console.warn('[qmark] native files share failed',e);}return false;
+    try{const out=await g.ImamTemporaryMedia.share(arr,{title:`بطاقات التصحيح — ${st?.name||''}`,text:String(msg||'')});if(out.unsupported)toast('المشاركة غير مدعومة؛ استخدم المعاينة والتنزيل فقط إذا رغبت','info');return !!(out.shared||out.cancelled);}catch(e){console.warn('[qmark] share failed',e);return false;}
   }
   async function shareErrorSnapshot(st,ses,msg=''){
     if(!rowsForImage(ses).length)return false;let files;
     try{files=await snapshotFiles(st,ses);}catch(e){console.warn('[qmark] snapshots failed',e);return false;}
     if(await shareSnapshotFile(files,st,msg))return true;
-    for(const file of files)downloadFile(file);
-    try{toast(`تم تنزيل ${files.length} ${files.length===1?'بطاقة':'بطاقات'} تصحيح واضحة بصيغة PNG`,'success');}catch(_){}
+    try{toast('لم تتم المشاركة؛ لم يتم تنزيل أي صورة تلقائيًا','info');}catch(_){}
     return false;
   }
   function ensurePreview(){
-    if($('qmarkPreview'))return;const el=document.createElement('div');el.id='qmarkPreview';el.className='qmark-preview-modal';el.hidden=true;el.innerHTML=`<div class="qmark-preview-backdrop" data-preview-close="1"></div><section class="qmark-preview-card" role="dialog" aria-modal="true" aria-label="معاينة بطاقة التصحيح"><header><div><small>معاينة قبل المشاركة</small><b>بطاقة مواضع التصحيح</b></div><button type="button" data-preview-close="1">✕</button></header><div class="qmark-preview-pages"><button type="button" id="qmarkPrevPage">السابق</button><span id="qmarkPageLabel">1 / 1</span><button type="button" id="qmarkNextPage">التالي</button></div><div class="qmark-preview-scroll"><img id="qmarkPreviewImg" alt="بطاقة مواضع التصحيح"></div><footer><button type="button" id="qmarkPreviewDownload">↓ تنزيل البطاقات</button><button type="button" id="qmarkPreviewShareCurrent" type="button">↗ البطاقة الحالية</button><button type="button" id="qmarkPreviewShare" class="primary">↗ مشاركة الكل</button></footer></section>`;document.body.appendChild(el);el.addEventListener('click',e=>{if(e.target?.dataset?.previewClose)closePreview();});$('qmarkPreviewDownload').addEventListener('click',()=>{for(const file of state.previewFiles)downloadFile(file);});$('qmarkPrevPage').addEventListener('click',()=>showPreviewPage(state.previewIndex-1));$('qmarkNextPage').addEventListener('click',()=>showPreviewPage(state.previewIndex+1));$('qmarkPreviewShareCurrent').addEventListener('click',async()=>{if(!state.previewFile)return;const st=findStudent($('sesSt')?.value);if(!await shareSnapshotFile(state.previewFile,st,''))downloadFile(state.previewFile);});$('qmarkPreviewShare').addEventListener('click',async()=>{if(!state.previewFiles.length)return;const sid=$('sesSt')?.value,st=findStudent(sid),data=typeof g.buildSesData==='function'?g.buildSesData():{},ses={studentId:sid,date:$('sesDate')?.value||new Date().toISOString().slice(0,10),...data},msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';if(!await shareSnapshotFile(state.previewFiles,st,msg)){for(const file of state.previewFiles)downloadFile(file);try{toast('تم تنزيل بطاقات التصحيح على جهازك','info');}catch(_){}}});
+    if($('qmarkPreview'))return;const el=document.createElement('div');el.id='qmarkPreview';el.className='qmark-preview-modal';el.hidden=true;el.innerHTML=`<div class="qmark-preview-backdrop" data-preview-close="1"></div><section class="qmark-preview-card" role="dialog" aria-modal="true" aria-label="معاينة بطاقة التصحيح"><header><div><small>معاينة قبل المشاركة</small><b>بطاقة مواضع التصحيح</b></div><button type="button" data-preview-close="1">✕</button></header><div class="qmark-preview-pages"><button type="button" id="qmarkPrevPage">السابق</button><span id="qmarkPageLabel">1 / 1</span><button type="button" id="qmarkNextPage">التالي</button></div><div class="qmark-preview-scroll"><img id="qmarkPreviewImg" alt="بطاقة مواضع التصحيح"></div><footer><button type="button" id="qmarkPreviewDownload">↓ تنزيل البطاقات</button><button type="button" id="qmarkPreviewShareCurrent" type="button">↗ البطاقة الحالية</button><button type="button" id="qmarkPreviewShare" class="primary">↗ مشاركة الكل</button></footer></section>`;document.body.appendChild(el);el.addEventListener('click',e=>{if(e.target?.dataset?.previewClose)closePreview();});$('qmarkPreviewDownload').addEventListener('click',()=>{for(const file of state.previewFiles)downloadFile(file);});$('qmarkPrevPage').addEventListener('click',()=>showPreviewPage(state.previewIndex-1));$('qmarkNextPage').addEventListener('click',()=>showPreviewPage(state.previewIndex+1));$('qmarkPreviewShareCurrent').addEventListener('click',async()=>{if(!state.previewFile)return;const st=findStudent($('sesSt')?.value);if(!await shareSnapshotFile(state.previewFile,st,''))toast('لم تتم المشاركة؛ لم يُنزّل الملف','info');});$('qmarkPreviewShare').addEventListener('click',async()=>{if(!state.previewFiles.length)return;const sid=$('sesSt')?.value,st=findStudent(sid),data=typeof g.buildSesData==='function'?g.buildSesData():{},ses={studentId:sid,date:$('sesDate')?.value||new Date().toISOString().slice(0,10),...data},msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';if(!await shareSnapshotFile(state.previewFiles,st,msg)){try{toast('لم تتم المشاركة؛ لم تُنزّل البطاقات','info');}catch(_){}}});
   }
   function showPreviewPage(i){
     const files=state.previewFiles;if(!files.length)return;state.previewIndex=Math.max(0,Math.min(i,files.length-1));
@@ -264,7 +262,7 @@
     $('qmarkPageLabel').textContent=`بطاقة ${state.previewIndex+1} من ${files.length}`;
     $('qmarkPrevPage').disabled=state.previewIndex===0;$('qmarkNextPage').disabled=state.previewIndex===files.length-1;
   }
-  function closePreview(){const el=$('qmarkPreview');if(el)el.hidden=true;if(state.previewUrl){URL.revokeObjectURL(state.previewUrl);state.previewUrl='';}state.previewFile=null;state.previewFiles=[];state.previewIndex=0;}
+  function closePreview(){const el=$('qmarkPreview');if(el)el.hidden=true;if(state.previewUrl){URL.revokeObjectURL(state.previewUrl);state.previewUrl='';}$('qmarkPreviewImg')?.removeAttribute('src');state.previewFile=null;state.previewFiles=[];state.previewIndex=0;}
   function currentSnapshotData(){const sid=$('sesSt')?.value,st=findStudent(sid);if(!sid||!st)return null;const data=typeof g.buildSesData==='function'?g.buildSesData():{},dateKey=$('sesDate')?.value||new Date().toISOString().slice(0,10),ses={studentId:sid,date:dateKey,status:typeof sesStatus!=='undefined'?sesStatus:'حضر',...data};return{st,ses};}
   async function previewCurrentDraftImage(){
     const pack=currentSnapshotData();if(!pack){try{toast('اختر الطالب أولًا','error');}catch(_){}return;}if(!rowsForImage(pack.ses).length){try{toast('لا توجد علامات أخطاء لإنشاء بطاقة','info');}catch(_){}return;}ensurePreview();try{state.previewFiles=await snapshotFiles(pack.st,pack.ses);state.previewIndex=0;showPreviewPage(0);$('qmarkPreview').hidden=false;}catch(e){console.warn('[qmark] preview failed',e);try{toast('تعذر إنشاء معاينة بطاقة التصحيح','error');}catch(_){}}
@@ -282,7 +280,7 @@
     if(!rowsForImage(ses).length){try{toast('لا توجد علامات أخطاء على النص لإنشاء صورة','info');}catch(_){}return;}
     const msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';
     const shared=await shareErrorSnapshot(st,ses,msg);
-    if(!shared)try{toast('تم إنشاء بطاقة التصحيح. يمكنك إرسال الرسالة مباشرة بزر حفظ وإرسال.','info');}catch(_){}
+    if(!shared)try{toast('لم تُشارك الصورة. يمكنك إرسال التقرير النصي بصورة مستقلة.','info');}catch(_){}
   }
   function correctionDetailsText(ses){
     const rows=Array.isArray(ses?.recitationErrors)?ses.recitationErrors:[];

@@ -1,0 +1,12 @@
+[data-imam-audio-library]{box-sizing:border-box;max-width:100%;overflow-wrap:anywhere;padding:12px;margin-block:12px;background:#f4faf6;color:#174b36;border:1px solid #c6ded0;border-radius:14px}
+[data-imam-audio-library] summary{font-weight:700;cursor:pointer;padding:8px 0}
+[data-imam-audio-library] label{display:block;margin:10px 0}
+[data-imam-audio-library] select{display:block;width:100%;max-width:100%;padding:9px;margin-top:4px;border:1px solid #a6c8b5;border-radius:8px;background:white;color:#174b36}
+[data-imam-audio-library] progress{width:100%;accent-color:#17674b}
+.ia28-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.ia28-actions button{min-height:44px;flex:1 1 126px;font:inherit;font-weight:700;border:1px solid #a5c6b5;border-radius:10px;padding:9px;background:#fff;color:#174b36;cursor:pointer}
+.ia28-actions button:first-child{background:#17674b;color:white}.ia28-actions button:disabled{opacity:.45;cursor:default}
+.ia28-media-dialog{box-sizing:border-box;width:min(92vw,460px);max-height:85dvh;overflow:auto;border:1px solid #c6ded0;border-radius:16px;padding:20px;color:#174b36;background:#fff;z-index:2147483646;text-align:start;font:inherit}
+.ia28-media-dialog::backdrop{background:#102c23aa}.ia28-media-fallback{position:fixed;inset:15% 4% auto;margin:auto;box-shadow:0 0 0 100vmax #102c23aa}
+.im119-warning-list button{display:block;width:100%;text-align:start;padding:12px;margin:6px 0;border:1px solid #d6b894;border-radius:9px;background:#fff8ee;color:#633e20;font:inherit;cursor:pointer}
+.ia28-missing-focus{outline:3px solid #bc6f28!important;outline-offset:3px}

@@ -9,12 +9,15 @@
 <link rel="stylesheet" href="guest-practice.css?v=11.7.4.1">
 <link rel="stylesheet" href="css/platform/public-experience.css?v=11.12.1-beta.27">
 <link rel="stylesheet" href="css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1">
+
+<link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-stage1">
 </head><body class="imam-portal-refresh">
 <main class="guest-shell">
 <header class="guest-top"><a href="guardian-login.html" aria-label="العودة">→ رجوع</a><span>أكاديمية الإمام — التحفيظ الحر</span><img src="icon-96.png" alt="شعار الأكاديمية"></header>
 <section class="guest-hero"><span class="guest-mark">📿</span><div><small>مساحة تعلّم مفتوحة للجميع</small><h1>احفظ القرآن على طريقتك</h1><p>اختر الشيخ والسورة والآيات، واستمع وكرّر وتدرّب بالتلقين. لا يلزم اشتراك في الأكاديمية.</p></div></section>
 <section class="guest-card"><div class="guest-head"><h2>مساحتي الخاصة</h2><span class="guest-local" id="guestSaveMode">محفوظ على هذا الجهاز</span></div>
 <label class="guest-field">اسم اختياري للتعرّف على سجلك <input id="guestNickname" maxlength="50" placeholder="مثال: أحمد" autocomplete="nickname"></label>
+<div data-imam-audio-library></div>
 <div id="guestLast" class="guest-last" aria-live="polite">لم تبدأ أي جلسة بعد.</div>
 <div class="guest-buttons"><button id="guestStart" class="guest-primary" type="button">▶ ابدأ التحفيظ</button><button id="guestContinue" type="button">↩ أكمل من آخر موضع</button></div>
 <h3>🔖 علاماتي المحفوظة</h3><div id="guestBookmarks" class="guest-bookmarks"><p>مفيش علامات لسه.</p></div>
@@ -110,6 +113,9 @@
     </footer>
   </div>
 </section>
+
+<script src="js/features/offline-audio-library.js?v=beta28-stage1"></script>
+<script src="js/features/temporary-media-share.js?v=beta28-stage1"></script>
 <script src="js/features/guardian-tahfeez.js?v=11.7.4.1"></script>
 <script src="js/features/guest-practice.js?v=11.7.4.1"></script>
 </body></html>

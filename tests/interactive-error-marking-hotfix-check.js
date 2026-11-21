@@ -16,7 +16,7 @@ for(const name of ['captureDraft','applyDraft','buildSesData'])ok(teacher.includ
 ok(teacher.includes("PREF_KEY='imam:qmark:prefs:v2'")&&teacher.includes('state.enabled=p.enabled!==false'),'correction mode preference not remembered');
 ok(teacher.includes('qmarkCustomInput')&&teacher.includes('addCustomError')&&teacher.includes("group,'custom'")||teacher.includes("addError(type,'custom')"),'custom typed error workflow missing');
 ok(v8.includes("const isQuranWord=x.source==='quran-word'")&&v8.includes('out.ayahText=v8SafeText(x.ayahText,1200)')&&v8.includes("'custom'"),'custom Quran annotations are not sanitizer-safe');
-ok(teacher.includes('buildSnapshotCanvas')&&teacher.includes('navigator.share')&&teacher.includes("type:'image/png'"),'annotated PNG Web Share path missing');
+ok(teacher.includes('buildSnapshotCanvas')&&teacher.includes('ImamTemporaryMedia.share')&&read('js/features/temporary-media-share.js').includes('navigator.share')&&teacher.includes("type:'image/png'"),'annotated PNG Web Share path missing');
 ok(css.includes('.qmark-custom-entry')&&css.includes('.qmark-share')&&css.includes('background:#fff0ea!important')&&css.includes('color:#71301f!important'),'high-contrast/custom controls missing');
 for(const id of ['tahfeezFrom','tahfeezTo','tahfeezSingle','tahfeezGroupFrom','tahfeezGroupTo']){
   const re=new RegExp(`id="${id}"[^>]*type="number"[^>]*inputmode="numeric"`);ok(re.test(tahHtml),`${id} is not a typed numeric input`);

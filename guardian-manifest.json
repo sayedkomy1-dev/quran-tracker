@@ -8,6 +8,7 @@
   "start_url": "./guardian-login.html?source=guardian-pwa",
   "scope": "./",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#f7f4ec",
   "theme_color": "#145A3A",
   "icons": [

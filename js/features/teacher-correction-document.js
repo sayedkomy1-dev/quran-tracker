@@ -113,16 +113,12 @@
     $('correctionHtmlFrame').src=previewUrl;$('correctionHtmlDialog').hidden=false;
   }
   function openErrorsOnly(){const pack=currentPack();if(!pack){g.toast?.('اختر الطالب أولًا','error');return;}if(!pack.ses.recitationErrors?.length){g.toast?.('لا توجد أخطاء مسجلة في هذه الحصة لمشاركتها','info');return;}ensureModal();previewKind='errors';previewHtml=reportHtml(pack.st,pack.ses,{errorsOnly:true});$('correctionHtmlTitle').textContent='🧭 أخطاء الحصة — HTML / PDF / PNG / نص';cleanupUrl();previewUrl=URL.createObjectURL(new Blob([previewHtml],{type:'text/html;charset=utf-8'}));$('correctionHtmlFrame').src=previewUrl;$('correctionHtmlDialog').hidden=false;}
-  function close(){if($('correctionHtmlDialog'))$('correctionHtmlDialog').hidden=true;}
+  function close(){if($('correctionHtmlDialog'))$('correctionHtmlDialog').hidden=true;const frame=$('correctionHtmlFrame');if(frame)frame.removeAttribute('src');cleanupUrl();previewHtml='';}
   function file(){const st=currentPack()?.st;const filename=String(st?.name||'student').replace(/[^\p{L}\p{N}-]+/gu,'-').slice(0,40);
     return new File([previewHtml||''],`${previewKind==='errors'?'quran-errors':'correction-report'}-${filename}.html`,{type:'text/html'});
   }
   function download(){if(!previewHtml)return;const f=file(),u=URL.createObjectURL(f);const a=document.createElement('a');a.href=u;a.download=f.name;document.body.appendChild(a);a.click();a.remove();g.setTimeout(()=>URL.revokeObjectURL(u),4000);}
-  async function share(){if(!previewHtml)return;const f=file();try{
-      if(navigator.share&&navigator.canShare?.({files:[f]})){await navigator.share({title:'تقرير الأخطاء الكامل',files:[f]});return;}
-    }catch(err){if(err?.name==='AbortError')return;console.warn('[correction html share]',err);}
-    download();g.toast?.('تم تنزيل ملف التقرير؛ يمكنك إرفاقه عبر واتساب.','info');
-  }
+  async function share(){if(!previewHtml)return;try{const out=await g.ImamTemporaryMedia.share([file()],{title:'تقرير الأخطاء الكامل'});if(out.unsupported)g.toast?.('المشاركة غير مدعومة؛ التنزيل اختياري فقط','info');}catch(err){g.toast?.('تعذرت المشاركة دون تنزيل','error');}}
   function print(){const frame=$('correctionHtmlFrame');try{frame?.contentWindow?.focus();frame?.contentWindow?.print();}
     catch(err){console.warn('[correction html print]',err);g.toast?.('تعذر فتح الطباعة هنا؛ نزّل التقرير وافتحه في المتصفح للحفظ بصيغة PDF.','info');}}
   // Unified export: includes manual recitation chips plus every Quran word/character mark.
@@ -171,8 +167,7 @@
   }
   async function sharePng(){const pack=currentPack();if(!pack||!pack.ses.recitationErrors?.length)return;
     try{const files=await pngFiles(pack.st,pack.ses);if(!files.length)return;
-      if(navigator.share&&navigator.canShare?.({files})){try{await navigator.share({title:'أخطاء الحصة',files});return;}catch(err){if(err?.name==='AbortError')return;}}
-      files.forEach(downloadMedia);g.toast?.('تم تنزيل صور الأخطاء؛ أرفقها يدويًا في محادثة ولي الأمر','info');
+      const out=await g.ImamTemporaryMedia.share(files,{title:'أخطاء الحصة'});if(out.unsupported)g.toast?.('المشاركة غير مدعومة؛ لم تُنزّل صور الأخطاء','info');
     }catch(err){console.error('[errors PNG]',err);g.toast?.('تعذر إنشاء الصورة. استخدم تقرير HTML أو PDF.','error');}
   }
   function errorsPlainText(ses){const rows=rowsForPng(ses);return rows.length?`🧭 أخطاء الحصة (${rows.length})\n${rows.join('\n')}`:'';}

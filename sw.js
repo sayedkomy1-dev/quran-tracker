@@ -14,7 +14,7 @@ const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
 // New reader-only shell must not overwrite an already-installed offline release.
-const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2';
+const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1';
 // Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
@@ -22,6 +22,20 @@ const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
+  './js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3',
+  './js/features/offline-audio-library.js?v=beta28-stage1',
+  './js/features/temporary-media-share.js?v=beta28-stage1',
+  './css/platform/temporary-media.css?v=beta28-stage1',
+  './guardian-portal.html',
+  './guest-practice.html',
+  './js/features/quran-audio-export.js?v=11.2.0-s4.1',
+  './js/features/guardian-audio-assist.js?v=11.2.0-s4.1',
+  './js/features/quran-audio-export.js?v=11.2.0-s4',
+  './js/features/teacher-correction-document.js?v=11.7.4.5',
+  './js/features/guardian-tahfeez.js?v=11.2.0-s4.1',
+  './js/features/guardian-tahfeez.js?v=11.7.4.1',
+  './manifest.json?v=11.12.1-beta.27',
+  './guardian-manifest.json?v=11.2.0-s4.1',
   './academy-mushaf.html',
   './css/platform/academy-mushaf.css?v=11.12.1-beta.27-hd-only',
   './js/features/academy-mushaf.js?v=11.12.1-beta.27-hd-only',
@@ -337,6 +351,8 @@ async function cacheVerifiedCurrentShell(cache,url){
       ||!body.includes(`app.js?v=${APP_VERSION}`)
       ||!body.includes(`runtime.js?v=${APP_VERSION}`)))
     throw new Error('[SW] index.html is an older release');
+  if(['./index.html','./guardian-portal.html','./guest-practice.html'].includes(url) && !body.includes('offline-audio-library.js?v=beta28-stage1'))
+    throw new Error('[SW] media stage1 HTML is not available');
   if(url.startsWith('./js/core/runtime.js') && !body.includes(`version:'${APP_VERSION}'`))
     throw new Error('[SW] runtime.js is an older release');
   if(url.startsWith('./app.js') && !body.includes(`WLQ_RELEASE_${APP_VERSION}`))

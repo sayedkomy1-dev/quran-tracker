@@ -27,6 +27,8 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 </style>
 <link rel="stylesheet" href="css/platform/public-experience.css?v=11.12.1-beta.27">
 <link rel="stylesheet" href="css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1">
+
+<link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-stage1">
 </head>
 <body class="imam-portal-refresh">
 <main class="portal-shell">
@@ -130,7 +132,8 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
     <section class="portal-card" id="portalAssignmentCard">
       <div class="portal-card-head"><div><b>📝 التكليف الحالي</b><small id="portalAssignmentDate">آخر حصة حضور</small></div></div>
       <div id="portalAssignment" class="portal-assignment"></div>
-      <div id="portalAudioAssist" class="portal-audio-assist" hidden>
+      <div data-imam-audio-library></div>
+<div id="portalAudioAssist" class="portal-audio-assist" hidden>
         <div><b>🎧 مساعدة صوتية للتكليف</b><small>ملف MP3 بسرعة التلاوة الأصلية — مناسب للإرسال على WhatsApp</small></div>
         <div class="portal-audio-controls"><select id="portalAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري راشد العفاسي</option><option value="husary">محمود خليل الحصري</option><option value="muaiqly">ماهر المعيقلي</option></select><button id="portalAudioShareBtn" type="button" onclick="guardianShareAssignmentAudio()">📲 مشاركة صوت التكليف</button></div>
         <small id="portalAudioStatus">يتم إنشاء ملف للتكليف الحالي فقط.</small>
@@ -253,6 +256,9 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <script src="js/features/guardian-portal-experience.js?v=11.2.0-s4.1"></script>
 <script src="js/features/quran-audio-export.js?v=11.2.0-s4.1"></script>
 <script src="js/features/guardian-audio-assist.js?v=11.2.0-s4.1"></script>
+
+<script src="js/features/offline-audio-library.js?v=beta28-stage1"></script>
+<script src="js/features/temporary-media-share.js?v=beta28-stage1"></script>
 <script src="js/features/guardian-tahfeez.js?v=11.2.0-s4.1"></script>
 <script src="js/features/guardian-messages.js?v=11.6.0-s1"></script>
 <script src="js/features/guardian-ratings.js?v=11.7.0-s1"></script>

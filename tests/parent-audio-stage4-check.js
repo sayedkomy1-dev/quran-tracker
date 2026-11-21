@@ -12,7 +12,7 @@ ok(experience.includes('beforeinstallprompt')&&experience.includes('wlq_guardian
 ok(css.includes('data-portal-theme="kids"')&&css.includes('.portal-quick-nav')&&css.includes('.portal-audio-assist'),'portal Stage 4 styles missing');
 ok(tcss.includes('child-friendly Tahfeez themes')&&tcss.includes('data-portal-theme="dark"'),'Tahfeez themes missing');
 for(const token of ['Alafasy_128kbps','Husary_128kbps','MaherAlMuaiqly128kbps'])ok(exporter.includes(token),`missing audio reciter ${token}`);
-ok(exporter.includes('new File')&&exporter.includes('navigator.share')&&exporter.includes('audio/mpeg'),'assignment MP3 export/share missing');
+ok(exporter.includes('new File')&&exporter.includes('ImamTemporaryMedia.share')&&read('js/features/temporary-media-share.js').includes('navigator.share')&&exporter.includes('audio/mpeg'),'assignment MP3 export/share missing');
 ok(audio.includes('Alafasy_128kbps')&&audio.includes('quran-timings-api')&&audio.includes('تعذر قص الكلمة بدقة'),'Mishary correction-word audio/fallback missing');
 ok(view.includes('data-pronounce-row')&&view.includes('portalShowCorrections')&&view.includes('ImamGuardianAudio?.setContext'),'guardian correction audio/collapse bridge missing');
 ok(index.includes('teacherAssignmentAudioReciter')&&index.includes('shareCurrentAssignmentAudio()'),'teacher assignment audio action missing');
