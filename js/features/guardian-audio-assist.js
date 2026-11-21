@@ -3,17 +3,17 @@
    Assignment MP3: Mishary/Husary/Muaiqly. Correction pronunciation: Mishary only. */
 (function guardianAudioAssist(g){
   const SURAS=['الفاتحة','البقرة','آل عمران','النساء','المائدة','الأنعام','الأعراف','الأنفال','التوبة','يونس','هود','يوسف','الرعد','إبراهيم','الحجر','النحل','الإسراء','الكهف','مريم','طه','الأنبياء','الحج','المؤمنون','النور','الفرقان','الشعراء','النمل','القصص','العنكبوت','الروم','لقمان','السجدة','الأحزاب','سبأ','فاطر','يس','الصافات','ص','الزمر','غافر','فصلت','الشورى','الزخرف','الدخان','الجاثية','الأحقاف','محمد','الفتح','الحجرات','ق','الذاريات','الطور','النجم','القمر','الرحمن','الواقعة','الحديد','المجادلة','الحشر','الممتحنة','الصف','الجمعة','المنافقون','التغابن','الطلاق','التحريم','الملك','القلم','الحاقة','المعارج','نوح','الجن','المزمل','المدثر','القيامة','الإنسان','المرسلات','النبأ','النازعات','عبس','التكوير','الانفطار','المطففين','الانشقاق','البروج','الطارق','الأعلى','الغاشية','الفجر','البلد','الشمس','الليل','الضحى','الشرح','التين','العلق','القدر','البينة','الزلزلة','العاديات','القارعة','التكاثر','العصر','الهمزة','الفيل','قريش','الماعون','الكوثر','الكافرون','النصر','المسد','الإخلاص','الفلق','الناس'];
-  const TIMING_BASE='https://cdn.jsdelivr.net/gh/spa5k/quran-timings-api@main/data';const timingCache=new Map();let context=null,wordAudio=null,wordStopTimer=null;
+  const TIMING_BASE='https://cdn.jsdelivr.net/gh/spa5k/quran-timings-api@main/data';const timingCache=new Map();let context=null,wordAudio=null,wordStopTimer=null,shareRequest=0;
   const $=id=>document.getElementById(id);
   function toast(msg){if(typeof g.portalToast==='function')return g.portalToast(msg);let t=document.createElement('div');t.className='portal-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
   function chapterOf(name){const n=String(name||'').replace(/^سورة\s+/,'').trim();const i=SURAS.indexOf(n);return i<0?0:i+1;}
   function normalizeArabic(v){return String(v||'').normalize('NFKD').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[^ء-ي]/g,'');}
   async function shareAssignmentAudio(){
-    const a=context?.learning?.newAssignment;if(!a)return toast('لا يوجد تكليف حفظ جديد لإرساله صوتيًا');const chapter=chapterOf(a.surah);if(!chapter)return toast('تعذر تحديد سورة التكليف');
+    const current=++shareRequest,selectedContext=context,a=selectedContext?.learning?.newAssignment;if(!a)return toast('لا يوجد تكليف حفظ جديد لإرساله صوتيًا');const chapter=chapterOf(a.surah);if(!chapter)return toast('تعذر تحديد سورة التكليف');
     const select=$('portalAudioReciter'),reciter=select?.value||'mishary',btn=$('portalAudioShareBtn'),status=$('portalAudioStatus');if(btn)btn.disabled=true;
     try{
-      status.textContent='جارٍ تجهيز ملف الصوت…';const file=await g.ImamQuranAudioExport.buildFile({chapter,surah:a.surah,from:a.full?1:a.from,to:a.full?(context?.learning?.newAssignment?.to||a.to):a.to,reciter},p=>{if(status&&p.total)status.textContent=`جارٍ تجهيز الصوت ${Math.min(p.done+1,p.total)}/${p.total}…`;});
-      const out=await g.ImamQuranAudioExport.shareFile(file,{title:`تكليف ${context?.student?.name||'الطالب'}`,text:`التكليف الصوتي — سورة ${a.surah} ${a.from||1}–${a.to||a.from||1}`});status.textContent=out.shared?'تمت المشاركة مع التطبيق المختار.':out.cancelled?'أُلغيت المشاركة':'المشاركة المباشرة غير مدعومة؛ لم يتم تنزيل ملف.';
+      status.textContent='جارٍ تجهيز ملف الصوت…';const file=await g.ImamQuranAudioExport.buildFile({chapter,surah:a.surah,from:a.full?1:a.from,to:a.full?(g.ImamOfflineAudio?.SURAHS?.[chapter-1]?.[1]||a.to):a.to,reciter},p=>{if(current===shareRequest&&status&&p.total)status.textContent=`جارٍ تجهيز الصوت ${Math.min(p.done+1,p.total)}/${p.total}…`;});
+      if(current!==shareRequest)return;const out=await g.ImamQuranAudioExport.shareFile(file,{title:`تكليف ${selectedContext?.student?.name||'الطالب'}`,text:`التكليف الصوتي — سورة ${a.surah} ${a.from||1}–${a.to||a.from||1}`});if(current!==shareRequest)return;status.textContent=out.shared?'تمت المشاركة مع التطبيق المختار.':out.cancelled?'أُلغيت المشاركة':'المشاركة المباشرة غير مدعومة؛ لم يتم تنزيل ملف.';
       try{if(out.shared)g.ImamGuardianEngagement?.log?.('assignment_audio_share',1,{surah:String(a.surah||''),from:Number(a.from)||1,to:Number(a.to)||Number(a.from)||1,reciter});}catch(_){}
     }catch(err){if(err?.name==='AbortError'){status.textContent='تم إلغاء المشاركة';}else{console.warn('[guardian assignment audio]',err);status.textContent='تعذر تجهيز الملف الآن';toast(g.ImamOfflineAudio?.message(err)||'تعذر تجهيز الملف');}}
     finally{if(btn)btn.disabled=false;}
@@ -40,6 +40,6 @@
       try{g.ImamGuardianEngagement?.log?.('correction_audio_play',1,{chapter,ayah,wordIndex,precise:!!timing});}catch(_){}
     }catch(err){console.warn('[guardian word pronunciation]',err);toast('تعذر تشغيل النطق الآن');}
   }
-  function setContext(data){context=data||null;const box=$('portalAudioAssist');if(box)box.hidden=!context?.learning?.newAssignment;}
+  function setContext(data){shareRequest++;g.ImamTemporaryMedia?.cancel?.();context=data||null;clearTimeout(wordStopTimer);if(wordAudio){wordAudio.pause();wordAudio.removeAttribute('src');wordAudio.load();}const status=$('portalAudioStatus');if(status)status.textContent='يتم إنشاء ملف للتكليف الحالي فقط.';const box=$('portalAudioAssist');if(box)box.hidden=!context?.learning?.newAssignment;}
   g.ImamGuardianAudio={setContext,shareAssignmentAudio,pronounce};g.guardianShareAssignmentAudio=shareAssignmentAudio;g.guardianPronounceCorrection=pronounce;
 })(globalThis);

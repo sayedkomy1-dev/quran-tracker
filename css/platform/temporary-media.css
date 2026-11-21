@@ -10,3 +10,16 @@
 .ia28-media-dialog::backdrop{background:#102c23aa}.ia28-media-fallback{position:fixed;inset:15% 4% auto;margin:auto;box-shadow:0 0 0 100vmax #102c23aa}
 .im119-warning-list button{display:block;width:100%;text-align:start;padding:12px;margin:6px 0;border:1px solid #d6b894;border-radius:9px;background:#fff8ee;color:#633e20;font:inherit;cursor:pointer}
 .ia28-missing-focus{outline:3px solid #bc6f28!important;outline-offset:3px}
+
+/* Candidate 1 — existing portal surfaces, responsive controls, no permission changes. */
+.ia28-portal-start{display:grid;gap:12px;padding:16px;border:1px solid #b9d8c6;border-radius:16px;background:#f4faf6;color:#174b36;margin:12px 0}
+.ia28-mode-switch,.ia28-start-actions,.ia28-guest-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ia28-mode-switch button,.ia28-start-actions button,.ia28-guest-modes button,.ia28-practice-assignment{font:inherit;min-height:46px;padding:10px;border:1px solid #a5c6b5;border-radius:10px;background:#fff;color:#174b36;font-weight:700;cursor:pointer;overflow-wrap:anywhere}
+.ia28-mode-switch button[aria-pressed=true],.ia28-start-actions button:last-child,.ia28-practice-assignment{color:white;background:#17674b;border-color:#17674b}
+.ia28-start-copy{display:grid;gap:4px}.ia28-start-copy small{font-size:.8em}
+.ia28-practice-assignment{width:100%;margin-top:8px}.ia28-guest-modes{margin:12px 0}
+.ia28-student-view :is(#portalFinanceCard,#portalFinanceNav,#portalMessageCard,#portalMessageNav,#portalRatingCard,#portalRatingNav,.portal-kpis,#portalGoalCard){display:none!important}
+.ia28-student-view .portal-quick-nav button{min-height:54px}.ia28-student-view .portal-assignment-item{font-size:1.05em}
+.fin-cycle-note{display:grid;gap:6px;padding:12px;margin:10px 0;background:#e9f6ef;color:#174b36;border:1px solid #b9d8c6;border-radius:10px}.fin-cycle-note progress{width:100%;accent-color:#17674b}
+@media(max-width:360px){.ia28-start-actions,.ia28-mode-switch{grid-template-columns:1fr}}
+@media print{.ia28-portal-start,.ia28-practice-assignment,.ia28-guest-modes{display:none!important}}

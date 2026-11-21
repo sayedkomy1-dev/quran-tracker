@@ -1,0 +1,622 @@
+[
+  {
+    "file": "academic-exams-1111-check.js",
+    "ok": true,
+    "output": "PASS 11.11 exam evidence, committee, repeat/fail, owner-only internal ijazah, audits, guardian summary, backup, offline and correction links\n"
+  },
+  {
+    "file": "academy-learning-check.js",
+    "ok": true,
+    "output": "PASS All 8 imported foundation levels present\nPASS Every foundation level has interactive lesson and assessment\nPASS Q&A answer keys valid and explicative\nPASS Makharij, letters and tajweed reference data not empty\nPASS No mock student progress write from educational exercises\nPASS No third-party AI requests in education material\nPASS Explicit no official evaluation and teaching review\nPASS Input text escaped using DOM textContent\nPASS Training pace count choices 2 4 6\nPASS Training results shown to user, without official record\nPASS Teacher guidance and similar verse references retained without verse snippets\nPASS Expanded navigation includes teacher strategies and similar references\nacademy learning 12/12\n"
+  },
+  {
+    "file": "academy-life-review8-check.js",
+    "ok": true,
+    "output": "PASS life review8: 17 regression groups + HD-only Mushaf + offline references\n"
+  },
+  {
+    "file": "academy-mobile-header-hotfix1-check.js",
+    "ok": true,
+    "output": "academy-mobile-header-hotfix1-check: PASS\n"
+  },
+  {
+    "file": "academy-mobile-header-hotfix2-check.js",
+    "ok": true,
+    "output": "academy-mobile-header-hotfix2-check: PASS\n"
+  },
+  {
+    "file": "academy-mobile-header-hotfix3-check.js",
+    "ok": true,
+    "output": "academy-mobile-header-hotfix3-check: PASS\n"
+  },
+  {
+    "file": "academy-mushaf-check.js",
+    "ok": true,
+    "output": "PASS HD-only public Mushaf: no old selectable source, no automatic fallback, error retry and cache upgrade\nPASS public mushaf single HD source/data/privacy and resource loading\n"
+  },
+  {
+    "file": "academy-mushaf-hd-only-check.js",
+    "ok": true,
+    "output": "PASS HD-only public Mushaf: no old selectable source, no automatic fallback, error retry and cache upgrade\n"
+  },
+  {
+    "file": "academy-suite-check.js",
+    "ok": true,
+    "output": "PASS Suite style and functionality loaded once\nPASS Existing session, guardian, board and error systems retained\nPASS Student, teacher and circles seed records are never injected\nPASS Suite uses native existing actions not parallel lesson or session storage\nPASS Arabic heading and navigable service cards\nPASS UI opt-out hides suite with original user theme\nPASS No Quran canonical text styled with letter distortion\nPASS Portal center lists functioning existing routes\nPASS No publication of demo or direct guardian login\nPASS All new assets are in both offline shell lists\nPASS Cache namespace changed to prevent stale asset reuse\nacademy suite 11/11\n"
+  },
+  {
+    "file": "academy-tenants-foundation-check.js",
+    "ok": true,
+    "output": "PASS academy-tenants-foundation: tenant permissions, no legacy migration, owner-only read view, RTL cache and local schema preserved\n"
+  },
+  {
+    "file": "academy-wide-overhaul-check.js",
+    "ok": true,
+    "output": "PASS academy-wide beta12: 14 pages, existing save contract, role workspace, responsive ownership, More discovery, guardian/student separation and safe archive\n"
+  },
+  {
+    "file": "advanced-analytics-stage1-check.js",
+    "ok": true,
+    "output": "PASS 11.12 analytics Stage 1: scoped server calls, roster aggregation, group drill-down, no local persistence, account switching\n"
+  },
+  {
+    "file": "automatic-roster-sync-check.js",
+    "ok": true,
+    "output": "PASS automatic-roster-sync: initial upload, save debounce, attendance, offline retry, privacy, empty protection, scoped access\n"
+  },
+  {
+    "file": "ayah-page-map-check.js",
+    "ok": true,
+    "output": "KFGQPC ayah-page map checks passed: 6236 ayat / 604 pages\n"
+  },
+  {
+    "file": "beta19-session-ux-check.js",
+    "ok": true,
+    "output": "beta19-session-ux-check: PASS — notes share, teacher board, kind preference, collapsed range, search touch area, sound, cache\n"
+  },
+  {
+    "file": "beta20-lesson-board-ux-check.js",
+    "ok": true,
+    "output": "beta20-lesson-board-ux-check: PASS — real save actions, notes audio, collapsed extras, board tools, session context, touch sound, cache\n"
+  },
+  {
+    "file": "beta21-session-compression-check.js",
+    "ok": true,
+    "output": "beta21-session-compression-check: PASS — recitation-only large repeat, zero floating save, compact disclosure, official save parity\n"
+  },
+  {
+    "file": "beta22-session-access-check.js",
+    "ok": true,
+    "output": "beta22-session-access-check: PASS — single action trio, phone shortcuts, followup recitation-only and closed, original data handlers\n"
+  },
+  {
+    "file": "beta24-notes-only-actions-check.js",
+    "ok": true,
+    "output": "beta24-notes-only-actions-check: PASS — original actions + errors in Notes, in-flow, preserved assessments\n"
+  },
+  {
+    "file": "beta25-guardian-errors-check.js",
+    "ok": true,
+    "output": "PASS beta25: notes-only original error ledger + four unique actions + guardian UI + mixed-error HTML/PNG/text/WhatsApp report\n"
+  },
+  {
+    "file": "beta26-guardian-reciter-ux-check.js",
+    "ok": true,
+    "output": "PASS beta26 guardian standalone scroll+back and reader label without new service/data changes\n"
+  },
+  {
+    "file": "beta27-error-followup-check.js",
+    "ok": true,
+    "output": "PASS beta27: error follow-up queue, corrected-in-lesson, manual/Quran, isolation, recurrence, mastery, decisions, import and offline assets\n"
+  },
+  {
+    "file": "beta27-guardian-delete-more-hotfix-check.js",
+    "ok": true,
+    "output": "PASS beta27 guardian delete + More scroll hotfix (mocked RPC and deletion)\n[student delete] guardian access not revoked Error: offline\n    at Object.revokeForStudentDeletion (/mnt/data/qt-stage1/quran-tracker-main/tests/beta27-guardian-delete-more-hotfix-check.js:56:81)\n    at Object.deleteSt [as runDeletion] (evalmachine.<anonymous>:14:30)\n    at /mnt/data/qt-stage1/quran-tracker-main/tests/beta27-guardian-delete-more-hotfix-check.js:59:27\n"
+  },
+  {
+    "file": "beta27-guardian-inactive-and-delete-hotfix3-check.js",
+    "ok": true,
+    "output": "PASS beta27 guardian archive, pause, bulk, editor and deletion safeguards (mock RPC)\n"
+  },
+  {
+    "file": "beta27-guardian-reactivation-hotfix4-check.js",
+    "ok": true,
+    "output": "PASS beta27 automatic student reactivation, rollback and guardian PIN display (offline mocks)\n"
+  },
+  {
+    "file": "beta27-quran-picker-hotfix2-check.js",
+    "ok": true,
+    "output": "PASS picker hotfix2: mobile touch selection, fast repeat access, PWA refs, correction tool isolation\n"
+  },
+  {
+    "file": "beta27-quran-text-board-check.js",
+    "ok": true,
+    "output": "PASS beta27 Quran text chooser, sections, board task, read-to-surah-end, offline references\n"
+  },
+  {
+    "file": "beta27-student-management-check.js",
+    "ok": true,
+    "output": "PASS beta27: Arabic/international phone, duplicate prevention, siblings, editing immutable ID, missing phone rejection, visible edit entry, status filter\n"
+  },
+  {
+    "file": "beta27-student-modal-layout-hotfix-check.js",
+    "ok": true,
+    "output": "PASS student modal: bounded scrolling, start-at-top, one field set, distinct offline release cache\n"
+  },
+  {
+    "file": "beta28-stage1-media-check.js",
+    "ok": true,
+    "output": "PASS media stage1: mock storage resume, offline MP3 merge, missing ayah, no persistent export, explicit share/cancel/unsupported and portal assets\n"
+  },
+  {
+    "file": "certificates-inspector-stage1-check.js",
+    "ok": true,
+    "output": "PASS v11.8 eligibility, certificates history, offline and unobstructed inspector\n"
+  },
+  {
+    "file": "circle-analytics-check.js",
+    "ok": true,
+    "output": "Circle analytics & reports checks passed for v10.10.0\n"
+  },
+  {
+    "file": "circle-backup-1110-check.js",
+    "ok": true,
+    "output": "PASS 11.10 backup restores validated guardian warnings, reviews, Quran corrections and detects failed save\n"
+  },
+  {
+    "file": "circle-management-1110-check.js",
+    "ok": true,
+    "output": "PASS 11.10 group recitation, honest attendance, excuses, stages, conflicts, preserved approved records, offline assets\n"
+  },
+  {
+    "file": "complete-corrections-sync-health-check.js",
+    "ok": true,
+    "output": "PASS complete-corrections-sync-health: 22/22 WhatsApp+HTML, review grades, XSS escape, RTL vector print and owner state\n"
+  },
+  {
+    "file": "design-bridge-check.js",
+    "ok": true,
+    "output": "PASS single design bridge asset references\nPASS native student/session/error/guardian feature assets preserved\nPASS public and guardian portals linked without student ID or PIN\nPASS no imported mock student, teacher, circle data\nPASS design switch uses own preference only\nPASS menu proxies original actions and avoids role bypass\nPASS presentation has no Quran rewriting\nPASS cache-safe offline assets listed in both groups\nPASS guardian/guest existing pages receive only a style layer\nPASS new visual files have no broken source links\nOK Design Bridge tests: 10/10\n"
+  },
+  {
+    "file": "error-marking-stage1.3-whatsapp-check.js",
+    "ok": true,
+    "output": "PASS error-marking-stage1.3-whatsapp-check\n"
+  },
+  {
+    "file": "followup-center-check.js",
+    "ok": true,
+    "output": "Teacher follow-up center checks passed for v10.10.0\n"
+  },
+  {
+    "file": "goal-planning-calculation-check.js",
+    "ok": true,
+    "output": "PASS goal-planning-calculation-check (verified modern and legacy learning evidence, 5 goal types, real schedules, consent)\n"
+  },
+  {
+    "file": "goal-planning-mobile-hotfix-check.js",
+    "ok": true,
+    "output": "PASS goal-planning-mobile-hotfix-check (real cache refs, mobile actions, legacy grades)\n"
+  },
+  {
+    "file": "goal-planning-stage1-check.js",
+    "ok": true,
+    "output": "PASS goal-planning-stage1-check\n"
+  },
+  {
+    "file": "goal-planning-stage2-check.js",
+    "ok": true,
+    "output": "PASS goal-planning-stage2-check (24.8/25/50/75/100, projected date, guardian, overdue notice, failed grade, consent, offline wiring)\n"
+  },
+  {
+    "file": "grade-controls-check.js",
+    "ok": true,
+    "output": "Assessment controls checks passed for v10.10.0\n"
+  },
+  {
+    "file": "guardian-arabic-digits-check.js",
+    "ok": true,
+    "output": "guardian-arabic-digits-check: PASS\n"
+  },
+  {
+    "file": "guardian-communication-check.js",
+    "ok": true,
+    "output": "guardian communication check: PASS\n"
+  },
+  {
+    "file": "guardian-engagement-stage4.1-check.js",
+    "ok": true,
+    "output": "PASS guardian-engagement-stage4.1-check\n"
+  },
+  {
+    "file": "guardian-family-linking-check.js",
+    "ok": true,
+    "output": "guardian-family-linking-check: PASS\n"
+  },
+  {
+    "file": "guardian-login-entry-check.js",
+    "ok": true,
+    "output": "guardian-login-entry-check PASS\n"
+  },
+  {
+    "file": "guardian-messages-stage1-check.js",
+    "ok": true,
+    "output": "PASS guardian-messages-stage1: tenant+PIN isolation, RLS, teacher inbox/reply, guarded forms, offline, SW and additive SQL\n"
+  },
+  {
+    "file": "guardian-phone-login-check.js",
+    "ok": true,
+    "output": "Guardian phone + PIN Stage 3 checks passed for v10.10.0\n"
+  },
+  {
+    "file": "guardian-portal-check.js",
+    "ok": true,
+    "output": "Guardian & Student Portal Stage 1 checks passed for v10.10.0\n"
+  },
+  {
+    "file": "guardian-portal-live-check.js",
+    "ok": true,
+    "output": "Guardian & Student Portal Stage 2 checks passed for v10.10.0\n"
+  },
+  {
+    "file": "guardian-report-polish-check.js",
+    "ok": true,
+    "output": "guardian-report-polish-check: PASS\n"
+  },
+  {
+    "file": "guardian-reset-flow-check.js",
+    "ok": true,
+    "output": "Guardian reset request Stage 3.3 checks passed for v10.10.0\n"
+  },
+  {
+    "file": "guardian-score-check.js",
+    "ok": true,
+    "output": "guardian score/report checks passed for v10.10.0\n"
+  },
+  {
+    "file": "guardian-student-switcher-check.js",
+    "ok": true,
+    "output": "guardian-student-switcher-check: PASS\n"
+  },
+  {
+    "file": "guardian-tahfeez-check.js",
+    "ok": true,
+    "output": "Guardian Tahfeez Center checks passed\n"
+  },
+  {
+    "file": "guardian-tahfeez-layout-check.js",
+    "ok": true,
+    "output": "Guardian Tahfeez mobile layout checks passed\n"
+  },
+  {
+    "file": "guardian-tahfeez-stage2-check.js",
+    "ok": true,
+    "output": "Guardian Tahfeez Center Stage 2 checks passed\n"
+  },
+  {
+    "file": "guest-role-update-batch-check.js",
+    "ok": true,
+    "output": "PASS guest-role-update-batch: isolated public guest, bookmarks and resume, Google opt-in RLS, owner scope, explicit PWA update\n"
+  },
+  {
+    "file": "imam-absence-makeup-check.js",
+    "ok": true,
+    "output": "PASS Strict real-calendar date parsing\nPASS Missing student/date rejected\nPASS Unexcused absence keeps no fabricated excuse\nPASS Excused absence requires meaningful reason\nPASS Excuse truncated and control characters removed\nPASS Unplanned absence never registers a planned date\nPASS Postponement and makeup plan must be on later valid dates\nPASS Only same-student prior actual absence can be linked\nPASS No linking a future absence to an earlier session\nPASS Existing makeup link survives edit without duplicate rejection\nPASS Previously compensated absence cannot silently change status\nPASS Available absence list filters siblings and completed links\nPASS Holiday has no phantom makeup fields\nPASS An unrelated attended session stays ordinary\nPASS Assignment alone cannot be mistaken for completed makeup recitation\nPASS Source wiring provides controls and offline assets\nPASS Save: absence only stores attendance/plan, never fake Quran section\nPASS Save: linked makeup without recitation evidence is rejected before saving\nPASS Save: linked attended makeup leaves original absence untouched\nPASS Save: duplicate makeup link rejected before any changes\nPASS Save: existing absence is updated by ID, never duplicated\nPASS Save: failed persistence rolls the entire session change back\nPASS Save: invalid excuse does not invoke persistence\nPASS Portable backup preserves attendance, excuse, planned date, makeup link\nPASS Portable backup remaps imported invalid session IDs consistently\nPASS Portable backup rejects duplicate/foreign/orphan makeup refs\nImam absence/makeup: 26 tests passed\n"
+  },
+  {
+    "file": "imam-board-beta6-corpus-check.js",
+    "ok": true,
+    "output": "PASS board beta.6: source-specific parsing, verse IDs, 7 reference comparisons, duplicates, gaps, HTML safety, gzip import, rights gate, offline wiring\n"
+  },
+  {
+    "file": "imam-board-mobile-entry-check.js",
+    "ok": true,
+    "output": "PASS mobile board entry, permissions, account switching, click, offline asset freshness\n"
+  },
+  {
+    "file": "imam-board-native-editor-check.js",
+    "ok": true,
+    "output": "PASS board beta.3: account-scoped newest snapshot, denied guest/pending roles, unchanged original session editor, explicit official save and Quran corrections\n"
+  },
+  {
+    "file": "imam-board-official-science-source-check.js",
+    "ok": true,
+    "output": "PASS official-science source: restricted source, invalid source/ayah rejected, HTML stripped, word match, CSV quoted, IndexedDB wire, display opt-in\n"
+  },
+  {
+    "file": "imam-board-preparation-safety-check.js",
+    "ok": true,
+    "output": "PASS board prep: stage validation, save/read, template immutability, account isolation, display whitelist and heartbeat\n"
+  },
+  {
+    "file": "imam-board-science-and-display-check.js",
+    "ok": true,
+    "output": "PASS board beta.4: scoped scientific cards, source/rights validation, protected screen sharing, Quran-range drawing parity\n"
+  },
+  {
+    "file": "imam-board-session-group-runtime-check.js",
+    "ok": true,
+    "output": "PASS board runtime: idempotent local save, two students isolated, teacher isolation, native official save explicit, mismatch blocked\n"
+  },
+  {
+    "file": "imam-makeup-agenda-check.js",
+    "ok": true,
+    "output": "PASS read-only plan counts overdue and future\nPASS due today counted separately\nPASS valid same-student linked makeup excludes pending\nPASS cross-student link never completes a plan\nPASS invalid linkage before original absence never completes\nPASS orphan completion link flags issue\nPASS duplicate links flag issue but do not double count pending\nPASS archived students omitted by caller and retain their records\nPASS visibility filters restrict students\nPASS unplanned absence not a booked makeup\nPASS undated makeup flagged, not included in false results\nPASS invalid target before original flagged\nPASS calendar validates February 30\nPASS no data mutation\nPASS student names escaped in HTML\nPASS no records displays empty-state note\nPASS teacher followup actually invokes existing module\nPASS unique followup center section\nPASS no data write, network, or storage APIs in agenda\nOK imam makeup agenda: 19/19\n"
+  },
+  {
+    "file": "imam-smart-board-check.js",
+    "ok": true,
+    "output": "PASS Imam smart board foundational wiring, syntax, safe display channel, account-scoped draft safety\n"
+  },
+  {
+    "file": "imam-teaching-insights-check.js",
+    "ok": true,
+    "output": "PASS reads only current visible students\nPASS counts open distinct error keys, not occurrences\nPASS detects old unanswered errors by last observed day\nPASS does not group separate surah-verse locations\nPASS records today included but not future-dated sessions\nPASS mastered followup closes historical error\nPASS new occurrence after mastery reopens the error\nPASS stabilize retains error open\nPASS absent session errors are not counted\nPASS no sharing sibling data by parent or phone\nPASS excludes archived and stopped students supplied by caller\nPASS deduplicates visible student IDs\nPASS no data source returns no phantom errors\nPASS does not mutate student or session source arrays\nPASS respects unknown day by choosing local current day\nPASS calendar rejects invalid days\nPASS missing error engine is visible as unavailable, not a false zero\nPASS type distribution is derived only from open errors\nPASS no student names or numbers in copyable academy summary\nPASS HTML escapes malicious student or error names\nPASS student next-action tip is escaped and teacher-controlled\nPASS empty tip does not add misleading action\nPASS focus prioritizes repeated errors\nPASS visible filter context appears in method note\nPASS center uses its visible filtered rows and not entire student registry\nPASS only one new panel exists inside the existing center\nPASS new assets loaded in correct order\nPASS new module contains no storage, network, mutation, or secret use\nPASS there is no automatic Quran or tajweed grading\nOK teaching intervention insights: 29/29\n"
+  },
+  {
+    "file": "imam-teaching-visibility-hotfix-check.js",
+    "ok": true,
+    "output": "PASS initial panel has visible loading/status message, not hidden\nPASS panel loader does not silently hide rendering problems\nPASS fresh service worker release and asset versions are consistent\nPASS successful render unhides educational panel\nPASS missing module shows retry action and does not hide panel\nPASS rendering exception is visible but original center remains operational\nOK visibility/diagnostic hotfix 6/6\n"
+  },
+  {
+    "file": "integrated-teacher-brief-check.js",
+    "ok": true,
+    "output": "PASS No student means no brief\nPASS Empty student has explicit empty states and no invented score\nPASS Archived students do not receive active session brief\nPASS Last absent day and last attended assignments are separate\nPASS Future-dated sessions and tasks do not contaminate summary\nPASS Sibling student isolation\nPASS Existing error/revision engine values read without mutation\nPASS Only genuine numeric assessment scores included\nPASS Missing review dates do not become due\nPASS HTML output escapes untrusted student notes and tasks\nPASS Index and service worker wire both new assets only once\nIntegrated teacher brief: 11 tests passed\n"
+  },
+  {
+    "file": "integration-asset-load-check.js",
+    "ok": true,
+    "output": "OK assets declaration checks: 18/18\n"
+  },
+  {
+    "file": "interactive-error-marking-check.js",
+    "ok": true,
+    "output": "Interactive error marking checks passed\n"
+  },
+  {
+    "file": "interactive-error-marking-hotfix-check.js",
+    "ok": true,
+    "output": "Interactive error marking Stage 1.1 hotfix checks passed\n"
+  },
+  {
+    "file": "interactive-error-marking-share-hotfix-check.js",
+    "ok": true,
+    "output": "Interactive error marking Stage 1.3 share/WhatsApp hotfix checks passed\n"
+  },
+  {
+    "file": "interactive-error-marking-stage2-check.js",
+    "ok": true,
+    "output": "PASS interactive-error-marking-stage2-check\n"
+  },
+  {
+    "file": "interactive-error-marking-stage3-check.js",
+    "ok": true,
+    "output": "PASS interactive-error-marking-stage3-check\n"
+  },
+  {
+    "file": "maintenance-audit-11111-check.js",
+    "ok": true,
+    "output": "PASS 11.11.1 backup certificate/archive preservation, safe academic progress and ISO week validation\n"
+  },
+  {
+    "file": "mobile-home-beta10-check.js",
+    "ok": true,
+    "output": "PASS beta10 phone homepage screenshot regression: toast, duplicate role title, contextual actions, accessible original routes, nav safe area\n"
+  },
+  {
+    "file": "mobile-navigation-check.js",
+    "ok": true,
+    "output": "mobile-navigation-check: PASS\n"
+  },
+  {
+    "file": "mobile-navigation-runtime-check.js",
+    "ok": true,
+    "output": "mobile-navigation-runtime-check: PASS\n"
+  },
+  {
+    "file": "mobile-refresh-safety-check.js",
+    "ok": true,
+    "output": "mobile-refresh-safety-check: PASS\n"
+  },
+  {
+    "file": "mushaf-all-entries-review9-hotfix2-check.js",
+    "ok": true,
+    "output": "PASS unified Mushaf direct API, teacher, review, legacy page opens, embedded HD 604 and close without legacy reader\n"
+  },
+  {
+    "file": "mushaf-unified-entry-review9-hotfix1-check.js",
+    "ok": true,
+    "output": "PASS single Mushaf entry: old tab unreachable, teacher shortcuts redirect, other navigation stable\n"
+  },
+  {
+    "file": "offline-auth-runtime-check.js",
+    "ok": true,
+    "output": "offline-auth-runtime-check: PASS\n"
+  },
+  {
+    "file": "offline-instant-shell-check.js",
+    "ok": true,
+    "output": "offline-instant-shell-check: PASS\n"
+  },
+  {
+    "file": "offline-reliability-check.js",
+    "ok": true,
+    "output": "offline-reliability-check: PASS\n"
+  },
+  {
+    "file": "offline-safety-snapshot-check.js",
+    "ok": true,
+    "output": "offline safety snapshot check: PASS\n"
+  },
+  {
+    "file": "offline-style-fallback-check.js",
+    "ok": true,
+    "output": "offline style fallback check: PASS\n"
+  },
+  {
+    "file": "offline-whatsapp-check.js",
+    "ok": true,
+    "output": "offline-whatsapp-check: PASS\n"
+  },
+  {
+    "file": "owner-upgrade-consistency-check.js",
+    "ok": true,
+    "output": "PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified current root/index and core scripts\n"
+  },
+  {
+    "file": "parent-audio-stage4-check.js",
+    "ok": true,
+    "output": "PASS parent-audio-stage4-check\n"
+  },
+  {
+    "file": "placement-center-1191-check.js",
+    "ok": true,
+    "output": "PASS placement-center-1191: division, exact grading, no false passes, retry history, assets, guardian sound/mute\n"
+  },
+  {
+    "file": "platform-design-system-check.js",
+    "ok": true,
+    "output": "PASS: beta7 design system, offline wiring, RTL/mobile navigation, public pages, roles isolation, no schema change\n"
+  },
+  {
+    "file": "platform-visual-refresh-check.js",
+    "ok": true,
+    "output": "PASS beta8 visible homepage refresh: roles, existing destinations, board permission check, 2-column phone layout, dark header/dock, PWA cache\n"
+  },
+  {
+    "file": "platform-workflow-beta9-check.js",
+    "ok": true,
+    "output": "PASS beta9 workspace: official save parity, safe keyboard/mobile dock, role actions, offline cache pinning\n"
+  },
+  {
+    "file": "preview-ui-review-guard.js",
+    "ok": true,
+    "output": "PASS preview UI: safe board return, accessible tools, teacher-first, all routes, wide surah picker, opt-in click audio\n"
+  },
+  {
+    "file": "progress-bridge-1111-check.js",
+    "ok": true,
+    "output": "PASS 11.11 scoped progress bridge: roster filtering, server grants, audit visibility integration\n"
+  },
+  {
+    "file": "pwa-automatic-restart-check.js",
+    "ok": true,
+    "output": "pwa-automatic-restart-check: PASS\n"
+  },
+  {
+    "file": "pwa-pull-refresh-check.js",
+    "ok": true,
+    "output": "pwa-pull-refresh-check: PASS\n"
+  },
+  {
+    "file": "quran-coverage-progress-check.js",
+    "ok": true,
+    "output": "PASS: Surah metadata complete: 114 surahs 6236 ayat\nPASS: A student without sessions shows zero, not fabricated memorization\nPASS: Counts overlapping verified ranges once\nPASS: Assignments and unevaluated attendance never count as memorized\nPASS: Only actual recitation with teacher score or grade counts as review\nPASS: Absent student or another student cannot contribute reviewed ayat\nPASS: Grades without an explicit actually recited range do not imply coverage\nPASS: No score 110, ambiguous grade, malformed ranges or mismatched surah ID accepted\nPASS: Quarter and juz boundaries are driven by verified QuranStructure refs\nPASS: Hizb and quarter counts across several juz remain consistent\nPASS: Corrupted Quran quarter metadata suppresses estimated juz breakdown\nPASS: Archived student history remains counted and untouched\nPASS: Untrusted displayed Quran chapter strings are HTML-escaped\nPASS: No Quran source or verified sections means no misleading zero mastery\nPASS: Existing student progress dashboard embeds same read-only module\nquran-coverage-progress-check: 15 cases passed\n"
+  },
+  {
+    "file": "quran-structure-check.js",
+    "ok": true,
+    "output": "Quran structure checks passed: 30 juz / 60 hizb / 240 quarters\n"
+  },
+  {
+    "file": "recitation-carry-check.js",
+    "ok": true,
+    "output": "Recitation carry-forward checks passed for v10.10.0\n"
+  },
+  {
+    "file": "release-consistency-beta16-check.js",
+    "ok": true,
+    "output": "PASS release consistency beta17: app version, all changed asset URLs, critical shell, offline public pages\n"
+  },
+  {
+    "file": "revision-text-boot-check.js",
+    "ok": true,
+    "output": "Stage 11.8.1 review text / snapshot boot tests passed\n"
+  },
+  {
+    "file": "role-home-tab-visibility-hotfix-check.js",
+    "ok": true,
+    "output": "PASS role-home-tab-visibility-hotfix: home-only workspace, active route, no floating add collision, cache refresh\n"
+  },
+  {
+    "file": "role-ux-errors-batch-check.js",
+    "ok": true,
+    "output": "PASS role-ux-errors-batch: guided roles, no duplicates, privacy copy, 6 separate high-resolution PNG pages, staged errors, legacy compatibility, WA unchanged\n"
+  },
+  {
+    "file": "session-draft-timer-regression-check.js",
+    "ok": true,
+    "output": "PASS session draft timer: success, pending callback, failed save, later edit\n"
+  },
+  {
+    "file": "session-intelligence-119-check.js",
+    "ok": true,
+    "output": "PASS 11.9 new-only/review/mixed/placement/followup, warnings, Quran bounds, save safety, offline assets\n"
+  },
+  {
+    "file": "smart-revision-stage1-check.js",
+    "ok": true,
+    "output": "PASS: teacher shell loads Smart Revision\nPASS: teacher shell loads Smart Revision CSS\nPASS: guardian portal has Smart Revision card\nPASS: guardian snapshot contains smart revision data\nPASS: guardian renderer exposes smart-review practice bridge\nPASS: service worker caches Smart Revision assets\nPASS: Smart Revision engine exports notebook API\nPASS: repeated corrected location is aggregated persistently\nPASS: resolved location uses 3-day first spaced interval\nPASS: unresolved location becomes due next day\nPASS: guardian revision payload is bounded and structured\nSmart Revision Stage 1 checks complete.\n"
+  },
+  {
+    "file": "static-check.js",
+    "ok": true,
+    "output": "Static checks passed for Imam Academy v11.2.0\n"
+  },
+  {
+    "file": "student-finance-stage1-check.js",
+    "ok": true,
+    "output": "PASS student-finance-stage1-check: month boundaries, paid/owed, billing absence, closing freeze, carry-forward, offline/save, backup, portal isolation\n"
+  },
+  {
+    "file": "student-finance-stage2-check.js",
+    "ok": true,
+    "output": "PASS student-finance-stage2-check: direct visible entry, statement, print, WhatsApp, guardian PIN boundary, SQL restrictions and SW cache\n"
+  },
+  {
+    "file": "student-progress-check.js",
+    "ok": true,
+    "output": "student-progress-check: PASS\n"
+  },
+  {
+    "file": "supervision-roster-permissions-stage2-check.js",
+    "ok": true,
+    "output": "PASS supervision-roster-permissions-stage2: tenant-scoped students, controlled progress/ratings, owner ACL, batch roster, audit, cache, no destructive SQL\n"
+  },
+  {
+    "file": "supervision-visible-entry-hotfix-check.js",
+    "ok": true,
+    "output": "PASS supervision-home-entry: first card on Premium home, visible CSS, owner, grants, deny, no duplicate\n"
+  },
+  {
+    "file": "surah-picker-beta17-check.js",
+    "ok": true,
+    "output": "PASS beta17 Surah picker: RTL, 114 canonical surahs, typed/voice normalization, mobile keyboard, original save field, offline asset pinning\n"
+  },
+  {
+    "file": "surah-picker-focus-beta18-check.js",
+    "ok": true,
+    "output": "PASS beta18: Android search-focus gesture and legacy-scroll isolation\n"
+  },
+  {
+    "file": "teacher-rating-supervision-stage1-check.js",
+    "ok": true,
+    "output": "PASS teacher-rating-supervision-stage1: role grants, audit, PIN, private RLS, SW, DOM isolation and no blind score\n"
+  },
+  {
+    "file": "v11-premium-ui-check.js",
+    "ok": true,
+    "output": "v11-premium-ui-check: PASS\n"
+  },
+  {
+    "file": "v11-premium-ui-stage2-check.js",
+    "ok": true,
+    "output": "v11-premium-ui-stage2-check: PASS\n"
+  },
+  {
+    "file": "version-debt-beta11-check.js",
+    "ok": true,
+    "output": "version-debt-beta11-check: PASS\n"
+  }
+]

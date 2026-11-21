@@ -21,7 +21,7 @@
     if(feedback)feedback.textContent='جارٍ تحميل الرسائل…';
     try{const data=await rpc('guardian_message_session_list',{p_session:s,p_student_ref:r});if(current!==requestId||s!==token||r!==studentRef)return;
       const rows=Array.isArray(data?.messages)?data.messages:[];$('portalMessageList').innerHTML=rows.slice(0,60).map(m=>`<article class="msg-item"><div class="msg-item-head"><b>${esc(categories[m.category]||'عامة')}</b><span class="msg-state ${esc(m.status)}">${esc(status[m.status]||'جديدة')}</span></div><small>${esc(date(m.created_at))}</small><p>${esc(m.message)}</p>${m.reply?`<div class="msg-reply"><b>رد المحفظ:</b><p>${esc(m.reply)}</p></div>`:''}</article>`).join('')||'<p class="msg-empty">لا توجد رسائل بعد. اكتب رسالتك الأولى للمحفظ.</p>';
-      if(feedback)feedback.textContent=`${rows.length} رسالة · المحفظ يرد من صندوق الوارد الخاص به`;
+      if(feedback)feedback.textContent=`${rows.length} رسالة معروضة (حتى ٦٠ من الأحدث) · المحفظ يرد من صندوق الوارد`;
     }catch(err){console.warn('[guardian messages]',err);if(current===requestId&&feedback)feedback.textContent='تعذر تحميل الرسائل. يلزم اتصال بالإنترنت وتفعيل دخول ولي الأمر.';}
   }
   async function send(){if(busy||!token||!studentRef)return;const category=$('portalMessageCategory')?.value,body=String($('portalMessageBody')?.value||'').trim(),feedback=$('portalMessageFeedback');

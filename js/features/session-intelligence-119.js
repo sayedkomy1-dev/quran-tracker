@@ -39,7 +39,7 @@
   const uniqueId=()=>root.Utils?.makeId?.('range119')||`range119-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   const positive=n=>Number.isInteger(Number(n))&&Number(n)>0;
   function quran(){return Array.isArray(g.S)?g.S:(typeof S!=='undefined'?S:[]);}
-  function rangeValid(item){const surah=quran().find(x=>x.n===item?.surah);return !!surah&&positive(item.from)&&positive(item.to)&&item.from<=item.to&&item.to<=surah.a;}
+  function rangeValid(item){const surah=quran().find(x=>x.n===item?.surah);return !!surah&&positive(item.from)&&positive(item.to)&&Number(item.from)<=Number(item.to)&&Number(item.to)<=surah.a;}
   function normalizedRange(item){return {id:String(item.id||uniqueId()),type:String(item.type||'rec'),surahId:quran().findIndex(x=>x.n===item.surah)+1,surah:item.surah,from:Number(item.from),to:Number(item.to),score:item.score!==null&&item.score!==undefined&&String(item.score).trim()!==''&&Number.isFinite(Number(item.score))?Math.max(0,Math.min(100,Number(item.score))):null,decision:String(item.decision||''),notes:String(item.notes||'').slice(0,500)};}
   function studentId(){return String(by('sesSt')?.value||'');}
   function sessionKey(){return `${studentId()}|${by('sesDate')?.value||''}`;}
@@ -69,11 +69,12 @@
     const checks=[requirement('student','تحديد الطالب',!!d.studentId,'critical','sesSt'),requirement('date','تاريخ الحصة',!!by('sesDate')?.value,'critical','sesDate')];
     if(d.status!=='حضر')return result(checks,kind);
     const skip=d.notPerformed||{},extras=Array.isArray(d.extraRecitations)?d.extraRecitations:[];
-    const has=k=>!!d[k]?.surah||extras.some(x=>x.type===k&&rangeValid(x))||!!d.actualRecitation?.[k]?.surah;
+    const has=k=>rangeValid(d[k])||extras.some(x=>x.type===k&&rangeValid(x))||rangeValid(d.actualRecitation?.[k]);
     const hasReview=()=>has('rec')||has('far')||!!d.juz?.chips?.length||!!d.surahReview?.chips?.length;
     const hasNew=has('new');
     const previous=(app().sessions||[]).filter(x=>x.studentId===d.studentId&&x.status==='حضر'&&String(x.sessionDate||x.date||'').slice(0,10)<String(by('sesDate')?.value||'')).sort((a,b)=>String(a.sessionDate||a.date||'').localeCompare(String(b.sessionDate||b.date||''))).at(-1);
-    const hasGrade=k=>!!d[k]?.grade||!!d.prevGrades?.[k]||!!d.reviewDecisions?.[k]||extras.some(x=>x.type===k&&(x.decision||x.score!==null&&x.score!==undefined));
+    const grade=v=>typeof v==='string'&&!!v.trim();
+    const hasGrade=k=>grade(d[k]?.grade)||grade(d.prevGrades?.[k])||!!DECISIONS[d.reviewDecisions?.[k]]||extras.some(x=>x.type===k&&rangeValid(x)&&(!!DECISIONS[x.decision]||Number.isFinite(x.score)&&x.score>=0&&x.score<=100));
     const add=k=>{
       if(skip[k])return;
       checks.push(requirement('range-'+k,`تحديد موضع ${ACT[k]}`,has(k),'important',k+'-s'));
@@ -93,7 +94,7 @@
       const target=kind==='placement'?'placement':'exam';
       const relevant=extras.filter(x=>x.type===target);
       checks.push(requirement('tested-range','إضافة موضع الاختبار',relevant.length>0,'important','im119AddRange'));
-      if(relevant.length)checks.push(requirement('tested-score','تقييم جميع مواضع الاختبار',relevant.every(x=>rangeValid(x)&&x.score!==null&&!!x.decision),'important','im119ExtraList'));
+      if(relevant.length)checks.push(requirement('tested-score','تقييم جميع مواضع الاختبار',relevant.every(x=>rangeValid(x)&&Number.isFinite(x.score)&&x.score>=0&&x.score<=100&&!!DECISIONS[x.decision]),'important','im119ExtraList'));
     }
     if(previous&&['new','rec','far'].some(k=>!!previous[k]&&!!skip[k]))checks.push(requirement('skip-reason','توضيح سبب عدم تنفيذ التكليف المقرر',!!String(d.skipReason||'').trim(),'important','im119NoRecitation'));
     if(kind==='followup')checks.push(requirement('followup-note','تحديد سبب عدم إجراء التسميع',!!skip.new&&!!skip.rec&&!!String(d.skipReason||'').trim(),'important','im119NoRecitation'));
@@ -116,7 +117,7 @@
       const idx=typeof g.getSurahIndex==='function'?g.getSurahIndex(surah):quran().findIndex(x=>x.n===surah);
       const label=ACT[k];
       if(idx<0){checks.push(requirement('raw-surah-'+k,`${label}: ${surah?'اسم السورة غير صحيح':'اختر السورة'}`,false,'critical',k+'-s'));continue;}
-      if(!full){for(const [suffix,val,which] of [['f',f,'البداية'],['t',t,'النهاية']])if(!val||!positive(val)||Number(val)>quran()[idx]?.a)checks.push(requirement('raw-'+suffix+'-'+k,`${label}: ${!val?'حدد آية '+which:'آية '+which+' خارج نطاق السورة'}`,false,'critical',k+'-'+suffix));}
+      if(!full){if(positive(f)&&positive(t)&&Number(f)>Number(t))checks.push(requirement('raw-order-'+k,`${label}: آية النهاية تسبق البداية`,false,'critical',k+'-t'));for(const [suffix,val,which] of [['f',f,'البداية'],['t',t,'النهاية']])if(!val||!positive(val)||Number(val)>quran()[idx]?.a)checks.push(requirement('raw-'+suffix+'-'+k,`${label}: ${!val?'حدد آية '+which:'آية '+which+' خارج نطاق السورة'}`,false,'critical',k+'-'+suffix));}
     }
     return result(checks,base.kind);
   }
@@ -214,9 +215,9 @@
   function showWarning(result,action){
     if(state.warning)return;state.warning=true;
     const prev=by('im119Warning');prev?.remove();const critical=result.critical.length>0;
-    const auth=g.WeLiveQuranAuth;const canOverride=!!auth?.isActive?.()&&['owner','teacher'].includes(String(auth.getAccess?.()?.role||''));
+    const auth=g.WeLiveQuranAuth;const canOverride=!['send','short','detailed'].includes(action)&&!!auth?.isActive?.()&&['owner','teacher'].includes(String(auth.getAccess?.()?.role||''));
     const box=document.createElement('div');box.id='im119Warning';box.className='mo open im119-dialog';
-    box.innerHTML=`<div class="mo-box" role="alertdialog" aria-modal="true" aria-labelledby="im119WarningTitle"><h3 id="im119WarningTitle">⚠️ ${['send','short','detailed'].includes(action)?'تحذير: تقرير ولي الأمر غير مكتمل':'تنبيه مهم: بيانات الحصة غير مكتملة'}</h3><p>انتبه يا شيخنا، راجع النواقص التالية قبل المتابعة:</p><div class="im119-warning-list">${result.outstanding.map(x=>`<button type="button" data-missing-target="${escape(x.target)}">${escape(x.label)} ${x.severity==='critical'?'(نقص حرج)':''} ← فتح الحقل</button>`).join('')}</div>${!critical?'<label>سبب اعتماد النواقص (مطلوب للتجاوز)<textarea id="im119OverrideReason" rows="2" maxlength="250"></textarea></label>':''}<div class="im119-actions"><button type="button" class="btn btn-g" data-action="review">استكمال البيانات</button><button type="button" class="btn btn-out" data-action="draft">حفظ كمسودة</button>${critical||!canOverride?'':`<button type="button" class="btn btn-wa" data-action="approve">${['send','short','detailed'].includes(action)?'متابعة بعد التأكيد':'اعتماد رغم التنبيه'}</button>`}<button type="button" class="btn btn-out" data-action="cancel">إلغاء</button></div></div>`;document.body.appendChild(box);
+    box.innerHTML=`<div class="mo-box" role="alertdialog" aria-modal="true" aria-labelledby="im119WarningTitle"><h3 id="im119WarningTitle">⚠️ ${['send','short','detailed'].includes(action)?'تحذير: تقرير ولي الأمر غير مكتمل':'تنبيه مهم: بيانات الحصة غير مكتملة'}</h3><p>انتبه يا شيخنا، راجع النواقص التالية قبل المتابعة:</p><div class="im119-warning-list">${result.outstanding.map(x=>`<button type="button" data-missing-target="${escape(x.target)}">${escape(x.label)} ${x.severity==='critical'?'(نقص حرج)':''} ← فتح الحقل</button>`).join('')}</div>${!critical&&canOverride?'<label>سبب اعتماد النواقص (مطلوب للتجاوز)<textarea id="im119OverrideReason" rows="2" maxlength="250"></textarea></label>':''}<div class="im119-actions"><button type="button" class="btn btn-g" data-action="review">استكمال البيانات</button><button type="button" class="btn btn-out" data-action="draft">حفظ كمسودة</button>${critical||!canOverride?'':`<button type="button" class="btn btn-wa" data-action="approve">${['send','short','detailed'].includes(action)?'متابعة بعد التأكيد':'اعتماد رغم التنبيه'}</button>`}<button type="button" class="btn btn-out" data-action="cancel">إلغاء</button></div></div>`;document.body.appendChild(box);
     function close(){box.remove();state.warning=false;}
     box.querySelectorAll('[data-missing-target]').forEach(btn=>btn.onclick=()=>{const target=btn.dataset.missingTarget;close();focusMissing(target);});
     box.querySelectorAll('[data-action]').forEach(btn=>btn.onclick=()=>{
@@ -251,7 +252,7 @@
     let e=validateCurrent();
     if(['send','short','detailed'].includes(action)){
       const st=(app().students||[]).find(x=>String(x.id)===studentId());
-      if(st&&typeof g.normalizeWhatsAppPhone==='function'&&!/^20\d{10}$/.test(g.normalizeWhatsAppPhone(st.phone||''))){g.toast?.(st.phone?'رقم واتساب ولي الأمر غير صحيح. افتح ملف الطالب وصحح الرقم ثم أعد الإرسال.':'رقم واتساب ولي الأمر غير مسجل. افتح ملف الطالب وأضف الرقم ثم أعد الإرسال.','error');return;}
+      if(st&&typeof g.normalizeWhatsAppPhone==='function'&&!/^20(10|11|12|15)\d{8}$/.test(g.normalizeWhatsAppPhone(st.phone||''))){g.toast?.(st.phone?'رقم واتساب ولي الأمر غير صحيح. افتح ملف الطالب وصحح الرقم ثم أعد الإرسال.':'رقم واتساب ولي الأمر غير مسجل. افتح ملف الطالب وأضف الرقم ثم أعد الإرسال.','error');return;}
     }
     // Play synchronously within the click gesture, even if the report is complete.
     // A stronger sequence alerts the teacher when the report is incomplete.

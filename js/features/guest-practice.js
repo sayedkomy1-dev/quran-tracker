@@ -5,16 +5,16 @@
  const SB_URL='https://svtcntalwfmexthcnvqe.supabase.co';
  const SB_KEY='sb_publishable_qYw8VdT1IXQ5WsdB2rhtEA_F6dSAN-j';
  const MAX_BOOKMARKS=120;
- let client=null,user=null,remoteTimer=null,inFlight=false;
+ let client=null,user=null,remoteTimer=null,inFlight=false,localOK=true;
  const def=()=>({id:g.crypto?.randomUUID?.()||'guest-'+Date.now().toString(36),nickname:'',last:null,bookmarks:[],updatedAt:0});
  function safe(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
  function read(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(!x||typeof x!=='object'||!x.id)return def();return {...def(),...x,bookmarks:Array.isArray(x.bookmarks)?x.bookmarks.slice(0,MAX_BOOKMARKS):[]};}catch(_){return def();}}
  let state=read();
  function bindPlayerContext(){g.ImamGuardianTahfeez?.setContext?.({academy:{name:'التحفيظ الحر'},student:{name:'ضيف-'+state.id,group:'',guardian:''},learning:{}});}
- function localSave(){state.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state));}catch(_){}draw();if(user)scheduleCloud();}
+ function localSave(){state.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state));localOK=true;}catch(_){localOK=false;}draw();if(user)scheduleCloud();}
  function nameFor(s){const option=$('tahfeezSurah')?.querySelector(`option[value="${Number(s)}"]`);return option?.textContent?.replace(/^\d+\.\s*/, '')||`سورة رقم ${Number(s)}`;}
  function draw(){
-   $('guestSaveMode').textContent=user?'المزامنة بجوجل عند الاتصال':'محفوظ على هذا الجهاز';
+   $('guestSaveMode').textContent=!localOK?'تعذر الحفظ المحلي — لا تغلق الصفحة':user?'المزامنة بجوجل عند الاتصال':'محفوظ على هذا الجهاز';
    const l=state.last;
    $('guestLast').textContent=l?`آخر موضع: ${nameFor(l.chapter)} — الآية ${l.ayah} · ${new Date(l.updatedAt||state.updatedAt).toLocaleDateString('ar-EG')}`:'لم تبدأ أي جلسة بعد.';
    $('guestContinue').disabled=!l;
@@ -31,7 +31,7 @@
     if(!surah)return;g.ImamGuardianTahfeez?.openCorrectionRange?.({surah,from:x.ayah,to:x.ayah,practiceMode:'listen'});}
  function addBookmark(){const chapter=Number($('tahfeezSurah')?.value||1),ayah=Number($('tahfeezNowAyah')?.textContent?.match(/\d+/)?.[0]||1);if(!Number.isInteger(chapter)||chapter<1||chapter>114||!Number.isInteger(ayah)||ayah<1)return;
    if(!state.bookmarks.some(x=>x.chapter===chapter&&x.ayah===ayah)){state.bookmarks.unshift({chapter,ayah,at:Date.now()});state.bookmarks=state.bookmarks.slice(0,MAX_BOOKMARKS);localSave();}
-   const alert=g.document.getElementById('guestBookmarkToast')||g.document.createElement('div');alert.id='guestBookmarkToast';alert.className='tahfeez-toast show';alert.textContent='🔖 تم حفظ العلامة في سجلك';g.document.body.append(alert);g.setTimeout(()=>alert.classList.remove('show'),1800);
+   const alert=g.document.getElementById('guestBookmarkToast')||g.document.createElement('div');alert.id='guestBookmarkToast';alert.className='tahfeez-toast show';alert.textContent=localOK?'🔖 تم حفظ العلامة في سجلك':'تعذر حفظ العلامة محليًا؛ تحقق من المساحة';g.document.body.append(alert);g.setTimeout(()=>alert.classList.remove('show'),1800);
  }
  function cloudStatus(s){$('guestCloudStatus').textContent=s;}
  function merge(remote){if(!remote||typeof remote!=='object')return;
@@ -54,11 +54,11 @@
  }
  function scheduleCloud(){if(!user)return;clearTimeout(remoteTimer);remoteTimer=g.setTimeout(()=>void cloudWrite(),1200);}
  async function cloudWrite(){if(!user||inFlight||g.navigator.onLine===false)return;
-   inFlight=true;const sb=await api(),stamp=state.updatedAt;try{if(!sb)throw new Error('OFFLINE');
+   inFlight=true;const account=user.id,stamp=state.updatedAt;try{const sb=await api();if(!sb||user?.id!==account)throw new Error('OFFLINE_OR_ACCOUNT_CHANGED');
      const payload={last:state.last,bookmarks:state.bookmarks,nickname:state.nickname,updatedAt:stamp};
-     const {error}=await sb.from('quran_guest_practice').upsert({user_id:user.id,display_name:state.nickname||'ضيف',payload,last_seen_at:new Date().toISOString()},{onConflict:'user_id'});
-     if(error)throw error;cloudStatus(`✅ تم حفظ السجل بجوجل · ${user.email}`);if(state.updatedAt!==stamp)scheduleCloud();
-   }catch(e){cloudStatus('سجلك محفوظ محليًا؛ المزامنة السحابية لم تتأكد بعد. اضغط تحديث المحاولة بعد الاتصال.');console.warn('[guest cloud]',e?.message||e);}
+     const {error}=await sb.from('quran_guest_practice').upsert({user_id:account,display_name:state.nickname||'ضيف',payload,last_seen_at:new Date().toISOString()},{onConflict:'user_id'});
+     if(error)throw error;if(user?.id!==account)return;cloudStatus(`✅ تم حفظ السجل بجوجل · ${user.email}`);if(state.updatedAt!==stamp)scheduleCloud();
+   }catch(e){if(user?.id===account)cloudStatus((localOK?'سجلك محفوظ محليًا؛ ':'تعذر الحفظ المحلي؛ ')+ 'المزامنة السحابية لم تتأكد بعد. اضغط تحديث المحاولة بعد الاتصال.');console.warn('[guest cloud]',e?.message||e);}
    finally{inFlight=false;}
  }
  async function resumeAccount(){const sb=await api();if(!sb)return;const {data,error}=await sb.auth.getUser();if(error||!data?.user)return;
@@ -77,7 +77,7 @@
    const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo,queryParams:{prompt:'select_account'}}});
    if(error)cloudStatus(`تعذر بدء الدخول: ${error.message}`);
  }
- async function googleOut(){if(!client||!user)return;await client.auth.signOut();user=null;$('guestGoogle').textContent='المتابعة بحساب Google';$('guestGoogleOut').hidden=true;cloudStatus('تم فصل حساب جوجل؛ سجلك المحلي على هذا الجهاز لم يُحذف.');draw();}
+ async function googleOut(){if(!client||!user)return;clearTimeout(remoteTimer);const result=await client.auth.signOut();if(result?.error){cloudStatus('تعذر فصل الحساب. أعد المحاولة.');return;}user=null;$('guestGoogle').textContent='المتابعة بحساب Google';$('guestGoogleOut').hidden=true;cloudStatus('تم فصل حساب جوجل؛ سجلك المحلي على هذا الجهاز لم يُحذف.');draw();}
  function init(){
    // Reuse existing public Quran player; never call guardian session, messages or teacher auth.
    bindPlayerContext();

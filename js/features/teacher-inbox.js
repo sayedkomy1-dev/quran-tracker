@@ -4,7 +4,7 @@
   const $=id=>document.getElementById(id), esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const labels={educational:'تعليمية',absence:'اعتذار',finance:'مالية',schedule:'تعديل موعد',general:'عامة'};
   const statuses={new:'جديدة',read:'تمت القراءة',replied:'تم الرد'};
-  let rows=[],filter='all',studentId='',profileStudentId='',busy=false;
+  let rows=[],filter='all',studentId='',profileStudentId='',busy=false,requestId=0;
   const toast=(msg,type='info')=>g.toast?.(msg,type);
   const date=v=>{const d=new Date(v);return Number.isFinite(d.getTime())?d.toLocaleString('ar-EG',{dateStyle:'medium',timeStyle:'short'}):'—';};
   function client(){return g.WeLiveQuranAuth?.getClient?.();}
@@ -46,17 +46,17 @@
       `<div class="msg-reply-form">${m.status==='new'?`<button type="button" data-msg-action="read" data-id="${esc(m.id)}">✓ تمت القراءة</button>`:''}<label>رد داخل البوابة<textarea maxlength="2000" data-reply-id="${esc(m.id)}" rows="2" placeholder="اكتب ردك لولي الأمر..."></textarea></label><button class="msg-send" type="button" data-msg-action="reply" data-id="${esc(m.id)}">إرسال الرد</button></div>`}</article>`).join('')||'<p class="msg-empty">لا توجد رسائل في هذا القسم.</p>';
   }
   async function refresh(){
-    const status=$('teacherMsgStatus');if(status)status.textContent='جارٍ تحميل الرسائل…';
-    try{const ref=studentId?await refForStudent(studentId):null;const data=await rpc('guardian_message_teacher_list',{p_student_ref:ref});rows=Array.isArray(data?.messages)?data.messages:[];
-      if(status)status.textContent=`${rows.filter(x=>x.status==='new').length} رسالة جديدة · ${rows.length} إجمالي`;render();
-    }catch(err){console.warn('[teacher inbox]',err);if(status)status.textContent='تعذر تحميل الرسائل. تأكد من الإنترنت وتسجيل الدخول وتنفيذ SQL الجديد.';}
+    const current=++requestId,selected=studentId,status=$('teacherMsgStatus');if(status)status.textContent='جارٍ تحميل الرسائل…';
+    try{const ref=selected?await refForStudent(selected):null;if(current!==requestId)return;const data=await rpc('guardian_message_teacher_list',{p_student_ref:ref});if(current!==requestId||$('teacherInboxModal')?.hidden)return;rows=Array.isArray(data?.messages)?data.messages:[];
+      if(status)status.textContent=`${rows.filter(x=>x.status==='new').length} رسالة جديدة · ${rows.length} رسالة معروضة (حتى ١٥٠ من الأحدث)`;render();
+    }catch(err){console.warn('[teacher inbox]',err);if(current===requestId&&status)status.textContent='تعذر تحميل الرسائل. تأكد من الإنترنت وتسجيل الدخول وتنفيذ SQL الجديد.';}
   }
   async function act(name,args){busy=true;try{await rpc(name,args);toast(name==='guardian_message_reply'?'تم إرسال الرد داخل بوابة ولي الأمر':'تم تحديث حالة الرسالة','success');await refresh();}catch(err){console.warn('[teacher inbox update]',err);toast('تعذر حفظ التغيير. لم يتم إرسال أي رد.','error');}finally{busy=false;}}
   function open(id=''){
-    studentId=String(id||'');ensureModal().hidden=false;filter='all';$('teacherMsgFilter').value='all';
+    requestId++;rows=[];studentId=String(id||'');ensureModal().hidden=false;render();filter='all';$('teacherMsgFilter').value='all';
     document.body.classList.add('msg-modal-open');$('teacherInboxModal').querySelector('[data-msg="close"]')?.focus();refresh();
   }
-  function close(){$('teacherInboxModal').hidden=true;document.body.classList.remove('msg-modal-open');studentId='';}
+  function close(){requestId++;rows=[];$('teacherInboxModal').hidden=true;const list=$('teacherMsgRows');if(list)list.textContent='';const status=$('teacherMsgStatus');if(status)status.textContent='';document.body.classList.remove('msg-modal-open');studentId='';}
   function ensureStudentShortcut(){
     const hdr=$('profHdr');if(!hdr)return;
     let b=$('teacherInboxShortcut');if(!b){b=document.createElement('button');b.id='teacherInboxShortcut';b.type='button';b.className='msg-shortcut';b.innerHTML='<span>💬</span><strong>رسائل ولي الأمر</strong><small>الرسائل والردود داخل الأكاديمية</small>';

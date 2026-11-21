@@ -1,0 +1,76 @@
+/* Candidate 2 — visual references: charcoal/blue training and mint/gold learning.
+   Portal presentation only. No Quran glyph, permission, data or layout visibility changes. */
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) {
+  --green:#167347;--green2:#218654;--greenp:#dcf6e6;--gold:#a66d13;
+  --ink:#20312a;--mut:#4d6559;--line:#d5e7db;--paper:#fffaf0;--card:#fff;
+  --public-focus:#167347;
+}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) body.imam-portal-refresh {
+  background:linear-gradient(145deg,#fff3c9 0,#f5fbf6 240px,#fffdf7 500px);
+}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) body.imam-portal-refresh :is(.guardian-login-card,.portal-hero){border-top-color:#e4b94f}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) .portal-hero{background:linear-gradient(120deg,#fff9e7,#e0f7e8);color:#20312a}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) :is(.portal-quick-nav button,.ia28-portal-start,.guardian-login-security){background:#edfaf1;color:#1b5136;border-color:#c7e7d1}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) :is(.ia28-mode-switch button,.ia28-start-actions button){border-color:#b9ddc7;color:#185737;background:#fff}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) :is(.ia28-mode-switch button[aria-pressed=true],.ia28-start-actions button:last-child,.ia28-practice-assignment,.guardian-login-card form button){background:#167347;color:#fff;border-color:#167347}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) .portal-tahfeez-entry{background:linear-gradient(120deg,#12673e,#21965e);color:#fff}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) .ia28-student-view :is(.portal-hero,.ia28-portal-start){background:#fff0bc;border-color:#e5c766;color:#513b0e}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) .ia28-student-view .portal-quick-nav button:nth-child(2n){background:#fff5d5;color:#604710;border-color:#e9d69a}
+html:not([data-portal-theme="dark"]):not([data-theme="dark"]) .ia28-student-view .portal-assignment-item{background:#fffdf5;border-color:#e9d69a}
+html[data-portal-theme="kids"] .portal-hero{background:#fff0bc}
+html[data-portal-theme="dark"] .ia28-portal-start{background:#172a20;color:#edf7f1;border-color:#345142}
+html[data-portal-theme="dark"] :is(.ia28-mode-switch button,.ia28-start-actions button){background:#20382b;color:#e5f4eb;border-color:#496b56}
+html[data-portal-theme="dark"] :is(.ia28-mode-switch button[aria-pressed=true],.ia28-start-actions button:last-child){background:#176b44;color:#fff}
+/* Public portal directory: warm yellow and mint, with readable dark text. */
+.portals-wrap .portals-intro{background:linear-gradient(120deg,#fff0b5,#dcf6e6);color:#24352b;border-color:#e1c36b}
+.portals-wrap .portals-intro p{color:#415b4d}.portals-wrap .portals-kicker{color:#77500b}
+.portals-wrap .portals-tile:nth-child(odd) .portals-symbol{background:#ffefb9;color:#65470f}
+.portals-wrap .portals-tile:nth-child(even) .portals-symbol{background:#d5f4e2;color:#17613f}
+/* Independent guest interface: dark by default, with an explicit light choice. */
+html[data-guest-practice][data-portal-theme="dark"],html[data-guest-practice][data-portal-theme="dark"] body.imam-portal-refresh{background:#1d2025;color:#f1f4f8;color-scheme:dark}
+html[data-guest-practice][data-portal-theme="dark"] .guest-top{color:#e5e9ef}
+html[data-guest-practice][data-portal-theme="dark"] :is(.guest-card,.guest-top a,.guest-theme-toggle){background:#25282e;color:#f1f4f8;border-color:#424955;box-shadow:none}
+html[data-guest-practice][data-portal-theme="dark"] .guest-hero{background:radial-gradient(ellipse at 15% 0,#24577f 0,transparent 50%),linear-gradient(135deg,#242a46,#1b293a 66%,#193d56);color:#fff;border:1px solid #405974}
+html[data-guest-practice][data-portal-theme="dark"] .guest-hero :is(p,small){color:#d4e9ff}
+html[data-guest-practice][data-portal-theme="dark"] :is(.guest-field,.guest-google p,.guest-footer){color:#bcc6d3}
+html[data-guest-practice][data-portal-theme="dark"] :is(.guest-last,.guest-bookmark,.guest-local,[data-imam-audio-library]){background:#20252c;color:#d6e2ef;border:1px solid #414b58}
+html[data-guest-practice][data-portal-theme="dark"] :is(.guest-field input,.guest-buttons button,.guest-bookmarks button,.guest-google #guestGoogle,.ia28-guest-modes button,[data-imam-audio-library] select,.ia28-actions button){background:#303641;color:#edf4ff;border-color:#526479}
+html[data-guest-practice][data-portal-theme="dark"] :is(.guest-buttons .guest-primary,.ia28-actions button:first-child){background:#135d9d;color:#fff;border-color:#4898d9}
+html[data-guest-practice][data-portal-theme="dark"] .guest-bookmark .guest-remove{color:#ffb3b1}
+.guest-theme-toggle{min-height:44px;border:1px solid #c5dccd;border-radius:12px;background:#fff;color:#185737;padding:8px 12px;font:inherit;cursor:pointer}
+.guest-top{flex-wrap:wrap}
+/* Charcoal reader, blue current ayah, green connection status. Applies only when dark is selected. */
+html[data-portal-theme="dark"] .tahfeez-shell{color-scheme:dark;background:#202226;color:#f2f4f7}
+html[data-portal-theme="dark"] .tahfeez-topbar{background:#202329;color:#fff;box-shadow:none;border-bottom:1px solid #39404a}
+html[data-portal-theme="dark"] :is(.tahfeez-settings,.tahfeez-player){background:#1c1f24;color:#f1f4f8;border-color:#3b424d}
+html[data-portal-theme="dark"] :is(.tahfeez-field select,.tahfeez-field input,.tahfeez-repeat-card,.tahfeez-tutor-card,.tahfeez-offline,.tahfeez-practice-modes button,.tahfeez-control,.tahfeez-reader-actions button,.tahfeez-offline-actions button,.tahfeez-link-btn,.tahfeez-secondary-controls button){background:#2a2e35;color:#eaf0f7;border-color:#4c5664}
+html[data-portal-theme="dark"] :is(.tahfeez-section-head small,.tahfeez-field>span,.tahfeez-switch-row small,.tahfeez-offline summary small,.tahfeez-practice-modes button small,.tahfeez-reader-head small,.tahfeez-focus-head span:last-child,.tahfeez-focus-foot span,.tahfeez-now span,.tahfeez-seek-row,.tahfeez-session-progress>div:first-child,.tahfeez-secondary-controls){color:#bdc7d4}
+html[data-portal-theme="dark"] .tahfeez-segment{background:#191c21}
+html[data-portal-theme="dark"] .tahfeez-segment button{color:#bdc7d4}
+html[data-portal-theme="dark"] :is(.tahfeez-segment button.active,.tahfeez-practice-modes button.active){background:#243f59;color:#e6f2ff;border-color:#6cace4}
+html[data-portal-theme="dark"] .tahfeez-reader{background:#232529}
+html[data-portal-theme="dark"] :is(.tahfeez-text,.tahfeez-focus-card){background:#25282d;border-color:#3d4651;box-shadow:none;color:#f1f4f8}
+html[data-portal-theme="dark"] :is(.tahfeez-reader-head span,.tahfeez-focus-text,.tahfeez-ayah,.tahfeez-now b,.tahfeez-empty){color:#f1f4f8}
+html[data-portal-theme="dark"] .tahfeez-focus-head span:first-child{background:#223e55;color:#a6d7ff}
+html[data-portal-theme="dark"] .tahfeez-focus-foot strong{background:#3f3522;color:#ffe3a0}
+html[data-portal-theme="dark"] .tahfeez-ayah i{color:#c2d3e6;border-color:#697b90}
+html[data-portal-theme="dark"] .tahfeez-ayah.playing>span{background:#24435f!important;color:#b8e1ff!important;border-color:#77baff!important;box-shadow:none!important}
+html[data-portal-theme="dark"] .tahfeez-ayah.playing>i{background:#1c609a!important;color:#fff!important;border-color:#77baff!important}
+html[data-portal-theme="dark"] .tahfeez-control.play{background:#135d9d;color:#fff;border-color:#6bb7f7;box-shadow:0 0 0 4px #2c435a}
+html[data-portal-theme="dark"] :is(.tahfeez-control.stop,.tahfeez-offline-actions button.danger){color:#ffb2ae}
+html[data-portal-theme="dark"] :is(.tahfeez-seek-row input,.tahfeez-secondary-controls input,.tahfeez-switch-row input,[data-imam-audio-library] progress){accent-color:#72baff}
+html[data-portal-theme="dark"] :is(.tahfeez-progress-track,.tahfeez-download-progress){background:#414955}
+html[data-portal-theme="dark"] :is(.tahfeez-progress-track i,.tahfeez-download-progress i){background:#63b0f3}
+html[data-portal-theme="dark"] :is(.tahfeez-shell,.guest-shell) :is(button,input,select,a):focus-visible{outline:3px solid #86caff;outline-offset:2px}
+/* Explicit light selection must win against an OS dark preference. */
+html[data-portal-theme="light"] .tahfeez-shell,html[data-portal-theme="kids"] .tahfeez-shell{color-scheme:light;background:#eef6ef;color:#20312a}
+html:is([data-portal-theme="light"],[data-portal-theme="kids"]) .tahfeez-settings{background:#f8fcf8;color:#20312a;border-color:#d5e7db}
+html:is([data-portal-theme="light"],[data-portal-theme="kids"]) .tahfeez-reader{background:#f7f4e9}
+html:is([data-portal-theme="light"],[data-portal-theme="kids"]) :is(.tahfeez-text,.tahfeez-focus-card,.tahfeez-player,.tahfeez-field select,.tahfeez-field input,.tahfeez-repeat-card,.tahfeez-tutor-card,.tahfeez-offline,.tahfeez-practice-modes button,.tahfeez-control:not(.play),.tahfeez-reader-actions button,.tahfeez-offline-actions button){background:#fff;color:#20312a;border-color:#d5e7db}
+html:is([data-portal-theme="light"],[data-portal-theme="kids"]) :is(.tahfeez-ayah,.tahfeez-focus-text,.tahfeez-now b,.tahfeez-reader-head span){color:#20312a}
+html:is([data-portal-theme="light"],[data-portal-theme="kids"]) :is(.tahfeez-practice-modes button small,.tahfeez-field>span,.tahfeez-switch-row small,.tahfeez-offline summary small){color:#4d6559}
+html:is([data-portal-theme="light"],[data-portal-theme="kids"]) .tahfeez-segment{background:#edf6ee}
+html:is([data-portal-theme="light"],[data-portal-theme="kids"]) :is(.tahfeez-segment button,.tahfeez-link-btn.secondary){color:#365748}
+html:is([data-portal-theme="light"],[data-portal-theme="kids"]) :is(.tahfeez-segment button.active,.tahfeez-practice-modes button.active){background:#dcf6e6;color:#185737;border-color:#77b995}
+html:is([data-portal-theme="light"],[data-portal-theme="kids"]) .tahfeez-control.play{background:#167347;border-color:#167347;color:#fff}
+/* Preserve hidden state, print behaviour, Quran font metrics and existing responsive layout. */

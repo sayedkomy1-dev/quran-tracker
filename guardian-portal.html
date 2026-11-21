@@ -29,6 +29,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <link rel="stylesheet" href="css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1">
 
 <link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-stage1">
+<link rel="stylesheet" href="css/platform/reference-palette.css?v=beta28-candidate2">
 </head>
 <body class="imam-portal-refresh">
 <main class="portal-shell">
@@ -53,6 +54,11 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <div class="portal-updated"><small id="portalUpdatedLabel">آخر تحديث للرابط</small><b id="portalUpdated">—</b></div>
     </section>
 
+    <section class="ia28-portal-start" aria-label="اختيار طريقة عرض البوابة">
+      <div class="ia28-mode-switch" role="group" aria-label="طريقة عرض البوابة"><button type="button" data-ia28-view="parent" aria-pressed="true">متابعة ولي الأمر</button><button type="button" data-ia28-view="student" aria-pressed="false">مساحة الطالب</button></div>
+      <div class="ia28-start-copy"><b>خطوتك اليوم: التكليف ثم التدريب</b><small>اختيار العرض للتيسير فقط، لا يغير صلاحيات الحساب ولا يفصلها.</small></div>
+      <div class="ia28-start-actions"><button type="button" onclick="guardianGoTo('portalAssignmentCard')">عرض التكليف الحالي</button><button type="button" onclick="openGuardianTahfeez()">▶ ابدأ التدريب</button></div>
+    </section>
     <nav class="portal-quick-nav" aria-label="اختصارات البوابة">
       <button type="button" onclick="openGuardianTahfeez()"><span>▶</span><b>ابدأ التحفيظ</b></button>
       <button type="button" onclick="guardianGoTo('portalAssignmentCard')"><span>📝</span><b>التكليف</b></button>
@@ -131,7 +137,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 
     <section class="portal-card" id="portalAssignmentCard">
       <div class="portal-card-head"><div><b>📝 التكليف الحالي</b><small id="portalAssignmentDate">آخر حصة حضور</small></div></div>
-      <div id="portalAssignment" class="portal-assignment"></div>
+      <div id="portalAssignment" class="portal-assignment"></div><button type="button" class="ia28-practice-assignment" onclick="openGuardianTahfeez();tahfeezLoadAssignment()">🎧 التدرب على تكليف الحفظ الجديد</button>
       <div data-imam-audio-library></div>
 <div id="portalAudioAssist" class="portal-audio-assist" hidden>
         <div><b>🎧 مساعدة صوتية للتكليف</b><small>ملف MP3 بسرعة التلاوة الأصلية — مناسب للإرسال على WhatsApp</small></div>
@@ -263,5 +269,6 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <script src="js/features/guardian-messages.js?v=11.6.0-s1"></script>
 <script src="js/features/guardian-ratings.js?v=11.7.0-s1"></script>
 <script src="js/features/guardian-portal-view.js?v=11.7.4.2"></script>
+<script src="js/features/beta28-portal-ux.js?v=beta28-candidate1" defer></script>
 </body>
 </html>

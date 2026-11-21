@@ -45,7 +45,7 @@
   function cleanSnapshot(raw){
     if(!raw||typeof raw!=='object')return null;
     return {
-      attendance:int(raw.attendance,0,100000),absence:int(raw.absence,0,100000),vacation:int(raw.vacation,0,100000),
+      billingMode:raw.billingMode==='eight'?'eight':'legacy',makeupCount:int(raw.makeupCount,0,100000),extraCount:int(raw.extraCount,0,100000),earned:raw.earned===true,attendance:int(raw.attendance,0,100000),absence:int(raw.absence,0,100000),vacation:int(raw.vacation,0,100000),
       billedSessions:int(raw.billedSessions,0,100000),plannedSessions:int(raw.plannedSessions,0,1000),
       rateCents:int(raw.rateCents),openingCents:signed(raw.openingCents),discountCents:int(raw.discountCents),
       additionCents:int(raw.additionCents),dueCents:signed(raw.dueCents),paidCents:int(raw.paidCents),
@@ -54,7 +54,7 @@
   }
   function cleanFinance(raw){
     if(!raw||typeof raw!=='object'||Array.isArray(raw))return {rateCents:0,plannedSessions:0,chargeAbsence:false,months:{}};
-    const out={rateCents:int(raw.rateCents),plannedSessions:int(raw.plannedSessions,0,1000),chargeAbsence:raw.chargeAbsence===true,months:{}};
+    const out={rateCents:int(raw.rateCents),plannedSessions:int(raw.plannedSessions,0,1000),chargeAbsence:raw.chargeAbsence===true,months:{},billingMode:raw.billingMode==='eight'?'eight':'legacy'};
     const source=raw.months&&typeof raw.months==='object'&&!Array.isArray(raw.months)?raw.months:{};
     Object.keys(source).filter(monthOK).sort().forEach(month=>{
       const row=source[month];if(!row||typeof row!=='object')return;
@@ -62,7 +62,7 @@
       const seen=new Set();const unique=payments.filter(p=>{if(seen.has(p.id))return false;seen.add(p.id);return true;});
       const closedAt=String(row.closedAt||'').slice(0,40);
       const closedSnapshot=closedAt?cleanSnapshot(row.closedSnapshot):null;
-      out.months[month]={rateCents:int(row.rateCents,out.rateCents),plannedSessions:int(row.plannedSessions,out.plannedSessions,1000),chargeAbsence:row.chargeAbsence===true,
+      out.months[month]={billingMode:row.billingMode==='eight'?'eight':'legacy',rateCents:int(row.rateCents,out.rateCents),plannedSessions:int(row.plannedSessions,out.plannedSessions,1000),chargeAbsence:row.chargeAbsence===true,
         openingCents:signed(row.openingCents),discountCents:int(row.discountCents),additionCents:int(row.additionCents),
         openingMode:row.openingMode==='auto'?'auto':'manual',payments:unique,closedAt:closedSnapshot?closedAt:'',closedSnapshot};
     });
@@ -74,26 +74,45 @@
     const saved=finance.months[month];if(saved)return {...saved,payments:saved.payments.slice()};
     const prev=finance.months[previousMonth(month)];
     const carry=prev?.closedAt?prev.closedSnapshot?.balanceCents||0:0;
-    return {rateCents:finance.rateCents,plannedSessions:finance.plannedSessions,chargeAbsence:finance.chargeAbsence,
+    return {billingMode:finance.billingMode==='eight'?'eight':'legacy',rateCents:finance.rateCents,plannedSessions:finance.billingMode==='eight'?8:finance.plannedSessions,chargeAbsence:finance.chargeAbsence,
       openingCents:carry,openingMode:prev?.closedAt?'auto':'manual',discountCents:0,additionCents:0,payments:[],closedAt:'',closedSnapshot:null};
   }
-  function fingerprint(rows){const raw=rows.map(r=>`${String(r.id||'')}:${monthDate(r)}:${String(r.status||'')}`).sort().join('|');let h=2166136261;for(let i=0;i<raw.length;i++){h^=raw.charCodeAt(i);h=Math.imul(h,16777619);}return `${rows.length}:${(h>>>0).toString(16)}`;}
+  function fingerprint(rows,eight=false){const raw=rows.map(r=>`${String(r.id||'')}:${monthDate(r)}:${String(r.status||'')}${eight?':'+String(r.makeupForSessionId||'')+':'+(r.completed!==false):''}`).sort().join('|');let h=2166136261;for(let i=0;i<raw.length;i++){h^=raw.charCodeAt(i);h=Math.imul(h,16777619);}return `${rows.length}:${(h>>>0).toString(16)}`;}
+  // The existing ledger and its frozen snapshots remain authoritative. Eight-session mode
+  // is explicit per month; no historical ledger is silently recalculated.
+  function eightCycle(rows,allRows,studentId,month){
+    const seen=new Set(),absences=new Map(allRows.filter(r=>String(r.studentId)===String(studentId)&&r.status==='غاب'&&r.id&&monthDate(r)).map(r=>[String(r.id),r]));
+    const isLaterMakeup=r=>String(r.studentId)===String(studentId)&&monthDate(r).slice(0,7)>month&&monthDate(absences.get(String(r.makeupForSessionId||''))).slice(0,7)===month;
+    const related=[...rows,...allRows.filter(isLaterMakeup)];
+    const ordered=related.filter(r=>r.status==='حضر'&&r.completed!==false&&monthDate(r)).sort((a,b)=>monthDate(a).localeCompare(monthDate(b))||String(a.id||'').localeCompare(String(b.id||'')));
+    let billedSessions=0,makeupCount=0,extraCount=0;const allocations=[];const usedAbsences=new Set();
+    for(const row of ordered){const id=String(row.id||monthDate(row));if(seen.has(id))continue;seen.add(id);
+      const ref=String(row.makeupForSessionId||''),absence=absences.get(ref);let type;
+      if(ref){makeupCount++;if(!absence||monthDate(row)<=monthDate(absence)||usedAbsences.has(ref)){type='review';}else{usedAbsences.add(ref);type=monthDate(absence).slice(0,7)!==month?'prior-makeup':billedSessions<8?'makeup':'extra-makeup';}}
+      else type=billedSessions<8?'regular':'gift';
+      const billed=type==='regular'||type==='makeup';if(billed)billedSessions++;else extraCount++;
+      allocations.push({id,type,billed});
+    }
+    return {billedSessions,makeupCount,extraCount,earned:billedSessions===8,allocations,fingerprint:fingerprint(related,true)};
+  }
   function calculate(studentId,month=monthNow()){
     const finance=financeFor(studentId);if(!finance||!monthOK(month))return null;
     const ledger=derivedMonth(finance,month),rows=monthSessions(studentId,month);
     const attendance=rows.filter(s=>s.status==='حضر').length,absence=rows.filter(s=>s.status==='غاب').length,vacation=rows.filter(s=>s.status==='إجازة').length;
     const paidCents=ledger.payments.reduce((sum,p)=>sum+(p.voidedAt?0:p.amountCents),0);
-    const billedSessions=attendance+(ledger.chargeAbsence?absence:0);
+    const billingMode=ledger.billingMode==='eight'?'eight':'legacy';const cycle=billingMode==='eight'?eightCycle(rows,sessions(),studentId,month):null;
+    const billedSessions=cycle?cycle.billedSessions:attendance+(ledger.chargeAbsence?absence:0);
     const dueCents=billedSessions*ledger.rateCents+ledger.discountCents*-1+ledger.additionCents;
-    const live={attendance,absence,vacation,billedSessions,plannedSessions:ledger.plannedSessions,
+    const live={billingMode,makeupCount:cycle?.makeupCount||0,extraCount:cycle?.extraCount||0,earned:!!cycle?.earned,attendance,absence,vacation,billedSessions,plannedSessions:cycle?8:ledger.plannedSessions,
       rateCents:ledger.rateCents,openingCents:ledger.openingCents,discountCents:ledger.discountCents,
       additionCents:ledger.additionCents,dueCents,paidCents,balanceCents:ledger.openingCents+dueCents-paidCents,
-      sessionFingerprint:fingerprint(rows)};
+      sessionFingerprint:cycle?cycle.fingerprint:fingerprint(rows)};
     const data=ledger.closedAt&&ledger.closedSnapshot?ledger.closedSnapshot:live;
     return {studentId,month,ledger,closed:!!ledger.closedAt,changedAfterClosing:!!ledger.closedAt&&live.sessionFingerprint!==data.sessionFingerprint,...data,
-      payments:ledger.payments,live};
+      payments:ledger.payments,live,allocations:cycle?.allocations||[]};
   }
-  function touch(student){student.updatedAt=new Date().toISOString();if(app().settings?.sync?.deviceId)student.updatedByDevice=app().settings.sync.deviceId;g.save?.();}
+  function commit(student,finance){const old=student.studentFinance,oldAt=student.updatedAt,oldBy=student.updatedByDevice;student.studentFinance=finance;student.updatedAt=new Date().toISOString();if(app().settings?.sync?.deviceId)student.updatedByDevice=app().settings.sync.deviceId;
+    try{if(g.save?.()!==false)return true;}catch(e){console.warn('[finance save]',e);}student.studentFinance=old;if(oldAt===undefined)delete student.updatedAt;else student.updatedAt=oldAt;if(oldBy===undefined)delete student.updatedByDevice;else student.updatedByDevice=oldBy;return false;}
   function ensureMutable(studentId,month){const st=studentById(studentId);if(!st||!monthOK(month))return null;const finance=cleanFinance(st.studentFinance);
     const ledger=derivedMonth(finance,month);if(ledger.closedAt)return null;
     finance.months[month]=ledger;return {st,finance,ledger};
@@ -104,11 +123,12 @@
     const moneyFields=['rateCents','discountCents','additionCents'];for(const field of moneyFields){if(!Number.isSafeInteger(values[field])||values[field]<0||values[field]>MAX_MONEY)return false;}
     if(!Number.isInteger(values.plannedSessions)||values.plannedSessions<0||values.plannedSessions>1000)return false;
     if(!Number.isSafeInteger(values.openingCents)||Math.abs(values.openingCents)>MAX_MONEY)return false;
-    Object.assign(ledger,{rateCents:values.rateCents,plannedSessions:values.plannedSessions,chargeAbsence:!!values.chargeAbsence,
+    const billingMode=values.billingMode==='eight'?'eight':values.billingMode==='legacy'?'legacy':ledger.billingMode||'legacy';
+    Object.assign(ledger,{billingMode,rateCents:values.rateCents,plannedSessions:billingMode==='eight'?8:values.plannedSessions,chargeAbsence:billingMode==='eight'?false:!!values.chargeAbsence,
       discountCents:values.discountCents,additionCents:values.additionCents,openingCents:values.openingCents,openingMode:'manual'});
     // Default tariff updates future unsaved months; already saved months retain snapshots.
-    finance.rateCents=ledger.rateCents;finance.plannedSessions=ledger.plannedSessions;finance.chargeAbsence=ledger.chargeAbsence;
-    st.studentFinance=finance;touch(st);return true;
+    finance.billingMode=billingMode;finance.rateCents=ledger.rateCents;finance.plannedSessions=ledger.plannedSessions;finance.chargeAbsence=ledger.chargeAbsence;
+    return commit(st,finance);
   }
   function addPayment(studentId,month,input){
     const amountCents=int(input?.amountCents,-1);
@@ -117,7 +137,7 @@
     const {st,finance,ledger}=next;
     const id=g.ImamApp?.Utils?.makeId?.('pay')||`pay-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     ledger.payments.push({id,date:input.date,amountCents,method:input.method,note:String(input.note||'').slice(0,350),createdAt:new Date().toISOString()});
-    st.studentFinance=finance;touch(st);return true;
+    return commit(st,finance);
   }
   function voidPayment(studentId,month,paymentId,reason){
     if(!String(reason||'').trim())return false;
@@ -126,17 +146,17 @@
     const payment=ledger.payments.find(p=>p.id===String(paymentId));
     if(!payment||payment.voidedAt)return false;
     payment.voidedAt=new Date().toISOString();payment.voidReason=String(reason).trim().slice(0,200);
-    st.studentFinance=finance;touch(st);return true;
+    return commit(st,finance);
   }
   function closeMonth(studentId,month){
     if(month>monthNow())return false;
+    const current=calculate(studentId,month);if(current?.billingMode==='eight'&&month===monthNow()&&!current.earned)return false;
     const next=ensureMutable(studentId,month);if(!next)return false;
     const {st,finance,ledger}=next;
     // Initialize month config before deriving final immutable figures.
-    st.studentFinance=finance;
-    const final=calculate(studentId,month);if(!final)return false;
+    const final=current;if(!final)return false;
     ledger.closedSnapshot={...final.live};ledger.closedAt=new Date().toISOString();
-    st.studentFinance=finance;touch(st);return true;
+    return commit(st,finance);
   }
   const ui={studentId:'',month:monthNow(),editing:false};
   function $ (id){return document.getElementById(id);}
@@ -180,7 +200,7 @@
   function statement(studentId,month){
     const s=calculate(studentId,month),st=studentById(studentId);if(!s||!st)return null;
     return {v:1,month,studentName:String(st.name||'طالب').slice(0,120),academy:String(app().settings?.circle||'أكاديمية الإمام لتحفيظ القرآن الكريم').slice(0,160),
-      teacher:String(app().settings?.name||'').slice(0,120),closed:s.closed,generatedAt:new Date().toISOString(),attendance:s.attendance,
+      billingMode:s.billingMode,makeupCount:s.makeupCount,extraCount:s.extraCount,earned:s.earned,teacher:String(app().settings?.name||'').slice(0,120),closed:s.closed,generatedAt:new Date().toISOString(),attendance:s.attendance,
       absence:s.absence,billedSessions:s.billedSessions,plannedSessions:s.plannedSessions,rateCents:s.rateCents,
       openingCents:s.openingCents,discountCents:s.discountCents,additionCents:s.additionCents,dueCents:s.dueCents,
       paidCents:s.paidCents,balanceCents:s.balanceCents,
@@ -191,7 +211,7 @@
     const balance=x.balanceCents<0?`رصيد دائن لصالح الطالب: ${money(-x.balanceCents)}`:`المتبقي: ${money(x.balanceCents)}`;
     return [`📿 ${x.academy}`,`💰 كشف حساب الطالب: ${x.studentName}`,`📅 شهر ${monthLabel(x.month)}`,
       `الحضور: ${x.attendance} | الغياب: ${x.absence} | الحصص المحتسبة: ${x.billedSessions}`,
-      `سعر الحصة: ${money(x.rateCents)}`,`الرصيد السابق: ${money(x.openingCents)}`,
+      x.billingMode==='eight'?`استحقاق دورة الثماني حصص: ${x.earned?'مكتملة':'قيد الاستكمال'} | تعويضية: ${x.makeupCount} | غير محتسبة: ${x.extraCount}`:'',`سعر الحصة: ${money(x.rateCents)}`,`الرصيد السابق: ${money(x.openingCents)}`,
       `الخصم: ${money(x.discountCents)} | الإضافة: ${money(x.additionCents)}`,
       `إجمالي المستحق: ${money(x.dueCents)}`,`المدفوع: ${money(x.paidCents)}`,balance,
       `حالة الشهر: ${x.closed?'مغلق':'مفتوح (كشف مبدئي)'}`,x.teacher?`المحفظ: ${x.teacher}`:''].filter(Boolean).join('\n');
@@ -249,6 +269,7 @@
     box.innerHTML=`<div class="fin-head"><div><div class="ch">💰 الحساب الشهري</div><small>الجنيه المصري · النشر لولي الأمر اختياري وآمن برقم الهاتف وPIN</small></div>${status}</div>
       <div class="fin-period"><label for="finMonth">اختر الشهر</label><input type="month" id="finMonth" value="${esc(ui.month)}" min="2020-01" max="2099-12"></div>
       <div class="fin-stats"><div><strong>${s.attendance}</strong><span>حضور</span></div><div><strong>${s.absence}</strong><span>غياب</span></div><div><strong>${s.billedSessions}</strong><span>حصص محسوبة</span></div><div><strong>${s.plannedSessions||'—'}</strong><span>حصص مستهدفة</span></div></div>
+      ${s.billingMode==='eight'?`<div class="fin-cycle-note"><b>دورة ٨ حصص — ${s.earned?'اكتمل استحقاق الأجر':'متبقي '+(8-s.billedSessions)+' حصص لاستكمال الاستحقاق'}</b><progress max="8" value="${s.billedSessions}"></progress><small>تعويضية: ${s.makeupCount} · غير محتسبة: ${s.extraCount} · الحصص الزائدة لا تزيد المستحق. يُحسب التعويض للشهر الأصلي إن كان مفتوحًا؛ إن كان مغلقًا تظهر إشارة للمراجعة دون تغيير كشفه.</small></div>`:''}
       <div class="fin-balances"><div><small>المستحق عن الشهر</small><strong>${money(s.dueCents)}</strong></div><div><small>المدفوع</small><strong>${money(s.paidCents)}</strong></div><div><small>${s.balanceCents<0?'رصيد دائن للطالب':'المتبقي شامل الرصيد السابق'}</small><strong class="${s.balanceCents>0?'fin-owed':'fin-credit'}">${money(Math.abs(s.balanceCents))}</strong></div></div>
       <div class="fin-export-actions"><button type="button" data-fin-act="print">🖨️ حفظ PDF / طباعة</button><button type="button" data-fin-act="whatsapp">📲 إرسال حساب WhatsApp</button></div>
       <div class="fin-guardian-actions"><div><b>🔐 كشف ولي الأمر</b><small>لا يظهر إلا بعد دخوله برقم الهاتف وPIN، وبعد مزامنتك يدويًا</small></div><button type="button" data-fin-act="publish">🔄 تحديث بوابة ولي الأمر</button><button type="button" class="fin-revoke" data-fin-act="revoke">إخفاء من البوابة</button></div>
@@ -257,6 +278,7 @@
       <div class="fin-row"><span>الرصيد السابق</span><b>${money(ledger.openingCents)}</b></div><div class="fin-row"><span>خصم / إضافة</span><b>${money(ledger.discountCents)} / ${money(ledger.additionCents)}</b></div>
       ${!s.closed?`<div class="fin-buttons"><button type="button" data-fin-act="${ui.editing?'cancel':'edit'}">${ui.editing?'إلغاء التعديل':'⚙️ إعدادات الشهر'}</button></div>`:''}
       ${ui.editing&&!s.closed?`<div class="fin-editor"><p class="fin-hint">سعر الحصة الجديد سيصبح الافتراضي للأشهر الجديدة فقط. الأشهر المحفوظة والمغلقة لا تتغير تلقائيًا.</p>
+         <label class="fin-field"><span>نظام الاحتساب</span><select id="finBillingMode"><option value="eight" ${(ledger.billingMode==='eight'||(!s.closed&&!ledger.rateCents&&!ledger.plannedSessions))?'selected':''}>دورة شهرية (٨ حصص)</option><option value="legacy" ${(ledger.billingMode!=='eight'&&(ledger.rateCents||ledger.plannedSessions))?'selected':''}>النظام السابق (حسب الحضور)</option></select></label><small>في نظام الثماني حصص: لا يُحسب الغياب، ولا تزيد الحصص اللاحقة المستحق. إغلاق الكشف المالي منفصل عن استحقاق الأجر.</small>
          <div class="fin-grid">${field('سعر الحصة (ج.م)','finRate',inputMoney(ledger.rateCents))}${field('عدد الحصص الشهري المستهدف','finPlanned',ledger.plannedSessions,{max:1000})}${field('الخصم (ج.م)','finDiscount',inputMoney(ledger.discountCents))}${field('الإضافة (ج.م)','finAddition',inputMoney(ledger.additionCents))}</div>
          <label class="fin-field"><span>الرصيد السابق (ج.م، يمكن أن يكون دائنًا بالسالب)</span><input type="number" id="finOpening" step="0.01" inputmode="decimal" value="${esc((ledger.openingCents/100).toFixed(2))}"></label>
          <label class="fin-check"><input id="finChargeAbs" type="checkbox" ${ledger.chargeAbsence?'checked':''}> احتساب حصة الغياب ضمن المستحق</label>
@@ -270,7 +292,7 @@
     const moneyFields=['finRate','finDiscount','finAddition'];const v=moneyFields.map(key=>toCents($(key)?.value));
     const n=Number($('finPlanned')?.value),opening=signedCents($('finOpening')?.value);
     if(v.some(x=>x===null)||!Number.isInteger(n)||n<0||n>1000||opening===null){show('راجع الأرقام: استخدم مبلغًا صحيحًا حتى منزلتين عشريتين','error');return;}
-    const ok=updateMonth(ui.studentId,ui.month,{rateCents:v[0],discountCents:v[1],additionCents:v[2],plannedSessions:n,openingCents:opening,chargeAbsence:!!$('finChargeAbs')?.checked});
+    const ok=updateMonth(ui.studentId,ui.month,{rateCents:v[0],discountCents:v[1],additionCents:v[2],plannedSessions:n,billingMode:$('finBillingMode')?.value,openingCents:opening,chargeAbsence:!!$('finChargeAbs')?.checked});
     if(!ok){show('تعذر حفظ الشهر (قد يكون مغلقًا)','error');return;}ui.editing=false;renderProfile();show('تم حفظ إعدادات الشهر','success');
   }
   function addFromForm(){
@@ -291,6 +313,7 @@
   function closeFromForm(){
     if(ui.editing){show('احفظ إعدادات الشهر قبل إغلاقه','error');return;}
     const s=calculate(ui.studentId,ui.month);if(!s||s.closed)return;
+    if(s.billingMode==='eight'&&ui.month===monthNow()&&!s.earned){show('لم تكتمل ٨ حصص بعد؛ يمكن تسجيل الدفعات دون إغلاق الدورة','error');return;}
     if(ui.month===monthNow()&&g.prompt?.('أنت على وشك إغلاق الشهر الجاري قبل انتهائه. إذا كنت متأكدًا، اكتب كلمة إغلاق:')!=='إغلاق'){show('تم إلغاء إغلاق الشهر الجاري لحماية حسابات الطالب','info');return;}
     if(!g.confirm?.(`إغلاق حساب شهر ${monthLabel(ui.month)}؟\nالمستحق: ${money(s.dueCents)}\nالمدفوع: ${money(s.paidCents)}\nالمتبقي: ${money(s.balanceCents)}\n\nبعد الإغلاق لا يمكن تعديل هذا الشهر. تأكد من جميع الدفعات أولًا.`))return;
     if(closeMonth(ui.studentId,ui.month)){renderProfile();show('تم إغلاق الشهر وتثبيت الكشف','success');}else show('تعذر إغلاق الشهر','error');
@@ -313,6 +336,6 @@
     }
   }
   g.ImamApp=g.ImamApp||{};
-  g.ImamApp.StudentFinance={cleanFinance,monthSessions,financeFor,calculate,updateMonth,addPayment,voidPayment,closeMonth,toCents,money,renderProfile,statement,plainStatement,ensureShortcut};
+  g.ImamApp.StudentFinance={cleanFinance,monthSessions,financeFor,calculate,eightCycle,updateMonth,addPayment,voidPayment,closeMonth,toCents,money,renderProfile,statement,plainStatement,ensureShortcut};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installHooks,{once:true});else installHooks();
 })(globalThis);

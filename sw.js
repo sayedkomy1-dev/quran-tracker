@@ -9,7 +9,7 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow';
+const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
@@ -22,6 +22,16 @@ const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
+  './css/platform/reference-palette.css?v=beta28-candidate2',
+  './js/features/guest-palette.js?v=beta28-candidate2',
+  './guardian-login.html',
+  './js/features/assignment-audio-share.js?v=11.12.1-beta.27',
+  './js/features/beta28-portal-ux.js?v=beta28-candidate1',
+  './js/features/student-finance.js?v=11.5.1-s2',
+  './js/features/teacher-inbox.js?v=11.6.0-s1',
+  './js/features/guardian-messages.js?v=11.6.0-s1',
+  './js/features/guardian-portal-view.js?v=11.7.4.2',
+  './js/features/guest-practice.js?v=11.7.4.1',
   './js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/offline-audio-library.js?v=beta28-stage1',
   './js/features/temporary-media-share.js?v=beta28-stage1',
