@@ -30,15 +30,16 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 
 <link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-stage1">
 <link rel="stylesheet" href="css/platform/reference-palette.css?v=beta28-candidate2">
+<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc3">
 </head>
 <body class="imam-portal-refresh">
 <main class="portal-shell">
   <header class="portal-header">
     <div class="portal-brand"><img src="icon-192.png" alt=""><div><b id="portalAcademy">أكاديمية الإمام لتحفيظ القرآن الكريم</b><span>بوابة ولي الأمر / الطالب</span></div></div>
-    <div class="portal-actions">
+    <details class="rc3-portal-tools"><summary>خيارات البوابة والمظهر</summary><div class="portal-actions">
       <div class="portal-theme-actions" aria-label="مظهر البوابة"><button type="button" data-portal-theme-btn="light" onclick="guardianSetTheme('light')" title="الوضع النهاري">☀️</button><button type="button" data-portal-theme-btn="dark" onclick="guardianSetTheme('dark')" title="الوضع الليلي">🌙</button><button type="button" data-portal-theme-btn="kids" onclick="guardianSetTheme('kids')" title="وضع الطفل">⭐</button></div>
       <button type="button" data-guardian-install onclick="guardianInstallPortal()">📱 تثبيت</button><button type="button" id="portalRefreshBtn" onclick="portalRefresh()" hidden>🔄 تحديث</button><button type="button" id="portalShareBtn" onclick="portalShare()">📤 مشاركة</button><button type="button" onclick="portalPrint()">🖨️ طباعة / PDF</button><button type="button" id="portalLogoutBtn" onclick="portalLogout()" hidden>🚪 خروج</button>
-    </div>
+    </div></details>
   </header>
 
   <section id="portalError" class="portal-error" hidden>
@@ -59,6 +60,8 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <div class="ia28-start-copy"><b>خطوتك اليوم: التكليف ثم التدريب</b><small>اختيار العرض للتيسير فقط، لا يغير صلاحيات الحساب ولا يفصلها.</small></div>
       <div class="ia28-start-actions"><button type="button" onclick="guardianGoTo('portalAssignmentCard')">عرض التكليف الحالي</button><button type="button" onclick="openGuardianTahfeez()">▶ ابدأ التدريب</button></div>
     </section>
+    <nav class="rc3-portal-tabs" aria-label="أقسام البوابة" hidden><button type="button" data-rc3-tab="overview" aria-pressed="true">الرئيسية</button><button type="button" data-rc3-tab="learning" aria-pressed="false">التكليف والتدريب</button><button type="button" data-rc3-tab="progress" aria-pressed="false">التقدم والحصص</button><button type="button" data-rc3-tab="family" aria-pressed="false">متابعة الأسرة</button><button type="button" data-rc3-tab="all" aria-pressed="false">كل الأقسام</button></nav>
+    <p class="rc3-portal-empty" role="status" hidden>لا توجد بيانات متاحة في هذا القسم حاليًا لحسابك.</p>
     <nav class="portal-quick-nav" aria-label="اختصارات البوابة">
       <button type="button" onclick="openGuardianTahfeez()"><span>▶</span><b>ابدأ التحفيظ</b></button>
       <button type="button" onclick="guardianGoTo('portalAssignmentCard')"><span>📝</span><b>التكليف</b></button>
@@ -70,7 +73,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <button type="button" id="portalRatingNav" onclick="guardianGoTo('portalRatingCard')" hidden><span>⭐</span><b>تقييم المحفظ</b></button>
     </nav>
 
-    <section class="portal-kpis" aria-label="مؤشرات التقدم">
+    <section class="portal-kpis" data-rc3-section="progress" aria-label="مؤشرات التقدم">
       <article><small>متوسط الإتقان</small><strong id="portalMastery">—</strong><span id="portalTrend">—</span></article>
       <article><small>نسبة الحضور</small><strong id="portalAttendance">—</strong><span>خلال الفترة المختارة</span></article>
       <article><small>الحفظ الجديد</small><strong id="portalNewAyat">0</strong><span>آية</span></article>
@@ -78,7 +81,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
     </section>
 
 
-    <section class="portal-learning-entry" aria-label="مركز التحفيظ">
+    <section class="portal-learning-entry" data-rc3-section="learning" aria-label="مركز التحفيظ">
       <button type="button" class="portal-tahfeez-entry" onclick="openGuardianTahfeez()">
         <span class="portal-tahfeez-mark" aria-hidden="true">◈</span>
         <span class="portal-tahfeez-copy"><b>التحفيظ</b><small>استماع · تكرار · تلقين · تحكم كامل بالآيات</small></span>
@@ -86,12 +89,12 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       </button>
     </section>
 
-    <section class="portal-card" id="portalQuranCard" hidden>
+    <section class="portal-card" id="portalQuranCard" hidden data-rc3-section="progress">
       <div class="portal-card-head"><div><b>📖 التقدم في القرآن</b><small>الإنجاز الموثق داخل التطبيق</small></div><strong id="portalQuranProgress">—</strong></div>
       <div class="portal-progress"><i id="portalQuranBar"></i></div>
     </section>
 
-    <section class="portal-card portal-goal-card" id="portalGoalCard" hidden>
+    <section class="portal-card portal-goal-card" id="portalGoalCard" hidden data-rc3-section="progress">
       <div class="portal-goal-head"><div><b>🎯 خطة الحفظ</b><small id="portalGoalTarget">الهدف طويل المدى</small></div><span id="portalGoalStatus" class="portal-goal-status">على الخطة</span></div>
       <div class="portal-goal-progress"><div><strong id="portalGoalProgress">0%</strong><span id="portalGoalExpected">المتوقع الآن 0%</span></div><div class="portal-goal-track"><i id="portalGoalBar"></i><em id="portalGoalExpectedMark"></em></div></div>
       <div class="portal-goal-kpis"><div><b id="portalGoalDone">0</b><span>تم تسميعها بنجاح</span></div><div><b id="portalGoalRemaining">0</b><span>متبقية</span></div><div><b id="portalGoalPace">0</b><span>آية/حصة مقترحة</span></div></div>
@@ -102,12 +105,12 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <div id="portalGoalNext" class="portal-goal-next" hidden></div>
     </section>
 
-    <section class="portal-card portal-finance-card" id="portalFinanceCard" hidden>
+    <section class="portal-card portal-finance-card" id="portalFinanceCard" hidden data-rc3-section="family">
       <div class="portal-card-head"><div><b>💰 الحسابات المالية</b><small>عرض فقط — متاح بعد الدخول برقم الهاتف وPIN</small></div></div>
       <div id="portalFinanceBody"></div>
     </section>
 
-    <section class="portal-card portal-rating-card" id="portalRatingCard" hidden>
+    <section class="portal-card portal-rating-card" id="portalRatingCard" hidden data-rc3-section="family">
       <div class="portal-card-head"><div><b>⭐ تقييم المحفظ</b><small>سري لإدارة الأكاديمية · لا يراه المحفظ · متاح بعد دخول الهاتف وPIN</small></div></div>
       <div class="portal-rating-form">
         <label>الالتزام بالمواعيد<select id="portalRating_punctuality"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
@@ -122,7 +125,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <p class="portal-rating-status" id="portalRatingStatus" role="status"></p>
     </section>
 
-    <section class="portal-card portal-message-card" id="portalMessageCard" hidden>
+    <section class="portal-card portal-message-card" id="portalMessageCard" hidden data-rc3-section="family">
       <div class="portal-card-head"><div><b>💬 التواصل مع المحفظ</b><small>رسائلك خاصة وتظهر للمحفظ فقط · تتطلب اتصالًا بالإنترنت ودخول PIN</small></div></div>
       <div class="msg-guardian-form">
         <label for="portalMessageCategory">نوع الرسالة</label>
@@ -135,9 +138,9 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <p id="portalMessageFeedback" class="msg-status" role="status"></p><div id="portalMessageList" class="msg-list"></div>
     </section>
 
-    <section class="portal-card" id="portalAssignmentCard">
+    <section class="portal-card" id="portalAssignmentCard" data-rc3-section="learning">
       <div class="portal-card-head"><div><b>📝 التكليف الحالي</b><small id="portalAssignmentDate">آخر حصة حضور</small></div></div>
-      <div id="portalAssignment" class="portal-assignment"></div><button type="button" class="ia28-practice-assignment" onclick="openGuardianTahfeez();tahfeezLoadAssignment()">🎧 التدرب على تكليف الحفظ الجديد</button>
+      <div id="portalAssignment" class="portal-assignment"></div><button type="button" class="ia28-practice-assignment" onclick="openGuardianAssignmentPractice()">🎧 التدرب على تكليف الحفظ الجديد</button>
       <div data-imam-audio-library></div>
 <div id="portalAudioAssist" class="portal-audio-assist" hidden>
         <div><b>🎧 مساعدة صوتية للتكليف</b><small>ملف MP3 بسرعة التلاوة الأصلية — مناسب للإرسال على WhatsApp</small></div>
@@ -146,22 +149,22 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       </div>
     </section>
 
-    <section class="portal-card portal-revision-card" id="portalSmartRevision" hidden>
+    <section class="portal-card portal-revision-card" id="portalSmartRevision" hidden data-rc3-section="learning">
       <div class="portal-card-head"><div><b>🧠 مراجعة اليوم</b><small>مقترحات ذكية مبنية على أخطاء التسميع السابقة</small></div><strong id="portalSmartRevisionCount">0</strong></div>
       <div id="portalSmartRevisionBody"></div>
     </section>
 
-    <section class="portal-card portal-correction-focus" id="portalCorrectionFocus" hidden>
+    <section class="portal-card portal-correction-focus" id="portalCorrectionFocus" hidden data-rc3-section="learning">
       <div class="portal-card-head"><div><b>🪶 بطاقة التصحيح الأخيرة</b><small id="portalCorrectionFocusDate">راجع المواضع التي ظهرت أثناء القراءة</small></div><strong id="portalCorrectionFocusCount">0</strong></div>
       <div id="portalCorrectionFocusBody"></div>
     </section>
 
-    <section class="portal-card">
+    <section class="portal-card" data-rc3-section="learning">
       <div class="portal-card-head"><div><b>🎯 مواضع تحتاج تثبيت</b><small>أحدث إشارات المتابعة المسجلة</small></div></div>
       <div id="portalAttention" class="portal-attention"></div>
     </section>
 
-    <section class="portal-card" id="portalRecentCard">
+    <section class="portal-card" id="portalRecentCard" data-rc3-section="progress">
       <div class="portal-card-head"><div><b>📅 آخر الحصص</b><small>عرض مختصر للمتابعة</small></div></div>
       <div id="portalRecent" class="portal-recent"></div>
     </section>
@@ -177,7 +180,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
         <button type="button" class="tahfeez-icon-btn" onclick="closeGuardianTahfeez()" aria-label="رجوع">←</button>
         <div><span>مركز التحفيظ</span><b id="tahfeezStudentName">الطالب</b></div>
       </div>
-      <div class="tahfeez-top-actions"><span id="tahfeezNetState" class="tahfeez-net">متصل</span><button type="button" class="tahfeez-icon-btn" onclick="tahfeezToggleSettings()" aria-label="إعدادات">⚙</button></div>
+      <div class="tahfeez-top-actions"><span id="tahfeezNetState" class="tahfeez-net">متصل</span><button type="button" id="tahfeezSettingsToggle" class="tahfeez-icon-btn" onclick="tahfeezToggleSettings()" aria-label="إعدادات" aria-controls="tahfeezSettings" aria-expanded="true">⚙</button></div>
     </header>
 
     <div class="tahfeez-layout">
@@ -230,6 +233,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       </aside>
 
       <main class="tahfeez-reader">
+        <button type="button" class="rc3-player-settings" onclick="tahfeezToggleSettings()">⚙ السورة · القارئ · التكرار</button>
         <div class="tahfeez-reader-head"><div><span id="tahfeezSurahLabel">سورة الفاتحة</span><small id="tahfeezRangeLabel">الآيات 1–7</small></div><div class="tahfeez-reader-actions"><button id="tahfeezRevealBtn" type="button" onclick="tahfeezToggleReveal()">إخفاء النص</button><button type="button" onclick="tahfeezLoadText(true)">↻ تحديث النص</button></div></div>
         <section class="tahfeez-focus-card" aria-live="polite">
           <div class="tahfeez-focus-head"><span id="tahfeezModeLabel">وضع الاستماع</span><span id="tahfeezFocusMeta">الآية 1</span></div>
@@ -270,5 +274,6 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <script src="js/features/guardian-ratings.js?v=11.7.0-s1"></script>
 <script src="js/features/guardian-portal-view.js?v=11.7.4.2"></script>
 <script src="js/features/beta28-portal-ux.js?v=beta28-candidate1" defer></script>
+<script src="js/features/rc3-experience.js?v=beta28-rc3" defer></script>
 </body>
 </html>

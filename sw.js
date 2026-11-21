@@ -9,7 +9,7 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette';
+const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette' + '-rc3-experience';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
@@ -23,6 +23,8 @@ const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
   './css/platform/reference-palette.css?v=beta28-candidate2',
+  './css/platform/rc3-experience.css?v=beta28-rc3',
+  './js/features/rc3-experience.js?v=beta28-rc3',
   './js/features/guest-palette.js?v=beta28-candidate2',
   './guardian-login.html',
   './js/features/assignment-audio-share.js?v=11.12.1-beta.27',
@@ -363,6 +365,8 @@ async function cacheVerifiedCurrentShell(cache,url){
     throw new Error('[SW] index.html is an older release');
   if(['./index.html','./guardian-portal.html','./guest-practice.html'].includes(url) && !body.includes('offline-audio-library.js?v=beta28-stage1'))
     throw new Error('[SW] media stage1 HTML is not available');
+  if(['./index.html','./guardian-portal.html','./guest-practice.html'].includes(url) && !body.includes('css/platform/rc3-experience.css?v=beta28-rc3'))
+    throw new Error('[SW] RC3 HTML is not available');
   if(url.startsWith('./js/core/runtime.js') && !body.includes(`version:'${APP_VERSION}'`))
     throw new Error('[SW] runtime.js is an older release');
   if(url.startsWith('./app.js') && !body.includes(`WLQ_RELEASE_${APP_VERSION}`))

@@ -61,13 +61,19 @@
     const next=g.document.createElement('span');next.className='role-hero-caption';next.textContent='ابدأ مباشرة أو اختر قسمك أدناه';heroActions.append(next);box.append(heroActions);
     const label=g.document.createElement('div');label.className='role-actions-heading';const labelTitle=g.document.createElement('h3');labelTitle.textContent='اختصارات مساحة العمل';const labelCaption=g.document.createElement('span');labelCaption.textContent='جميع الأدوات حسب صلاحية حسابك';label.append(labelTitle,labelCaption);box.append(label);
     const grid=g.document.createElement('div');grid.className='role-home-actions';
-    for(const [index,[icon,label,detail,code]] of actions[role].entries()){
+    const filter=g.document.createElement('div');filter.className='rc3-role-filter';const input=g.document.createElement('input');input.type='search';input.placeholder='ابحث في أدوات مساحة العمل';input.setAttribute('aria-label','البحث في أدوات مساحة العمل');const count=g.document.createElement('span');count.setAttribute('role','status');filter.append(input,count);box.append(filter);
+    const groupMap={supervision:'الإدارة والإشراف','academy-analytics':'الإدارة والإشراف',academy:'الإدارة والإشراف',guests:'الإدارة والإشراف',settings:'الإدارة والإشراف','academic-exams':'التعليم والحلقات','circle-manager':'التعليم والحلقات',checkin:'التعليم والحلقات',mushaf:'التعليم والحلقات',students:'الطلاب والمتابعة',followup:'الطلاب والمتابعة','add-student':'الطلاب والمتابعة',inbox:'الطلاب والمتابعة',reports:'الطلاب والمتابعة'};
+    const grouped=new Map();for(const row of actions[role]){const group=groupMap[row[3]]||'أدوات أخرى';if(!grouped.has(group))grouped.set(group,[]);grouped.get(group).push(row);}
+    const groupNodes=[];let idx=0;
+    for(const [group,rows] of grouped){const heading=g.document.createElement('h4');heading.className='rc3-role-group-heading';heading.textContent=group;grid.append(heading);const groupButtons=[];groupNodes.push({heading,buttons:groupButtons});
+    for(const [icon,label,detail,code] of rows){const index=idx++;
       const btn=g.document.createElement('button');btn.type='button';btn.className='role-home-action'+(index===0?' role-action-featured':'');btn.dataset.destination=code;
       const mark=g.document.createElement('span');mark.className='role-icon';mark.textContent=icon;
       const text=g.document.createElement('span');const b=g.document.createElement('b');b.textContent=label;const small=g.document.createElement('small');small.textContent=detail;text.append(b,small);btn.append(mark,text);
       btn.title=detail;btn.setAttribute('aria-label',`${label}: ${detail}`);btn.dataset.helpText=detail;
-      btn.addEventListener('click',()=>trigger(code));grid.append(btn);
-    }
+      btn.addEventListener('click',()=>trigger(code));grid.append(btn);groupButtons.push(btn);
+    }}
+    function filterActions(){const q=input.value.trim().toLocaleLowerCase('ar');let n=0;for(const group of groupNodes){let groupCount=0;for(const b of group.buttons){const ok=!q||b.textContent.toLocaleLowerCase('ar').includes(q)||group.heading.textContent.includes(q);b.classList.toggle('rc3-filtered',!ok);if(ok){n++;groupCount++;}}group.heading.hidden=groupCount===0;}count.textContent=n===0?'لا توجد أدوات مطابقة':`${n} أداة`;}input.addEventListener('input',filterActions);filterActions();
     box.append(grid);
     g.ImamUXGuide?.maybeOpen?.(role);
     if(role==='teacher'){

@@ -9,7 +9,7 @@
  const def=()=>({id:g.crypto?.randomUUID?.()||'guest-'+Date.now().toString(36),nickname:'',last:null,bookmarks:[],updatedAt:0});
  function safe(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
  function read(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(!x||typeof x!=='object'||!x.id)return def();return {...def(),...x,bookmarks:Array.isArray(x.bookmarks)?x.bookmarks.slice(0,MAX_BOOKMARKS):[]};}catch(_){return def();}}
- let state=read();
+ let state=read(),bookmarkSignature=null;
  function bindPlayerContext(){g.ImamGuardianTahfeez?.setContext?.({academy:{name:'التحفيظ الحر'},student:{name:'ضيف-'+state.id,group:'',guardian:''},learning:{}});}
  function localSave(){state.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state));localOK=true;}catch(_){localOK=false;}draw();if(user)scheduleCloud();}
  function nameFor(s){const option=$('tahfeezSurah')?.querySelector(`option[value="${Number(s)}"]`);return option?.textContent?.replace(/^\d+\.\s*/, '')||`سورة رقم ${Number(s)}`;}
@@ -18,7 +18,7 @@
    const l=state.last;
    $('guestLast').textContent=l?`آخر موضع: ${nameFor(l.chapter)} — الآية ${l.ayah} · ${new Date(l.updatedAt||state.updatedAt).toLocaleDateString('ar-EG')}`:'لم تبدأ أي جلسة بعد.';
    $('guestContinue').disabled=!l;
-   const root=$('guestBookmarks');root.replaceChildren();
+   const root=$('guestBookmarks'),signature=JSON.stringify(state.bookmarks);if(signature===bookmarkSignature)return;bookmarkSignature=signature;root.replaceChildren();
    if(!state.bookmarks.length){const p=g.document.createElement('p');p.textContent='مفيش علامات لسه. افتح التحفيظ واضغط «ضع علامة» عند الآية.';root.append(p);return;}
    state.bookmarks.forEach((x,i)=>{
      const row=g.document.createElement('div');row.className='guest-bookmark';
@@ -82,11 +82,12 @@
    // Reuse existing public Quran player; never call guardian session, messages or teacher auth.
    bindPlayerContext();
    $('guestNickname').value=state.nickname||'';
+   g.ImamGuardianTahfeez?.restoreGuestLast?.(state.last);
    $('guestNickname').addEventListener('change',e=>{state.nickname=String(e.target.value||'').trim().slice(0,50);localSave();});
    $('guestStart').addEventListener('click',()=>g.openGuardianTahfeez?.());
-   $('guestContinue').addEventListener('click',()=>{g.ImamGuardianTahfeez?.restoreGuestLast?.(state.last);g.openGuardianTahfeez?.();g.tahfeezResumeLast?.();});
+   $('guestContinue').addEventListener('click',()=>{g.ImamGuardianTahfeez?.restoreGuestLast?.(state.last);g.openGuardianTahfeez?.({deferText:true});g.tahfeezResumeLast?.();});
    $('guestGoogle').addEventListener('click',google);$('guestGoogleOut').addEventListener('click',googleOut);
-   g.addEventListener('wlq:guest-position',e=>{const x=e.detail||{};if(!x.chapter||!x.ayah)return;state.last={...x};localSave();});
+   g.addEventListener('wlq:guest-position',e=>{const x=e.detail||{};if(!x.chapter||!x.ayah)return;if(state.last&&['chapter','from','to','ayah','practiceMode'].every(k=>state.last[k]===x[k]))return;state.last={...x};localSave();});
    g.addEventListener('online',()=>{if(user)scheduleCloud();});draw();
    let returning=false;try{returning=Boolean(localStorage.getItem('wlq-guest-google-v1'))||/(?:access_token|refresh_token)=/.test(g.location?.hash||'');}catch(_){}
    if(g.navigator.onLine!==false&&returning)void resumeAccount();

@@ -13,17 +13,19 @@
 <link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-stage1">
 <link rel="stylesheet" href="css/platform/reference-palette.css?v=beta28-candidate2">
 <script src="js/features/guest-palette.js?v=beta28-candidate2" defer></script>
+<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc3">
 </head><body class="imam-portal-refresh">
 <main class="guest-shell">
 <header class="guest-top"><a href="guardian-login.html" aria-label="العودة">→ رجوع</a><span>أكاديمية الإمام — التحفيظ الحر</span><img src="icon-96.png" alt="شعار الأكاديمية"><button type="button" id="guestThemeToggle" class="guest-theme-toggle" aria-label="تبديل الوضع الليلي والنهاري" aria-pressed="true">☀ نهاري</button></header>
 <section class="guest-hero"><span class="guest-mark">📿</span><div><small>مساحة تعلّم مفتوحة للجميع</small><h1>احفظ القرآن على طريقتك</h1><p>اختر الشيخ والسورة والآيات، واستمع وكرّر وتدرّب بالتلقين. لا يلزم اشتراك في الأكاديمية.</p></div></section>
 <section class="guest-card"><div class="guest-head"><h2>مساحتي الخاصة</h2><span class="guest-local" id="guestSaveMode">محفوظ على هذا الجهاز</span></div>
-<label class="guest-field">اسم اختياري للتعرّف على سجلك <input id="guestNickname" maxlength="50" placeholder="مثال: أحمد" autocomplete="nickname"></label>
-<div data-imam-audio-library></div>
+
+
 <div id="guestLast" class="guest-last" aria-live="polite">لم تبدأ أي جلسة بعد.</div>
 <div class="guest-buttons"><button id="guestStart" class="guest-primary" type="button">▶ ابدأ التحفيظ</button><button id="guestContinue" type="button">↩ أكمل من آخر موضع</button></div>
-<div class="ia28-guest-modes" aria-label="طرق بدء التدريب"><button type="button" data-ia28-practice="listen">استماع</button><button type="button" data-ia28-practice="tutor">تلقين</button><button type="button" data-ia28-practice="stabilize">تثبيت</button><button type="button" data-ia28-practice="test">اختبار ذاتي</button></div><h3>🔖 علاماتي المحفوظة</h3><div id="guestBookmarks" class="guest-bookmarks"><p>مفيش علامات لسه.</p></div>
+<div class="ia28-guest-modes" aria-label="طرق بدء التدريب"><button type="button" data-ia28-practice="listen">استماع</button><button type="button" data-ia28-practice="tutor">تلقين</button><button type="button" data-ia28-practice="stabilize">تثبيت</button><button type="button" data-ia28-practice="test">اختبار ذاتي</button></div><label class="guest-field">اسم اختياري للتعرّف على سجلك <input id="guestNickname" maxlength="50" placeholder="مثال: أحمد" autocomplete="nickname"></label><h3>🔖 علاماتي المحفوظة</h3><div id="guestBookmarks" class="guest-bookmarks"><p>مفيش علامات لسه.</p></div>
 </section>
+<section class="guest-card rc3-guest-library"><div data-imam-audio-library></div></section>
 <section class="guest-card guest-google"><h2>اختياري: اربط سجلّك بجوجل</h2><p>من غير حساب، سجلك يفضل محفوظ على الجهاز ده فقط. ربط جوجل يسمح باستعادته على جهاز تاني بعد نجاح المزامنة السحابية. عند ربط جوجل، إدارة المنصة قد ترى بريدك وآخر نشاط تدريب، لكن لا تحصل على بيانات طلاب الأكاديمية.</p>
 <div class="guest-buttons"><button id="guestGoogle" type="button">المتابعة بحساب Google</button><button id="guestGoogleOut" type="button" hidden>فصل حساب Google</button></div><p id="guestCloudStatus" role="status" aria-live="polite">الدخول كضيف لا يحتاج موافقة المحفظ.</p></section>
 <footer class="guest-footer">تحفيظ القرآن الكريم · بالقرآن نحيا</footer>
@@ -35,7 +37,7 @@
         <button type="button" class="tahfeez-icon-btn" onclick="closeGuardianTahfeez()" aria-label="رجوع">←</button>
         <div><span>مركز التحفيظ</span><b id="tahfeezStudentName">الطالب</b></div>
       </div>
-      <div class="tahfeez-top-actions"><span id="tahfeezNetState" class="tahfeez-net">متصل</span><button type="button" class="tahfeez-icon-btn" onclick="tahfeezToggleSettings()" aria-label="إعدادات">⚙</button></div>
+      <div class="tahfeez-top-actions"><span id="tahfeezNetState" class="tahfeez-net">متصل</span><button type="button" id="tahfeezSettingsToggle" class="tahfeez-icon-btn" onclick="tahfeezToggleSettings()" aria-label="إعدادات" aria-controls="tahfeezSettings" aria-expanded="true">⚙</button></div>
     </header>
 
     <div class="tahfeez-layout">
@@ -88,6 +90,7 @@
       </aside>
 
       <main class="tahfeez-reader">
+        <button type="button" class="rc3-player-settings" onclick="tahfeezToggleSettings()">⚙ السورة · القارئ · التكرار</button>
         <div class="tahfeez-reader-head"><div><span id="tahfeezSurahLabel">سورة الفاتحة</span><small id="tahfeezRangeLabel">الآيات 1–7</small></div><div class="tahfeez-reader-actions"><button type="button" onclick="GuestTahfeez.addBookmark()">🔖 ضع علامة</button><button id="tahfeezRevealBtn" type="button" onclick="tahfeezToggleReveal()">إخفاء النص</button><button type="button" onclick="tahfeezLoadText(true)">↻ تحديث النص</button></div></div>
         <section class="tahfeez-focus-card" aria-live="polite">
           <div class="tahfeez-focus-head"><span id="tahfeezModeLabel">وضع الاستماع</span><span id="tahfeezFocusMeta">الآية 1</span></div>
@@ -121,4 +124,5 @@
 <script src="js/features/guardian-tahfeez.js?v=11.7.4.1"></script>
 <script src="js/features/guest-practice.js?v=11.7.4.1"></script>
 <script src="js/features/beta28-portal-ux.js?v=beta28-candidate1" defer></script>
+<script src="js/features/rc3-experience.js?v=beta28-rc3" defer></script>
 </body></html>
