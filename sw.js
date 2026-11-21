@@ -9,7 +9,7 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette' + '-rc3-experience' + '-rc4-share-warning' + '-rc5-teacher-feedback' + '-rc6-quiet-lesson' + '-rc7-data-safety' + '-rc8-reliability-workspace';
+const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette' + '-rc3-experience' + '-rc4-share-warning' + '-rc5-teacher-feedback' + '-rc6-quiet-lesson' + '-rc7-data-safety' + '-rc8-reliability-workspace' + '-rc9-lesson-flow' + '-rc10-teacher-fast-path';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
@@ -24,9 +24,14 @@ const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 const CRITICAL_FRESH_SHELL = [
   './auth.js?v=beta28-rc7-data-safety',
   './sync-core.js?v=beta28-rc7-data-safety',
-  './app.js?v=beta28-rc7-data-safety',
+  './app.js?v=beta28-rc9',
   './v8.js?v=beta28-rc7-data-safety',
   './css/platform/rc8-premium-workspace.css?v=beta28-rc8',
+  './css/platform/rc9-lesson-flow.css?v=beta28-rc9',
+  './js/features/rc9-lesson-flow.js?v=beta28-rc9',
+  './css/platform/rc10-teacher-fast-path.css?v=beta28-rc10',
+  './js/features/rc10-teacher-fast-path.js?v=beta28-rc10',
+  './v9.js?v=beta28-rc9',
   './js/features/rc8-premium-workspace.js?v=beta28-rc8',
   './css/platform/quiet-lesson-rc6.css?v=beta28-rc6',
   './js/features/quiet-lesson-rc6.js?v=beta28-rc6',
@@ -36,7 +41,7 @@ const CRITICAL_FRESH_SHELL = [
   './css/platform/temporary-media.css?v=beta28-rc4',
   './js/features/temporary-media-share.js?v=beta28-rc4',
   './js/features/assignment-audio-share.js?v=beta28-rc4',
-  './js/features/session-intelligence-119.js?v=beta28-rc4',
+  './js/features/session-intelligence-119.js?v=beta28-rc9',
   './css/platform/rc3-experience.css?v=beta28-rc3',
   './js/features/rc3-experience.js?v=beta28-rc3',
   './js/features/guest-palette.js?v=beta28-candidate2',
@@ -49,12 +54,12 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/guardian-portal-view.js?v=11.7.4.2',
   './js/features/guest-practice.js?v=11.7.4.1',
   './js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3',
-  './js/features/offline-audio-library.js?v=beta28-stage1',
+  './js/features/offline-audio-library.js?v=beta28-rc9',
   './js/features/temporary-media-share.js?v=beta28-stage1',
   './css/platform/temporary-media.css?v=beta28-stage1',
   './guardian-portal.html',
   './guest-practice.html',
-  './js/features/quran-audio-export.js?v=11.2.0-s4.1',
+  './js/features/quran-audio-export.js?v=beta28-rc9',
   './js/features/guardian-audio-assist.js?v=11.2.0-s4.1',
   './js/features/quran-audio-export.js?v=11.2.0-s4',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
@@ -234,7 +239,7 @@ const APP_SHELL = [
   './v10.js?v=11.12.1-beta.27',
   './revision-quran-text.css?v=11.8.1',
   './js/features/revision-quran-text.js?v=11.8.1',
-  './js/features/teacher-error-marking.js?v=11.12.1-beta.27-quran-picker-hotfix2',
+  './js/features/teacher-error-marking.js?v=beta28-rc9',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './js/features/guardian-communication.js?v=11.0.0',
   './js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3',
@@ -327,7 +332,7 @@ const CORE_SHELL = [
   './js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/student-finance.js?v=11.5.1-s2',
   './js/features/v11-ui.js?v=11.12.1-beta.27',
-  './js/features/teacher-error-marking.js?v=11.12.1-beta.27-quran-picker-hotfix2',
+  './js/features/teacher-error-marking.js?v=beta28-rc9',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './app.js?v=11.12.1-beta.27-absence-review2',
   './revision-quran-text.css?v=11.8.1',
@@ -374,15 +379,17 @@ async function cacheVerifiedCurrentShell(cache,url){
   const body=await response.clone().text();
   if(url==='./index.html' &&
      (!body.includes(`name="application-version" content="${APP_VERSION}"`)
-      ||!body.includes('app.js?v=beta28-rc7-data-safety')
+      ||!body.includes('app.js?v=beta28-rc9')
       ||!body.includes(`runtime.js?v=${APP_VERSION}`)))
     throw new Error('[SW] index.html is an older release');
-  if(['./index.html','./guardian-portal.html','./guest-practice.html'].includes(url) && !body.includes('offline-audio-library.js?v=beta28-stage1'))
+  if(['./index.html','./guardian-portal.html','./guest-practice.html'].includes(url) && !body.includes('offline-audio-library.js?v=beta28-rc9'))
     throw new Error('[SW] media stage1 HTML is not available');
   if(['./index.html','./guardian-portal.html','./guest-practice.html'].includes(url) && !body.includes('css/platform/rc3-experience.css?v=beta28-rc3'))
     throw new Error('[SW] RC3 HTML is not available');
-  if(url==='./index.html' && (!body.includes('rc8-premium-workspace.css?v=beta28-rc8')||!body.includes('rc8-premium-workspace.js?v=beta28-rc8')))
-    throw new Error('[SW] RC8 workspace assets missing from current HTML');
+  if(url==='./index.html' && (!body.includes('rc9-lesson-flow.css?v=beta28-rc9')||!body.includes('rc9-lesson-flow.js?v=beta28-rc9')))
+    throw new Error('[SW] RC9 teacher lesson assets missing from current HTML');
+  if(url==='./index.html' && (!body.includes('rc10-teacher-fast-path.css?v=beta28-rc10')||!body.includes('rc10-teacher-fast-path.js?v=beta28-rc10')))
+    throw new Error('[SW] RC10 teacher fast-path assets missing from current HTML');
   if(url.startsWith('./js/core/runtime.js') && !body.includes(`version:'${APP_VERSION}'`))
     throw new Error('[SW] runtime.js is an older release');
   if(url.startsWith('./app.js') && !body.includes(`WLQ_RELEASE_${APP_VERSION}`))

@@ -706,9 +706,9 @@ function renderV9Home(){
     return `<button class="v92-today-student" onclick="startFor('${v9Esc(st.id)}')"><span class="v92-person"><span class="v92-avatar">${v9Esc(v9Initials(st.name))}</span><span><b>${v9Esc(st.name)}</b><small>${v9Esc(st.group||st.level||'طالب')}</small></span></span>${badge}</button>`;
   }).join(''):`<div class="v92-empty"><b>لا يوجد طلاب مسجلون</b><span>ابدأ بإضافة أول طالب.</span><button class="btn btn-g btn-sm" onclick="openAddSt()">إضافة طالب</button></div>`;
   const nextTitle=next?`${next.label}${next.st.scheduleTime?` · ${v9Esc(next.st.scheduleTime)}`:''}`:'العمل اليومي';
-  const nextHeading=next?`ابدأ حصة ${v9Esc(next.st.name.split(' ')[0]||next.st.name)}`:'ابدأ الحصة مباشرة';
+  const nextHeading='ابدأ الحصة الآن';
   const nextText=next?(next.stop?`آخر تسميع فعلي: ${v9Esc(v9SectionLabel(next.stop))}`:next.last?'لا يوجد موضع تسميع فعلي مسجل في آخر حصة':'هذه أول حصة مسجلة للطالب'):'اختر الطالب ثم سجّل التسميع والحفظ والمراجعة في شاشة واحدة.';
-  const nextAction=next?`startFor('${v9Esc(next.st.id)}')`:`goPage('session')`;
+  const nextAction=`goPage('session')`;
   el.innerHTML=`
     <section class="v92-home-head">
       <div class="v92-brand-line"><img src="icon-96.png" alt="" class="v92-logo"><div><b>${v9Esc(settings.circle||'أكاديمية الإمام')}</b><span>${v9Esc(v9TodayDate())}</span></div></div>
@@ -717,7 +717,7 @@ function renderV9Home(){
 
     <section class="v92-primary-card${next?.overdue?' overdue':''}">
       <div><span class="v92-kicker">${nextTitle}</span><h1>${nextHeading}</h1><p>${nextText}</p></div>
-      <button class="v92-start" onclick="${nextAction}">${v9Icon(next?'play':'book')}<span>${next?'ابدأ الآن':'ابدأ حصة'}</span></button>
+      <button class="v92-start" onclick="${nextAction}">${v9Icon(next?'play':'book')}<span>ابدأ الحصة الآن</span></button>
     </section>
 
     <section class="v92-stats" aria-label="إحصائيات اليوم">

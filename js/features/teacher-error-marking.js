@@ -331,21 +331,28 @@
     // the normal WhatsApp workflow with the Android share sheet.
     legacy.override('saveAndSendWA',function(){
       let ses=null;
-      try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}catch(e){console.error('[qmark] save before WhatsApp failed',e);}
-      if(!ses){try{toast('تعذر حفظ الحصة قبل الإرسال','error');}catch(_){}return;}
+      try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}
+      catch(e){console.error('[qmark] save before WhatsApp failed',e);}
+      if(!ses){try{toast('لم يُرسل التقرير: تعذر حفظ الحصة. راجع تنبيه النواقص وحالة التخزين.','error');}catch(_){}return false;}
       const st=findStudent(ses.studentId);
-      if(!st){try{toast('تعذر العثور على بيانات الطالب بعد الحفظ','error');}catch(_){}return;}
+      if(!st){try{toast('حُفظت الحصة، لكن تعذر العثور على الطالب لإرسال التقرير.','error');}catch(_){}return false;}
       const msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';
-      safeOpenWhatsApp(st,msg);
-      try{toast('تم حفظ الحصة وفتح رسالة ولي الأمر','success');}catch(_){}
+      const opened=safeOpenWhatsApp(st,msg);
+      if(!opened){try{toast('حُفظت الحصة، لكن تعذر فتح محادثة ولي الأمر. يمكنك إعادة المشاركة دون حفظ جديد.','error');}catch(_){}return false;}
+      try{toast('تم حفظ الحصة وفتح محادثة ولي الأمر. راجع الرسالة واضغط إرسال داخل واتساب.','success');}catch(_){}
+      return true;
     },'v11.2.0-error1.3');
     if(typeof g.saveAndSendWAMode==='function')legacy.override('saveAndSendWAMode',function(mode){
       let ses=null;
-      try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}catch(e){console.error('[qmark] save mode before WhatsApp failed',e);}
-      if(!ses)return;
-      const st=findStudent(ses.studentId);if(!st)return;
+      try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}
+      catch(e){console.error('[qmark] save mode before WhatsApp failed',e);}
+      if(!ses){try{toast('لم يتم إرسال التقرير: تعذر حفظ الحصة.','error');}catch(_){}return false;}
+      const st=findStudent(ses.studentId);
+      if(!st){try{toast('الحصة محفوظة، لكن ملف الطالب غير متاح للمشاركة.','error');}catch(_){}return false;}
       const msg=typeof g.buildWAMsgMode==='function'?g.buildWAMsgMode(st,ses,mode):(typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'');
-      safeOpenWhatsApp(st,msg);
+      if(!safeOpenWhatsApp(st,msg)){try{toast('الحصة محفوظة، لكن واتساب لم يُفتح. أعد المشاركة من الحصة.','error');}catch(_){}return false;}
+      try{toast('تم فتح محادثة ولي الأمر. يلزم الضغط على إرسال داخل واتساب.','success');}catch(_){}
+      return true;
     },'v11.2.0-error1.3');
   }
   function init(){if(state.installed)return;state.installed=true;readPrefs();installPersistenceBridges();installPanel();ensureSheet();observe();hookOpeners();installReportBridge();installWhatsAppBridge();refreshPanel();document.addEventListener('visibilitychange',()=>{if(document.hidden){savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}}});g.addEventListener?.('pagehide',()=>{savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}},{capture:true});}

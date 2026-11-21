@@ -16,17 +16,32 @@
     const reciter=RECITERS[input?.reciter]?input.reciter:'mishary';lib.key(reciter,chapter,from);lib.key(reciter,chapter,to);if(to<from)throw new Error('AUDIO_INVALID_VERSE');
     if(count>MAX_AYAHS)throw new Error('AUDIO_RANGE_TOO_LARGE');
     const rec=RECITERS[input?.reciter]||RECITERS.mishary,parts=[];let total=0;
+    // A mid-surah assignment needs a standalone Basmala on every chapter except At-Tawbah.
+    // Verse 1 is deliberately not prefixed: the source track can already contain it;
+    // Al-Fatihah 1:1 is itself the Basmala. Never risk a duplicate opening.
+    const needsBasmala=chapter!==9&&from>1;
+    if(needsBasmala){
+      try{
+        onProgress?.({done:0,total:count+1,ayah:1,chapter:1,phase:'basmala'});
+        const b=await lib.verse(reciter,1,1);const raw=new Uint8Array(await b.arrayBuffer());
+        const clean=lib.audioPayload(raw);if(!lib.isMp3(raw)||!clean.length)throw new Error('EMPTY_AUDIO');
+        total+=clean.byteLength;parts.push(clean);
+      }catch(e){if(g.navigator?.onLine===false)throw new Error('AUDIO_BASMALA_MISSING');throw e;}
+    }
     for(let ayah=from;ayah<=to;ayah++){
-      onProgress?.({done:ayah-from,total:count,ayah,phase:'fetch'});
+      onProgress?.({done:ayah-from+(needsBasmala?1:0),total:count+(needsBasmala?1:0),ayah,phase:'fetch'});
       const source=await lib.verse(reciter,chapter,ayah);const raw=new Uint8Array(await source.arrayBuffer()),clean=lib.audioPayload(raw);if(!lib.isMp3(raw)||!clean.length)throw new Error('EMPTY_AUDIO');
       total+=clean.byteLength;if(total>MAX_BYTES)throw new Error('AUDIO_FILE_TOO_LARGE');parts.push(clean);
     }
-    onProgress?.({done:count,total:count,phase:'ready'});
+    onProgress?.({done:count+(needsBasmala?1:0),total:count+(needsBasmala?1:0),phase:'ready'});
     const blob=new Blob(parts,{type:'audio/mpeg'}),surah=safeName(input?.surah||`سورة-${chapter}`),label=safeName(rec.label.replace(/^الشيخ\s+/,''));
     return new File([blob],`تكليف-${surah}-${from}-${to}-${label}.mp3`,{type:'audio/mpeg',lastModified:Date.now()});
   }
   async function shareFile(file,{title='صوت التكليف',text='ملف صوتي للتكليف'}={}){
     if(!g.ImamTemporaryMedia)throw new Error('MEDIA_SHARE_UNAVAILABLE');return g.ImamTemporaryMedia.share([file],{title,text});
   }
+  // Concatenation adds no intentional pause, but original MP3 recordings may
+  // include their own encoder padding or trailing silence; true gapless output
+  // requires decoding and re-encoding, not supported by this offline utility.
   g.ImamQuranAudioExport={RECITERS,audioUrl,buildFile,shareFile};
 })(globalThis);

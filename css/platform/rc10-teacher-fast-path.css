@@ -1,0 +1,15 @@
+/* IMAM beta.28-rc.10 — Quiet fast path. No new save or guardian-send action. */
+body.imam-design-bridge #pg-session .ia30-step-next{display:flex;justify-content:flex-end;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 20px;padding:10px 0;border-top:1px solid var(--ui-line,#d9e5df);}
+body.imam-design-bridge #pg-session .ia30-step-next[hidden]{display:none!important;}
+body.imam-design-bridge #pg-session .ia30-step-hint{color:var(--ui-muted,#607570);font-size:12px;}
+body.imam-design-bridge #pg-session .ia30-next-btn{min-height:46px;padding:10px 20px;border:1px solid #17684d;border-radius:12px;background:#17684d;color:#fff;font:inherit;font-size:14px;font-weight:800;cursor:pointer;touch-action:manipulation;}
+body.imam-design-bridge #pg-session .ia30-next-btn:disabled{opacity:.55;cursor:not-allowed;}
+body.imam-design-bridge #pg-session .ia30-next-btn:focus-visible{outline:3px solid #c38c29;outline-offset:3px;}
+@media(max-width:650px){
+ /* The step tabs already state the current stage. This second intro duplicates it. */
+ body.imam-design-bridge #pg-session .ia8-session-toolbar{display:none!important;}
+ body.imam-design-bridge #pg-session .ia30-step-next{padding:10px 0;margin:8px 0 16px;}
+ body.imam-design-bridge #pg-session .ia30-step-next .ia30-next-btn{width:100%;}
+ body.imam-design-bridge #pg-session .ia30-step-hint{display:none;}
+}
+@media(prefers-reduced-motion:reduce){body.imam-design-bridge #pg-session .ia30-next-btn{transition:none;}}

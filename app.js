@@ -1556,10 +1556,16 @@ function sendWA(){
   openWhatsApp(st,buildWAMsg(st,ses));
 }
 function saveAndSendWA(){
-  const ses=saveSession({silent:true,noCelebrate:true});if(!ses)return;
-  const st=students.find(x=>x.id===ses.studentId);if(!st)return;
-  openWhatsApp(st,buildWAMsg(st,ses));
-  toast('تم حفظ الحصة وفتح رسالة ولي الأمر','success');
+  const ses=saveSession({silent:true,noCelebrate:true});
+  if(!ses){toast('لم يتم إرسال التقرير: تعذر اعتماد الحصة. راجع الحقول المحددة أو حالة الحفظ المحلي.','error');return false;}
+  const st=students.find(x=>x.id===ses.studentId);
+  if(!st){toast('حُفظت الحصة على الجهاز، لكن ملف الطالب غير متاح لإرسال التقرير.','error');return false;}
+  let opened=false;
+  try{opened=openWhatsApp(st,buildWAMsg(st,ses));}
+  catch(err){console.warn('[guardian-handoff] could not open WhatsApp',err);}
+  if(!opened){toast('حُفظت الحصة بنجاح، لكن تعذر فتح واتساب. يمكنك إعادة مشاركة التقرير دون حفظ الحصة من جديد.','error');return false;}
+  toast('تم حفظ الحصة وتجهيز واتساب. أكمل إرسال الرسالة من المحادثة بنفسك.','success');
+  return true;
 }
 
 // ══════════════════════════════════════

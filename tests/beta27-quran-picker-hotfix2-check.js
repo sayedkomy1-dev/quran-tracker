@@ -9,8 +9,9 @@ const marker=fs.readFileSync('js/features/teacher-error-marking.js','utf8');
 const css=fs.readFileSync('teacher-quran-range-picker.css','utf8');
 const ver='11.12.1-beta.27-quran-picker-hotfix2';
 for(const file of ['teacher-quran-range-picker.css','js/features/teacher-quran-range-picker.js','js/features/teacher-error-marking.js']) {
- assert(html.includes(file+'?v='+ver), 'new asset browser version: '+file);
- assert(sw.includes("'./"+file+'?v='+ver+"'"), 'new asset PWA cache version: '+file);
+ const requested=file==='js/features/teacher-error-marking.js'?'beta28-rc9':ver;
+ assert(html.includes(file+'?v='+requested), 'new asset browser version: '+file);
+ assert(sw.includes("'./"+file+'?v='+requested+"'"), 'new asset PWA cache version: '+file);
 }
 assert(css.includes('min-width:42px')&&css.includes('min-height:42px'),'verse selection must have a phone-size tap target');
 assert(code.includes("if(!draft||!e.target.closest('.quran-ayah-num, .ia27-choose-end'))return"),'separate verse number selection from word errors');

@@ -19,7 +19,7 @@ for(const name of [...scripts,...css]){
  const versionedV9=`${name}?v=${version}-guardian-reactivation-hotfix4`;
  const versionedBoard=`${name}?v=${version}-quran-picker1`;
  const revision2=`${name}?v=${version}-absence-review2`;
- const rc7=`${name}?v=beta28-rc7-data-safety`;
+ const rc7=`${name}?v=beta28-rc9`;
  assert(html.includes(ref)||html.includes(versionedV9)||html.includes(versionedBoard)||html.includes(revision2)||html.includes(rc7),`index missing fresh ${name}`);
  assert(sw.includes(`'./${ref}'`)||sw.includes(`'./${versionedV9}'`)||sw.includes(`'./${versionedBoard}'`)||sw.includes(`'./${revision2}'`)||sw.includes(`'./${rc7}'`),`SW missing fresh ${name}`);
 }

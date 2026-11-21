@@ -1,0 +1,15 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../../css/platform/rc10-teacher-fast-path.css"></head><body class="imam-design-bridge">
+<div id="pg-session" class="pg on v9-guided" data-ia-session-step="assessment">
+ <div id="ia21SessionStudent"><select id="sesSt"><option value="">اختر الطالب</option><option value="17">أحمد</option></select></div>
+ <div id="v9SessionSteps" class="v9-session-steps"><div class="v9-step-row"><button type="button" data-step="assessment" onclick="setSessionStep('assessment')">التسميع</button><button type="button" data-step="new" onclick="setSessionStep('new')">الحفظ</button><button type="button" data-step="review" onclick="setSessionStep('review')">المراجعة</button><button type="button" data-step="notes" onclick="setSessionStep('notes')">الملاحظات</button></div></div>
+ <div id="sesContent">
+ <div class="card" data-v9-step="assessment" id="assessment-card"><h2>تسميع</h2></div>
+ <div class="card" data-v9-step="new" id="new-card"><h2>حفظ</h2></div>
+ <div class="card" data-v9-step="review" id="review-card"><h2>مراجعة</h2></div>
+ <div class="card" data-v9-step="notes" id="notes-card"><h2>ملاحظات</h2></div>
+ <section id="v9SessionFooter"><button id="saveSessionBtn">حفظ الحصة</button><button id="saveSendSessionBtn">حفظ وإرسال لولي الأمر</button></section>
+ </div>
+</div>
+<script>function setSessionStep(step){document.querySelector('#pg-session').setAttribute('data-ia-session-step',step);document.querySelector('#v9SessionFooter').hidden=step!=='notes';}</script>
+<script src="../../js/features/rc10-teacher-fast-path.js"></script>
+</body></html>

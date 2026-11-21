@@ -14,7 +14,7 @@
   // Audible warning uses Web Audio from a user-initiated click, not autoplay.
   // No external sound assets or permissions. Can be disabled in the session UI.
   const AUDIO_PREF='imam:teacher:guardian-send-audio:v1';
-  function audioEnabled(){try{return localStorage.getItem(AUDIO_PREF)!=='off';}catch(_){return true;}}
+  function audioEnabled(){try{return localStorage.getItem(AUDIO_PREF)==='on';}catch(_){return false;}}
   function playGuardianWarning(incomplete){
     if(!audioEnabled())return false;
     try{
@@ -87,7 +87,8 @@
     if(kind==='auto'){
       for(const k of ['new','rec','far']){if(previous?.[k]&&!skip[k])checks.push(requirement('prior-grade-'+k,`تسجيل نتيجة ${ACT[k]} من تكليف الحصة السابقة`,hasGrade(k),'important','pgr-'+k));}
       if(hasNew&&d.actualRecitation?.new&&!hasGrade('new')&&!skip.new)checks.push(requirement('grade-new','نتيجة موضع الحفظ الجديد الذي تم تسميعه',false,'important','pgr-new'));
-      if(!hasNew&&!hasReview()&&!extras.length)checks.push(requirement('activities','تحديد نشاط الحصة أو تأكيد عدم تنفيذه',!!skip.new&&!!skip.rec,'important','im119Kind'));
+      const hasActualEvidence=Object.values(d.prevGrades||{}).some(Boolean)||Object.values(d.actualRecitation||{}).some(Boolean)||!!d.recitationErrors?.length;
+      if(!hasNew&&!hasReview()&&!extras.length&&!hasActualEvidence)checks.push(requirement('activities','تحديد نشاط الحصة أو تأكيد عدم تنفيذه',!!skip.new&&!!skip.rec,'important','im119Kind'));
       for(const k of ['rec','far'])if(has(k)&&!skip[k])checks.push(requirement('grade-'+k,`تقييم ${ACT[k]}`,hasGrade(k),'important','pgr-'+k));
     }
     if(kind==='placement'||kind==='exam'){
@@ -119,15 +120,25 @@
       if(idx<0){checks.push(requirement('raw-surah-'+k,`${label}: ${surah?'اسم السورة غير صحيح':'اختر السورة'}`,false,'critical',k+'-s'));continue;}
       if(!full){if(positive(f)&&positive(t)&&Number(f)>Number(t))checks.push(requirement('raw-order-'+k,`${label}: آية النهاية تسبق البداية`,false,'critical',k+'-t'));for(const [suffix,val,which] of [['f',f,'البداية'],['t',t,'النهاية']])if(!val||!positive(val)||Number(val)>quran()[idx]?.a)checks.push(requirement('raw-'+suffix+'-'+k,`${label}: ${!val?'حدد آية '+which:'آية '+which+' خارج نطاق السورة'}`,false,'critical',k+'-'+suffix));}
     }
-    return result(checks,base.kind);
+    // Selected grade DOM is the teacher's current input. The legacy report model
+    // can lag one click behind; do not warn that a visible selected grade is empty.
+    const reconciled=checks.map(issue=>{
+      const gradeIssue=issue.id.match(/^(?:prior-)?grade-(new|rec|far|juz|surahReview)$/);
+      if(!gradeIssue||issue.done)return issue;
+      const box=by('pgr-'+gradeIssue[1]);
+      return box?.querySelector?.('.gb.sel[data-g]')?{...issue,done:true}:issue;
+    });
+    return result(reconciled,base.kind);
   }
   function focusMissing(target){
     const id=String(target||'');
     const grade=id.match(/^pgr-(new|rec|far|juz|surahReview)$/);
     const section=id.match(/^(new|rec|far)-(?:s|f|t|full)$/);
     // Guided session mode hides non-current sections, even when a target exists.
+    const advancedTarget=/^(im119|im119Extra)/.test(id);
     const step=grade?'assessment':section?(section[1]==='new'?'new':'review'):'assessment';
     try{g.setSessionStep?.(step,false);}catch(_){}
+    if(advancedTarget){const more=by('ia29LessonExtras');if(more)more.open=true;}
     if(section&&by('tog-'+section[1])&&!by('tog-'+section[1]).classList.contains('on')){
       try{g.togSec?.(section[1]);}catch(_){}
     }
@@ -138,7 +149,7 @@
     const t=by(id)||(grade?by('prev-task-'+grade[1]):null);
     if(!t){g.toast?.('تعذر تحديد الحقل تلقائيًا؛ افتح قسم النواقص لتعديله','info');return false;}
     let node=t;while(node){if(node.tagName==='DETAILS')node.open=true;node=node.parentElement;}
-    const focusTarget=grade?(t.querySelector?.('.gb')||t):t;
+    const focusTarget=grade?(t.querySelector?.('.gb:not(.sel)')||t.querySelector?.('.gb')||t):t;
     if(!focusTarget.matches?.('input,select,textarea,button,a,[tabindex]'))focusTarget.setAttribute?.('tabindex','-1');
     const visible=()=>{
       try{focusTarget.scrollIntoView?.({block:'center',behavior:'smooth'});}catch(_){}
@@ -241,7 +252,10 @@
     data={...data,...(Object.keys(actual).length?{actualRecitation:actual}:null)};
     const has=state.extra.length||state.kind!=='auto'||Object.values(state.skip).some(Boolean)||Object.values(state.decisions).some(Boolean)||!!state.overrideReason;if(!has)return data;return {...data,teacher119:{kind:state.kind,extra:state.extra.map(normalizedRange),notPerformed:{...state.skip},decisions:{...state.decisions},skipReason:state.skipReason,...(state.overrideReason?{overrideReason:state.overrideReason,overrideAt:state.overrideAt,overrideIssues:state.overrideIssues}:null)}};}
   function showWarning(result,action){
-    if(state.warning)return;state.warning=true;
+    if(state.warning)return;
+    // Recheck the real editor at the moment of opening, not a stale completion card.
+    const latest=validateCurrent();if(!latest.outstanding.length)return execute(action);
+    result=latest;state.warning=true;
     const prev=by('im119Warning');prev?.remove();const critical=result.critical.length>0;
     // The underlying save/send action enforces permissions; a noncritical reminder
     // must not become an extra permission gate, including in offline lessons.
@@ -249,7 +263,7 @@
     const box=document.createElement('div');box.id='im119Warning';box.className='mo open im119-dialog';
     box.innerHTML=`<div class="mo-box" role="alertdialog" aria-modal="true" aria-labelledby="im119WarningTitle"><h3 id="im119WarningTitle">⚠️ ${['send','short','detailed'].includes(action)?'تحذير: تقرير ولي الأمر غير مكتمل':'تنبيه مهم: بيانات الحصة غير مكتملة'}</h3><p>انتبه يا شيخنا، راجع النواقص التالية قبل المتابعة:</p><div class="im119-warning-list">${result.outstanding.map(x=>`<button type="button" data-missing-target="${escape(x.target)}">${escape(x.label)} ${x.severity==='critical'?'(نقص حرج)':''} ← فتح الحقل</button>`).join('')}</div>${canOverride?'<label>سبب التخطي (اختياري، يُحفظ مع الحصة)<textarea id="im119OverrideReason" rows="2" maxlength="250" placeholder="مثال: لم يتم التقييم في هذه الحصة"></textarea></label>':''}<div class="im119-actions"><button type="button" class="btn btn-g" data-action="review">استكمال البيانات</button><button type="button" class="btn btn-out" data-action="draft">حفظ كمسودة</button>${canOverride?'<button type="button" class="btn btn-wa" data-action="approve">تخطي التنبيه والمتابعة</button>':''}<button type="button" class="btn btn-out" data-action="cancel">إلغاء</button></div></div>`;document.body.appendChild(box);
     function close(){box.remove();state.warning=false;}
-    box.querySelectorAll('[data-missing-target]').forEach(btn=>btn.onclick=()=>{const target=btn.dataset.missingTarget;close();focusMissing(target);});
+    box.querySelectorAll('[data-missing-target]').forEach(btn=>btn.onclick=()=>{const target=btn.dataset.missingTarget,issue=btn.textContent;const latest=validateCurrent();close();if(!latest.outstanding.some(x=>x.target===target)){g.toast?.('تم استكمال هذا الحقل بالفعل؛ راجع ما تبقى فقط','success');render();return;}focusMissing(target);});
     box.querySelectorAll('[data-action]').forEach(btn=>btn.onclick=()=>{
       const choice=btn.dataset.action,reason=by('im119OverrideReason')?.value.trim()||'';
       if(choice==='approve'&&!canOverride){g.toast?.('ليس لديك تصريح لتجاوز التنبيه','error');return;}
@@ -264,9 +278,9 @@
         }catch(err){g.toast?.('تعذر تأكيد حفظ المسودة، راجع مساحة التخزين','error');}
         return;
       }
-      if(choice==='review'){const target=result.outstanding[0]?.target;close();focusMissing(target);return;}
+      if(choice==='review'){const latest=validateCurrent(),target=latest.outstanding[0]?.target;close();if(!target){render();g.toast?.('البيانات مكتملة الآن','success');return;}focusMissing(target);return;}
       if(choice==='cancel'){close();return;}
-      if(choice==='approve'){state.overrideReason=reason||'تم تخطي تنبيه النواقص باختيار المحفظ';state.overrideAt=new Date().toISOString();state.overrideIssues=result.outstanding.map(x=>x.id);close();execute(action);}
+      if(choice==='approve'){const latest=validateCurrent();if(latest.critical.length){close();focusMissing(latest.critical[0].target);g.toast?.('يوجد خطأ حرج لا يمكن تجاوزه؛ تم فتح الحقل المطلوب','error');return;}state.overrideReason=reason||'تم تخطي تنبيه النواقص باختيار المحفظ';state.overrideAt=new Date().toISOString();state.overrideIssues=latest.outstanding.map(x=>x.id);close();execute(action);}
     });
   }
   function execute(action){
