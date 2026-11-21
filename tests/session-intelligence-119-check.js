@@ -40,9 +40,17 @@ ctx.buildSesData=()=>({notes:'اختبار'});
 let raw=api.validateCurrent();assert(raw.critical.some(x=>x.target==='new-t'&&x.id==='raw-t-new'));
 fake['new-t'].value='999';raw=api.validateCurrent();assert(raw.critical.some(x=>x.target==='new-t'));
 fake['new-t'].value='5';assert(!api.validateCurrent().critical.some(x=>x.id==='raw-t-new'));
+// The current-grade control (#gr-new) must satisfy the UI validator even when
+// older buildSesData versions omit grade from the serialized section.
+ctx.buildSesData=()=>({new:{surah:'البقرة',from:2,to:5},actualRecitation:{new:{surah:'البقرة',from:2,to:5}},prevGrades:{}});
+fake['gr-new']={querySelector:sel=>sel==='.gb.sel[data-g]'?{dataset:{g:'جيد'}}:null};
+let currentGrade=api.validateCurrent();
+assert(!currentGrade.outstanding.some(x=>x.id==='grade-new'),'selected new-memorization grade must not trigger a false warning');
+delete fake['gr-new'];
+ctx.buildSesData=()=>({notes:'اختبار'});
 fake['sb-a']={classList:{contains:x=>x==='sel-a'}};fake['new-t'].value='';assert(!api.validateCurrent().critical.some(x=>x.id==='raw-t-new'));
 const html=read('index.html'),sw=read('sw.js'),runtime=read('js/core/runtime.js'),app=read('app.js');
-assert(html.includes('session-intelligence-119.js?v=beta28-rc9'));
+assert(html.includes('session-intelligence-119.js?v=beta28-rc11'));
 assert(sw.includes("'./js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3'"));
 assert(sw.includes("'./session-intelligence-119.css?v=11.9.2'"));
 assert(runtime.includes("version:'11.12.1-beta.27',schema:12"));

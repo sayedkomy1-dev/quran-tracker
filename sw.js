@@ -9,7 +9,7 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette' + '-rc3-experience' + '-rc4-share-warning' + '-rc5-teacher-feedback' + '-rc6-quiet-lesson' + '-rc7-data-safety' + '-rc8-reliability-workspace' + '-rc9-lesson-flow' + '-rc10-teacher-fast-path';
+const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette' + '-rc3-experience' + '-rc4-share-warning' + '-rc5-teacher-feedback' + '-rc6-quiet-lesson' + '-rc7-data-safety' + '-rc8-reliability-workspace' + '-rc9-lesson-flow' + '-rc10-teacher-fast-path' + '-rc11-teacher-flow';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
@@ -30,6 +30,8 @@ const CRITICAL_FRESH_SHELL = [
   './css/platform/rc9-lesson-flow.css?v=beta28-rc9',
   './js/features/rc9-lesson-flow.js?v=beta28-rc9',
   './css/platform/rc10-teacher-fast-path.css?v=beta28-rc10',
+  './css/platform/rc11-teacher-flow.css?v=beta28-rc11',
+  './js/features/rc11-teacher-flow.js?v=beta28-rc11',
   './js/features/rc10-teacher-fast-path.js?v=beta28-rc10',
   './v9.js?v=beta28-rc9',
   './js/features/rc8-premium-workspace.js?v=beta28-rc8',
@@ -41,7 +43,7 @@ const CRITICAL_FRESH_SHELL = [
   './css/platform/temporary-media.css?v=beta28-rc4',
   './js/features/temporary-media-share.js?v=beta28-rc4',
   './js/features/assignment-audio-share.js?v=beta28-rc4',
-  './js/features/session-intelligence-119.js?v=beta28-rc9',
+  './js/features/session-intelligence-119.js?v=beta28-rc11',
   './css/platform/rc3-experience.css?v=beta28-rc3',
   './js/features/rc3-experience.js?v=beta28-rc3',
   './js/features/guest-palette.js?v=beta28-candidate2',
@@ -390,6 +392,8 @@ async function cacheVerifiedCurrentShell(cache,url){
     throw new Error('[SW] RC9 teacher lesson assets missing from current HTML');
   if(url==='./index.html' && (!body.includes('rc10-teacher-fast-path.css?v=beta28-rc10')||!body.includes('rc10-teacher-fast-path.js?v=beta28-rc10')))
     throw new Error('[SW] RC10 teacher fast-path assets missing from current HTML');
+  if(url==='./index.html' && (!body.includes('rc11-teacher-flow.css?v=beta28-rc11')||!body.includes('rc11-teacher-flow.js?v=beta28-rc11')))
+    throw new Error('[SW] RC11 compact teacher flow assets missing from current HTML');
   if(url.startsWith('./js/core/runtime.js') && !body.includes(`version:'${APP_VERSION}'`))
     throw new Error('[SW] runtime.js is an older release');
   if(url.startsWith('./app.js') && !body.includes(`WLQ_RELEASE_${APP_VERSION}`))

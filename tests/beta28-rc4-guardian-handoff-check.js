@@ -51,6 +51,6 @@ vm.runInNewContext(read('js/features/assignment-audio-share.js'),context);
  fake.sesSt.value='';btns.length=0;btns.push({dataset:{action:'cancel'}});
  api.showWarning({outstanding:[{id:'student',label:'اختر الطالب',target:'sesSt',severity:'critical'}],critical:[{id:'student'}]},'send');
  assert(!modal.innerHTML.includes('تخطي التنبيه والمتابعة'),'critical issues still block sending');
- const index=read('index.html'),sw=read('sw.js');for(const name of ['assignment-audio-share.js','temporary-media-share.js'])assert(index.includes(`${name}?v=beta28-rc4`)&&sw.includes(`${name}?v=beta28-rc4`));assert(index.includes('session-intelligence-119.js?v=beta28-rc9')&&sw.includes('session-intelligence-119.js?v=beta28-rc9'));
+ const index=read('index.html'),sw=read('sw.js');for(const name of ['assignment-audio-share.js','temporary-media-share.js'])assert(index.includes(`${name}?v=beta28-rc4`)&&sw.includes(`${name}?v=beta28-rc4`));assert(index.includes('session-intelligence-119.js?v=beta28-rc11')&&sw.includes('session-intelligence-119.js?v=beta28-rc11'));
  console.log('PASS RC4: scoped guardian recipient, missing phone guard, direct WhatsApp text fallback, guided focus, allowed noncritical override, critical block, offline assets');
 })().catch(e=>{console.error(e);process.exitCode=1});

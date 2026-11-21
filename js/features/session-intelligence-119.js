@@ -125,8 +125,12 @@
     const reconciled=checks.map(issue=>{
       const gradeIssue=issue.id.match(/^(?:prior-)?grade-(new|rec|far|juz|surahReview)$/);
       if(!gradeIssue||issue.done)return issue;
-      const box=by('pgr-'+gradeIssue[1]);
-      return box?.querySelector?.('.gb.sel[data-g]')?{...issue,done:true}:issue;
+      // A previous-assignment grade is selected under pgr-*, whereas grading
+      // the current new/review work uses gr-*. Do not report a visually selected
+      // current grade as missing just because legacy buildSesData omits it.
+      const prior=issue.id.startsWith('prior-grade-');
+      const boxes=prior?[by('pgr-'+gradeIssue[1])]:[by('pgr-'+gradeIssue[1]),by('gr-'+gradeIssue[1])];
+      return boxes.some(box=>!!box?.querySelector?.('.gb.sel[data-g]'))?{...issue,done:true}:issue;
     });
     return result(reconciled,base.kind);
   }
@@ -260,8 +264,8 @@
     // The underlying save/send action enforces permissions; a noncritical reminder
     // must not become an extra permission gate, including in offline lessons.
     const canOverride=!critical;
-    const box=document.createElement('div');box.id='im119Warning';box.className='mo open im119-dialog';
-    box.innerHTML=`<div class="mo-box" role="alertdialog" aria-modal="true" aria-labelledby="im119WarningTitle"><h3 id="im119WarningTitle">⚠️ ${['send','short','detailed'].includes(action)?'تحذير: تقرير ولي الأمر غير مكتمل':'تنبيه مهم: بيانات الحصة غير مكتملة'}</h3><p>انتبه يا شيخنا، راجع النواقص التالية قبل المتابعة:</p><div class="im119-warning-list">${result.outstanding.map(x=>`<button type="button" data-missing-target="${escape(x.target)}">${escape(x.label)} ${x.severity==='critical'?'(نقص حرج)':''} ← فتح الحقل</button>`).join('')}</div>${canOverride?'<label>سبب التخطي (اختياري، يُحفظ مع الحصة)<textarea id="im119OverrideReason" rows="2" maxlength="250" placeholder="مثال: لم يتم التقييم في هذه الحصة"></textarea></label>':''}<div class="im119-actions"><button type="button" class="btn btn-g" data-action="review">استكمال البيانات</button><button type="button" class="btn btn-out" data-action="draft">حفظ كمسودة</button>${canOverride?'<button type="button" class="btn btn-wa" data-action="approve">تخطي التنبيه والمتابعة</button>':''}<button type="button" class="btn btn-out" data-action="cancel">إلغاء</button></div></div>`;document.body.appendChild(box);
+    const box=document.createElement('div');box.id='im119Warning';box.className=critical?'mo open im119-dialog':'ia31-inline-warning';
+    box.innerHTML=`<div class="mo-box" role="${critical?'alertdialog':'region'}" ${critical?'aria-modal="true"':''} aria-labelledby="im119WarningTitle"><h3 id="im119WarningTitle">⚠️ ${['send','short','detailed'].includes(action)?'تحذير: تقرير ولي الأمر غير مكتمل':'تنبيه مهم: بيانات الحصة غير مكتملة'}</h3><p>انتبه يا شيخنا، راجع النواقص التالية قبل المتابعة:</p><div class="im119-warning-list">${result.outstanding.map(x=>`<button type="button" data-missing-target="${escape(x.target)}">${escape(x.label)} ${x.severity==='critical'?'(نقص حرج)':''} ← فتح الحقل</button>`).join('')}</div>${canOverride?'<label>سبب التخطي (اختياري، يُحفظ مع الحصة)<textarea id="im119OverrideReason" rows="2" maxlength="250" placeholder="مثال: لم يتم التقييم في هذه الحصة"></textarea></label>':''}<div class="im119-actions"><button type="button" class="btn btn-g" data-action="review">استكمال البيانات</button><button type="button" class="btn btn-out" data-action="draft">حفظ كمسودة</button>${canOverride?'<button type="button" class="btn btn-wa" data-action="approve">تخطي التنبيه والمتابعة</button>':''}<button type="button" class="btn btn-out" data-action="cancel">إلغاء</button></div></div>`;const warningHost=!critical&&(by('v9SessionFooter')||by('sesContent'));if(warningHost)warningHost.appendChild(box);else document.body.appendChild(box);
     function close(){box.remove();state.warning=false;}
     box.querySelectorAll('[data-missing-target]').forEach(btn=>btn.onclick=()=>{const target=btn.dataset.missingTarget,issue=btn.textContent;const latest=validateCurrent();close();if(!latest.outstanding.some(x=>x.target===target)){g.toast?.('تم استكمال هذا الحقل بالفعل؛ راجع ما تبقى فقط','success');render();return;}focusMissing(target);});
     box.querySelectorAll('[data-action]').forEach(btn=>btn.onclick=()=>{

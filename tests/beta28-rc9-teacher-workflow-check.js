@@ -9,7 +9,8 @@ const style=read('css/platform/rc9-lesson-flow.css');
 assert(html.includes('js/features/rc9-lesson-flow.js?v=beta28-rc9'));
 assert(html.includes('css/platform/rc9-lesson-flow.css?v=beta28-rc9'));
 for(const file of ['js/features/rc9-lesson-flow.js','css/platform/rc9-lesson-flow.css','js/features/offline-audio-library.js','js/features/quran-audio-export.js','js/features/session-intelligence-119.js','js/features/teacher-error-marking.js']){
-  assert(sw.includes(`'./${file}?v=beta28-rc9'`),`${file}: latest offline asset not included`);
+  const version=file==='js/features/session-intelligence-119.js'?'beta28-rc11':'beta28-rc9';
+  assert(sw.includes(`'./${file}?v=${version}'`),`${file}: latest offline asset not included`);
 }
 assert(flow.includes("student.insertAdjacentElement('afterend',wizard)"),'lesson steps should follow student selector');
 assert(flow.includes('ia29LessonExtras')&&flow.includes("makeDetails('ia29ReaderTools'"),'optional cards and text tools need disclosures');

@@ -52,6 +52,7 @@ c732a9c9a8f374767d2bb02a83d7dd30f007040bac280b2e9e4328fc404f28e5  ./BETA24-CHANG
 3db550f90fbc48a1d02e17a8e5f54965b7e5e84dde3a4a999bb41833cf4021a1  ./BETA28-CANDIDATE-ACCEPTANCE.md
 346eb0ea8bfe3d477c051f08ad0e3ef10c1b6008f1a746e0d1dd2a789154798c  ./BETA28-CANDIDATE2-DESIGN.md
 a6fcaa82ff6ad65de35305942d4d0776044a5853d276d2c08c6b84e3cfa1fd77  ./BETA28-RC10-FAST-PATH.md
+8846f9bd45ace24050af96d520d0a9c95214a6930b2af3ef130fec4fd6745d00  ./BETA28-RC11-TEACHER-FLOW.md
 5c8b8860f0f742d5e0941d49431b9506b5d16cf1098855b3793a51c2189d0aaa  ./BETA28-RC3-EXPERIENCE.md
 49b444a82169db0b61eb530249c6f5a32e44b754d963106099fbe7d68019d315  ./BETA28-RC4-GUARDIAN-AUDIO-AND-REPORT-UX.md
 e5b8f43115b9fede174c8835aa56486b499aca825687ed5231b4b584f8cd6eeb  ./BETA28-RC5-TEACHER-ACTIONS-AND-AUDIO.md
@@ -403,6 +404,7 @@ dbe08e7bf8fbcb41b1164de6959a3a45628a92aabc29f48c032af5379b625302  ./css/platform
 b2f8dc8fcea5182f0136837f2ac56b5aa5384d77861d15ec7d3f701f0cd566bd  ./css/platform/public-experience.css
 2a9a494ff033e661cae1db40798cd542d489f237a65808d0fb46bc350948bd6d  ./css/platform/quiet-lesson-rc6.css
 34a8d4e9c5179d0353de4663e1ae465a3b1d618636b108b249a5cfc78060b6f6  ./css/platform/rc10-teacher-fast-path.css
+1393f2feec0fbad116a95d884dd217b616630b1f9fbd79e9c29a42f40ae6c208  ./css/platform/rc11-teacher-flow.css
 9ee1e1e1e32adb426564f56be57569303a153cf8f8bf5c3e9a4236f9bea2c648  ./css/platform/rc3-experience.css
 84db9e56a0522cccaafbb2afde50da52a694569e507d25236a46b85c55eb1c0d  ./css/platform/rc5-teacher-actions.css
 3d9d3386ffab82b44e0d5e78ed5c3f72ae4aba5b67a0b5d556615315feb68625  ./css/platform/rc8-premium-workspace.css
@@ -458,7 +460,7 @@ a5621b720d653801b0475f1b58786b1f9ab7ccdd0e46a8f0ee845e2dc253fcdf  ./imam-board-d
 03345b61e6cbe1fe97225df1518d1f515110c970558a477468195db71f4340fb  ./imam-makeup-agenda.css
 03eb52ed64c2f85bf9420c6d6a21f6520e03dbc7fcf1943a9551ab379fd94dd9  ./imam-smart-board.css
 4846b74dfd4aebb06a1844a43fa591c0e388642c5caf2a1f829512a46e4328cc  ./imam-teaching-insights.css
-534448365f44f8cc0e13023db5b08ffcc2cad36bc8c576dfa578b1cbc0d6fee7  ./index.html
+c2b91dfab809490e1be119a626888071f500bf8f7ad349525f1bedb28b993c5b  ./index.html
 47ce4d055146c84c6c71ef1029f8e029112dba8ea016ce13f096a1754bea7608  ./integrated-teacher-brief.css
 69d4270bc62d31c34e16af5692329f87c48147f6c84ab77546b3512581113add  ./js/core/boot-health.js
 c75ba2bd9578a52755e58ea22687299960ff68da1ccd08760fbd1facdcaa279b  ./js/core/mobile-navigation.js
@@ -512,13 +514,14 @@ ef42dfaffd57df98c78dbfd0880c3de11095e6bf5b4c1d420cd802372c0dd845  ./js/features/
 fd764a7cdeeafd1f062c21c3e580f912ee4e31ea73642580b7b94734302f0608  ./js/features/quran-engine.js
 9c1ee1b80e6daa26bfba14e1b2e8a88c5d270ec584a3298e85096fa5aecbb7a2  ./js/features/quran-structure.js
 4433a83e3d931dc98e91f2524ef1b500598ccf501c361e62d46c43a7f9216ec7  ./js/features/rc10-teacher-fast-path.js
+0e32f75828928f7b0725c7b46adfd15333544777eee0b8f4bd74671039df4f2c  ./js/features/rc11-teacher-flow.js
 decb747eb57253390ae8de208947dbe16c4cc11c1ffe8b42b702caea89c5eb3b  ./js/features/rc3-experience.js
 275a76e7e0981a571c434b54549d8a1e3e2dc594ed3196a1da382a70468ec232  ./js/features/rc8-premium-workspace.js
 7e22c67e450b637e367d00ca4ab0ce2b225ce022054a35f1ffde3ddd9402ab7b  ./js/features/rc9-lesson-flow.js
 156b97975c649282746e98c0a4c515572751fd58c924eeda451ef2ab29081173  ./js/features/recitation-carry.js
 60b3781ea69a00972316965ede0df4c3c6d35d57e7943c49cda06647d19d115a  ./js/features/revision-quran-text.js
 54b63e0824ac4e3a52252b6e0c9c161c21a9af60d73fa2e6a825edc67e394279  ./js/features/role-home.js
-4733c6b95aba93b2ad4bfc97f51e40e1f9e9a3871538f394868dab5c80a37f78  ./js/features/session-intelligence-119.js
+3df5f81ba7fc594c28e6b7141b6b98351d94575cccd6270eefae65fe143ef882  ./js/features/session-intelligence-119.js
 f6dc8b4df73e0f71b83c009a7cef334904aabdd89d6abd75d31a156eeeb74da5  ./js/features/smart-revision.js
 6318937ef1efad96f60c3e15fd3e831ddbfbdf5133cccbd9df169d9a49d55ac2  ./js/features/student-finance.js
 921a2fc19b8d71218b26ca9284c11639c6aff0132e72533ea7a81983823f9daf  ./js/features/student-progress.js
@@ -534,7 +537,7 @@ eed9abc30a7d0370328e5bb1b496629de5ac808070e9e61c05a921213ffde644  ./js/features/
 a29eff5aee0d11a9e536f63bbd79bebfbf23de8154cc1be4b95304dabc8626db  ./js/features/v10-data.js
 ff3097d5c4eb04b2a50bbdd83f76f099ebcb35411ca11fe84507465a92e9d72c  ./js/features/v11-ui.js
 36eef73a2ab5795f2680f7ea4d19842babf7d5f0fa7784bb75b1c78367587665  ./manifest.json
-9032f489b11342c2805d51631877577b7ead547b5ca41b453e38c206d4b6cd83  ./package.json
+b9789b8dd18204fc1d90e4ac6fb72d3caaa2b23fd3dcd1d5adffdc3dd8ff4733  ./package.json
 006233681e5b9057b512f30a2d188752516a20b1d0c3728d5f463922d2c2e255  ./placement-center-1191.css
 714c0006dae19e65c61e5a4e353adc0e89317871d33ddbf4425dc48cdde72a80  ./privacy.html
 c328381c6471d948a58ff4542ada95bc77bebe7c3ac2842cc0faab347fd591cc  ./progress-bridge-1111.css
@@ -604,7 +607,7 @@ e2ee210099231f20d2005138bf3de83dcb0abb8c6344254d276981622fa025c7  ./sql/guardian
 ce5ebe40e60843b65f8dbc03d05e432691b13602a0570b3db582b197adc36c26  ./sql/supervision-roster-permissions.sql
 2b51c2968f5f1ebd9115b2a32143d8c27522a7f0492e84cfbaa05d752dbe35a0  ./sql/teacher-ratings-supervision.sql
 c63c5a3e7a4996aa3389a270049075a253477686edf089461f112fecab17e6ad  ./student-finance.css
-4c9605e8a4cb087a2fab437018788cd60f1281f788d3fc294bb04dc935d3a2eb  ./sw.js
+96de45112c8e4c49ace2873ac108e1544e97c4a2c0e86fe2ca7de3df2a5541cc  ./sw.js
 f89314ba9af25b2eb08b9d437fc0f8614a4062099691daccf799807cc665536d  ./sync-core.js
 c119463a48ab3e54f5d631af17484e8901f7f51029e8684f857860184efc9d07  ./teacher-error-marking.css
 45d3066a29a49f56bc29852c4b65679fd9b64bb81a0a4228a9c2ad19f0773b7a  ./teacher-quran-range-picker.css
@@ -641,13 +644,14 @@ a8521329b262c95c524ab30e8af90ffa5eed7afb609ab0bb15a10cf7035dd60b  ./tests/beta27
 2be452761ecf54a66f7a71708dbc5dc86da9e30a7058011e09a4d2441fb51c47  ./tests/beta27-student-modal-layout-hotfix-check.js
 5956bb2c3b5ce138ca65d9380ebc786dd97e4e3a3c7131082be4eada0c35d09c  ./tests/beta28-candidate-regression-check.js
 1f9bfb8bf25882b79f119fc432cccd3d89409ee23354c4e978167b3fe0550bac  ./tests/beta28-rc10-fast-path-check.js
+26b5159aa16cc88912b581769b807b6f75c1ca43d2e3ebe44039e89f774afc0f  ./tests/beta28-rc11-teacher-flow-check.js
 b4e599231f26b3530dcdef04ed240fc5767f81cd0deff1ec112fc94817aeffdd  ./tests/beta28-rc3-experience-check.js
-81a5e87095031200f2a4822a90e3488a1e61b5c6cb0c55b97a8f75bfaffa4f19  ./tests/beta28-rc4-guardian-handoff-check.js
+695e8a4a769c01bdee5ba686ed81ffaa4f8605d632fbb44277dede49521bfc11  ./tests/beta28-rc4-guardian-handoff-check.js
 c5ae767a06cc144c0fa4902cdf7ca385b6c764caa7e851f491d98f127be09710  ./tests/beta28-rc5-feedback-check.js
 55a37d8c8637fb1e8c50ebadb2a867b7ad08616faed533a4cc09ace193ec7e04  ./tests/beta28-rc6-quiet-lesson-check.js
 6bae20ce41baf5d661e89787d289199b18a75fa3b043ef38a81969b5dbda3f29  ./tests/beta28-rc7-finance-auth-behavior.js
 18c85c547e599566c1d735d2f96dc73f9f3d48e6f3890c81ffaf4b076c12ceb8  ./tests/beta28-rc8-reliability-behavior.js
-ddccceff2f7ac43e62c834251cfa1068d53f1e6c720ecd31978dc0bd5923d127  ./tests/beta28-rc9-teacher-workflow-check.js
+668a634004590f051d0f3b83b2664f589457c0a54b2a95608f72235887d847f0  ./tests/beta28-rc9-teacher-workflow-check.js
 70185cb1455b5a93f48892bd01b96a9d2cbd088756dd409b3652ac835b4e56c1  ./tests/beta28-reference-palette-check.js
 05c4094fb62d6a78d9ccf4451e8b138731f9f9007955dbe718ac8c0e8cc8c27e  ./tests/beta28-stage1-media-check.js
 6a0667e9d1f3db486ecc2f411e3a6c12a924b24a2ee2fcb643638d0856144852  ./tests/board-visual-fixture.html
@@ -659,6 +663,7 @@ e287cf5864b91e7093a945cec83c850f15e8a765708f0084473f77906add0e0e  ./tests/comple
 7c99af356ad0b6f9f0ca86b8991df585ada32d8e93fcff1866e224e76d4fc3f3  ./tests/design-bridge-check.js
 8ff9820e4b3a00e48c6b415cce32b74136260d110267278ec65d48dd09c8efd4  ./tests/error-marking-stage1.3-whatsapp-check.js
 072fe4208526344bede0ee016e63718f624f9f93ccfcb7ab258715d733f8df3e  ./tests/fixtures/rc10-teacher-fast-path.html
+3f7a5cead30855ad6b57a8f87a99763b1c546df29d3b448004efbc3bfa40e1e2  ./tests/fixtures/rc11-mobile-lesson.html
 8c4bc8c85218fd4b2aa605c870382084c936d509c207aa2caf70c009254d0371  ./tests/followup-center-check.js
 70e58cc26aa2ceaf6446475d9ccd7079730f263a7bb7f5d3467778d9f3d68470  ./tests/goal-planning-calculation-check.js
 6337743b0b8fd713c1046993f36fbf5bfb787c82dda5e53153608f883c6149aa  ./tests/goal-planning-mobile-hotfix-check.js
@@ -703,6 +708,7 @@ b0007f3d3a8d90d321548a4bb75e4daa95ec2f216afc7367524c9fccf30bfaaa  ./tests/integr
 f086d3afcc086631ed8e321e29dc79001aa486a85059ef09cc752f5a081bbaac  ./tests/interactive-error-marking-stage2-check.js
 3fcdce5e0df6109f8684816ca72d981ba98fbff35e2481f173bedb40a4695c02  ./tests/interactive-error-marking-stage3-check.js
 60f2fa2b0e67337bc6d3701e1c69efb3e7feac86b1c7e83ec52f7d4c3b947233  ./tests/maintenance-audit-11111-check.js
+a3fb4a39a50ec7eced19b682082df2e101c0b5ca5b7b47bafacdd86157a2e276  ./tests/measure-rc11-mobile.py
 66d2ba8cfc761c17655d00356c93f68e977bd4dd83e615e4449930448cd092a4  ./tests/mobile-home-beta10-check.js
 a0398b8b1cd49fa7412db42d26cc2340882bd672df97800a04d653546cec9b1c  ./tests/mobile-navigation-check.js
 7173e348fb81bb7884d3d5127d67a551a76a24f99094979627af8e2d95569690  ./tests/mobile-navigation-runtime-check.js
@@ -733,7 +739,7 @@ ee2b06b565b49d1cc30b0af62df99070a5e303abd3bb24b94f0ecdb4cf78d6a7  ./tests/revisi
 48cc1e91796327f6e3c4db8016f94db8dfc7a2bde928004c129d56c18e2d7b20  ./tests/role-home-tab-visibility-hotfix-check.js
 8974e24fa6a9c1a68c03c03894c58a43fc1977994d635cb1f658b09fa22fcb65  ./tests/role-ux-errors-batch-check.js
 215cf6bebb2f215a34e7d6fc70c48fe004ba53c4109b77d899b86b0b40da2153  ./tests/session-draft-timer-regression-check.js
-f0c8e5b0f4887d36036e466932f9cc25a7b3d560300ae4e50e58c6a63bfe568f  ./tests/session-intelligence-119-check.js
+9e1d6f3da40243356e56c63e0998e36e7b9a95293c726efd9c38564d2dca5b13  ./tests/session-intelligence-119-check.js
 08d4710ac072e85c754ed1a421b610d5c8921e476b93202c3d5601157e32bd7e  ./tests/smart-revision-stage1-check.js
 f45fe6e2aad9820b85d655bbf634e8f5ca36ae5233e3d8fbf5ff03ec987e3744  ./tests/static-check.js
 c643bcc64cc29b4e7891a1ec9067a91fb3208b74e1cbb97170eac4bae085c878  ./tests/student-finance-stage1-check.js
