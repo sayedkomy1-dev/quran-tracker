@@ -165,15 +165,10 @@ async function teacherAccess(req: Request) {
 async function teacherOwnsStudent(ownerId: string, studentRef: string): Promise<boolean> {
   if (!/^[0-9a-f]{64}$/.test(studentRef)) return false;
   const { data, error } = await admin.from("guardian_portal_shares")
-    .select("student_ref,guardian_account_id")
-    .eq("owner_user_id", ownerId).eq("student_ref", studentRef)
-    .not("guardian_account_id", "is", null).limit(1);
+    .select("student_ref")
+    .eq("owner_user_id", ownerId).eq("student_ref", studentRef).limit(1);
   if (error) throw error;
-  if (!data?.length) return false;
-  const { data: accounts, error: accountError } = await admin.from("guardian_portal_accounts")
-    .select("id,disabled_at").in("id", data.map(row => row.guardian_account_id).filter(Boolean));
-  if (accountError) throw accountError;
-  return (accounts || []).some(row => !row.disabled_at);
+  return !!data?.length;
 }
 async function readJson(req: Request) {
   try { return await req.json(); } catch (_) { throw new Error("INVALID_JSON"); }
@@ -338,10 +333,11 @@ async function teacherList(req: Request) {
   const body = await readJson(req);
   const studentRef = String(body.student_ref || "");
   if (!await teacherOwnsStudent(teacher.ownerId, studentRef)) throw new Error("STUDENT_NOT_AUTHORIZED");
-  const { data: rows, error } = await admin.from("student_recitation_submissions")
+  let submissionsQuery = admin.from("student_recitation_submissions")
     .select("id,surah_no,ayah_from,ayah_to,student_note,file_size_bytes,duration_ms,status,created_at,uploaded_at,storage_path")
-    .eq("owner_user_id", teacher.ownerId).eq("student_ref", studentRef)
-    .neq("status", "archived").order("created_at", { ascending: false }).limit(30);
+    .eq("owner_user_id", teacher.ownerId).eq("student_ref", studentRef);
+  if (!body.include_archived) submissionsQuery = submissionsQuery.neq("status", "archived");
+  const { data: rows, error } = await submissionsQuery.order("created_at", { ascending: false }).limit(30);
   if (error) throw error;
   const ids = (rows || []).map(row => row.id);
   const { data: feedbackRows, error: feedbackError } = ids.length
@@ -419,6 +415,18 @@ async function teacherArchive(req: Request) {
   if (!data) throw new Error("SUBMISSION_NOT_FOUND");
   return { ok: true, archived: true };
 }
+async function teacherRestore(req: Request) {
+  const teacher = await teacherAccess(req);
+  const body = await readJson(req);
+  const id = String(body.submission_id || "");
+  if (!validUuid(id)) throw new Error("SUBMISSION_NOT_FOUND");
+  const { data, error } = await admin.from("student_recitation_submissions").update({
+    status: "submitted", archived_at: null
+  }).eq("id", id).eq("owner_user_id", teacher.ownerId).select("id").maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error("SUBMISSION_NOT_FOUND");
+  return { ok: true, restored: true };
+}
 async function handle(req: Request): Promise<Response> {
   const cors = corsHeaders(req);
   if (cors === null) return json({ ok: false, error: "ORIGIN_NOT_ALLOWED" }, 403);
@@ -438,6 +446,7 @@ async function handle(req: Request): Promise<Response> {
     else if (route === "teacher/list") result = await teacherList(req);
     else if (route === "teacher/feedback") result = await teacherFeedback(req);
     else if (route === "teacher/archive") result = await teacherArchive(req);
+    else if (route === "teacher/restore") result = await teacherRestore(req);
     else return json({ ok: false, error: "NOT_FOUND" }, 404, cors || {});
     return json(result, 200, cors || {});
   } catch (error) {
