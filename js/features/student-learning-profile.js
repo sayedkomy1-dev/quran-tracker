@@ -162,13 +162,16 @@
     const attendanceText=result.attendance===null?'بيانات غير كافية':result.attendance+'%';
     const errorsText=result.openErrors===null?'غير متاح':String(result.openErrors.count);
     const steps=result.nextSteps.map(step=>'<li>'+esc(step)+'</li>').join('');
+    const errorDetail=result.openErrors?.first
+      ?'<p class="slp-error-note">أحد مواضع المتابعة: <b>'+esc(result.openErrors.first.type)+'</b>'+(result.openErrors.first.where?' · '+esc(result.openErrors.first.where):'')+'</p>'
+      :'';
     return '<section class="slp-profile" aria-label="الملف التعليمي للطالب">'+
       '<div class="slp-head"><div><b>🧠 الملف التعليمي</b><small>مؤشرات من تقييمات الحصص المسجلة — للمحفظ فقط</small></div><span class="slp-evidence">'+esc(result.evidence)+'</span></div>'+
       '<div class="slp-stats">'+
         '<div><small>حصص بتقييمات رقمية</small><strong>'+result.assessedSessions+'</strong></div>'+
         '<div><small>الحضور في الفترة</small><strong>'+attendanceText+'</strong></div>'+
         '<div><small>أخطاء مفتوحة</small><strong>'+errorsText+'</strong></div>'+
-      '</div>'+
+      '</div>'+errorDetail+
       '<div class="slp-columns">'+
         '<section><h4>نقاط قوة موثقة</h4>'+strengthHtml+'</section>'+
         '<section><h4>احتياجات دعم محتملة</h4>'+supportHtml+'</section>'+
