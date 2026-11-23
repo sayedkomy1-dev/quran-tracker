@@ -502,7 +502,7 @@ eb57d1d6b485f8a2e4d696582ed52fb1be4bcac40954a1a0d38b1ebb0a616417  ./js/features/
 31abe5da6ef26eee76ba957e42c4c892f82204026c89717b23f42f4c5cb8fbd6  ./js/features/guardian-messages.js
 e5e7fe9ad9861ebb41e8ad49fbed320498b8b124a5961036db4a66c98cfc5d7d  ./js/features/guardian-portal-experience.js
 c7f1040ff7f2760f4e83a6bff420ac3f0f3407baba3a8160df0a0b092aecc000  ./js/features/guardian-portal-share.js
-7b1bbe4a19cc9eb25059cb65aceb83f263a7f0691e205d8530ccb6a3ac26f9d1  ./js/features/guardian-portal-view.js
+c21053b425b82d38bf363e552e0ae02e53117a136097b31c5cf1e15e2916d071  ./js/features/guardian-portal-view.js
 4631cbb1ca1a4040397d14b42cfdeac653508e58e67b44e5b3e2ebe50a51f757  ./js/features/guardian-ratings.js
 2590af2cc02dd97d417ffafdb65d27e6d39bcbd104b6c670e7b0406721b1262d  ./js/features/guardian-tahfeez.js
 0a2d64078e5861dd5447594673e982e2d30254691f87c302addd2b4f32194fe6  ./js/features/guest-palette.js
