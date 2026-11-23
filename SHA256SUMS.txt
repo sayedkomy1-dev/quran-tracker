@@ -793,7 +793,7 @@ d5d3e8895713a9c5021f33816f98b36a5abb8cda087f24ed41e50a58a20bdd42  ./tests/offlin
 44253e22f9a502b620016431d3f59d2585253750eb4638034256292c46e9701d  ./tests/offline-safety-snapshot-check.js
 e5e0e8cd7a548b418414487ab5febabade0bd866b11c9d64889a5c83a6b8a90d  ./tests/offline-style-fallback-check.js
 87132f6120cfb2ffd6777a5a27fe4aa3c7d6d57a316ab2c8a225e5fcd50eb677  ./tests/offline-whatsapp-check.js
-e37dddaa8978265184b0244e9595362889a6dfe0398b428af29f62f771b490fe  ./tests/owner-upgrade-consistency-check.js
+0e93f71fa88a9d2b88b94252d17d621abdded74d8de98131de67963276d40bcf  ./tests/owner-upgrade-consistency-check.js
 e5b99cf37af60ec556a3cd7db8631d01bd7d683c11752229bed5ce9d3ab3a79e  ./tests/parent-audio-stage4-check.js
 a82d3906e1de69c4e6398df520c07ad0bd57db7f125f8df770b6fafe1f0e10e1  ./tests/placement-center-1191-check.js
 99b12237696e2c24d849e09b72377d16b7c9b277688b30dfd4694f94afadf732  ./tests/platform-design-system-check.js

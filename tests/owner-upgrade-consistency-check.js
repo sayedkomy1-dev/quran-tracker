@@ -12,7 +12,7 @@ const app=read('app.js');
 const bootstrap=read('js/core/offline-bootstrap.js');
 const version='11.12.1-beta.27';
 assert(html.includes(`name="application-version" content="${version}"`));
-assert(html.includes("app.js?v=beta28-rc13"));
+assert(html.includes("app.js?v=beta28-rc16-learning-observations1"));
 assert(html.includes(`runtime.js?v=${version}`));
 assert(html.includes(`offline-bootstrap.js?v=${version}`));
 assert(sw.includes(`const APP_VERSION = '${version}'`));
