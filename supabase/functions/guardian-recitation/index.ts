@@ -215,6 +215,8 @@ async function uploadAudio(path: string, file: File) {
 function apiError(error: unknown) {
   const code = String((error as Error)?.message || error || "SERVER_ERROR");
   const known: Record<string, { status: number; message: string }> = {
+    SERVER_NOT_CONFIGURED: { status: 503, message: "خدمة التسجيلات لم تُجهز بعد على الخادم." },
+    API_KEY_INVALID: { status: 401, message: "تعذر التحقق من التطبيق. أعد تحميل الصفحة." },
     SESSION_INVALID: { status: 401, message: "جلسة الدخول غير صالحة. سجّل الدخول مرة أخرى." },
     SESSION_EXPIRED: { status: 401, message: "انتهت جلسة الدخول. أعد تسجيل الدخول مع الاحتفاظ بالتسجيل المعلّق." },
     SESSION_REVOKED: { status: 403, message: "تم إيقاف صلاحية الدخول لهذا الحساب." },

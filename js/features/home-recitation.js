@@ -11,6 +11,15 @@
   let portalContext=null,dbPromise=null,portalRecorder=null,portalStream=null,portalChunks=[],portalStartedAt=0,portalTimer=null,portalRecordingMeta=null;
   let portalUploading=false,portalDraftUrl='',teacherModal=null,teacherState=null,teacherRecorder=null,teacherStream=null,teacherChunks=[],teacherTimer=null,teacherFeedbackBlob=null,teacherFeedbackFile=null;
 
+  function makeUuid(){
+    if(g.crypto?.randomUUID)return g.crypto.randomUUID();
+    const bytes=new Uint8Array(16);
+    try{g.crypto?.getRandomValues?.(bytes);}catch(_){}
+    if(!bytes.some(Boolean))for(let i=0;i<16;i++)bytes[i]=Math.floor(Math.random()*256);
+    bytes[6]=(bytes[6]&0x0f)|0x40;bytes[8]=(bytes[8]&0x3f)|0x80;
+    const hex=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+    return hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
+  }
   function setText(id,value){const el=$(id);if(el)el.textContent=String(value??'');}
   function portalStatus(message,kind='info'){const el=$('hrcPortalStatus');if(el){el.textContent=message||'';el.dataset.kind=kind;}}
   function teacherStatus(message,kind='info'){const el=$('hrcTeacherStatus');if(el){el.textContent=message||'';el.dataset.kind=kind;}}
@@ -101,7 +110,7 @@
       }
     }catch(error){if(String(error?.message||'').includes('غير كافية'))throw error;}
     const item={
-      id:g.crypto?.randomUUID?.()||('hrc-'+Date.now()+'-'+Math.random().toString(36).slice(2,9)),
+      id:makeUuid(),
       studentRef:ctx.studentRef,studentName:ctx.studentName,
       surahNo:range.surahNo,surahName:range.surahName,ayahFrom:range.from,ayahTo:range.to,
       studentNote:ctx.note||'',durationMs:Math.round(durationMs||0),mimeType:Core.normalizeMime(blob.type),
@@ -298,7 +307,9 @@
       studentName:String(value.studentName||'الطالب'),assignment:value.assignment||null
     }:null;
     const changed=!!portalContext&&(!next||portalContext.studentRef!==next.studentRef||portalContext.sessionToken!==next.sessionToken);
+    const studentChanged=!!portalContext&&(!next||portalContext.studentRef!==next.studentRef);
     if(changed&&portalRecorder&&portalRecorder.state!=='inactive')stopPortalRecording();
+    if(studentChanged&&$('hrcStudentNote'))$('hrcStudentNote').value='';
     if(changed&&portalDraftUrl){try{g.URL.revokeObjectURL(portalDraftUrl);}catch(_){}portalDraftUrl='';$('hrcPortalPreview')?.replaceChildren();}
     if(!next){
       if(portalRecorder&&portalRecorder.state!=='inactive')stopPortalRecording();
@@ -313,6 +324,10 @@
       const from=Math.max(1,Number(assignment.from)||1),to=Math.max(from,Number(assignment.to)||from);
       if($('hrcAyahFrom'))$('hrcAyahFrom').value=String(from);
       if($('hrcAyahTo'))$('hrcAyahTo').value=String(to);
+      updateAyahInputs();
+    }else{
+      if($('hrcAyahFrom'))$('hrcAyahFrom').value='1';
+      if($('hrcAyahTo'))$('hrcAyahTo').value=String(Number(surahs()[0]?.[1])||7);
       updateAyahInputs();
     }
     setText('hrcPortalStudentName',portalContext.studentName);
@@ -429,7 +444,7 @@
       const note=Core.cleanText(markerNote.value,300),time=Number(audio.currentTime);
       if(!Number.isFinite(time)||!Number.isFinite(Number(audio.duration))||Number(audio.duration)<=0){teacherStatus('شغّل التسجيل حتى تظهر مدته، ثم أضف العلامة عند موضع التصحيح.','warning');return;}
       const ayah=markerAyah.value===''?null:Number(markerAyah.value);
-      const checked=Core.validAnnotation({id:g.crypto?.randomUUID?.()||'',time_ms:Math.round(time*1000),ayah_no:ayah,note},{from:row.ayah_from,to:row.ayah_to},Math.round(audio.duration*1000));
+      const checked=Core.validAnnotation({id:makeUuid(),time_ms:Math.round(time*1000),ayah_no:ayah,note},{from:row.ayah_from,to:row.ayah_to},Math.round(audio.duration*1000));
       if(!checked.ok){teacherStatus(checked.reason==='time'?'توقيت العلامة خارج مدة التسجيل.':checked.reason==='ayah'?'رقم الآية خارج نطاق التكليف.':'اكتب ملاحظة للعلامة.','warning');return;}
       teacherState.annotations.push(checked.value);markerNote.value='';renderTeacherAnnotations();teacherStatus('أضيفت العلامة عند '+Core.formatTime(checked.value.time_ms)+'.','success');
     });
@@ -503,7 +518,10 @@
       form.append('annotations',JSON.stringify(teacherState.annotations||[]));
       const audioFile=teacherFeedbackFile;
       if(teacherFeedbackBlob)form.append('audio_file',teacherFeedbackBlob,'teacher-feedback.'+Core.extensionForMime(teacherFeedbackBlob.type));
-      else if(audioFile&&Core.fileAllowed(audioFile))form.append('audio_file',audioFile,audioFile.name||'teacher-feedback');
+      else if(audioFile){
+        if(!Core.fileAllowed(audioFile))throw new Error('ملف التعليق الصوتي غير مدعوم أو أكبر من 20 ميجابايت.');
+        form.append('audio_file',audioFile,audioFile.name||'teacher-feedback');
+      }
       const result=await callTeacherForm('teacher/feedback',form,teacherState.token);
       teacherFeedbackBlob=null;teacherFeedbackFile=null;
       teacherStatus(result.student_visible?'تم حفظ التصحيح واعتماده للطالب.':'تم حفظ المراجعة كملاحظة داخلية للمحفظ.','success');
