@@ -27,3 +27,5 @@
 @media(max-width:430px){.slp-columns{grid-template-columns:1fr}.slp-profile{padding:10px}.slp-stats small{font-size:7.5px}}
 [data-theme="dark"] .slp-profile{background:var(--v9-surface,var(--wh,#111d16));border-color:var(--v9-border,var(--bdr,#314338))}
 [data-theme="dark"] .slp-columns li,[data-theme="dark"] .slp-next{background:rgba(120,170,135,.09)}
+
+.slp-error-note{margin:9px 0 0;padding:8px 10px;border-radius:9px;background:rgba(173,112,42,.08);font-size:9px;line-height:1.7;color:var(--v9-text,var(--txt,#183b2b))}.slp-error-note b{color:var(--gm,#246744)}
