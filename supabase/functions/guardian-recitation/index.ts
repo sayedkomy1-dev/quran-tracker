@@ -426,7 +426,7 @@ async function teacherRestore(req: Request) {
   if (!validUuid(id)) throw new Error("SUBMISSION_NOT_FOUND");
   const { data, error } = await admin.from("student_recitation_submissions").update({
     status: "submitted", archived_at: null
-  }).eq("id", id).eq("owner_user_id", teacher.ownerId).select("id").maybeSingle();
+  }).eq("id", id).eq("owner_user_id", teacher.ownerId).eq("status", "archived").select("id").maybeSingle();
   if (error) throw error;
   if (!data) throw new Error("SUBMISSION_NOT_FOUND");
   return { ok: true, restored: true };
