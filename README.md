@@ -1,3 +1,11 @@
+## Beta28 RC13 candidate
+
+- Public independent practice portal: `maqraa.html` — «مقرأة الإمام» (the previous `guest-practice.html` route remains for compatibility).
+- RC13 release notes: `RELEASE-BETA28-RC13.md`.
+- Android acceptance checklist: `BETA28-RC13-ACCEPTANCE.md`.
+- RC13 automated checks: `npm run test:beta28-rc13`.
+- This is a candidate build based on application version `11.12.1-beta.27`; Local Schema remains `12`. Complete the Android acceptance checklist before production rollout.
+
 ## v11.5 Stage 2 — Finance Quick Access & Guardian Statements (11.5.1)
 
 A prominently visible finance button in the student's identity card jumps straight to monthly accounts. From there, the teacher can print/save PDF via device print, send a text statement directly to the guardian's WhatsApp, or explicitly publish a read-only statement to the phone/PIN guardian portal. This last option needs `sql/guardian-finance-statements.sql` executed in Supabase **after Git Commit review and before Push**. No financial data is exposed through public portal links. The local Schema remains 12. See `QA-REPORT-11.5.1-STAGE2.md`.

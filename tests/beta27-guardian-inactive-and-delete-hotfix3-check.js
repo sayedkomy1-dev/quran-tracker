@@ -17,7 +17,7 @@ const code=[
  slice('function saveSt(){','function openV9ContextMenu('),
  slice('async function setStudentStatusWithUndo(id,status){','async function deleteSt(){')
 ].join('\n');
-function sandbox({deny=false,denyAt=0,portalMissing=false}={}){
+function sandbox({deny=false,denyAt=0,portalMissing=false,saveResult=true}={}){
  const events=[],students=[{id:'a',name:'الأخ الأول',studentStatus:'active',phone:'201000000000'},
                         {id:'b',name:'الأخ الثاني',studentStatus:'active',phone:'201000000000'}];
  let rpcCount=0;
@@ -26,12 +26,12 @@ function sandbox({deny=false,denyAt=0,portalMissing=false}={}){
  const ctx={students,sessions:[{studentId:'a'},{studentId:'b'}],tasks:[{studentId:'a'}],editId:'a',curStId:'a',
    V9:{selectedStudents:new Set(['a','b']),undo:null,filters:{}},
    V9_BASE:{saveSt:()=>{events.push('base-save');box.open=false;ctx.students[0].studentStatus=fields['m-status'].value;}},
-   globalThis:{ImamApp:{GuardianPortal:portalMissing?{}:{revokeForStudentDeletion:async id=>{events.push('rpc:'+id);rpcCount++;if(deny||(denyAt&&rpcCount===denyAt))throw Error('OFFLINE');return {ok:true};}}}},
+   globalThis:{ImamApp:{GuardianPortal:portalMissing?{}:{revokeForStudentDeletion:async id=>{events.push('rpc:'+id);rpcCount++;if(deny||(denyAt&&rpcCount===denyAt))throw Error('OFFLINE');return {ok:true,hadLiveLink:true,hadPhoneAccess:true};},restoreForStudentReactivation:async id=>{events.push('restore:'+id);return {ok:true,changed:true,credentials:{pin:'123456'}};},showReactivationCredentials:ids=>events.push('credentials:'+ids.join(','))}}},
    document:{getElementById:id=>fields[id]||{value:'',classList:{contains:()=>false}}},
    setTimeout:()=>{},
    v9StudentStatus:st=>st.studentStatus||'active',
    v9Toast:(message,kind)=>events.push('toast:'+kind),
-   save:()=>{events.push('save');return true;},renderSt:()=>{},renderHome:()=>{},updateBulkBar:()=>{},
+   save:()=>{events.push('save');return saveResult;},renderSt:()=>{},renderHome:()=>{},updateBulkBar:()=>{},
    console:{warn:()=>{}},openProf:()=>{},goPage:()=>{}}
  vm.createContext(ctx);vm.runInContext(code+'\nthis.ops={setStudentStatusWithUndo,bulkSetStatus,saveSt};',ctx);
  return {ctx,events,fields,box};
@@ -50,7 +50,7 @@ function sandbox({deny=false,denyAt=0,portalMissing=false}={}){
   assert(events.indexOf('rpc:a')<events.indexOf('save')&&events.indexOf('rpc:b')<events.indexOf('save'));
   assert.equal(ctx.V9.selectedStudents.size,0);}
  {const {ctx,events}=sandbox({denyAt:2});await ctx.ops.bulkSetStatus('archived');
-  assert.deepEqual(ctx.students.map(s=>s.studentStatus),['active','active']);assert(!events.includes('save'));
+  assert.deepEqual(ctx.students.map(s=>s.studentStatus),['active','active']);assert(!events.includes('save'));assert(events.includes('restore:a'),'partial remote revoke must restore already-revoked guardian access');
   assert.equal(ctx.V9.selectedStudents.size,2);}
  {const {ctx,events,box}=sandbox();await ctx.ops.saveSt();
   assert.equal(ctx.students[0].studentStatus,'paused');assert(!box.open);
@@ -66,6 +66,9 @@ function sandbox({deny=false,denyAt=0,portalMissing=false}={}){
   assert(!events.includes('rpc:a'),'editing existing paused notes does not require re-revoking');}
  {const {ctx,events}=sandbox();ctx.students[0].studentStatus='paused';
   await ctx.ops.setStudentStatusWithUndo('a','archived');assert(events.includes('rpc:a'),'existing paused record rechecked before archive');}
+ {const {ctx,events}=sandbox({saveResult:false});await ctx.ops.setStudentStatusWithUndo('a','paused');
+  assert.equal(ctx.students[0].studentStatus,'active','failed local save must restore previous active status');
+  assert(events.includes('restore:a'),'failed local save after remote revoke must restore guardian access');}
  assert(portal.includes("if(st.studentStatus&&st.studentStatus!=='active'&&!forReactivation)throw new Error('STUDENT_NOT_ACTIVE')"),'inactive snapshots blocked for normal requests');
  assert(portal.includes('revokeForStudentDeactivation:revokeForStudentDeletion'),'all status routes reuse verified cleanup');
  assert(index.includes('guardian-reactivation-hotfix4')&&worker.includes('guardian-reactivation-hotfix4'),'fresh worker asset versioning');

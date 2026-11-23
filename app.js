@@ -377,12 +377,36 @@ function writeOfflineSafetySnapshot(){
   try{
     if(!storageScopeUserId)return;
     const next={students,sessions,tasks,settings};
-    const prior=readOfflineSafetySnapshot();
+    const atomic=readAccountAtomicSnapshot(),prior=readOfflineSafetySnapshot();
+    // The atomic account snapshot is already a complete same-device recovery copy.
+    // Do not keep a second full LocalStorage copy of the same student/session data:
+    // it can consume the browser's small LocalStorage quota and make future saves fail.
+    if(atomic&&atomic.userId===storageScopeUserId&&snapshotHasData(atomic.snapshot)){
+      // The account snapshot is complete and current; the global safety value is
+      // now a redundant full copy and is safe to retire.
+      if(prior)localStorage.removeItem(WLQ_OFFLINE_SAFETY_KEY);
+      return;
+    }
     // Never replace last-good data with a transient empty state, online OR offline.
-    // Explicit user deletion still uses tombstones in scoped account storage.
     if(!snapshotHasData(next)&&snapshotHasData(prior))return;
-    localStorage.setItem(WLQ_OFFLINE_SAFETY_KEY,JSON.stringify({userId:storageScopeUserId,email:storageScopeEmail,savedAt:new Date().toISOString(),snapshot:next}));
+    // Keep a fallback only when no complete atomic snapshot exists.
+    if(!snapshotHasData(prior)&&snapshotHasData(next))localStorage.setItem(WLQ_OFFLINE_SAFETY_KEY,JSON.stringify({userId:storageScopeUserId,email:storageScopeEmail,savedAt:new Date().toISOString(),snapshot:next}));
   }catch(e){console.warn('تعذر حفظ نسخة الأوفلاين الاحتياطية',e);}
+}
+function compactRedundantAccountMirrors(){
+  // Reclaim only byte-for-byte duplicates whose complete atomic replacement is
+  // already validated for this exact account. Never remove a unique last-good copy.
+  try{
+    const atomic=readAccountAtomicSnapshot();if(!atomic||atomic.userId!==storageScopeUserId)return 0;
+    let removed=0;const snap=atomic.snapshot;
+    for(const key of ['students','sessions','tasks','settings']){
+      const mirrorKey=accountLocalKey(key),mirror=localStorage.getItem(mirrorKey);
+      if(mirror!==null&&mirror===JSON.stringify(snap[key])){localStorage.removeItem(mirrorKey);removed++;}
+    }
+    const safety=readOfflineSafetySnapshot();
+    if(safety&&snapshotHasData(snap)){localStorage.removeItem(WLQ_OFFLINE_SAFETY_KEY);removed++;}
+    return removed;
+  }catch(_){return 0;}
 }
 function applySnapshot(x,source='account'){
   students=Array.isArray(x?.students)?x.students:[];
@@ -575,6 +599,9 @@ function showAccountMigrationNotice(){
   else if(n.type==='empty')toast('تم فتح مساحة بيانات فارغة لهذا الحساب، والبيانات القديمة لم تُحذف.','info');
 }
 function save(){
+  // RC13: reclaim only exact duplicate mirrors before writing the next complete snapshot.
+  // This reduces LocalStorage pressure without touching unique recovery copies.
+  compactRedundantAccountMirrors();
   // RC8: one atomic account-scoped local recovery snapshot, then one IndexedDB
   // readwrite transaction. Never remove a last-good copy before commit.
   const stamp=nextSnapshotStamp();
@@ -3242,6 +3269,12 @@ async function copyRestartDiagnostics(){
   catch(_){showRestartDiagnostics();toast('انسخ السجل الظاهر يدويًا','info');}
 }
 async function requestPersistentStorage(){
+  if(globalThis.ImamStorageGovernor?.requestPersistence){
+    try{const result=await globalThis.ImamStorageGovernor.requestPersistence();
+      toast(!result.supported?'هذا المتصفح لا يدعم طلب حماية التخزين':result.granted?'تم منح حماية التخزين المحلي':'لم يمنح المتصفح الحماية الدائمة للتخزين',result.granted?'success':'info');
+      await globalThis.ImamStorageGovernor.refresh?.();renderPlatformStatus();return;
+    }catch(_){toast('تعذر تغيير حالة التخزين','error');return;}
+  }
   if(!navigator.storage?.persist){toast('هذا المتصفح لا يدعم طلب حماية التخزين','info');return;}
   try{const ok=await navigator.storage.persist();toast(ok?'تم طلب حماية البيانات المحلية بنجاح':'لم يمنح المتصفح حماية دائمة للتخزين',ok?'success':'info');renderPlatformStatus();}catch(_){toast('تعذر تغيير حالة التخزين','error');}
 }

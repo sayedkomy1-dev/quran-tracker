@@ -50,7 +50,7 @@
     const grid=element('div','imam-bridge-portal-grid');
     const items=[
       ['👨‍👩‍👧','بوابة ولي الأمر والطالب','دخول مصرح به إلى السجلات','guardian-login.html'],
-      ['📖','القرآن والتدريب الحر','مصادر النص والتلاوة الموجودة','guest-practice.html'],
+      ['📖','القرآن والتدريب الحر','مصادر النص والتلاوة الموجودة','maqraa.html'],
       ['🏛️','بوابات الأكاديمية','الوصول المنظم إلى الخدمات','academy-portals.html'],
     ];
     items.forEach(([ico,label,description,href])=>{

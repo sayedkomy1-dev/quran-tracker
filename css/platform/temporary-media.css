@@ -18,16 +18,14 @@
 .ia28-mode-switch button[aria-pressed=true],.ia28-start-actions button:last-child,.ia28-practice-assignment{color:white;background:#17674b;border-color:#17674b}
 .ia28-start-copy{display:grid;gap:4px}.ia28-start-copy small{font-size:.8em}
 .ia28-practice-assignment{width:100%;margin-top:8px}.ia28-guest-modes{margin:12px 0}
-.ia28-student-view :is(#portalFinanceCard,#portalFinanceNav,#portalMessageCard,#portalMessageNav,#portalRatingCard,#portalRatingNav,.portal-kpis,#portalGoalCard){display:none!important}
+.ia28-student-view :is(#portalFinanceCard,#portalFinanceNav,#portalMessageCard,#portalMessageNav){display:none!important}
 .ia28-student-view .portal-quick-nav button{min-height:54px}.ia28-student-view .portal-assignment-item{font-size:1.05em}
 .fin-cycle-note{display:grid;gap:6px;padding:12px;margin:10px 0;background:#e9f6ef;color:#174b36;border:1px solid #b9d8c6;border-radius:10px}.fin-cycle-note progress{width:100%;accent-color:#17674b}
 @media(max-width:360px){.ia28-start-actions,.ia28-mode-switch{grid-template-columns:1fr}}
 @media print{.ia28-portal-start,.ia28-practice-assignment,.ia28-guest-modes{display:none!important}}
 
 /* rc.4: clear guardian target and accessible correction navigation */
-.ia28-media-dialog [data-recipient]{padding:12px;border:1px solid #afd5c0;background:#ecf7f0;border-radius:10px;font-weight:750;color:#15543c}
 .ia28-media-dialog [data-guidance]{line-height:1.8}
-.ia28-media-dialog [data-chat]{background:#eef8f2;color:#155a39;border-color:#b2dac4}
 .im119-warning-list button:focus-visible,.ia28-media-dialog button:focus-visible{outline:3px solid #247e54;outline-offset:2px}
 #im119Warning .im119-actions{display:flex;flex-wrap:wrap;gap:8px}
 #im119Warning .im119-actions button{min-height:44px;flex:1 1 138px}

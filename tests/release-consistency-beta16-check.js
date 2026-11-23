@@ -19,16 +19,16 @@ for(const name of [...scripts,...css]){
  const versionedV9=`${name}?v=${version}-guardian-reactivation-hotfix4`;
  const versionedBoard=`${name}?v=${version}-quran-picker1`;
  const revision2=`${name}?v=${version}-absence-review2`;
- const rc7=`${name}?v=beta28-rc9`;
+ const rc7=`${name}?v=beta28-rc13`;
  assert(html.includes(ref)||html.includes(versionedV9)||html.includes(versionedBoard)||html.includes(revision2)||html.includes(rc7),`index missing fresh ${name}`);
  assert(sw.includes(`'./${ref}'`)||sw.includes(`'./${versionedV9}'`)||sw.includes(`'./${versionedBoard}'`)||sw.includes(`'./${revision2}'`)||sw.includes(`'./${rc7}'`),`SW missing fresh ${name}`);
 }
 for(const name of ['v9.js','v10.js','role-home.css','teacher-rating.css']){
  assert(sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./${name}?v=${version}`)
- ||(name==='v9.js'&&sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./v9.js?v=${version}-guardian-reactivation-hotfix4'`)),`Critical shell missing ${name}`);
+ ||(name==='v9.js'&&(sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./v9.js?v=${version}-guardian-reactivation-hotfix4'`)||sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./v9.js?v=beta28-rc13'`))),`Critical shell missing ${name}`);
 }
 assert(read('imam-board-display.html').includes(`imam-smart-board.css?v=${version}`));
 for(const htmlFile of ['guardian-login.html','guardian-portal.html','guest-practice.html'])
  assert(read(htmlFile).includes(`css/platform/public-experience.css?v=${version}`));
-assert(read('guardian-portal.html').includes(`teacher-rating.css?v=${version}`));
+assert(!read('guardian-portal.html').includes('teacher-rating.css')&&!read('guardian-portal.html').includes('guardian-ratings.js'),'guardian/student portal must not load teacher rating UI');
 console.log('PASS release consistency beta17: app version, all changed asset URLs, critical shell, offline public pages');

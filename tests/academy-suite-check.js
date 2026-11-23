@@ -10,7 +10,7 @@ check('Suite uses native existing actions not parallel lesson or session storage
 check('Arabic heading and navigable service cards',()=>{assert(home.includes('لأن كل آية تستحق عناية'));assert(home.includes('academy-learning.html'));assert(home.includes('guardian-login.html'));assert(home.includes('imamSmartBoardTab'))});
 check('UI opt-out hides suite with original user theme',()=>{assert(css.includes('body:not(.imam-design-bridge) .ias-home{display:none!important}'));assert(css.includes('body.imam-design-bridge #pg-home :is(.imam-bridge-hero,.imam-bridge-section)'))});
 check('No Quran canonical text styled with letter distortion',()=>{assert(!/\.quran-ayah[^\n]*letter-spacing\s*:\s*[1-9]/.test(css))});
-check('Portal center lists functioning existing routes',()=>{assert(portal.includes('apsContent'));assert(js.includes('guest-practice.html'));assert(js.includes('guardian-login.html'));assert(js.includes('academy-learning.html'))});
+check('Portal center lists functioning existing routes',()=>{assert(portal.includes('apsContent'));assert(js.includes('maqraa.html'));assert(js.includes('guardian-login.html'));assert(js.includes('academy-learning.html'))});
 check('No publication of demo or direct guardian login',()=>{assert(!js.includes('loginAsGuardianDirect'));assert(!js.includes('WAQF_MEMORIAL_NAMES_LIST'))});
 check('All new assets are in both offline shell lists',()=>{const a=['academy-learning.html','data/academy-learning-materials.json','css/platform/academy-portal-suite.css','js/features/academy-suite.js'];for(const path of a)assert(sw.split(path).length>=3,`Missing ${path} from one shell list`)});
 check('Cache namespace changed to prevent stale asset reuse',()=>{assert(sw.includes("'-academy-life-review8'"))});

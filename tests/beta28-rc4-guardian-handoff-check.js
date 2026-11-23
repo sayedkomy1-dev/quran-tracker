@@ -10,28 +10,13 @@ const context={console,Date,Math,document:{getElementById:id=>elements[id]||null
 context.globalThis=context;
 vm.runInNewContext(read('js/features/assignment-audio-share.js'),context);
 (async()=>{
- await context.shareCurrentAssignmentAudio();assert.equal(buildCount,1);assert.equal(uploads.length,1);assert.equal(uploads[0].recipient.phone,'201012345678');assert.equal(uploads[0].recipient.studentName,student.name);assert.equal(elements.teacherAssignmentAudioBtn.disabled,false);
+ await context.shareCurrentAssignmentAudio();assert.equal(buildCount,1);assert.equal(uploads.length,1);assert.equal(uploads[0].recipient,undefined,'audio file handoff must not claim a specific WhatsApp recipient');assert.equal(elements.teacherAssignmentAudioBtn.disabled,false);
  student.phone='';await context.shareCurrentAssignmentAudio();assert.equal(buildCount,1,'missing phone blocks MP3 build and untargeted share');assert.equal(uploads.length,1);assert(messages.some(x=>x.includes('رقم واتساب')));
  student.phone='01012345678';elements.sesSt.value='';await context.shareCurrentAssignmentAudio();assert.equal(buildCount,1,'no student prevents audio generation');
- const media=read('js/features/temporary-media-share.js');assert(media.includes('https://wa.me/${phone}?text=')&&media.includes('مشاركة MP3')&&media.includes('فتح محادثة ولي الأمر'));assert(!media.includes('download(file)'));
- // Exercise the actual WhatsApp chat target in the dialog when native file sharing is unavailable.
- let dialog=null,openedUrl='',chat;
- const nodes=new Map();
- const mediaDoc={createElement:tag=>{
-   assert.equal(tag,'dialog');
-   dialog={className:'',dir:'',innerHTML:'',querySelector(key){
-     if(!nodes.has(key))nodes.set(key,{hidden:false,disabled:false,textContent:'',onclick:null});
-     return nodes.get(key);
-   },addEventListener(){},showModal(){},remove(){dialog=null;}};return dialog;
- },body:{append(d){dialog=d;}}};
- const mediaCtx={document:mediaDoc,navigator:{onLine:true},open:(url)=>{openedUrl=url;return true}};
- mediaCtx.globalThis=mediaCtx;vm.runInNewContext(media,mediaCtx);
- const mediaPromise=mediaCtx.ImamTemporaryMedia.share([{size:2500}],{title:'تكليف',text:'سورة الفاتحة',recipient:{phone:'201012345678',name:'ولي اختبار',studentName:'طالب الاختبار'}});
- assert(dialog,'recipient fallback must show dialog even without Web Share files');
- chat=nodes.get('[data-chat]');assert.equal(chat.hidden,false);
- chat.onclick();assert(openedUrl.startsWith('https://wa.me/201012345678?text='),'chat opens the exact linked guardian number');
- assert.equal(nodes.get('[data-share]').hidden,true,'unsupported native share must not pretend to attach audio');
- nodes.get('[data-cancel]').onclick();assert.equal((await mediaPromise).cancelled,true);
+ const media=read('js/features/temporary-media-share.js');assert(media.includes('navigator.share')&&media.includes('اختر واتساب من قائمة المشاركة')&&!media.includes('https://wa.me/')&&!media.includes('data-chat'));assert(!media.includes('download(file)'));
+ // If file sharing is unavailable, the app must not pretend it can attach MP3 to a direct chat.
+ const mediaCtx={navigator:{share:undefined,canShare:()=>false},document:{body:{append(){}}}};mediaCtx.globalThis=mediaCtx;vm.runInNewContext(media,mediaCtx);
+ const unsupported=await mediaCtx.ImamTemporaryMedia.share([{size:2500}],{title:'تكليف',text:'سورة الفاتحة'});assert.equal(unsupported.unsupported,true);assert.equal(unsupported.downloaded,false);
  const original=read('js/features/session-intelligence-119.js');
  const instrumented=original.replace('root.SessionIntelligence={evaluate,','root.SessionIntelligence={showWarning,focusMissing,evaluate,');
  const fake={};let modal,step='',saveCount=0,focusCount=0,opened=false;
@@ -51,6 +36,6 @@ vm.runInNewContext(read('js/features/assignment-audio-share.js'),context);
  fake.sesSt.value='';btns.length=0;btns.push({dataset:{action:'cancel'}});
  api.showWarning({outstanding:[{id:'student',label:'اختر الطالب',target:'sesSt',severity:'critical'}],critical:[{id:'student'}]},'send');
  assert(!modal.innerHTML.includes('تخطي التنبيه والمتابعة'),'critical issues still block sending');
- const index=read('index.html'),sw=read('sw.js');for(const name of ['assignment-audio-share.js','temporary-media-share.js'])assert(index.includes(`${name}?v=beta28-rc4`)&&sw.includes(`${name}?v=beta28-rc4`));assert(index.includes('session-intelligence-119.js?v=beta28-rc11')&&sw.includes('session-intelligence-119.js?v=beta28-rc11'));
- console.log('PASS RC4: scoped guardian recipient, missing phone guard, direct WhatsApp text fallback, guided focus, allowed noncritical override, critical block, offline assets');
+ const index=read('index.html'),sw=read('sw.js');for(const name of ['assignment-audio-share.js','temporary-media-share.js'])assert(index.includes(`${name}?v=beta28-rc13`)&&sw.includes(`${name}?v=beta28-rc13`));assert(index.includes('session-intelligence-119.js?v=beta28-rc13')&&sw.includes('session-intelligence-119.js?v=beta28-rc13'));
+ console.log('PASS RC4: scoped guardian recipient, missing phone guard, native Android share sheet and manual recipient selection, guided focus, allowed noncritical override, critical block, offline assets');
 })().catch(e=>{console.error(e);process.exitCode=1});

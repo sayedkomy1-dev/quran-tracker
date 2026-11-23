@@ -106,7 +106,7 @@
         <div id="wlqAuthState" class="wlq-auth-state">جارٍ التحقق من الحساب…</div>
         <button type="button" class="wlq-google-btn" id="wlqGoogleLogin" hidden>متابعة باستخدام Google</button>
         <a class="wlq-guardian-btn" id="wlqGuardianLogin" href="guardian-login.html" hidden>👨‍👩‍👧 دخول ولي الأمر / الطالب</a>
-        <a class="wlq-guest-link" href="guest-practice.html">📿 ابدأ التحفيظ كضيف — بدون حساب</a>
+        <a class="wlq-guest-link" href="maqraa.html">📿 ابدأ التحفيظ كضيف — بدون حساب</a>
         <button type="button" class="wlq-auth-secondary" id="wlqAuthRetry" hidden>إعادة المحاولة</button>
         <button type="button" class="wlq-auth-secondary" id="wlqAuthSignOut" hidden>تسجيل الخروج</button>
         <div class="wlq-auth-note" id="wlqAuthNote"></div>

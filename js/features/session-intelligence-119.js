@@ -58,8 +58,25 @@
   function current(){
     const sid=studentId(),ses=(app().sessions||[]).find(x=>x.studentId===sid&&String(x.sessionDate||x.date||'').slice(0,10)===(by('sesDate')?.value||''));return ses||null;
   }
+  function domSectionData(k){
+    const toggle=by('tog-'+k);if(!toggle?.classList.contains('on'))return null;
+    const surah=String(by(k+'-s')?.value||'').trim(),idx=typeof g.getSurahIndex==='function'?g.getSurahIndex(surah):quran().findIndex(x=>x.n===surah);
+    if(idx<0)return null;const meta=quran()[idx],full=!!by(k+'-full')?.checked;
+    const from=full?1:Number(by(k+'-f')?.value),to=full?Number(meta?.a):Number(by(k+'-t')?.value);
+    if(!positive(from)||!positive(to)||from>to||to>Number(meta?.a))return null;
+    return {surahId:idx+1,surah:meta.n,from,to,full:full||from===1&&to===Number(meta.a)};
+  }
+  function reconcileDomSections(data){
+    const out={...(data||{})};
+    for(const k of ['new','rec','far']){
+      const toggle=by('tog-'+k);if(!toggle?.classList.contains('on'))continue;
+      const dom=domSectionData(k);if(dom)out[k]={...(out[k]||{}),...dom};else if(out[k]){const keep={...out[k]};for(const key of ['surahId','surah','from','to','full'])delete keep[key];out[k]=keep;}
+    }
+    return out;
+  }
   function editor(){
     let data={};try{data=typeof g.buildSesData==='function'?g.buildSesData():{};}catch(_){data={};}
+    data=reconcileDomSections(data);
     const status=by('sb-a')?.classList.contains('sel-a')?'غاب':by('sb-v')?.classList.contains('sel-v')?'إجازة':'حضر';
     return {...data,studentId:studentId(),status,kind:state.kind,sessionType:state.kind,extraRecitations:state.extra.slice(),notPerformed:{...state.skip},reviewDecisions:{...state.decisions},skipReason:state.skipReason};
   }
@@ -77,10 +94,10 @@
     const hasGrade=k=>grade(d[k]?.grade)||grade(d.prevGrades?.[k])||!!DECISIONS[d.reviewDecisions?.[k]]||extras.some(x=>x.type===k&&rangeValid(x)&&(!!DECISIONS[x.decision]||Number.isFinite(x.score)&&x.score>=0&&x.score<=100));
     const add=k=>{
       if(skip[k])return;
-      checks.push(requirement('range-'+k,`تحديد موضع ${ACT[k]}`,has(k),'important',k+'-s'));
-      if(k!=='new')checks.push(requirement('grade-'+k,`تقييم ${ACT[k]}`,hasGrade(k),'important','pgr-'+k));
+      checks.push(requirement('range-'+k,`اختر سورة ${ACT[k]} وحدد الآيات أو اختر السورة كاملة`,has(k),'important',k+'-s'));
+      if(k!=='new')checks.push(requirement('grade-'+k,`اختر نتيجة تقييم ${ACT[k]}`,hasGrade(k),'important','pgr-'+k));
     };
-    if(kind==='new'||kind==='mixed'){add('new');if(!skip.new)checks.push(requirement('grade-new','تسجيل نتيجة تسميع الحفظ الجديد',hasGrade('new'),'important','pgr-new'));}
+    if(kind==='new'||kind==='mixed'){add('new');if(!skip.new)checks.push(requirement('grade-new','اختر نتيجة تسميع الحفظ الجديد (أتقن / يحتاج تثبيت / أخطأ مرة أخرى)',hasGrade('new'),'important','pgr-new'));}
     if(kind==='review'||kind==='mixed'){
       if(kind==='review'&&has('far')&&!has('rec'))add('far');else add('rec');
     }
@@ -136,34 +153,31 @@
   }
   function focusMissing(target){
     const id=String(target||'');
-    const grade=id.match(/^pgr-(new|rec|far|juz|surahReview)$/);
+    const grade=id.match(/^(?:pgr|gr|prev-task)-(new|rec|far|juz|surahReview)$/);
     const section=id.match(/^(new|rec|far)-(?:s|f|t|full)$/);
-    // Guided session mode hides non-current sections, even when a target exists.
     const advancedTarget=/^(im119|im119Extra)/.test(id);
     const step=grade?'assessment':section?(section[1]==='new'?'new':'review'):'assessment';
     try{g.setSessionStep?.(step,false);}catch(_){}
-    if(advancedTarget){const more=by('ia29LessonExtras');if(more)more.open=true;}
-    if(section&&by('tog-'+section[1])&&!by('tog-'+section[1]).classList.contains('on')){
-      try{g.togSec?.(section[1]);}catch(_){}
+    if(advancedTarget){const more=by('ia29LessonExtras')||by('ia20SessionAdvanced')||by('ia21CompletionMore');if(more)more.open=true;}
+    if(section&&by('tog-'+section[1])&&!by('tog-'+section[1]).classList.contains('on')){try{g.togSec?.(section[1]);}catch(_){}}
+    if(section&&/-(f|t)$/.test(id)){const range=by(section[1]+'-range');if(range)range.style.display='';}
+    const targetCandidates=[id];
+    if(grade){targetCandidates.push('pgr-'+grade[1],'gr-'+grade[1],'prev-task-'+grade[1]);}
+    if(section){targetCandidates.push(section[1]+'-s');}
+    const t=targetCandidates.map(by).find(Boolean)||null;
+    if(!t){
+      const card=by('im119Completion');card?.scrollIntoView?.({block:'center',behavior:'smooth'});
+      g.toast?.(`الحقل المطلوب: ${id||'غير محدد'}. افتح قسم التقييمات أو موضع التسميع لإكماله.`,'warning');return false;
     }
-    if(section&&/-(f|t)$/.test(id)){
-      const range=by(section[1]+'-range');if(range)range.style.display='';
-    }
-    // Open all nested DETAILS, then focus a real choice for grade panels.
-    const t=by(id)||(grade?by('prev-task-'+grade[1]):null);
-    if(!t){g.toast?.('تعذر تحديد الحقل تلقائيًا؛ افتح قسم النواقص لتعديله','info');return false;}
     let node=t;while(node){if(node.tagName==='DETAILS')node.open=true;node=node.parentElement;}
     const focusTarget=grade?(t.querySelector?.('.gb:not(.sel)')||t.querySelector?.('.gb')||t):t;
     if(!focusTarget.matches?.('input,select,textarea,button,a,[tabindex]'))focusTarget.setAttribute?.('tabindex','-1');
     const visible=()=>{
       try{focusTarget.scrollIntoView?.({block:'center',behavior:'smooth'});}catch(_){}
       try{focusTarget.focus?.({preventScroll:true});}catch(_){focusTarget.focus?.();}
-      t.classList?.add?.('ia28-missing-focus');
-      setTimeout(()=>t.classList?.remove?.('ia28-missing-focus'),3500);
+      t.classList?.add?.('ia28-missing-focus');setTimeout(()=>t.classList?.remove?.('ia28-missing-focus'),3500);
     };
-    // Let the guided-mode and disclosure DOM settle first.
-    setTimeout(visible,60);
-    return true;
+    setTimeout(visible,90);return true;
   }
 
   function touchDraft(){try{g.scheduleDraftSave?.();}catch(_){}}
@@ -256,7 +270,7 @@
     data={...data,...(Object.keys(actual).length?{actualRecitation:actual}:null)};
     const has=state.extra.length||state.kind!=='auto'||Object.values(state.skip).some(Boolean)||Object.values(state.decisions).some(Boolean)||!!state.overrideReason;if(!has)return data;return {...data,teacher119:{kind:state.kind,extra:state.extra.map(normalizedRange),notPerformed:{...state.skip},decisions:{...state.decisions},skipReason:state.skipReason,...(state.overrideReason?{overrideReason:state.overrideReason,overrideAt:state.overrideAt,overrideIssues:state.overrideIssues}:null)}};}
   function showWarning(result,action){
-    if(state.warning)return;
+    if(state.warning){const existing=by('im119Warning');if(existing){existing.scrollIntoView?.({block:'center',behavior:'smooth'});g.toast?.('نافذة مراجعة النواقص مفتوحة بالفعل؛ أكمل الحقول المحددة أو اختر إلغاء.','info');return;}state.warning=false;}
     // Recheck the real editor at the moment of opening, not a stale completion card.
     const latest=validateCurrent();if(!latest.outstanding.length)return execute(action);
     result=latest;state.warning=true;
@@ -288,12 +302,15 @@
     });
   }
   function execute(action){
+    const fn=action==='send'?g.saveAndSendWA:(action==='short'||action==='detailed'?g.saveAndSendWAMode:g.saveSession);
+    if(typeof fn!=='function'){g.toast?.('وظيفة الحفظ أو الإرسال لم تكتمل بعد. أعد تحميل الأكاديمية ثم حاول مرة أخرى.','error');return false;}
     state.bypass=true;
     try{
-      if(action==='send')g.saveAndSendWA?.();
-      else if(action==='short'||action==='detailed')g.saveAndSendWAMode?.(action);
-      else g.saveSession?.();
-    }finally{state.bypass=false;state.overrideReason='';state.overrideIssues=[];}
+      const out=(action==='short'||action==='detailed')?fn.call(g,action):fn.call(g);
+      if(out===false){const health=root.SaveHealth;g.toast?.(health?.message||'لم تكتمل العملية. لم يتم فتح واتساب؛ راجع حالة الحفظ والنواقص.','error');return false;}
+      return out;
+    }catch(err){console.error('[session intelligence] action failed',err);g.toast?.('حدث خطأ أثناء حفظ الحصة أو تجهيز رسالة ولي الأمر. لم يتم تأكيد الإرسال.','error');return false;}
+    finally{state.bypass=false;state.overrideReason='';state.overrideIssues=[];}
   }
   function tryAction(action){
     let e=validateCurrent();
@@ -314,7 +331,7 @@
     const origApply=g.applyDraft;
     if(typeof origApply==='function')legacy.override('applyDraft',function(...a){const out=origApply.apply(this,a);const meta=a[0]?.teacher119;if(meta){state.kind=TYPES[meta.kind]?meta.kind:'auto';state.extra=(meta.extra||[]).filter(rangeValid).map(normalizedRange);state.skip={...meta.notPerformed};state.decisions={...meta.decisions};state.skipReason=String(meta.skipReason||'');render();}return out;},'v11.9-session-intelligence');
     const origBuild=g.buildSesData;
-    if(typeof origBuild==='function')legacy.override('buildSesData',function(...args){return addMetaToData(origBuild.apply(this,args));},'v11.9-session-intelligence');
+    if(typeof origBuild==='function')legacy.override('buildSesData',function(...args){const base=origBuild.apply(this,args);return addMetaToData(reconcileDomSections(base));},'v11.9-session-intelligence');
     const extraLine=ses=>{
       const extras=ses?.teacher119?.extra||[];
       if(!extras.length)return '';

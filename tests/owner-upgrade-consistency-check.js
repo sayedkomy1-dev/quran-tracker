@@ -12,7 +12,7 @@ const app=read('app.js');
 const bootstrap=read('js/core/offline-bootstrap.js');
 const version='11.12.1-beta.27';
 assert(html.includes(`name="application-version" content="${version}"`));
-assert(html.includes("app.js?v=beta28-rc9"));
+assert(html.includes("app.js?v=beta28-rc13"));
 assert(html.includes(`runtime.js?v=${version}`));
 assert(html.includes(`offline-bootstrap.js?v=${version}`));
 assert(sw.includes(`const APP_VERSION = '${version}'`));
@@ -45,7 +45,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  const sourceFor=url=>{
   const p=new URL(key(url)).pathname;
   if(p==='/index.html')return staleIndex?html.replaceAll(version,'11.9.0'):html;
-  if(p==='/guardian-portal.html'||p==='/guest-practice.html')return read(p.slice(1));
+  if(p==='/guardian-portal.html'||p==='/guest-practice.html'||p==='/maqraa.html')return read(p.slice(1));
   if(p==='/app.js')return app;
   if(p==='/js/core/runtime.js')return runtime;
   if(p==='/js/core/offline-bootstrap.js')return bootstrap;
@@ -72,17 +72,17 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  }
  await installation;
  const currentName=vm.runInContext('ACTIVE_CACHE_NAME',ctx);
- assert(currentName.endsWith('-beta28-stage1'),'must test the new cache namespace');
+ assert(currentName.includes('-beta28-stage1')&&currentName.endsWith('-rc14-tahfeez-continuation'),'must test the RC14 cache namespace while retaining the Beta28 stage marker');
  const newCache=await cachesMock.open(currentName);
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
  assert(currentRoot && currentHtml,'both root and index paths must have current HTML');
  assert((await currentRoot.text()).includes('name="application-version" content="11.12.1-beta.27"'),'root may not serve stale HTML');
- assert((await currentHtml.text()).includes('app.js?v=beta28-rc9'),'index may not serve old app.js');
+ assert((await currentHtml.text()).includes('app.js?v=beta28-rc13'),'index may not serve old app.js');
 }
 (async()=>{
  await testWorker({staleIndex:true});
  await testWorker({offlineRuntime:true});
  await testWorker({});
- console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified current root/index and core scripts');
+ console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC14 root/index and retained RC13 core scripts');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -3,8 +3,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const html=fs.readFileSync('index.html','utf8'),sw=fs.readFileSync('sw.js','utf8');
 const source=fs.readFileSync('js/features/supervisor-dashboard.js','utf8');
 const auth=fs.readFileSync('auth.js','utf8');
-assert.match(html,/src="auth\.js\?v=beta28-rc7-data-safety"/);
-assert.match(sw,/\.\/auth\.js\?v=11\.7\.4-foundation/);
+assert.match(html,/src="auth\.js\?v=beta28-rc13"/);
+assert.match(sw,/\.\/auth\.js\?v=beta28\-rc13/);
 assert.match(sw,/\.\/js\/features\/supervisor-dashboard\.js\?v=11\.12\.1/);
 assert.match(auth,/ImamApp\?\.Supervision\?\.initialize/);
 

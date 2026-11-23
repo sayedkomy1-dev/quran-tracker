@@ -25,7 +25,7 @@
   const state={
     context:null,assignment:null,open:false,repeatMode:'range',practiceMode:'listen',textRevealed:true,verses:[],selectedAyah:1,
     sequence:[],sequenceIndex:0,cycle:1,itemLoop:1,playing:false,paused:false,timer:null,countdownTimer:null,countdownEnd:0,
-    objectUrl:'',fetchController:null,playRequest:0,textRequest:0,textChapter:0,preparing:false,offlineRequest:0,downloading:false,downloadCancel:false,historyPushed:false,lastState:null
+    objectUrl:'',fetchController:null,playRequest:0,activeAudioToken:0,lastEndedToken:0,mediaReadyCleanup:null,textRequest:0,textChapter:0,preparing:false,offlineRequest:0,downloading:false,downloadCancel:false,historyPushed:false,lastState:null
   };
   let selectedNode=null,playingNode=null,renderKey="",offlineTimer=null;
   function toast(msg){
@@ -86,6 +86,7 @@
   }
   function updateLabels(){
     const r=currentRange();
+    const basmala=$('tahfeezBasmala');if(basmala)basmala.hidden=!(g.ImamTahfeezFlow?.showOpeningBasmala?.(r.chapter,r.from)??(r.from===1&&r.chapter!==1&&r.chapter!==9));
     if($('tahfeezSurahLabel'))$('tahfeezSurahLabel').textContent=`سورة ${r.surah}`;
     if($('tahfeezRangeLabel'))$('tahfeezRangeLabel').textContent=`الآيات ${r.from}–${r.to}`;
     if($('tahfeezNowSurah'))$('tahfeezNowSurah').textContent=`سورة ${r.surah}`;if($('tahfeezNowAyah'))$('tahfeezNowAyah').textContent=`الآية ${clamp(state.selectedAyah,r.from,r.to,r.from)}`;
@@ -191,40 +192,72 @@
     if(scroll&&node){const viewport=$('tahfeezText'),r=node.getBoundingClientRect(),v=viewport.getBoundingClientRect();if(r.top<v.top||r.bottom>v.bottom||r.top<0||r.bottom>innerHeight)node.scrollIntoView({behavior:'auto',block:'nearest'});}
   }
   function selectAyah(a,play=false){
-    state.completed=false;
+    // An intentional verse selection is a seek into the user's chosen range, not a one-ayah session.
     if(state.playing||state.paused||state.preparing||state.timer)stop();
-    const r=currentRange();state.selectedAyah=Math.trunc(clamp(a,r.from,r.to,r.from));$('tahfeezNowAyah').textContent=`الآية ${state.selectedAyah}`;
-    if(state.repeatMode==='single'){$('tahfeezSingle').value=String(state.selectedAyah);renderText();savePrefs();}paintAyah(state.selectedAyah);updateFocus();saveLast();if(play)playSingle(state.selectedAyah);
+    state.completed=false;
+    const r=currentRange();state.selectedAyah=Math.trunc(clamp(a,r.from,r.to,r.from));
+    if(state.repeatMode==='single'){$('tahfeezSingle').value=String(state.selectedAyah);renderText();savePrefs();}
+    else if(state.repeatMode==='group'){
+      const b=repeatBounds();if(state.selectedAyah<b.from||state.selectedAyah>b.to){setRepeatMode('range');toast('الآية خارج المجموعة؛ سيتم الإكمال حتى نهاية المقدار المحدد');}
+    }
+    $('tahfeezNowAyah').textContent=`الآية ${state.selectedAyah}`;
+    paintAyah(state.selectedAyah);updateFocus();saveLast();
+    if(play)startPlayback();
   }
   function setPlayingAyah(a){
     const r=currentRange(),last=state.lastState,changed=!last||last.chapter!==r.chapter||last.from!==r.from||last.to!==r.to||last.ayah!==a||last.practiceMode!==state.practiceMode;state.selectedAyah=a;$('tahfeezNowAyah').textContent=`الآية ${a}`;paintAyah(a,true);updateFocus();if(changed||!state.lastState)saveLast();
   }
-  function buildSequence(){const b=repeatBounds(),arr=[];for(let a=b.from;a<=b.to;a++)arr.push(a);return arr;}
+  function buildSequence(){const b=repeatBounds();const plan=g.ImamTahfeezFlow?.plan?.({from:b.from,to:b.to,selected:state.selectedAyah});if(plan)return plan.sequence;const arr=[];for(let a=b.from;a<=b.to;a++)arr.push(a);return arr;}
   async function audioSource(ch,ayah,rec){
     const url=remoteAudio(rec,ch,ayah);
     try{const lib=g.ImamOfflineAudio,k=lib?.reciterKey(rec);if(k){const blob=await lib.get(k,ch,ayah);if(blob){return{blob,offline:true};}}}catch(_){}
     try{const cache=await caches.open(AUDIO_CACHE),hit=await cache.match(url);if(hit){const blob=await hit.blob();if(blob.size){return{blob,offline:true};}}}catch(_){}
+    if(navigator.onLine===false)throw new Error('AUDIO_OFFLINE_MISSING');
     return{src:url,offline:false};
   }
+  function waitForMediaReady(audio,request,timeoutMs=15000){
+    if(audio.readyState>=2)return Promise.resolve();
+    return new Promise((resolve,reject)=>{
+      let settled=false;const finish=(err)=>{if(settled)return;settled=true;clearTimeout(timer);audio.removeEventListener('loadeddata',ready);audio.removeEventListener('canplay',ready);audio.removeEventListener('error',failed);if(state.mediaReadyCleanup===cancel)state.mediaReadyCleanup=null;err?reject(err):resolve();};
+      const abortError=()=>{const e=new Error('AUDIO_LOAD_ABORTED');e.name='AbortError';return e;};
+      const ready=()=>{if(request!==state.playRequest)return finish(abortError());if(audio.readyState>=2)finish();};
+      const failed=()=>finish(new Error('AUDIO_LOAD_FAILED'));
+      const cancel=()=>finish(abortError());
+      const timer=setTimeout(()=>finish(new Error('AUDIO_LOAD_TIMEOUT')),timeoutMs);
+      state.mediaReadyCleanup=cancel;audio.addEventListener('loadeddata',ready);audio.addEventListener('canplay',ready);audio.addEventListener('error',failed);ready();
+    });
+  }
   async function playCurrentItem(resetTime=true){
-    clearTimeout(state.timer);state.timer=null;const request=++state.playRequest;state.preparing=true;
+    clearTimeout(state.timer);state.timer=null;const request=++state.playRequest;state.preparing=true;state.playing=false;state.paused=false;state.activeAudioToken=0;
     const a=state.sequence[state.sequenceIndex];if(!a){state.preparing=false;finishPlayback();return;}
     const r=currentRange(),rec=$('tahfeezReciter').value,audio=$('tahfeezAudio');setPlayingAyah(a);$('tahfeezPlaybackState').textContent=`الدورة ${state.cycle} · الآية ${a}`;updateSessionProgress();updatePlayButton();
     try{
-      const src=await audioSource(r.chapter,a,rec);if(request!==state.playRequest)return;revokeObject();if(src.blob)state.objectUrl=URL.createObjectURL(src.blob);audio.playbackRate=clamp($('tahfeezSpeed').value,.5,1.5,1);audio.volume=clamp($('tahfeezVolume').value,0,1,1);audio.src=src.blob?state.objectUrl:src.src;audio.dataset.offline=src.offline?'1':'0';if(resetTime)audio.currentTime=0;await audio.play();if(request!==state.playRequest)return;state.preparing=false;state.playing=true;state.paused=false;updatePlayButton();
+      const src=await audioSource(r.chapter,a,rec);if(request!==state.playRequest)return;
+      state.mediaReadyCleanup?.();state.mediaReadyCleanup=null;audio.pause();audio.removeAttribute('src');try{audio.load();}catch(_){}revokeObject();
+      if(src.blob)state.objectUrl=URL.createObjectURL(src.blob);
+      audio.playbackRate=clamp($('tahfeezSpeed').value,.5,1.5,1);audio.volume=clamp($('tahfeezVolume').value,0,1,1);
+      state.activeAudioToken=request;audio.dataset.playToken=String(request);audio.dataset.offline=src.offline?'1':'0';audio.src=src.blob?state.objectUrl:src.src;audio.load();
+      await waitForMediaReady(audio,request);if(request!==state.playRequest)return;
+      if(resetTime)audio.currentTime=0;
+      await audio.play();if(request!==state.playRequest)return;state.preparing=false;state.playing=true;state.paused=false;updatePlayButton();
       try{g.ImamGuardianEngagement?.log?.('ayah_listen',1,{chapter:r.chapter,ayah:a,cycle:state.cycle,itemLoop:state.itemLoop,mode:state.practiceMode,offline:!!src.offline});}catch(_){}
-    }catch(e){if(request!==state.playRequest)return;state.preparing=false;state.playing=false;state.paused=false;updatePlayButton();$('tahfeezPlaybackState').textContent=navigator.onLine===false?'الصوت غير محفوظ لهذا الموضع':'تعذر تشغيل الصوت';toast(navigator.onLine===false?'نزّل التكليف أولًا للاستماع دون إنترنت':'تعذر تشغيل الصوت الآن');}
+    }catch(e){if(request!==state.playRequest)return;state.mediaReadyCleanup?.();state.mediaReadyCleanup=null;state.activeAudioToken=0;state.preparing=false;state.playing=false;state.paused=false;updatePlayButton();$('tahfeezPlaybackState').textContent=navigator.onLine===false?'الصوت غير محفوظ لهذا الموضع':'تعذر تحميل الآية أو تشغيلها';toast(navigator.onLine===false?'هذه الآية غير محفوظة على الجهاز؛ اتصل بالإنترنت أو نزّلها مسبقًا':'تعذر تشغيل الآية. أعد المحاولة أو انتقل للآية التالية');}
   }
-  async function playSingle(a){
-    stop(false);state.sequence=[a];state.sequenceIndex=0;state.cycle=1;state.itemLoop=1;await playCurrentItem();
+  function replayCurrentAyah(){
+    // 'Replay then continue' is distinct from the explicit single-verse repeat mode.
+    if(state.repeatMode==='single'){setRepeatMode('range');toast('إعادة الآية ثم متابعة المقدار كاملًا');}
+    selectAyah(state.selectedAyah,true);
   }
+  function restartRange(){selectAyah(repeatBounds().from,true);}
   function startPlayback(){
     savePrefs();state.sequence=buildSequence();if(!state.sequence.length)return toast('اختر نطاقًا صحيحًا أولًا');
     const r=currentRange();try{g.ImamGuardianEngagement?.log?.('tahfeez_start',1,{chapter:r.chapter,from:r.from,to:r.to,mode:state.practiceMode,tutor:!!$('tahfeezTutor').checked});}catch(_){}
     state.sequenceIndex=state.completed?0:Math.max(0,state.sequence.indexOf(state.selectedAyah));state.completed=false;state.cycle=1;state.itemLoop=1;clearCountdown();updateSessionProgress();playCurrentItem();updateLoopState();
   }
-  function audioEnded(){
-    if(!state.sequence.length||!state.playing)return;
+  function audioEnded(event){
+    const audio=event?.currentTarget||$('tahfeezAudio'),token=Number(audio?.dataset?.playToken)||0;
+    if(!state.sequence.length||!state.playing||!token||token!==state.activeAudioToken||token!==state.playRequest||token===state.lastEndedToken)return;
+    state.lastEndedToken=token;state.activeAudioToken=0;
     try{const r=currentRange(),a=state.sequence[state.sequenceIndex]||state.selectedAyah;g.ImamGuardianEngagement?.log?.('repeat_complete',1,{chapter:r.chapter,ayah:a,cycle:state.cycle,itemLoop:state.itemLoop,mode:state.practiceMode});}catch(_){}
     const tutor=!!$('tahfeezTutor').checked,itemMax=tutor?clamp($('tahfeezTutorRepeat').value,1,20,3):1,pause=tutor?clamp($('tahfeezTutorPause').value,0,30,2)*1000:150;
     if(state.itemLoop<itemMax){state.itemLoop++;updateSessionProgress();$('tahfeezPlaybackState').textContent=`ردد الآية ${state.sequence[state.sequenceIndex]} · ${state.itemLoop}/${itemMax}`;scheduleNext(()=>playCurrentItem(),pause);return;}
@@ -234,7 +267,7 @@
     if(state.cycle<cycles){state.cycle++;state.sequenceIndex=0;updateSessionProgress();scheduleNext(()=>playCurrentItem(),pause);return;}
     finishPlayback();
   }
-  function finishPlayback(){state.completed=true;state.playing=false;state.paused=false;clearTimeout(state.timer);state.timer=null;clearCountdown();updateSessionProgress(Number.MAX_SAFE_INTEGER);$('tahfeezPlaybackState').textContent='اكتمل التشغيل';updatePlayButton();document.querySelectorAll('.tahfeez-ayah.playing').forEach(x=>x.classList.remove('playing'));try{const r=currentRange();g.ImamGuardianEngagement?.log?.('tahfeez_complete',1,{chapter:r.chapter,from:r.from,to:r.to,cycles:state.cycle,mode:state.practiceMode});}catch(_){} }
+  function finishPlayback(){state.completed=true;state.playing=false;state.paused=false;state.activeAudioToken=0;clearTimeout(state.timer);state.timer=null;clearCountdown();updateSessionProgress(Number.MAX_SAFE_INTEGER);$('tahfeezPlaybackState').textContent='اكتمل التشغيل';updatePlayButton();document.querySelectorAll('.tahfeez-ayah.playing').forEach(x=>x.classList.remove('playing'));try{const r=currentRange();g.ImamGuardianEngagement?.log?.('tahfeez_complete',1,{chapter:r.chapter,from:r.from,to:r.to,cycles:state.cycle,mode:state.practiceMode});}catch(_){} }
   function playPause(){
     const audio=$('tahfeezAudio');
     if(state.preparing){stop();return;}
@@ -245,34 +278,44 @@
     if(audio.paused){const request=state.playRequest;audio.play().then(()=>{if(request!==state.playRequest)return;state.playing=true;state.paused=false;updatePlayButton();$('tahfeezPlaybackState').textContent=`الآية ${state.selectedAyah}`;}).catch(()=>{});}else{audio.pause();state.playing=false;state.paused=true;updatePlayButton();$('tahfeezPlaybackState').textContent='متوقف مؤقتًا';}
   }
   function stop(clearSequence=true){
-    state.playRequest++;state.preparing=false;state.waitPaused=false;state.completed=false;clearTimeout(state.timer);state.timer=null;clearCountdown();const audio=$('tahfeezAudio');if(audio){audio.pause();audio.removeAttribute('src');try{audio.load();}catch(_){}}
+    state.playRequest++;state.activeAudioToken=0;state.mediaReadyCleanup?.();state.mediaReadyCleanup=null;state.preparing=false;state.waitPaused=false;state.completed=false;clearTimeout(state.timer);state.timer=null;clearCountdown();const audio=$('tahfeezAudio');if(audio){audio.pause();audio.removeAttribute('src');try{audio.load();}catch(_){}}
     revokeObject();state.playing=false;state.paused=false;if(clearSequence){state.sequence=[];state.sequenceIndex=0;state.cycle=1;state.itemLoop=1;}playingNode=null;document.querySelectorAll('.tahfeez-ayah.playing').forEach(x=>x.classList.remove('playing'));if($('tahfeezPlaybackState'))$('tahfeezPlaybackState').textContent='جاهز';if($('tahfeezSeek'))$('tahfeezSeek').value='0';if($('tahfeezCurrentTime'))$('tahfeezCurrentTime').textContent='0:00';if($('tahfeezDuration'))$('tahfeezDuration').textContent='0:00';updatePlayButton();updateFocus();if(clearSequence)updateSessionProgress(0);
   }
   function updatePlayButton(){const b=$('tahfeezPlayBtn');if(!b)return;const active=state.preparing||!!state.timer||state.playing&&!$('tahfeezAudio').paused;b.textContent=active?'Ⅱ':'▶';b.setAttribute('aria-label',active?'إيقاف مؤقت':'تشغيل');}
-  function jumpAyah(delta){const r=currentRange(),b=state.repeatMode==='group'?repeatBounds():r,active=state.playing||state.preparing||!!state.timer,next=clamp(state.selectedAyah+delta,b.from,b.to,b.from);if(next===state.selectedAyah)return;selectAyah(next,false);if(state.practiceMode==='test')toast('اختبر نفسك ثم اضغط تشغيل للاستماع والتحقق');else if(active)startPlayback();}
+  function jumpAyah(delta){const r=currentRange(),b=state.repeatMode==='group'?repeatBounds():r,active=state.playing||state.preparing||state.paused||!!state.timer,next=clamp(state.selectedAyah+delta,b.from,b.to,b.from);if(next===state.selectedAyah)return;selectAyah(next,active);}
   function seekBy(sec){const audio=$('tahfeezAudio');if(!audio||!Number.isFinite(audio.duration))return;audio.currentTime=clamp(audio.currentTime+sec,0,audio.duration,0);}
   function fmtTime(n){n=Math.max(0,Number(n)||0);return `${Math.floor(n/60)}:${String(Math.floor(n%60)).padStart(2,'0')}`;}
   function syncSeek(){const a=$('tahfeezAudio'),range=$('tahfeezSeek');if(!a||!range)return;const d=Number(a.duration)||0,c=Number(a.currentTime)||0;range.value=d?String(Math.round(c/d*1000)):'0';$('tahfeezCurrentTime').textContent=fmtTime(c);$('tahfeezDuration').textContent=fmtTime(d);}
   function seekInput(){const a=$('tahfeezAudio'),range=$('tahfeezSeek');if(a&&Number.isFinite(a.duration)&&a.duration>0)a.currentTime=(Number(range.value)||0)/1000*a.duration;}
   function toggleMute(){const a=$('tahfeezAudio');a.muted=!a.muted;$('tahfeezMuteBtn').textContent=a.muted?'🔇':'🔊';}
   async function cacheAudioRange(from,to,chapter,rec){
-    const cache=await caches.open(AUDIO_CACHE),bar=$('tahfeezDownloadBar');state.downloading=true;state.downloadCancel=false;let done=0,total=to-from+1;
-    for(let a=from;a<=to;a++){
-      if(state.downloadCancel)break;const url=remoteAudio(rec,chapter,a);const hit=await cache.match(url);
-      if(!hit){const lib=g.ImamOfflineAudio,k=lib?.reciterKey(rec);if(k)await lib.verse(k,chapter,a,{store:true});else{const res=await fetch(url,{mode:'cors',cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);await cache.put(url,res.clone());}}
-      done++;if(bar)bar.style.width=`${Math.round(done/total*100)}%`;$('tahfeezOfflineStatus').textContent=`تم تنزيل ${done} من ${total}`;
-    }
-    state.downloading=false;return{done,total};
+    const bar=$('tahfeezDownloadBar'),lib=g.ImamOfflineAudio,key=lib?.reciterKey(rec);state.downloading=true;state.downloadCancel=false;let done=0,total=to-from+1;
+    try{
+      if(key&&typeof lib.downloadVerses==='function'){
+        const out=await lib.downloadVerses(key,chapter,from,to,p=>{done=p.done;if(bar)bar.style.width=`${Math.round(done/Math.max(1,p.total)*100)}%`;const status=$('tahfeezOfflineStatus');if(status)status.textContent=`حُفظ ${p.done} من ${p.total} آية · ${surahName(p.chapter)} ${p.ayah}`;});
+        return out;
+      }
+      // Compatibility fallback for any historical reader not yet mapped to the shared library.
+      const cache=await caches.open(AUDIO_CACHE);let written=0;
+      for(let a=from;a<=to;a++){
+        if(state.downloadCancel)break;const url=remoteAudio(rec,chapter,a),hit=await cache.match(url);
+        if(!hit){if(written%8===0){const capacity=await g.ImamStorageGovernor?.canContinueAudioDownload?.();if(capacity&&!capacity.ok)return{done,total,stopped:false,storageLimited:true};}
+          const res=await fetch(url,{mode:'cors',cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);await cache.put(url,res.clone());written++;}
+        done++;if(bar)bar.style.width=`${Math.round(done/total*100)}%`;const status=$('tahfeezOfflineStatus');if(status)status.textContent=`تم تنزيل ${done} من ${total}`;
+      }
+      return{done,total,stopped:state.downloadCancel,storageLimited:false};
+    }finally{state.downloading=false;}
   }
   async function downloadRange(){
     if(state.downloading)return toast('يوجد تنزيل جارٍ بالفعل');const r=currentRange(),b=repeatBounds(),rec=$('tahfeezReciter').value;
-    if(navigator.onLine===false)return toast('شغّل الإنترنت لتنزيل الصوت أول مرة');
-    try{const x=await cacheAudioRange(b.from,b.to,r.chapter,rec);toast(`تم حفظ ${x.done} آية للاستماع دون إنترنت`);await refreshOfflineStatus();}catch(e){state.downloading=false;toast('تعذر تنزيل الصوت من المصدر الحالي');await refreshOfflineStatus();}
+    try{const x=await cacheAudioRange(b.from,b.to,r.chapter,rec);toast(x.storageLimited?'توقف التنزيل لحماية مساحة الجهاز؛ الآيات المكتملة محفوظة ويمكن الاستكمال لاحقًا.':x.stopped?'تم إيقاف التنزيل؛ الآيات المكتملة محفوظة.':`تم حفظ ${x.done} آية للاستماع دون إنترنت`);await refreshOfflineStatus();}catch(e){toast(g.ImamOfflineAudio?.message?.(e)||'تعذر تنزيل الصوت من المصدر الحالي');await refreshOfflineStatus();}
   }
   async function downloadSurah(){
-    if(state.downloading)return toast('يوجد تنزيل جارٍ بالفعل');const r=currentRange(),rec=$('tahfeezReciter').value;if(navigator.onLine===false)return toast('شغّل الإنترنت لتنزيل الصوت أول مرة');
-    try{const x=await cacheAudioRange(1,r.max,r.chapter,rec);toast(`تم حفظ سورة ${r.surah} (${x.done} آية)`);await refreshOfflineStatus();}catch(e){state.downloading=false;toast('تعذر إكمال تنزيل السورة');await refreshOfflineStatus();}
+    if(state.downloading)return toast('يوجد تنزيل جارٍ بالفعل');const r=currentRange(),rec=$('tahfeezReciter').value;
+    try{const x=await cacheAudioRange(1,r.max,r.chapter,rec);toast(x.storageLimited?'توقف التنزيل لحماية مساحة الجهاز؛ الآيات المكتملة محفوظة ويمكن الاستكمال لاحقًا.':x.stopped?'تم إيقاف التنزيل؛ الآيات المكتملة محفوظة.':`تم حفظ سورة ${r.surah} (${x.done} آية)`);await refreshOfflineStatus();}catch(e){toast(g.ImamOfflineAudio?.message?.(e)||'تعذر إكمال تنزيل السورة');await refreshOfflineStatus();}
   }
+  function cancelDownload(){state.downloadCancel=true;g.ImamOfflineAudio?.stop?.();}
+
   async function clearDownloads(){
     const r=currentRange(),rec=$('tahfeezReciter').value,cache=await caches.open(AUDIO_CACHE);let n=0;const lib=g.ImamOfflineAudio,k=lib?.reciterKey(rec);if(k){try{n=await lib.removeRange(k,r.chapter);toast(n?`تم حذف ${n} ملفًا صوتيًا لهذه السورة`:'لا توجد ملفات محفوظة لهذه السورة');refreshOfflineStatus();}catch(e){toast(lib.message(e));}return;}for(let a=1;a<=r.max;a++){if(await cache.delete(remoteAudio(rec,r.chapter,a)))n++;}toast(n?`تم حذف ${n} ملفًا صوتيًا من الجهاز`:'لا توجد ملفات محفوظة لهذه السورة');refreshOfflineStatus();
   }
@@ -317,7 +360,7 @@
     const shell=$('guardianTahfeez');if(!shell)return;const chapter=idx+1,max=surahAyahs(chapter),from=clamp(input?.from,1,max,1),to=clamp(input?.to,from,max,from);
     // A correction review is an explicit user action; never let the automatic assignment opener replace it.
     stop();shell.dataset.assignmentOpened='1';
-    $('tahfeezSurah').value=String(chapter);fillAyahSelectors(false);$('tahfeezFrom').value=String(from);$('tahfeezTo').value=String(to);updateTargetSelectors();state.selectedAyah=from;$('tahfeezNowAyah').textContent=`الآية ${from}`;
+    $('tahfeezSurah').value=String(chapter);fillAyahSelectors(false);$('tahfeezFrom').value=String(from);$('tahfeezTo').value=String(to);updateTargetSelectors();state.selectedAyah=clamp(input?.startAyah,from,to,from);$('tahfeezNowAyah').textContent=`الآية ${state.selectedAyah}`;
     setPracticeMode(input?.practiceMode||'stabilize',true);
     if(!state.open){state.open=true;shell.hidden=false;shell.setAttribute('aria-hidden','false');document.body.classList.add('tahfeez-open');setNet();state.lastState=readLast()||state.lastState;updateResumeButton();if(!state.historyPushed){history.pushState({guardianTahfeez:true},'',location.href);state.historyPushed=true;}}
     loadText();refreshOfflineStatus();toast(`تم فتح مواضع التصحيح: سورة ${surah} ${from}${to>from?'–'+to:''}`);
@@ -333,7 +376,7 @@
     surah.innerHTML=SURAS.map((x,i)=>`<option value="${i+1}">${i+1}. سورة ${x[0]}</option>`).join('');rec.innerHTML=RECITERS.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');
     const p=readPrefs();surah.value=String(clamp(p.surah,1,114,1));fillAyahSelectors(false);if(p.from)$('tahfeezFrom').value=String(clamp(p.from,1,surahAyahs(currentChapter()),1));if(p.to)$('tahfeezTo').value=String(clamp(p.to,1,surahAyahs(currentChapter()),surahAyahs(currentChapter())));updateTargetSelectors();
     if(RECITERS.some(x=>x[0]===p.reciter))rec.value=p.reciter;if(p.speed)$('tahfeezSpeed').value=String(p.speed);if(p.repeat)$('tahfeezRepeat').value=String(clamp(p.repeat,1,30,1));if(p.tutorRepeat)$('tahfeezTutorRepeat').value=String(clamp(p.tutorRepeat,1,20,3));if(p.tutorPause)$('tahfeezTutorPause').value=String(p.tutorPause);if(Number.isFinite(Number(p.volume)))$('tahfeezVolume').value=String(clamp(p.volume,0,1,1));$('tahfeezTutor').checked=!!p.tutor;setRepeatMode(p.repeatMode||'range');state.practiceMode=p.practiceMode||'listen';state.textRevealed=state.practiceMode!=='test';setPracticeMode(state.practiceMode,false);tutorChanged();
-    const text=$('tahfeezText');const pick=e=>{const node=e.target.closest?.('.tahfeez-ayah');if(node&&text.contains(node))selectAyah(Number(node.dataset.ayah),false);};text.addEventListener('click',pick);text.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){if(e.target.closest?.('.tahfeez-ayah')){e.preventDefault();pick(e);}}});
+    const text=$('tahfeezText');const pick=e=>{const node=e.target.closest?.('.tahfeez-ayah');if(node&&text.contains(node))selectAyah(Number(node.dataset.ayah),true);};text.addEventListener('click',pick);text.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){if(e.target.closest?.('.tahfeez-ayah')){e.preventDefault();pick(e);}}});
     $('tahfeezOfflineStatus')?.closest('details')?.addEventListener('toggle',refreshOfflineStatus);
     if(g.matchMedia?.('(max-width:820px)').matches)toggleSettings();
     surah.addEventListener('change',()=>{stop();fillAyahSelectors(false);state.selectedAyah=1;loadText();refreshOfflineStatus();savePrefs();});
@@ -344,7 +387,7 @@
     document.querySelectorAll('#tahfeezPracticeModes button').forEach(btn=>btn.addEventListener('click',()=>setPracticeMode(btn.dataset.practice,true)));
     $('tahfeezTutor').addEventListener('change',()=>{if(state.playing||state.paused||state.preparing||state.timer)stop();tutorChanged();});$('tahfeezSpeed').addEventListener('change',()=>{const a=$('tahfeezAudio');a.playbackRate=Number($('tahfeezSpeed').value)||1;savePrefs();});$('tahfeezReciter').addEventListener('change',()=>{stop();refreshOfflineStatus();savePrefs();});
     $('tahfeezVolume').addEventListener('input',()=>{const a=$('tahfeezAudio');a.volume=Number($('tahfeezVolume').value)||0;});$('tahfeezVolume').addEventListener('change',savePrefs);
-    const audio=$('tahfeezAudio');audio.addEventListener('ended',audioEnded);audio.addEventListener('timeupdate',syncSeek);audio.addEventListener('loadedmetadata',syncSeek);audio.addEventListener('play',()=>{state.playing=true;state.paused=false;updatePlayButton();});audio.addEventListener('pause',()=>{if(audio.ended)return;updatePlayButton();});audio.addEventListener('error',()=>{if(state.open&&audio.getAttribute('src')){state.preparing=false;state.playing=false;state.paused=false;updatePlayButton();$('tahfeezPlaybackState').textContent=navigator.onLine===false?'هذا الصوت غير محفوظ Offline':'حدث خطأ في ملف الصوت';}});$('tahfeezSeek').addEventListener('input',seekInput);
+    const audio=$('tahfeezAudio');audio.addEventListener('ended',audioEnded);audio.addEventListener('timeupdate',syncSeek);audio.addEventListener('loadedmetadata',syncSeek);audio.addEventListener('play',()=>{state.playing=true;state.paused=false;updatePlayButton();});audio.addEventListener('pause',()=>{if(audio.ended)return;updatePlayButton();});audio.addEventListener('error',()=>{if(state.open&&audio.getAttribute('src')&&Number(audio.dataset.playToken)===state.playRequest&&state.activeAudioToken===state.playRequest){state.preparing=false;state.playing=false;state.paused=false;state.activeAudioToken=0;updatePlayButton();$('tahfeezPlaybackState').textContent=navigator.onLine===false?'هذا الصوت غير محفوظ Offline':'تعذر تحميل ملف الآية؛ حاول مرة أخرى';}});$('tahfeezSeek').addEventListener('input',seekInput);
     window.addEventListener('online',()=>{setNet();refreshOfflineStatus();});window.addEventListener('offline',setNet);window.addEventListener('popstate',()=>{if(state.open)close(true);});
     updateLabels();updateLoopState();updateFocus();updateSessionProgress(0);applyTextVisibility();setNet();
   }
@@ -352,7 +395,7 @@
     state.lastState=x;try{localStorage.setItem(lastKey(),JSON.stringify(x));}catch(_){}updateResumeButton();
   }
   g.openGuardianAssignmentPractice=()=>{open({deferText:true});const shell=$('guardianTahfeez');if(shell)shell.dataset.assignmentOpened='1';if(!state.assignment){loadText();refreshOfflineStatus();toast('لا يوجد تكليف حفظ جديد من المحفظ حاليًا');return;}loadAssignment();};
-  g.ImamGuardianTahfeez={setContext:configureAssignment,open,close,loadAssignment,loadText,resumeLast,setPracticeMode,openCorrectionRange,restoreGuestLast};
-  g.openGuardianTahfeez=open;g.openGuardianCorrectionRange=openCorrectionRange;g.closeGuardianTahfeez=close;g.tahfeezToggleSettings=toggleSettings;g.tahfeezLoadAssignment=loadAssignment;g.tahfeezResumeLast=resumeLast;g.tahfeezToggleReveal=toggleReveal;g.tahfeezLoadText=loadText;g.tahfeezPlayPause=playPause;g.tahfeezStop=()=>stop();g.tahfeezPreviousAyah=()=>jumpAyah(-1);g.tahfeezNextAyah=()=>jumpAyah(1);g.tahfeezSeekBy=seekBy;g.tahfeezToggleMute=toggleMute;g.tahfeezDownloadRange=downloadRange;g.tahfeezDownloadSurah=downloadSurah;g.tahfeezClearDownloads=clearDownloads;
+  g.ImamGuardianTahfeez={setContext:configureAssignment,open,close,loadAssignment,loadText,resumeLast,setPracticeMode,openCorrectionRange,restoreGuestLast,ayahCount:surahAyahs};
+  g.openGuardianTahfeez=open;g.openGuardianCorrectionRange=openCorrectionRange;g.closeGuardianTahfeez=close;g.tahfeezToggleSettings=toggleSettings;g.tahfeezLoadAssignment=loadAssignment;g.tahfeezResumeLast=resumeLast;g.tahfeezToggleReveal=toggleReveal;g.tahfeezLoadText=loadText;g.tahfeezPlayPause=playPause;g.tahfeezReplayCurrentAyah=replayCurrentAyah;g.tahfeezRestartRange=restartRange;g.tahfeezStop=()=>stop();g.tahfeezPreviousAyah=()=>jumpAyah(-1);g.tahfeezNextAyah=()=>jumpAyah(1);g.tahfeezSeekBy=seekBy;g.tahfeezToggleMute=toggleMute;g.tahfeezDownloadRange=downloadRange;g.tahfeezDownloadSurah=downloadSurah;g.tahfeezClearDownloads=clearDownloads;g.tahfeezCancelDownload=cancelDownload;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(globalThis);

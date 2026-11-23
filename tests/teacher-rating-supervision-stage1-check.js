@@ -18,13 +18,12 @@ assert.match(sql,/private_note text not null default '' check \(char_length\(pri
 assert.match(sql,/insert into public\.app_supervision_audit/);assert.match(sql,/grant execute on function public\.guardian_teacher_rating_submit\(uuid,text,jsonb,text\) to anon,authenticated/);
 assert.ok(!/\b(drop|truncate)\b|\bdelete\s+from\b|alter\s+table\s+public\.app_users/i.test(sql),'No destructive SQL or alteration of app users allowed');
 assert.ok(!/phone_hash|pin_hash|ip_address|user_agent/i.test(sql),'Sensitive login metadata must not be persisted in ratings/supervision');
-assert.match(portal,/id="portalRatingCard" hidden/);assert.match(portal,/id="portalRatingNav"[^>]+hidden/);assert.match(portal,/id="portalRatingSend"/);
-for(const metric of ['punctuality','teaching','followup','kindness','benefit','clarity'])assert.match(portal,new RegExp('portalRating_'+metric));
+assert.doesNotMatch(portal,/portalRatingCard|portalRatingNav|portalRatingSend|guardian-ratings\.js/,'guardian/student portal must not expose teacher rating UI');
 assert.match(view,/ImamGuardianRatings\?\.clear\?\.\(\)/);assert.match(view,/ImamGuardianRatings\?\.setContext\?\.\(\{sessionToken,studentRef:row\.student_ref\}\)/);
 assert.match(rating,/guardian_teacher_rating_submit/);assert.match(rating,/guardian_teacher_rating_session_get/);assert.match(rating,/if\(!context\?\.sessionToken\|\|!context\?\.studentRef\)return/);
 assert.match(supervisor,/app_supervision_access/);assert.match(supervisor,/if\(!g.WeLiveQuranAuth\?\.isOwner\?\.\(\)\&\&!allowed\)return/);assert.match(supervisor,/app_supervisor_assign/);
 assert.match(auth,/ImamApp\?\.Supervision\?\.initialize/);
-for(const file of ['./teacher-rating.css?v=11.12.1-beta.27','./js/features/guardian-ratings.js?v=11.7.0-s1','./js/features/supervisor-dashboard.js?v=11.12.1-beta.27'])assert.ok(sw.includes(file),'Missing offline asset '+file);
+for(const file of ['./teacher-rating.css?v=11.12.1-beta.27','./js/features/supervisor-dashboard.js?v=11.12.1-beta.27'])assert.ok(sw.includes(file),'Missing offline asset '+file);assert.ok(!sw.includes('./js/features/guardian-ratings.js'),'guardian rating UI module is no longer part of the parent portal shell');
 assert.match(sw,/const CACHE_NAME = 'quran-pwa-v11\.12\.1-beta\.27-workspace-workflow'/);
 assert.match(read('js/core/runtime.js'),/schema:12/);
 assert.ok(!/navigator\.share|wa\.me/.test(rating+supervisor),'Do not touch WhatsApp behavior');

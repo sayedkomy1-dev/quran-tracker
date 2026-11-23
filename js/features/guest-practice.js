@@ -27,10 +27,14 @@
      row.append(open,rem);root.append(row);
    });
  }
- function openBookmark(x){const ch=Number(x.chapter);const surah=$('tahfeezSurah')?.querySelector(`option[value="${ch}"]`)?.textContent?.replace(/^\d+\.\s*سورة\s*/, '');
-    if(!surah)return;g.ImamGuardianTahfeez?.openCorrectionRange?.({surah,from:x.ayah,to:x.ayah,practiceMode:'listen'});}
+ function openBookmark(x){const ch=Number(x.chapter);const opt=$('tahfeezSurah')?.querySelector(`option[value="${ch}"]`),surah=opt?.textContent?.replace(/^\d+\.\s*سورة\s*/, '');
+    if(!surah)return;const last=state.last?.chapter===ch?state.last:null;
+    const from=Math.max(1,Math.min(x.ayah,Number(x.from)||Number(last?.from)||x.ayah));
+    const max=g.ImamGuardianTahfeez?.ayahCount?.(ch)||286;
+    const to=Math.max(x.ayah,Number(x.to)||Number(last?.to)||max);
+    g.ImamGuardianTahfeez?.openCorrectionRange?.({surah,from,to,startAyah:x.ayah,practiceMode:'listen'});}
  function addBookmark(){const chapter=Number($('tahfeezSurah')?.value||1),ayah=Number($('tahfeezNowAyah')?.textContent?.match(/\d+/)?.[0]||1);if(!Number.isInteger(chapter)||chapter<1||chapter>114||!Number.isInteger(ayah)||ayah<1)return;
-   if(!state.bookmarks.some(x=>x.chapter===chapter&&x.ayah===ayah)){state.bookmarks.unshift({chapter,ayah,at:Date.now()});state.bookmarks=state.bookmarks.slice(0,MAX_BOOKMARKS);localSave();}
+   if(!state.bookmarks.some(x=>x.chapter===chapter&&x.ayah===ayah)){state.bookmarks.unshift({chapter,ayah,from:Number($('tahfeezFrom')?.value)||ayah,to:Number($('tahfeezTo')?.value)||ayah,at:Date.now()});state.bookmarks=state.bookmarks.slice(0,MAX_BOOKMARKS);localSave();}
    const alert=g.document.getElementById('guestBookmarkToast')||g.document.createElement('div');alert.id='guestBookmarkToast';alert.className='tahfeez-toast show';alert.textContent=localOK?'🔖 تم حفظ العلامة في سجلك':'تعذر حفظ العلامة محليًا؛ تحقق من المساحة';g.document.body.append(alert);g.setTimeout(()=>alert.classList.remove('show'),1800);
  }
  function cloudStatus(s){$('guestCloudStatus').textContent=s;}
@@ -73,7 +77,7 @@
  }
  async function google(){if(user){await cloudWrite();return;}
    cloudStatus('جارٍ بدء تسجيل الدخول الاختياري...');const sb=await api();if(!sb){cloudStatus('يتطلب ربط جوجل الإنترنت؛ التدريب دون حساب ما زال متاحًا.');return;}
-   const redirectTo=new URL('guest-practice.html',location.href).href;
+   const entryFile=location.pathname.endsWith('/maqraa.html')?'maqraa.html':'guest-practice.html';const redirectTo=new URL(entryFile,location.href).href;
    const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo,queryParams:{prompt:'select_account'}}});
    if(error)cloudStatus(`تعذر بدء الدخول: ${error.message}`);
  }

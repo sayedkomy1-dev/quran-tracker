@@ -6,6 +6,7 @@ assert(!js.includes('classicUrl')&&!js.includes('cdn.quran.ws/svg/pages')&&!js.i
 assert(!/studentId|guardianPin|donationCount|waqfImpactStats|fetch\('https:\/\/.*AI/.test(js));assert(html.includes('لا نستقبل تبرعات'));
 assert(sw.split('academy-mushaf.html').length>=3);assert(sw.includes('mushaf-hd-only'));
 assert(!html.includes('data-mushaf-source')&&html.includes('amRetry'));assert(js.includes('amRetry'));
-assert(html.includes('guest-practice.html'));
+assert(html.includes('maqraa.html'));
+assert(fs.existsSync(path.join(root,'maqraa.html')));
 require('./academy-mushaf-hd-only-check');
 console.log('PASS public mushaf single HD source/data/privacy and resource loading');

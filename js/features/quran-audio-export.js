@@ -4,7 +4,10 @@
 (function quranAudioExport(g){
   const RECITERS={
     mishary:{folder:'Alafasy_128kbps',label:'الشيخ مشاري راشد العفاسي'},
-    husary:{folder:'Husary_128kbps',label:'الشيخ محمود خليل الحصري'},
+    husary:{folder:'Husary_128kbps',label:'الشيخ محمود خليل الحصري — مرتل'},
+    husaryTeacher:{folder:'Husary_Muallim_128kbps',label:'الشيخ محمود خليل الحصري — معلم'},
+    minshawy:{folder:'Minshawy_Murattal_128kbps',label:'الشيخ محمد صديق المنشاوي — مرتل'},
+    minshawyTeacher:{folder:'Minshawy_Teacher_128kbps',label:'الشيخ محمد صديق المنشاوي — معلم'},
     muaiqly:{folder:'MaherAlMuaiqly128kbps',label:'الشيخ ماهر المعيقلي'}
   };
   const MAX_AYAHS=286,MAX_BYTES=48*1024*1024;
@@ -38,6 +41,7 @@
     return new File([blob],`تكليف-${surah}-${from}-${to}-${label}.mp3`,{type:'audio/mpeg',lastModified:Date.now()});
   }
   async function shareFile(file,{title='صوت التكليف',text='ملف صوتي للتكليف'}={}){
+    if(!(file instanceof File)||file.type!=='audio/mpeg'||!file.size)throw new Error('AUDIO_EXPORT_INVALID_FILE');
     if(!g.ImamTemporaryMedia)throw new Error('MEDIA_SHARE_UNAVAILABLE');return g.ImamTemporaryMedia.share([file],{title,text});
   }
   // Concatenation adds no intentional pause, but original MP3 recordings may

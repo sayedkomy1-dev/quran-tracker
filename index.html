@@ -132,14 +132,18 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 }
 </style>
 
-<link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-rc4">
-<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc3">
+<link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-rc13">
+<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc13">
 <link rel="stylesheet" href="css/platform/rc5-teacher-actions.css?v=beta28-rc5">
 <link rel="stylesheet" href="css/platform/quiet-lesson-rc6.css?v=beta28-rc6">
 <link rel="stylesheet" href="css/platform/rc8-premium-workspace.css?v=beta28-rc8">
 <link rel="stylesheet" href="css/platform/rc9-lesson-flow.css?v=beta28-rc9">
 <link rel="stylesheet" href="css/platform/rc10-teacher-fast-path.css?v=beta28-rc10">
 <link rel="stylesheet" href="css/platform/rc11-teacher-flow.css?v=beta28-rc11">
+<style id="imam-storage-governor-style">
+.sg-meter{height:10px;background:var(--line,#e5e7eb);border-radius:99px;overflow:hidden;margin:10px 0}.sg-meter i{display:block;height:100%;width:0;background:var(--gm,#16845b);transition:width .2s}.sg-meter i[data-level="warning"]{background:#c58a16}.sg-meter i[data-level="critical"]{background:#c0392b}.sg-details{font-size:12px;line-height:1.8}.sg-alert{padding:9px 11px;border-radius:9px;background:var(--soft,#f4f6f5);margin:8px 0}.sg-alert[data-level="warning"]{border-inline-start:4px solid #c58a16}.sg-alert[data-level="critical"]{border-inline-start:4px solid #c0392b}.sg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}.sg-grid>div{padding:8px;border:1px solid var(--line,#e5e7eb);border-radius:8px;display:grid}.sg-grid small{color:var(--muted,#667085)}.sg-details details{border-top:1px solid var(--line,#e5e7eb);padding:6px 0}.sg-details summary{cursor:pointer;font-weight:600}.sg-details ul{margin:5px 0;padding-inline-start:20px;overflow-wrap:anywhere}.sg-protection{color:var(--muted,#667085);font-size:11px;margin-top:9px}.sg-global-alert{position:sticky;top:0;z-index:10050;display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 14px;background:#fff2d8;color:#694500;border-bottom:1px solid #e4bd6d;font-size:12px;line-height:1.7}.sg-global-alert button{border:0;border-radius:7px;padding:5px 10px;background:#ead3a4;color:#503800;white-space:nowrap}
+</style>
+
 </head>
 <body class="imam-global-redesign imam-design-bridge">
 
@@ -638,7 +642,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
         <audio id="voiceNotePreview" controls style="display:none"></audio>
         <button type="button" class="btn btn-red btn-xs" id="voiceNoteDeleteBtn" onclick="deletePendingVoiceNote()" style="display:none">حذف</button>
       </div>
-      <details class="assignment-audio-details"><summary>🎧 مشاركة صوت التكليف (اختياري)</summary><div class="assignment-audio-share"><select id="teacherAssignmentAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري العفاسي</option><option value="husary">الحصري</option><option value="muaiqly">المعيقلي</option></select><button type="button" class="btn btn-out" id="teacherAssignmentAudioBtn" onclick="shareCurrentAssignmentAudio()">مشاركة صوت الحفظ الجديد</button></div></details>
+      <details class="assignment-audio-details"><summary>🎧 مشاركة صوت التكليف (اختياري)</summary><div class="assignment-audio-share"><select id="teacherAssignmentAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري العفاسي</option><option value="husary">الحصري — مرتل</option><option value="husaryTeacher">الحصري — معلم</option><option value="minshawy">المنشاوي — مرتل</option><option value="minshawyTeacher">المنشاوي — معلم</option><option value="muaiqly">المعيقلي</option></select><button type="button" class="btn btn-out" id="teacherAssignmentAudioBtn" onclick="shareCurrentAssignmentAudio()">مشاركة صوت الحفظ الجديد</button></div></details>
     </div>
 
     <button class="btn btn-g mb8" id="saveSessionBtn" onclick="saveSession()">💾 حفظ الحصة</button>
@@ -699,6 +703,19 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <!-- ══════════════ SETTINGS ══════════════ -->
 <div class="pg" id="pg-settings">
 <div data-imam-audio-library></div>
+<div class="card" id="imamStorageManager">
+  <div class="ch">🧰 إدارة التخزين والكاش</div>
+  <p class="txt-mut" style="font-size:12px">مراقبة مساحة الجهاز وتنظيف كاش تشغيل التطبيق القديم والمؤقت بأمان.</p>
+  <div id="imamStorageSummary" class="platform-status" aria-live="polite">جارٍ فحص التخزين…</div>
+  <div class="sg-meter" role="progressbar" aria-label="استخدام مساحة التخزين" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="imamStorageBar"></i></div>
+  <div id="imamStorageDetails" class="sg-details"></div>
+  <div class="settings-actions">
+    <button class="btn btn-out btn-sm" id="imamStorageRefresh" type="button">فحص المساحة الآن</button>
+    <button class="btn btn-g btn-sm" id="imamStorageClean" type="button">تنظيف آمن للكاش المؤقت</button>
+    <button class="btn btn-out btn-sm" id="imamStoragePersist" type="button">طلب حماية التخزين</button>
+  </div>
+  <p id="imamStorageActionStatus" class="txt-mut" style="font-size:12px" aria-live="polite"></p>
+</div>
 <div class="txt-mut" style="padding:0 12px 8px">تطوير beta.28 — المرحلة الأولى: المكتبة الصوتية والمشاركة المؤقتة (نسخة مراجعة)</div>
   <div class="card">
     <div class="ch">👤 بيانات المحفظ</div>
@@ -1166,15 +1183,15 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
 <script src="js/core/runtime.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/v10-data.js?v=11.0.0" defer></script>
-<script src="auth.js?v=beta28-rc7-data-safety" defer></script>
+<script src="auth.js?v=beta28-rc13" defer></script>
 <script src="js/features/role-home.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/ux-guidance.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/academy-workspaces.js?v=11.7.4-foundation" defer></script>
 <script src="sync-core.js?v=beta28-rc7-data-safety" defer></script>
-<script src="app.js?v=beta28-rc9" defer></script>
+<script src="app.js?v=beta28-rc13" defer></script>
 <script src="v8.js?v=beta28-rc7-data-safety" defer></script>
 <script src="js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
-<script src="v9.js?v=beta28-rc9" defer></script>
+<script src="v9.js?v=beta28-rc13" defer></script>
 <script src="js/features/mushaf-offline.js?v=11.7.4.2" defer></script>
 <script src="js/features/quran-engine.js?v=11.0.0" defer></script>
 <script src="js/features/quran-structure.js?v=11.0.0" defer></script>
@@ -1182,7 +1199,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="v10.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/mushaf-entry-unifier.js?v=11.12.1-beta.27-review9-hotfix2" defer></script>
 <script src="js/features/revision-quran-text.js?v=11.8.1" defer></script>
-<script src="js/features/teacher-error-marking.js?v=beta28-rc9" defer></script>
+<script src="js/features/teacher-error-marking.js?v=beta28-rc13" defer></script>
 <script src="js/features/teacher-correction-document.js?v=11.7.4.5" defer></script>
 <script src="js/features/guardian-communication.js?v=11.0.0" defer></script>
 <script src="js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3" defer></script>
@@ -1198,15 +1215,16 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/supervisor-dashboard.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4" defer></script>
 
-<script src="js/features/offline-audio-library.js?v=beta28-rc9" defer></script>
-<script src="js/features/temporary-media-share.js?v=beta28-rc4" defer></script>
-<script src="js/features/quran-audio-export.js?v=beta28-rc9" defer></script>
-<script src="js/features/assignment-audio-share.js?v=beta28-rc4" defer></script>
+<script src="js/features/storage-governor.js?v=beta28-rc13" defer></script>
+<script src="js/features/offline-audio-library.js?v=beta28-rc13" defer></script>
+<script src="js/features/temporary-media-share.js?v=beta28-rc13" defer></script>
+<script src="js/features/quran-audio-export.js?v=beta28-rc13" defer></script>
+<script src="js/features/assignment-audio-share.js?v=beta28-rc13" defer></script>
 <script src="js/features/v11-ui.js?v=11.12.1-beta.27" defer></script>
 <script src="js/core/mobile-navigation.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/achievement-certificates.js?v=11.9.0" defer></script>
 
-<script src="js/features/session-intelligence-119.js?v=beta28-rc11" defer></script>
+<script src="js/features/session-intelligence-119.js?v=beta28-rc13" defer></script>
 
 <script src="js/features/placement-center-1191.js?v=11.9.2" defer></script>
 
@@ -1228,10 +1246,10 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker-hotfix2" defer></script>
 <script src="js/features/integrated-teacher-brief.js?v=11.12.1-beta.27-integration-review1" defer></script>
 <script src="js/features/imam-absence-makeup.js?v=11.12.1-beta.27-absence-review2" defer></script>
-<script src="js/features/design-bridge.js?v=11.12.1-beta.27-design-bridge1" defer></script>
+<script src="js/features/design-bridge.js?v=beta28-rc13" defer></script>
 <script src="js/features/academy-suite.js?v=11.12.1-beta.27-visual-suite-review7" defer></script>
 <script src="js/features/academy-life.js?v=11.12.1-beta.27-life-review8" defer></script>
-<script src="js/features/rc3-experience.js?v=beta28-rc3" defer></script>
+<script src="js/features/rc3-experience.js?v=beta28-rc13" defer></script>
 <script src="js/features/quiet-lesson-rc6.js?v=beta28-rc6" defer></script>
 <script src="js/features/rc8-premium-workspace.js?v=beta28-rc8" defer></script>
 <script src="js/features/rc9-lesson-flow.js?v=beta28-rc9" defer></script>

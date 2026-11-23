@@ -7,8 +7,8 @@ assert.match(html,/dir="rtl" data-guest-practice="1"/);
 assert.match(html,/id="guardianTahfeez"/);
 for(const id of ['guestStart','guestContinue','guestBookmarks','guestGoogle','guestNickname','tahfeezPlayBtn','tahfeezSurah','tahfeezReciter','tahfeezFrom','tahfeezTo'])assert.ok(html.includes(`id="${id}"`),`Missing ${id}`);
 for(const privateFeature of ['guardian-portal-view.js','guardian-messages.js','student-finance.js','guardian-ratings.js','auth.js','sync-core.js'])assert.ok(!html.includes(privateFeature),`Guest must not load private module: ${privateFeature}`);
-assert.match(auth,/href="guest-practice\.html"/);
-assert.match(read('guardian-login.html'),/href="guest-practice\.html"/);
+assert.match(auth,/href="maqraa\.html"/);
+assert.match(read('guardian-login.html'),/href="maqraa\.html"/);
 assert.match(role,/owner:\[/);assert.match(role,/supervisor:\[/);assert.match(role,/teacher:\[/);
 assert.match(role,/app_supervision_access/);assert.match(role,/data\?\.allowed===true/);
 assert.match(role,/quran_guest_usage_overview/);assert.match(role,/if\(!g\.WeLiveQuranAuth\?\.isOwner\?\.\(\)\)return/);
@@ -32,7 +32,7 @@ assert.match(player,/wlq:guest-position/);
 assert.match(guest,/wlq-guest-google-v1/);
 assert.match(guest,/googleOut/);
 assert.match(guest,/previous&&previous!==data\.user\.id/);
-assert.match(guest,/new URL\('guest-practice.html',location.href\)/);
+assert.match(guest,/location.pathname.endsWith\('\/maqraa.html'\)/);
 // Local-only behavioral exercise. Verify marked ayah, last position, and resume.
 function node(id=''){return {id,value:'',textContent:'',hidden:false,dataset:{},children:[],listeners:{},addEventListener(ev,fn){this.listeners[ev]=fn;},append(...nodes){this.children.push(...nodes);},replaceChildren(...nodes){this.children=[...nodes];},setAttribute(){},classList:{add(){},remove(){}},querySelector(s){if(s==='option[value="78"]')return{textContent:'78. سورة النبأ'};return null;}};}
 const elements={},storage=new Map(),events={};for(const id of ['guestSaveMode','guestLast','guestContinue','guestBookmarks','guestNickname','guestStart','guestGoogle','guestGoogleOut','guestCloudStatus','tahfeezSurah','tahfeezNowAyah','guestBookmarkToast'])elements[id]=node(id);

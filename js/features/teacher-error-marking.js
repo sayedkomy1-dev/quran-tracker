@@ -11,6 +11,7 @@
   const CONTEXTS={new_read:'الحفظ الجديد — قراءة الطالب',talaqqin:'التلقين — ترديد خلف الشيخ',recitation:'التسميع',review:'المراجعة'};
   const PREF_KEY='imam:qmark:prefs:v2';
   const state={enabled:true,context:'recitation',target:null,observer:null,installed:false,customTypes:[],previewFile:null,previewFiles:[],previewIndex:0,previewUrl:''};
+  let sendBusy=false,sendReleaseTimer=0;
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const appState=()=>g.ImamApp?.State||{};
@@ -322,6 +323,15 @@
     if(typeof baseMode==='function')legacy.override('buildWAMsgMode',function(st,ses,mode='detailed'){return appendCorrectionDetails(baseMode.call(this,st,ses,mode),ses);},'v11.2.0-error2');
     if(typeof baseMsg==='function')legacy.override('buildWAMsg',function(st,ses){return appendCorrectionDetails(baseMsg.call(this,st,ses),ses);},'v11.2.0-error2');
   }
+  function setSendButtonsBusy(on){
+    const buttons=[$('saveSessionBtn'),$('saveSendSessionBtn'),...Array.from(document.querySelectorAll('#sessionWaModes button'))].filter(Boolean);
+    buttons.forEach(button=>{
+      if(on){if(!button.dataset.sendOriginalText)button.dataset.sendOriginalText=button.textContent;button.disabled=true;button.setAttribute('aria-busy','true');if(button.id==='saveSendSessionBtn')button.textContent='جارٍ حفظ الحصة وتجهيز واتساب…';}
+      else{button.disabled=false;button.removeAttribute('aria-busy');if(button.dataset.sendOriginalText){button.textContent=button.dataset.sendOriginalText;delete button.dataset.sendOriginalText;}}
+    });
+  }
+  function beginSend(){if(sendBusy){toast('جارٍ تنفيذ عملية الإرسال الحالية؛ انتظر لحظة قبل الضغط مرة أخرى.','info');return false;}sendBusy=true;clearTimeout(sendReleaseTimer);setSendButtonsBusy(true);return true;}
+  function endSendLater(success){clearTimeout(sendReleaseTimer);if(success){sendReleaseTimer=setTimeout(()=>{sendBusy=false;setSendButtonsBusy(false);},1200);}else{sendBusy=false;setSendButtonsBusy(false);}}
   function installWhatsAppBridge(){
     const legacy=g.ImamApp?.Legacy;if(!legacy)return;
     // Stage 1.3: restore the original message-first UX.
@@ -330,29 +340,26 @@
     // only from the explicit “مشاركة صورة الأخطاء” button, so it never intercepts
     // the normal WhatsApp workflow with the Android share sheet.
     legacy.override('saveAndSendWA',function(){
-      let ses=null;
-      try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}
-      catch(e){console.error('[qmark] save before WhatsApp failed',e);}
-      if(!ses){try{toast('لم يُرسل التقرير: تعذر حفظ الحصة. راجع تنبيه النواقص وحالة التخزين.','error');}catch(_){}return false;}
-      const st=findStudent(ses.studentId);
-      if(!st){try{toast('حُفظت الحصة، لكن تعذر العثور على الطالب لإرسال التقرير.','error');}catch(_){}return false;}
-      const msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';
-      const opened=safeOpenWhatsApp(st,msg);
-      if(!opened){try{toast('حُفظت الحصة، لكن تعذر فتح محادثة ولي الأمر. يمكنك إعادة المشاركة دون حفظ جديد.','error');}catch(_){}return false;}
-      try{toast('تم حفظ الحصة وفتح محادثة ولي الأمر. راجع الرسالة واضغط إرسال داخل واتساب.','success');}catch(_){}
-      return true;
+      if(!beginSend())return false;let success=false;
+      try{
+        let ses=null;try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}catch(e){console.error('[qmark] save before WhatsApp failed',e);}
+        if(!ses){toast('لم يُرسل التقرير: تعذر حفظ الحصة. راجع النواقص ومساحة التخزين؛ لم يتم فتح واتساب.','error');return false;}
+        const st=findStudent(ses.studentId);if(!st){toast('حُفظت الحصة، لكن تعذر العثور على الطالب لإرسال التقرير.','error');return false;}
+        const msg=typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'';const opened=safeOpenWhatsApp(st,msg);
+        if(!opened){toast('حُفظت الحصة، لكن تعذر فتح محادثة ولي الأمر. يمكنك إعادة المحاولة دون حفظ جديد.','error');return false;}
+        success=true;toast('تم حفظ الحصة وفتح محادثة ولي الأمر. راجع الرسالة واضغط إرسال داخل واتساب.','success');return true;
+      }finally{endSendLater(success);}
     },'v11.2.0-error1.3');
     if(typeof g.saveAndSendWAMode==='function')legacy.override('saveAndSendWAMode',function(mode){
-      let ses=null;
-      try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}
-      catch(e){console.error('[qmark] save mode before WhatsApp failed',e);}
-      if(!ses){try{toast('لم يتم إرسال التقرير: تعذر حفظ الحصة.','error');}catch(_){}return false;}
-      const st=findStudent(ses.studentId);
-      if(!st){try{toast('الحصة محفوظة، لكن ملف الطالب غير متاح للمشاركة.','error');}catch(_){}return false;}
-      const msg=typeof g.buildWAMsgMode==='function'?g.buildWAMsgMode(st,ses,mode):(typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'');
-      if(!safeOpenWhatsApp(st,msg)){try{toast('الحصة محفوظة، لكن واتساب لم يُفتح. أعد المشاركة من الحصة.','error');}catch(_){}return false;}
-      try{toast('تم فتح محادثة ولي الأمر. يلزم الضغط على إرسال داخل واتساب.','success');}catch(_){}
-      return true;
+      if(!beginSend())return false;let success=false;
+      try{
+        let ses=null;try{ses=typeof g.saveSession==='function'?g.saveSession({silent:true,noCelebrate:true}):null;}catch(e){console.error('[qmark] save mode before WhatsApp failed',e);}
+        if(!ses){toast('لم يتم إرسال التقرير: تعذر حفظ الحصة. راجع النواقص ومساحة التخزين.','error');return false;}
+        const st=findStudent(ses.studentId);if(!st){toast('الحصة محفوظة، لكن ملف الطالب غير متاح للمشاركة.','error');return false;}
+        const msg=typeof g.buildWAMsgMode==='function'?g.buildWAMsgMode(st,ses,mode):(typeof g.buildWAMsg==='function'?g.buildWAMsg(st,ses):'');
+        if(!safeOpenWhatsApp(st,msg)){toast('الحصة محفوظة، لكن واتساب لم يُفتح. أعد المشاركة من الحصة.','error');return false;}
+        success=true;toast('تم فتح محادثة ولي الأمر. يلزم الضغط على إرسال داخل واتساب.','success');return true;
+      }finally{endSendLater(success);}
     },'v11.2.0-error1.3');
   }
   function init(){if(state.installed)return;state.installed=true;readPrefs();installPersistenceBridges();installPanel();ensureSheet();observe();hookOpeners();installReportBridge();installWhatsAppBridge();refreshPanel();document.addEventListener('visibilitychange',()=>{if(document.hidden){savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}}});g.addEventListener?.('pagehide',()=>{savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}},{capture:true});}

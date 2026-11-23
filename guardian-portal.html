@@ -21,16 +21,17 @@
 <link rel="stylesheet" href="goal-planning.css?v=11.4.2-s2">
 <link rel="stylesheet" href="guardian-finance.css?v=11.5.1-s2">
 <link rel="stylesheet" href="guardian-messages.css?v=11.6.0-s1">
-<link rel="stylesheet" href="teacher-rating.css?v=11.12.1-beta.27">
 <style id="wlqCriticalOfflineStyle">
 html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:#15291d}body{margin:0;min-height:100vh}.page{max-width:1100px;margin:auto}.offline-bar,.update-banner{box-sizing:border-box}button,input,select,textarea{font:inherit;max-width:100%;box-sizing:border-box}img{max-width:100%;height:auto}.modal{max-width:100vw}.hidden,[hidden]{display:none!important}
 </style>
 <link rel="stylesheet" href="css/platform/public-experience.css?v=11.12.1-beta.27">
 <link rel="stylesheet" href="css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1">
 
-<link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-stage1">
+<link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-rc13">
 <link rel="stylesheet" href="css/platform/reference-palette.css?v=beta28-candidate2">
-<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc3">
+<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc13">
+<link rel="stylesheet" href="css/platform/rc13-portal-learning.css?v=beta28-rc13">
+<link rel="stylesheet" href="css/platform/rc14-tahfeez-flow.css?v=beta28-rc14">
 </head>
 <body class="imam-portal-refresh">
 <main class="portal-shell">
@@ -70,7 +71,6 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <button type="button" onclick="guardianGoTo('portalRecentCard')"><span>📅</span><b>الحصص</b></button>
       <button type="button" id="portalFinanceNav" onclick="guardianGoTo('portalFinanceCard')" hidden><span>💰</span><b>الحسابات</b></button>
       <button type="button" id="portalMessageNav" onclick="guardianGoTo('portalMessageCard')" hidden><span>💬</span><b>الرسائل</b></button>
-      <button type="button" id="portalRatingNav" onclick="guardianGoTo('portalRatingCard')" hidden><span>⭐</span><b>تقييم المحفظ</b></button>
     </nav>
 
     <section class="portal-kpis" data-rc3-section="progress" aria-label="مؤشرات التقدم">
@@ -110,21 +110,6 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <div id="portalFinanceBody"></div>
     </section>
 
-    <section class="portal-card portal-rating-card" id="portalRatingCard" hidden data-rc3-section="family">
-      <div class="portal-card-head"><div><b>⭐ تقييم المحفظ</b><small>سري لإدارة الأكاديمية · لا يراه المحفظ · متاح بعد دخول الهاتف وPIN</small></div></div>
-      <div class="portal-rating-form">
-        <label>الالتزام بالمواعيد<select id="portalRating_punctuality"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label>أسلوب التعليم<select id="portalRating_teaching"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label>متابعة الطالب<select id="portalRating_followup"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label>حسن التعامل<select id="portalRating_kindness"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label>الاستفادة<select id="portalRating_benefit"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label>وضوح الشرح<select id="portalRating_clarity"><option value="" selected>اختر التقييم</option><option value="5">5 — ممتاز</option><option value="4">4 — جيد جدًا</option><option value="3">3 — جيد</option><option value="2">2 — يحتاج تحسين</option><option value="1">1 — ضعيف</option></select></label>
-        <label class="rating-note">ملاحظة خاصة للإدارة (اختياري)<textarea id="portalRatingNote" maxlength="800" rows="2" placeholder="ملاحظات تساعد إدارة الأكاديمية على تحسين الخدمة"></textarea></label>
-        <button type="button" id="portalRatingSend">حفظ التقييم للإدارة فقط</button>
-      </div>
-      <p class="portal-rating-status" id="portalRatingStatus" role="status"></p>
-    </section>
-
     <section class="portal-card portal-message-card" id="portalMessageCard" hidden data-rc3-section="family">
       <div class="portal-card-head"><div><b>💬 التواصل مع المحفظ</b><small>رسائلك خاصة وتظهر للمحفظ فقط · تتطلب اتصالًا بالإنترنت ودخول PIN</small></div></div>
       <div class="msg-guardian-form">
@@ -141,10 +126,9 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
     <section class="portal-card" id="portalAssignmentCard" data-rc3-section="learning">
       <div class="portal-card-head"><div><b>📝 التكليف الحالي</b><small id="portalAssignmentDate">آخر حصة حضور</small></div></div>
       <div id="portalAssignment" class="portal-assignment"></div><button type="button" class="ia28-practice-assignment" onclick="openGuardianAssignmentPractice()">🎧 التدرب على تكليف الحفظ الجديد</button>
-      <div data-imam-audio-library></div>
 <div id="portalAudioAssist" class="portal-audio-assist" hidden>
         <div><b>🎧 مساعدة صوتية للتكليف</b><small>ملف MP3 بسرعة التلاوة الأصلية — مناسب للإرسال على WhatsApp</small></div>
-        <div class="portal-audio-controls"><select id="portalAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري راشد العفاسي</option><option value="husary">محمود خليل الحصري</option><option value="muaiqly">ماهر المعيقلي</option></select><button id="portalAudioShareBtn" type="button" onclick="guardianShareAssignmentAudio()">📲 مشاركة صوت التكليف</button></div>
+        <div class="portal-audio-controls"><select id="portalAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري راشد العفاسي</option><option value="husary">محمود خليل الحصري — مرتل</option><option value="husaryTeacher">محمود خليل الحصري — معلم</option><option value="minshawy">محمد صديق المنشاوي — مرتل</option><option value="minshawyTeacher">محمد صديق المنشاوي — معلم</option><option value="muaiqly">ماهر المعيقلي</option></select><button id="portalAudioShareBtn" type="button" onclick="guardianShareAssignmentAudio()">📲 مشاركة صوت التكليف</button></div>
         <small id="portalAudioStatus">يتم إنشاء ملف للتكليف الحالي فقط.</small>
       </div>
     </section>
@@ -227,7 +211,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 
         <details class="tahfeez-offline">
           <summary><span><b>الاستماع دون إنترنت</b><small id="tahfeezOfflineStatus">يمكن تنزيل التكليف على هذا الجهاز</small></span><span>⌄</span></summary>
-          <div class="tahfeez-offline-actions"><button type="button" onclick="tahfeezDownloadRange()">↓ تنزيل النطاق</button><button type="button" onclick="tahfeezDownloadSurah()">↓ تنزيل السورة</button><button type="button" class="danger" onclick="tahfeezClearDownloads()">حذف صوت السورة</button></div>
+          <div class="tahfeez-offline-actions"><button type="button" onclick="tahfeezDownloadRange()">↓ تنزيل النطاق</button><button type="button" onclick="tahfeezDownloadSurah()">↓ تنزيل السورة</button><button type="button" class="danger" onclick="tahfeezClearDownloads()">حذف صوت السورة</button><button type="button" onclick="tahfeezCancelDownload()">إيقاف التنزيل</button></div>
           <div class="tahfeez-download-progress"><i id="tahfeezDownloadBar"></i></div>
         </details>
       </aside>
@@ -241,6 +225,8 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
           <div class="tahfeez-focus-foot"><span id="tahfeezRepeatBadge">جاهز</span><strong id="tahfeezCountdown" hidden></strong></div>
         </section>
         <div class="tahfeez-session-progress"><div><span id="tahfeezProgressText">جاهز لبدء الجلسة</span><span id="tahfeezProgressPct">0%</span></div><div class="tahfeez-progress-track"><i id="tahfeezProgressBar"></i></div></div>
+        <div id="tahfeezBasmala" class="tahfeez-basmala" hidden>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+        <p class="tahfeez-tap-hint">اضغط على أي آية داخل المقدار لتبدأ منها وتستمر التلاوة إلى آخر المقدار.</p>
         <div id="tahfeezText" class="tahfeez-text"><div class="tahfeez-empty">اختر السورة والنطاق لعرض النص.</div></div>
       </main>
     </div>
@@ -256,6 +242,10 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
         <button type="button" class="tahfeez-control small" onclick="tahfeezSeekBy(10)" aria-label="تقديم 10 ثوان">+10</button>
         <button type="button" class="tahfeez-control stop" onclick="tahfeezStop()" aria-label="إيقاف">■</button>
       </div>
+      <div class="tahfeez-continuation-actions" role="group" aria-label="خيارات استمرار التلاوة">
+        <button type="button" onclick="tahfeezReplayCurrentAyah()" aria-label="أعد الآية الحالية ثم واصل التلاوة">↺ أعد الآية ثم أكمل</button>
+        <button type="button" onclick="tahfeezRestartRange()" aria-label="ابدأ من أول المقدار">⟲ من أول المقدار</button>
+      </div>
       <div class="tahfeez-secondary-controls"><label><span>الصوت</span><input id="tahfeezVolume" type="range" min="0" max="1" step="0.05" value="1"></label><button type="button" id="tahfeezMuteBtn" onclick="tahfeezToggleMute()">🔊</button><span id="tahfeezLoopState">تشغيل مرة واحدة</span></div>
       <audio id="tahfeezAudio" preload="metadata"></audio>
     </footer>
@@ -264,16 +254,17 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 
 <script src="js/features/guardian-engagement.js?v=11.2.0-s4.1"></script>
 <script src="js/features/guardian-portal-experience.js?v=11.2.0-s4.1"></script>
-<script src="js/features/quran-audio-export.js?v=11.2.0-s4.1"></script>
-<script src="js/features/guardian-audio-assist.js?v=11.2.0-s4.1"></script>
+<script src="js/features/quran-audio-export.js?v=beta28-rc13"></script>
+<script src="js/features/guardian-audio-assist.js?v=beta28-rc13"></script>
 
-<script src="js/features/offline-audio-library.js?v=beta28-rc9"></script>
-<script src="js/features/temporary-media-share.js?v=beta28-stage1"></script>
-<script src="js/features/guardian-tahfeez.js?v=11.2.0-s4.1"></script>
+<script src="js/features/storage-governor.js?v=beta28-rc13"></script>
+<script src="js/features/offline-audio-library.js?v=beta28-rc13"></script>
+<script src="js/features/temporary-media-share.js?v=beta28-rc13"></script>
+<script src="js/features/tahfeez-flow-rc14.js?v=beta28-rc14"></script>
+<script src="js/features/guardian-tahfeez.js?v=beta28-rc14"></script>
 <script src="js/features/guardian-messages.js?v=11.6.0-s1"></script>
-<script src="js/features/guardian-ratings.js?v=11.7.0-s1"></script>
 <script src="js/features/guardian-portal-view.js?v=11.7.4.2"></script>
-<script src="js/features/beta28-portal-ux.js?v=beta28-candidate1" defer></script>
-<script src="js/features/rc3-experience.js?v=beta28-rc3" defer></script>
+<script src="js/features/beta28-portal-ux.js?v=beta28-rc13" defer></script>
+<script src="js/features/rc3-experience.js?v=beta28-rc13" defer></script>
 </body>
 </html>

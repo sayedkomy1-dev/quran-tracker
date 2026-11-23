@@ -14,7 +14,7 @@ const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
 // New reader-only shell must not overwrite an already-installed offline release.
-const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1';
+const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation';
 // Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
@@ -22,9 +22,24 @@ const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
 const CRITICAL_FRESH_SHELL = [
-  './auth.js?v=beta28-rc7-data-safety',
+  './auth.js?v=beta28-rc13',
+  './js/features/storage-governor.js?v=beta28-rc13',
+  './js/features/offline-audio-library.js?v=beta28-rc13',
+  './js/features/temporary-media-share.js?v=beta28-rc13',
+  './js/features/quran-audio-export.js?v=beta28-rc13',
+  './js/features/assignment-audio-share.js?v=beta28-rc13',
+  './js/features/guardian-audio-assist.js?v=beta28-rc13',
+  './js/features/tahfeez-flow-rc14.js?v=beta28-rc14',
+  './css/platform/rc14-tahfeez-flow.css?v=beta28-rc14',
+  './js/features/guardian-tahfeez.js?v=beta28-rc14',
+  './js/features/beta28-portal-ux.js?v=beta28-rc13',
+  './css/platform/rc13-portal-learning.css?v=beta28-rc13',
+  './css/platform/temporary-media.css?v=beta28-rc13',
+  './maqraa.html',
+  './js/features/tahfeez-flow-rc14.js?v=beta28-rc14',
+  './css/platform/rc14-tahfeez-flow.css?v=beta28-rc14',
   './sync-core.js?v=beta28-rc7-data-safety',
-  './app.js?v=beta28-rc9',
+  './app.js?v=beta28-rc13',
   './v8.js?v=beta28-rc7-data-safety',
   './css/platform/rc8-premium-workspace.css?v=beta28-rc8',
   './css/platform/rc9-lesson-flow.css?v=beta28-rc9',
@@ -33,40 +48,40 @@ const CRITICAL_FRESH_SHELL = [
   './css/platform/rc11-teacher-flow.css?v=beta28-rc11',
   './js/features/rc11-teacher-flow.js?v=beta28-rc11',
   './js/features/rc10-teacher-fast-path.js?v=beta28-rc10',
-  './v9.js?v=beta28-rc9',
+  './v9.js?v=beta28-rc13',
   './js/features/rc8-premium-workspace.js?v=beta28-rc8',
   './css/platform/quiet-lesson-rc6.css?v=beta28-rc6',
   './js/features/quiet-lesson-rc6.js?v=beta28-rc6',
   './css/platform/rc5-teacher-actions.css?v=beta28-rc5',
   './js/features/beta19-experience.js?v=beta28-rc5',
   './css/platform/reference-palette.css?v=beta28-candidate2',
-  './css/platform/temporary-media.css?v=beta28-rc4',
-  './js/features/temporary-media-share.js?v=beta28-rc4',
-  './js/features/assignment-audio-share.js?v=beta28-rc4',
-  './js/features/session-intelligence-119.js?v=beta28-rc11',
-  './css/platform/rc3-experience.css?v=beta28-rc3',
-  './js/features/rc3-experience.js?v=beta28-rc3',
+  './css/platform/temporary-media.css?v=beta28-rc13',
+  './js/features/temporary-media-share.js?v=beta28-rc13',
+  './js/features/assignment-audio-share.js?v=beta28-rc13',
+  './js/features/session-intelligence-119.js?v=beta28-rc13',
+  './css/platform/rc3-experience.css?v=beta28-rc13',
+  './js/features/rc3-experience.js?v=beta28-rc13',
   './js/features/guest-palette.js?v=beta28-candidate2',
   './guardian-login.html',
-  './js/features/assignment-audio-share.js?v=11.12.1-beta.27',
-  './js/features/beta28-portal-ux.js?v=beta28-candidate1',
+  './js/features/assignment-audio-share.js?v=beta28-rc13',
+  './js/features/beta28-portal-ux.js?v=beta28-rc13',
   './js/features/student-finance.js?v=11.5.1-s2',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './js/features/guardian-portal-view.js?v=11.7.4.2',
-  './js/features/guest-practice.js?v=11.7.4.1',
-  './js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3',
-  './js/features/offline-audio-library.js?v=beta28-rc9',
-  './js/features/temporary-media-share.js?v=beta28-stage1',
-  './css/platform/temporary-media.css?v=beta28-stage1',
+  './js/features/guest-practice.js?v=beta28-rc13',
+  './js/features/session-intelligence-119.js?v=beta28-rc13',
+  './js/features/offline-audio-library.js?v=beta28-rc13',
+  './js/features/temporary-media-share.js?v=beta28-rc13',
+  './css/platform/temporary-media.css?v=beta28-rc13',
   './guardian-portal.html',
   './guest-practice.html',
-  './js/features/quran-audio-export.js?v=beta28-rc9',
-  './js/features/guardian-audio-assist.js?v=11.2.0-s4.1',
-  './js/features/quran-audio-export.js?v=11.2.0-s4',
+  './js/features/quran-audio-export.js?v=beta28-rc13',
+  './js/features/guardian-audio-assist.js?v=beta28-rc13',
+  './js/features/quran-audio-export.js?v=beta28-rc13',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
-  './js/features/guardian-tahfeez.js?v=11.2.0-s4.1',
-  './js/features/guardian-tahfeez.js?v=11.7.4.1',
+  './js/features/guardian-tahfeez.js?v=beta28-rc13',
+  './js/features/guardian-tahfeez.js?v=beta28-rc13',
   './manifest.json?v=11.12.1-beta.27',
   './guardian-manifest.json?v=11.2.0-s4.1',
   './academy-mushaf.html',
@@ -84,10 +99,10 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/academy-learning.js?v=11.12.1-beta.27-review7',
   './data/academy-learning-materials.json',
   './css/platform/academy-portal-suite.css?v=11.12.1-beta.27-review7',
-  './js/features/academy-portal-suite.js?v=11.12.1-beta.27-review7',
+  './js/features/academy-portal-suite.js?v=beta28-rc13',
 
   './css/platform/design-bridge.css?v=11.12.1-beta.27-design-bridge1',
-  './js/features/design-bridge.js?v=11.12.1-beta.27-design-bridge1',
+  './js/features/design-bridge.js?v=beta28-rc13',
   './css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1',
   './css/platform/academy-portals.css?v=11.12.1-beta.27-design-bridge1',
   './academy-portals.html',
@@ -112,12 +127,12 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/platform-ux.js?v=11.12.1-beta.27',
   './js/features/platform-workflow.js?v=11.12.1-beta.27',
   './js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
-  './js/features/assignment-audio-share.js?v=11.12.1-beta.27',
-  './v9.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
+  './js/features/assignment-audio-share.js?v=beta28-rc13',
+  './v9.js?v=beta28-rc13',
   './v8.js?v=11.12.1-beta.27-error-followup-candidate',
   './js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate',
   './error-followup.css?v=11.12.1-beta.27-error-followup-candidate',
-  './app.js?v=11.12.1-beta.27-absence-review2',
+  './app.js?v=beta28-rc13',
   './js/core/runtime.js?v=11.12.1-beta.27',
   './js/core/boot-health.js?v=11.12.1-beta.27',
   './js/core/offline-bootstrap.js?v=11.12.1-beta.27',
@@ -157,10 +172,10 @@ const APP_SHELL = [
   './js/features/academy-learning.js?v=11.12.1-beta.27-review7',
   './data/academy-learning-materials.json',
   './css/platform/academy-portal-suite.css?v=11.12.1-beta.27-review7',
-  './js/features/academy-portal-suite.js?v=11.12.1-beta.27-review7',
+  './js/features/academy-portal-suite.js?v=beta28-rc13',
 
   './css/platform/design-bridge.css?v=11.12.1-beta.27-design-bridge1',
-  './js/features/design-bridge.js?v=11.12.1-beta.27-design-bridge1',
+  './js/features/design-bridge.js?v=beta28-rc13',
   './css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1',
   './css/platform/academy-portals.css?v=11.12.1-beta.27-design-bridge1',
   './academy-portals.html',
@@ -194,9 +209,12 @@ const APP_SHELL = [
   './imam-board-display.html',
   './imam-board-display.js?v=11.12.1-beta.27',
   './guest-practice.html',
+  './maqraa.html',
+  './css/platform/rc13-portal-learning.css?v=beta28-rc13',
+  './js/features/beta28-portal-ux.js?v=beta28-rc13',
   './guest-practice.css?v=11.7.4.2',
-  './js/features/guest-practice.js?v=11.7.4.2',
-  './js/features/guardian-tahfeez.js?v=11.7.4.2',
+  './js/features/guest-practice.js?v=beta28-rc13',
+  './js/features/guardian-tahfeez.js?v=beta28-rc13',
   './role-home.css?v=11.12.1-beta.27',
   './ux-guidance.css?v=11.7.4.2',
   './js/features/role-home.js?v=11.12.1-beta.27',
@@ -205,11 +223,11 @@ const APP_SHELL = [
   './js/features/ux-guidance.js?v=11.12.1-beta.27',
 
 
-  './app.js?v=11.12.1-beta.27-absence-review2',
+  './app.js?v=beta28-rc13',
   './v8.js?v=11.12.1-beta.27-error-followup-candidate',
   './js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate',
   './error-followup.css?v=11.12.1-beta.27-error-followup-candidate',
-  './v9.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
+  './v9.js?v=beta28-rc13',
   './js/features/mushaf-offline.js?v=11.7.4.2',
 
 
@@ -225,7 +243,7 @@ const APP_SHELL = [
   './js/features/circle-management-1110.js?v=11.11.1',
   './placement-center-1191.css?v=11.9.2',
   './js/features/placement-center-1191.js?v=11.9.2',
-  './js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3',
+  './js/features/session-intelligence-119.js?v=beta28-rc13',
   './teacher-error-marking.css?v=11.8.0',
   './correction-document.css?v=11.7.4.5',
   './smart-revision.css?v=11.3.0-s1',
@@ -234,14 +252,13 @@ const APP_SHELL = [
   './guardian-finance.css?v=11.5.1-s2',
   './guardian-messages.css?v=11.6.0-s1',
   './teacher-rating.css?v=11.12.1-beta.27',
-  './js/features/guardian-ratings.js?v=11.7.0-s1',
   './js/features/supervisor-dashboard.js?v=11.12.1-beta.27',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './v10.js?v=11.12.1-beta.27',
   './revision-quran-text.css?v=11.8.1',
   './js/features/revision-quran-text.js?v=11.8.1',
-  './js/features/teacher-error-marking.js?v=beta28-rc9',
+  './js/features/teacher-error-marking.js?v=beta28-rc13',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './js/features/guardian-communication.js?v=11.0.0',
   './js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3',
@@ -250,18 +267,26 @@ const APP_SHELL = [
   './js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/student-finance.js?v=11.5.1-s2',
   './js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4',
-  './js/features/quran-audio-export.js?v=11.2.0-s4',
-  './js/features/assignment-audio-share.js?v=11.12.1-beta.27',
+  './js/features/quran-audio-export.js?v=beta28-rc13',
+  './js/features/assignment-audio-share.js?v=beta28-rc13',
   './js/features/v11-ui.js?v=11.12.1-beta.27',
   './achievement-certificates.css?v=11.8.0',
   './js/features/achievement-certificates.js?v=11.9.0',
   './guardian-portal.html',
+  './js/features/storage-governor.js?v=beta28-rc13',
+  './js/features/offline-audio-library.js?v=beta28-rc13',
+  './js/features/temporary-media-share.js?v=beta28-rc13',
+  './js/features/quran-audio-export.js?v=beta28-rc13',
+  './js/features/guardian-audio-assist.js?v=beta28-rc13',
+  './js/features/guardian-tahfeez.js?v=beta28-rc13',
+  './js/features/rc3-experience.js?v=beta28-rc13',
+  './css/platform/rc3-experience.css?v=beta28-rc13',
   './guardian-portal.css?v=11.2.0-s4.1',
   './guardian-tahfeez.css?v=11.2.0-s4.1',
   './js/features/guardian-engagement.js?v=11.2.0-s4.1',
   './js/features/guardian-portal-experience.js?v=11.2.0-s4.1',
-  './js/features/guardian-audio-assist.js?v=11.2.0-s4.1',
-  './js/features/guardian-tahfeez.js?v=11.2.0-s4.1',
+  './js/features/guardian-audio-assist.js?v=beta28-rc13',
+  './js/features/guardian-tahfeez.js?v=beta28-rc13',
   './js/features/guardian-portal-view.js?v=11.7.4.2',
   './guardian-login.html',
   './guardian-login.css?v=11.2.0-s4',
@@ -274,7 +299,7 @@ const APP_SHELL = [
   './js/core/mobile-navigation.js?v=11.12.1-beta.27',
   './js/features/v10-data.js?v=11.0.0',
   './js/features/recitation-carry.js?v=11.0.0',
-  './auth.js?v=11.7.4-foundation',
+  './auth.js?v=beta28-rc13',
   './sync-core.js?v=11.0.0',
   './auth.css?v=11.0.0',
   './academy-workspaces.css?v=11.7.4-foundation',
@@ -303,10 +328,20 @@ const APP_SHELL = [
 // installed PWA unusable offline. Keep the previous worker active instead.
 const CORE_SHELL = [
   './index.html',
+  './guardian-portal.html',
+  './guardian-login.html',
+  './js/features/storage-governor.js?v=beta28-rc13',
+  './js/features/offline-audio-library.js?v=beta28-rc13',
+  './js/features/temporary-media-share.js?v=beta28-rc13',
+  './js/features/quran-audio-export.js?v=beta28-rc13',
+  './js/features/guardian-tahfeez.js?v=beta28-rc13',
   './guest-practice.html',
+  './maqraa.html',
+  './css/platform/rc13-portal-learning.css?v=beta28-rc13',
+  './js/features/beta28-portal-ux.js?v=beta28-rc13',
   './guest-practice.css?v=11.7.4.2',
-  './js/features/guest-practice.js?v=11.7.4.2',
-  './js/features/guardian-tahfeez.js?v=11.7.4.2',
+  './js/features/guest-practice.js?v=beta28-rc13',
+  './js/features/guardian-tahfeez.js?v=beta28-rc13',
   './role-home.css?v=11.12.1-beta.27',
   './ux-guidance.css?v=11.7.4.2',
   './js/features/role-home.js?v=11.12.1-beta.27',
@@ -318,7 +353,7 @@ const CORE_SHELL = [
   './js/features/circle-management-1110.js?v=11.11.1',
   './placement-center-1191.css?v=11.9.2',
   './js/features/placement-center-1191.js?v=11.9.2',
-  './js/features/session-intelligence-119.js?v=11.12.1-beta.27-guardian-both-hotfix3',
+  './js/features/session-intelligence-119.js?v=beta28-rc13',
   './teacher-error-marking.css?v=11.8.0',
   './correction-document.css?v=11.7.4.5',
   './smart-revision.css?v=11.3.0-s1',
@@ -326,7 +361,6 @@ const CORE_SHELL = [
   './student-finance.css?v=11.5.1-s2',
   './guardian-messages.css?v=11.6.0-s1',
   './teacher-rating.css?v=11.12.1-beta.27',
-  './js/features/guardian-ratings.js?v=11.7.0-s1',
   './js/features/supervisor-dashboard.js?v=11.12.1-beta.27',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
@@ -334,12 +368,12 @@ const CORE_SHELL = [
   './js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3',
   './js/features/student-finance.js?v=11.5.1-s2',
   './js/features/v11-ui.js?v=11.12.1-beta.27',
-  './js/features/teacher-error-marking.js?v=beta28-rc9',
+  './js/features/teacher-error-marking.js?v=beta28-rc13',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
-  './app.js?v=11.12.1-beta.27-absence-review2',
+  './app.js?v=beta28-rc13',
   './revision-quran-text.css?v=11.8.1',
   './js/features/revision-quran-text.js?v=11.8.1',
-  './auth.js?v=11.7.4-foundation',
+  './auth.js?v=beta28-rc13',
   './js/core/runtime.js?v=11.12.1-beta.27',
   './js/core/offline-bootstrap.js?v=11.12.1-beta.27'
 ];
@@ -381,12 +415,12 @@ async function cacheVerifiedCurrentShell(cache,url){
   const body=await response.clone().text();
   if(url==='./index.html' &&
      (!body.includes(`name="application-version" content="${APP_VERSION}"`)
-      ||!body.includes('app.js?v=beta28-rc9')
+      ||!body.includes('app.js?v=beta28-rc13')
       ||!body.includes(`runtime.js?v=${APP_VERSION}`)))
     throw new Error('[SW] index.html is an older release');
-  if(['./index.html','./guardian-portal.html','./guest-practice.html'].includes(url) && !body.includes('offline-audio-library.js?v=beta28-rc9'))
+  if(['./index.html','./guardian-portal.html','./guest-practice.html','./maqraa.html'].includes(url) && !body.includes('offline-audio-library.js?v=beta28-rc13'))
     throw new Error('[SW] media stage1 HTML is not available');
-  if(['./index.html','./guardian-portal.html','./guest-practice.html'].includes(url) && !body.includes('css/platform/rc3-experience.css?v=beta28-rc3'))
+  if(['./index.html','./guardian-portal.html','./guest-practice.html','./maqraa.html'].includes(url) && !body.includes('css/platform/rc3-experience.css?v=beta28-rc13'))
     throw new Error('[SW] RC3 HTML is not available');
   if(url==='./index.html' && (!body.includes('rc9-lesson-flow.css?v=beta28-rc9')||!body.includes('rc9-lesson-flow.js?v=beta28-rc9')))
     throw new Error('[SW] RC9 teacher lesson assets missing from current HTML');
@@ -394,6 +428,9 @@ async function cacheVerifiedCurrentShell(cache,url){
     throw new Error('[SW] RC10 teacher fast-path assets missing from current HTML');
   if(url==='./index.html' && (!body.includes('rc11-teacher-flow.css?v=beta28-rc11')||!body.includes('rc11-teacher-flow.js?v=beta28-rc11')))
     throw new Error('[SW] RC11 compact teacher flow assets missing from current HTML');
+  if(url==='./index.html' && !body.includes('storage-governor.js?v=beta28-rc13'))
+    throw new Error('[SW] RC12 storage governor is missing from the current settings shell');
+  if(url==='./maqraa.html' && !body.includes('data-maqraa="1"')) throw new Error('[SW] maqraa.html is not the RC13 independent entry');
   if(url.startsWith('./js/core/runtime.js') && !body.includes(`version:'${APP_VERSION}'`))
     throw new Error('[SW] runtime.js is an older release');
   if(url.startsWith('./app.js') && !body.includes(`WLQ_RELEASE_${APP_VERSION}`))
@@ -465,19 +502,29 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil((async()=>{
-    // Delete old app caches only after Stage 5 has installed a complete core shell.
-    const keys=await caches.keys();
-    await Promise.all(keys.filter(k=>k.startsWith('quran-pwa-')&&k!==ACTIVE_CACHE_NAME).map(k=>caches.delete(k)));
+    // Old caches are deleted only when every current core + critical asset is verified.
+    const active=await caches.open(ACTIVE_CACHE_NAME),missing=await missingProtectedShellAssets(active);
+    if(!missing.length){
+      const keys=await caches.keys();
+      await Promise.all(keys.filter(k=>k.startsWith('quran-pwa-')&&k!==ACTIVE_CACHE_NAME).map(k=>caches.delete(k)));
+    }else console.warn('[SW] retaining previous caches; protected shell is incomplete',missing);
+    // Keep the complete current offline shell pinned; trim only unpinned runtime entries.
+    try{await trimRuntimeCache(active,80);}catch(err){console.warn('[SW] runtime cache trim skipped',err);}
     if(self.registration.navigationPreload)await self.registration.navigationPreload.enable().catch(()=>{});
     await self.clients.claim();
   })());
 });
 
-async function trimRuntimeCache(cache,maxEntries=110){
+async function missingProtectedShellAssets(cache){
+  const required=[...new Set([...CORE_SHELL,...CRITICAL_FRESH_SHELL])],missing=[];
+  for(const path of required){if(!await matchLocalAsset(cache,new Request(absolute(path),{credentials:'same-origin'})))missing.push(path);}
+  return missing;
+}
+
+async function trimRuntimeCache(cache,maxRuntimeEntries=80){
   const keys=await cache.keys();
-  if(keys.length<=maxEntries)return;
-  // App shell shares this cache with runtime responses. Never evict the pinned
-  // Quran/lesson code, CSS or offline entrypoint while trimming runtime data.
+  // App shell shares this cache with runtime responses. Never evict pinned
+  // Quran/lesson code, CSS or offline entrypoints; cap only unpinned runtime data.
   const pinned=new Set();
   for(const path of [...APP_SHELL,...CORE_SHELL,...CRITICAL_FRESH_SHELL,'./']){
     const url=absolute(path);
@@ -485,17 +532,37 @@ async function trimRuntimeCache(cache,maxEntries=110){
     const plain=new URL(url);plain.search='';plain.hash='';pinned.add(plain.href);
   }
   const runtime=keys.filter(key=>!pinned.has(key.url));
-  const count=Math.min(runtime.length,keys.length-maxEntries);
+  const count=Math.max(0,runtime.length-Math.max(0,Number(maxRuntimeEntries)||0));
+  if(!count)return;
+  // Cache API key order is insertion order; remove the oldest runtime entries first.
   await Promise.all(runtime.slice(0,count).map(key=>cache.delete(key)));
+}
+async function cacheRuntimeResponse(cache,request,response){
+  const write=async()=>{
+    await cache.put(request,response.clone());
+    await cache.put(canonicalRequest(request),response.clone());
+  };
+  try{await write();}
+  catch(error){
+    // A quota failure may be recoverable by removing only oldest unpinned runtime entries.
+    if(!/QuotaExceeded|quota/i.test(String(error?.name||'')+' '+String(error?.message||error)))throw error;
+    await trimRuntimeCache(cache,40);
+    try{await write();}
+    catch(second){
+      if(!/QuotaExceeded|quota/i.test(String(second?.name||'')+' '+String(second?.message||second)))throw second;
+      // Last safe retry: clear every unpinned runtime response, never shell or Quran audio.
+      await trimRuntimeCache(cache,0);
+      await write();
+    }
+  }
+  await trimRuntimeCache(cache,80);
 }
 
 async function refreshSameOrigin(cache,req){
   try{
     const res=await fetchWithTimeout(req,1800,{cache:'no-store'});
     if(res&&res.ok){
-      await cache.put(req,res.clone());
-      await cache.put(canonicalRequest(req),res.clone());
-      await trimRuntimeCache(cache);
+      await cacheRuntimeResponse(cache,req,res);
       return true;
     }
   }catch(_){ }
@@ -509,8 +576,7 @@ async function cacheFirstSameOrigin(req){
   try{
     const res=await fetchWithTimeout(req,2200,{cache:'no-store'});
     if(res&&res.ok){
-      cache.put(req,res.clone()).catch(()=>{});
-      cache.put(canonicalRequest(req),res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});
+      cacheRuntimeResponse(cache,req,res).catch(()=>{});
       return res;
     }
   }catch(_){ }
@@ -523,7 +589,7 @@ async function externalSupabase(req){
   if(cached)return cached;
   try{
     const res=await fetchWithTimeout(req,2200);
-    if(res&&(res.ok||res.type==='opaque')){cache.put(req,res.clone()).catch(()=>{});return res;}
+    if(res&&(res.ok||res.type==='opaque')){cacheRuntimeResponse(cache,req,res).catch(()=>{});return res;}
   }catch(_){ }
   return new Response('',{status:503,statusText:'Offline'});
 }
@@ -550,8 +616,9 @@ self.addEventListener('fetch', event => {
       const cache=await caches.open(ACTIVE_CACHE_NAME);
       const portalNav=url.pathname.endsWith('/guardian-portal.html');
       const guardianLoginNav=url.pathname.endsWith('/guardian-login.html');
+      const maqraaNav=url.pathname.endsWith('/maqraa.html');
       const guestNav=url.pathname.endsWith('/guest-practice.html');
-      const fallback=guestNav?'./guest-practice.html':portalNav?'./guardian-portal.html':guardianLoginNav?'./guardian-login.html':'./index.html';
+      const fallback=maqraaNav?'./maqraa.html':guestNav?'./guest-practice.html':portalNav?'./guardian-portal.html':guardianLoginNav?'./guardian-login.html':'./index.html';
       const cached=(await matchLocalAsset(cache,req))
         ||(await matchLocalAsset(cache,new Request(absolute(fallback),{credentials:'same-origin'})))
         ||(await matchLocalAsset(cache,new Request(absolute('./index.html'),{credentials:'same-origin'})));
@@ -561,7 +628,7 @@ self.addEventListener('fetch', event => {
       try{
         const preload=await Promise.race([event.preloadResponse,new Promise(r=>setTimeout(()=>r(null),700))]);
         const res=preload||await fetchWithTimeout(req,2200,{cache:'no-store'});
-        if(res&&res.ok){cache.put(absolute(fallback),res.clone()).catch(()=>{});return res;}
+        if(res&&res.ok){cacheRuntimeResponse(cache,absolute(fallback),res).catch(()=>{});return res;}
       }catch(_){ }
       return new Response('Offline',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}});
     })());
@@ -585,7 +652,7 @@ self.addEventListener('fetch', event => {
     if(cached)return cached;
     try{
       const res=await fetch(req);
-      if(res&&res.ok){cache.put(req,res.clone()).then(()=>trimRuntimeCache(cache)).catch(()=>{});return res;}
+      if(res&&res.ok){cacheRuntimeResponse(cache,req,res).catch(()=>{});return res;}
     }catch(_){ }
     return new Response('',{status:503,statusText:'Offline'});
   })());
@@ -603,5 +670,21 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:ACTIVE_CACHE_NAME,offlineStage:'5.5',uiStage:'11.7.3-supervision-2'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:ACTIVE_CACHE_NAME,offlineStage:'5.7-storage-audio-portal-rc13',uiStage:'11.12.1-beta.28-rc13'});
+  if(event.data?.type==='IMAM_STORAGE_SAFE_CLEAN'&&event.ports?.[0]){
+    const port=event.ports[0];
+    event.waitUntil((async()=>{
+      // Refuse all cleanup unless every core and critical offline asset is present.
+      const active=await caches.open(ACTIVE_CACHE_NAME),missing=await missingProtectedShellAssets(active);
+      if(missing.length)throw new Error('ACTIVE_OFFLINE_SHELL_INCOMPLETE');
+      const before=(await active.keys()).length;
+      await trimRuntimeCache(active,80);
+      const after=(await active.keys()).length;
+      const names=await caches.keys();
+      const old=names.filter(name=>name.startsWith('quran-pwa-')&&name!==ACTIVE_CACHE_NAME);
+      let deletedOldCaches=0;
+      for(const name of old){if(await caches.delete(name))deletedOldCaches++;}
+      return {ok:true,deletedOldCaches,trimmedRuntimeEntries:Math.max(0,before-after),preservedCacheNames:(await caches.keys()).filter(name=>!name.startsWith('quran-pwa-'))};
+    })().then(result=>port.postMessage(result)).catch(error=>port.postMessage({ok:false,error:error?.message||'STORAGE_CLEAN_FAILED'})));
+  }
 });

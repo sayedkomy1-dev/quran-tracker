@@ -30,7 +30,7 @@ function contextWithStorage(){
   parseJSONSafe:(s,def)=>{try{return JSON.parse(s);}catch(_){return def;}},
   snapshotHasData:s=>!!((s.students||[]).length||(s.sessions||[]).length||(s.tasks||[]).length),
   nextSnapshotStamp:()=>++seq,
-  idbWriteSnapshot:stamp=>snapshots.push(stamp),writeOfflineSafetySnapshot:()=>{},
+  idbWriteSnapshot:stamp=>snapshots.push(stamp),writeOfflineSafetySnapshot:()=>{},compactRedundantAccountMirrors:()=>0,
   queueMicrotask:fn=>fn(),updateTaskBadge:()=>{},
   document:{dispatchEvent(){}},Event:function Event(){},
   globalThis:null

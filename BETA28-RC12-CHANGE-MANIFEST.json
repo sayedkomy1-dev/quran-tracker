@@ -1,0 +1,47 @@
+{
+  "candidate": "IMAM Beta28 RC12 — Storage Reliability",
+  "base_internal_version": "11.12.1-beta.27",
+  "local_schema": 12,
+  "database_migration": false,
+  "changed": [
+    "app.js",
+    "index.html",
+    "guardian-portal.html",
+    "guest-practice.html",
+    "sw.js",
+    "js/features/storage-governor.js",
+    "js/features/offline-audio-library.js",
+    "package.json",
+    "tests/platform-workflow-beta9-check.js",
+    "tests/owner-upgrade-consistency-check.js",
+    "tests/storage-governor-check.js",
+    "tests/storage-governor-sw-check.js",
+    "RELEASE-BETA28-RC12-STORAGE.md",
+    "BETA28-RC12-CHANGE-MANIFEST.json"
+  ],
+  "preserved": [
+    "QuranApp IndexedDB database and all existing object stores",
+    "Student, lesson, attendance, task, finance, error, draft, and voice-note records",
+    "imam-quran-audio-library-v1 IndexedDB database",
+    "imam-guardian-tahfeez-audio-v1 CacheStorage cache",
+    "Unknown CacheStorage caches",
+    "WhatsApp direct-message and audio share flows"
+  ],
+  "runtime_cache_policy": {
+    "max_unpinned_entries": 80,
+    "eviction": "oldest runtime entries first",
+    "pinned_shell_eviction": false,
+    "quota_retry": "trim runtime to 40 then retry once"
+  },
+  "audio_download_guard": {
+    "minimum_free_bytes": 33554432,
+    "check_interval_ayahs": 8,
+    "critical_usage_ratio": 0.96,
+    "automatic_audio_deletion": false
+  },
+  "test_status": {
+    "rc12_focused_suite": "passed",
+    "full_npm_test": "blocked by pre-existing version-debt-beta11-check (styles.css remains in runtime root)",
+    "real_device_acceptance": "pending"
+  }
+}

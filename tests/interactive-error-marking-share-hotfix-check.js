@@ -10,6 +10,6 @@ ok(!teacher.includes("(g.students||[]).find"),'teacher feature still incorrectly
 ok(teacher.includes('function findStudent(id)')&&teacher.includes('const st=findStudent(ses.studentId)'),'guardian lookup bridge missing');
 ok(teacher.includes('function safeOpenWhatsApp')&&teacher.includes("toast('تم حفظ الحصة وفتح محادثة ولي الأمر. راجع الرسالة واضغط إرسال داخل واتساب.'"),'WhatsApp handoff must disclose that teacher must press send' );
 ok(teacher.includes('buildSnapshotCanvas')&&teacher.includes('canvasFile')&&teacher.includes('ImamTemporaryMedia.share')&&read('js/features/temporary-media-share.js').includes('navigator.share')&&teacher.includes('downloadFile(file)'),'PNG create/share/download pipeline missing');
-ok(index.includes('js/features/teacher-error-marking.js?v=beta28-rc9'),'teacher hotfix cache-buster missing');
-ok(sw.includes("quran-pwa-v11.2.0-error2")&&sw.includes("uiStage:'11.2-error-marking-2'")&&sw.includes('teacher-error-marking.js?v=beta28-rc9'),'service-worker Stage 1.3 cache version missing');
+ok(index.includes('js/features/teacher-error-marking.js?v=beta28-rc13'),'teacher hotfix cache-buster missing');
+ok(sw.includes("quran-pwa-v11.2.0-error2")&&sw.includes("uiStage:'11.2-error-marking-2'")&&sw.includes('teacher-error-marking.js?v=beta28-rc13'),'service-worker Stage 1.3 cache version missing');
 console.log('Interactive error marking Stage 1.3 share/WhatsApp hotfix checks passed');
