@@ -1,0 +1,50 @@
+.hrc-student-card,.hrc-teacher-entry{box-sizing:border-box;border:1px solid #c6dfd1;border-radius:16px;background:linear-gradient(145deg,#f7fcf8,#eef7f1);color:#174b36;padding:16px;margin:14px 0;display:grid;gap:12px}
+.hrc-card-head,.hrc-teacher-entry{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hrc-card-head>div,.hrc-teacher-entry>div{display:grid;gap:4px}
+.hrc-card-head b,.hrc-teacher-entry b{font-size:1.05rem}
+.hrc-card-head small,.hrc-teacher-entry small{color:#587568;line-height:1.6}
+.hrc-card-head>span{font-size:.85rem;font-weight:700;background:#e2f0e7;border-radius:999px;padding:6px 10px}
+.hrc-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:10px}
+.hrc-grid label,.hrc-field{display:grid;gap:6px;font-weight:700;font-size:.9rem}
+.hrc-grid select,.hrc-grid input,.hrc-student-card textarea,.hrc-field textarea,.hrc-marker-box textarea,.hrc-marker-box input{box-sizing:border-box;width:100%;min-width:0;border:1px solid #b8d1c3;border-radius:10px;padding:10px;background:#fff;color:#173d2c;font:inherit}
+.hrc-student-card textarea,.hrc-field textarea,.hrc-marker-box textarea{resize:vertical}
+.hrc-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px}
+.hrc-actions button,.hrc-primary,.hrc-secondary,.hrc-student-card button,.hrc-teacher-entry button{font:inherit;font-weight:700;border-radius:10px;padding:10px 14px;min-height:42px;cursor:pointer}
+.hrc-primary,.hrc-student-card button:not(.hrc-secondary),.hrc-teacher-entry button{background:#176b4c;color:#fff;border:1px solid #176b4c}
+.hrc-secondary{background:#fff;color:#24543e;border:1px solid #b8d1c3}
+.hrc-student-card button:disabled,.hrc-primary:disabled{opacity:.5;cursor:not-allowed}
+.hrc-file-pick{display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:8px 12px;border:1px dashed #8eb39c;border-radius:10px;background:#fff;color:#24543e;font-weight:700;cursor:pointer}
+.hrc-file-pick input{max-width:210px;font-size:.8rem}
+.hrc-student-card audio,.hrc-submission-item audio,.hrc-existing-voice audio,.hrc-review-audio{display:block;width:100%;max-width:100%;margin-top:8px}
+.hrc-status{min-height:1.4em;font-size:.9rem;color:#456b59}
+.hrc-status[data-kind=error]{color:#a02d2d}.hrc-status[data-kind=warning]{color:#875514}.hrc-status[data-kind=success]{color:#176b4c}
+.hrc-empty{padding:12px;margin:8px 0;border:1px dashed #c3d8ca;border-radius:10px;color:#637b6d;background:#fff}
+.hrc-pending-item,.hrc-submission-item{display:grid;gap:8px;padding:12px;border:1px solid #d1e2d7;border-radius:12px;background:#fff;margin-top:8px}
+.hrc-pending-item>div{display:grid;gap:4px}.hrc-pending-item small,.hrc-submission-item small{color:#6a7d72}
+.hrc-student-feedback{display:grid;gap:8px;border-top:1px solid #e0ebe4;padding-top:10px;margin-top:8px}
+.hrc-student-feedback p{white-space:pre-wrap;margin:0;line-height:1.8}
+.hrc-mark-link{display:block!important;width:100%;text-align:start;background:#f1f8f3!important;color:#24543e!important;border:1px solid #c8ddcf!important;margin:3px 0}
+.hrc-teacher-entry{margin:12px 0}
+.hrc-modal{position:fixed;inset:0;z-index:2147483000;background:#102a1fbb;display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
+.hrc-modal[hidden]{display:none}
+.hrc-modal-dialog{box-sizing:border-box;width:min(1120px,100%);max-height:94dvh;overflow:auto;background:#f8fbf8;color:#183c2b;border-radius:18px;border:1px solid #c7ddce;box-shadow:0 20px 70px #071b1270;padding:16px}
+.hrc-modal-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #dce9e0;padding-bottom:12px;margin-bottom:10px}
+.hrc-modal-dialog>header>div{display:grid;gap:4px}.hrc-modal-dialog>header small{color:#62796c}
+.hrc-modal-dialog>header button{font-size:1.5rem;width:42px;height:42px;border:1px solid #c4d9cb;border-radius:10px;background:#fff;color:#24543e}
+.hrc-teacher-layout{display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr);gap:14px}
+.hrc-teacher-list{display:grid;align-content:start;gap:8px;max-height:70dvh;overflow:auto}
+.hrc-teacher-row{display:grid;gap:4px;text-align:start;padding:12px;border:1px solid #d1e2d7;border-radius:12px;background:#fff;color:#214a36;font:inherit;cursor:pointer}
+.hrc-teacher-row.active{border-color:#287b56;box-shadow:inset 0 0 0 1px #287b56;background:#eef8f1}
+.hrc-teacher-row span,.hrc-teacher-row small{color:#657b6e}
+.hrc-teacher-detail{min-width:0;display:grid;gap:10px;align-content:start}
+.hrc-teacher-detail h3{margin:0;font-size:1.05rem}
+.hrc-student-note{background:#fff7e9;border:1px solid #ead9b7;border-radius:10px;padding:10px;margin:0}
+.hrc-marker-box,.hrc-voice-feedback,.hrc-existing-voice{display:grid;gap:8px;border:1px solid #d4e4da;border-radius:12px;padding:12px;background:#fff}
+.hrc-marker-box input{max-width:180px}
+.hrc-annotation-list{display:grid;gap:6px}
+.hrc-annotation-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px;border:1px solid #d9e7de;border-radius:9px;background:#fff}
+.hrc-annotation-row span{line-height:1.6;overflow-wrap:anywhere}
+.hrc-publish-check{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid #b8d9c4;border-radius:10px;background:#edf7f0;font-weight:700}
+.hrc-publish-check input{width:20px;height:20px}
+@media(max-width:700px){.hrc-grid{grid-template-columns:1fr 1fr}.hrc-grid label:first-child{grid-column:1/-1}.hrc-teacher-layout{grid-template-columns:1fr}.hrc-teacher-list{max-height:220px}.hrc-modal-dialog{padding:12px}.hrc-actions>*{flex:1 1 auto}}
+@media(max-width:420px){.hrc-grid{grid-template-columns:1fr}.hrc-grid label:first-child{grid-column:auto}.hrc-card-head,.hrc-teacher-entry{align-items:flex-start;flex-direction:column}.hrc-card-head>span{align-self:flex-start}.hrc-file-pick{width:100%;box-sizing:border-box;justify-content:space-between}.hrc-file-pick input{max-width:62%}.hrc-annotation-row{align-items:flex-start;flex-direction:column}}

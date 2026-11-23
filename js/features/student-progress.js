@@ -186,6 +186,7 @@ function renderV107Progress(studentId=curStId){
   const grades=data.gradeCounts,totalGrades=Object.values(grades).reduce((a,b)=>a+b,0);
   let learningProfileHtml='';
   let learningObservationsHtml='';
+  const homeRecitationHtml=globalThis.ImamHomeRecitation?.renderTeacherPanel?.(studentId)||'';
   try{
     const learningProfile=globalThis.ImamApp?.StudentLearningProfile;
     if(typeof learningProfile?.build==='function'&&typeof learningProfile?.render==='function'){
@@ -205,6 +206,7 @@ function renderV107Progress(studentId=curStId){
   host.innerHTML=`
     ${learningProfileHtml}
     ${learningObservationsHtml}
+    ${homeRecitationHtml}
     <div class="v107-kpis">
       <div class="v107-kpi ${v107MasteryClass(data.mastery)}"><small>متوسط الإتقان</small><strong>${v107Metric(data.mastery,'%')}</strong><span>${v107Esc(scoreCoverage)}</span></div>
       <div class="v107-kpi"><small>نسبة الحضور</small><strong>${v107Metric(data.attendance,'%')}</strong><span>${data.present.length} حضور · ${data.absent.length} غياب</span></div>
@@ -235,6 +237,9 @@ function renderV107Progress(studentId=curStId){
     </div>
     ${v107CumulativeCoverage(studentId)}
     <div class="v107-actions"><button class="btn btn-wa btn-sm" onclick="v107SendProgressWhatsApp()">📲 إرسال ملخص التقدم</button><button class="btn btn-out btn-sm" onclick="goPage('reports')">📊 التقرير الشهري</button></div>`;
+
+  const homeRecitationButton=host.querySelector('[data-hrc-teacher-open]');
+  if(homeRecitationButton)homeRecitationButton.addEventListener('click',()=>globalThis.ImamHomeRecitation?.openTeacherInbox?.(studentId));
 
   const observationSaveButton=host.querySelector('[data-slp-observation-save]');
   if(observationSaveButton)observationSaveButton.addEventListener('click',()=>{
