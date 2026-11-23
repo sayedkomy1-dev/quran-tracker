@@ -590,7 +590,7 @@ b6c06ed1db9e399381b56ed1986047e79ed1cf64dc4e5b04c426dd1b4a7bf5bd  ./screenshots/
 73aae2c2b66f858646a0e1585b4a1d8d2ee138516f917fc616482fb2526c0dad  ./scripts/measure-ui.py
 478a04a2ae18f5509bf7df40a729f0abdbb3d8bf9c2cbf56706aab11b553e9a7  ./scripts/pack-imam-tafsir.mjs
 3beda8389aa92ff90efbe3445624d1871778640a4887cff2d3f18824591c83c0  ./scripts/release-budget.mjs
-b91c1b36b98e4e093ebe60588473fb59160c1f4be0acc0b3ead5300951302318  ./scripts/release-integrity.mjs
+8700c4fb3eb1798f4a1cbf467959bf7fe19fe4d0a6c210561b53eb38e9008d61  ./scripts/release-integrity.mjs
 0be5a3c57e0114b9ace7a8d01b576be4aaa57eaa64ec68d175bffbb29aa26a28  ./session-intelligence-119.css
 a742da9a43b8e50048528e26f238909c32d2bde7a7db075b018509ef981500e2  ./smart-revision.css
 70e4d1fd8544c25bedd4fd6428eb4d342eabdba35fcb949824a0f5eb14e33b74  ./sql/academic-progress-1111-OPTIONAL.sql
