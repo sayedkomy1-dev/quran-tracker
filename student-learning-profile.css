@@ -1,0 +1,29 @@
+/* RC16 — student learning profile; isolated from existing progress and portal styles. */
+.slp-profile{margin:12px 0;padding:13px;border:1px solid var(--v9-border,var(--bdr,#dce6df));border-radius:15px;background:var(--v9-surface,var(--wh,#fff));direction:rtl;min-width:0}
+.slp-head{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;margin-bottom:11px}
+.slp-head>div{display:grid;gap:4px;min-width:0}
+.slp-head b{font-size:13px;color:var(--v9-text,var(--txt,#183b2b))}
+.slp-head small,.slp-foot{font-size:9px;line-height:1.7;color:var(--v9-muted,var(--mut,#66766d))}
+.slp-evidence{border-radius:999px;padding:5px 9px;background:var(--gp,#edf5ef);color:var(--gm,#246744);font-size:9px;font-weight:800;white-space:nowrap}
+.slp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.slp-stats>div{display:grid;gap:4px;padding:9px 6px;border:1px solid var(--v9-border,var(--bdr,#dce6df));border-radius:10px;text-align:center;min-width:0}
+.slp-stats small{font-size:8px;color:var(--v9-muted,var(--mut,#66766d));line-height:1.5}
+.slp-stats strong{font-size:17px;color:var(--v9-text,var(--gm,#246744));overflow-wrap:anywhere}
+.slp-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.slp-columns>section{border:1px solid var(--v9-border,var(--bdr,#dce6df));border-radius:11px;padding:10px;min-width:0}
+.slp-columns h4{font-size:10px;margin:0 0 7px;color:var(--v9-text,var(--txt,#183b2b))}
+.slp-columns ul,.slp-next ul{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.slp-columns li{display:grid;gap:3px;padding:7px;border-radius:8px;background:var(--gp,#f3f7f4);min-width:0}
+.slp-columns li b{font-size:9px;overflow-wrap:anywhere}
+.slp-columns li span{font-size:8px;color:var(--v9-muted,var(--mut,#66766d))}
+.slp-empty{font-size:9px;line-height:1.7;color:var(--v9-muted,var(--mut,#66766d));margin:0}
+.slp-trend{font-size:9px;margin:9px 0 0;color:var(--v9-muted,var(--mut,#66766d))}
+.slp-trend b{color:var(--v9-text,var(--gm,#246744))}
+.slp-next{margin-top:10px;padding:10px;border-right:3px solid var(--gm,#28724b);border-radius:9px;background:var(--gp,#f3f7f4)}
+.slp-next>b{font-size:10px;color:var(--v9-text,var(--gm,#246744))}
+.slp-next ul{margin-top:6px;list-style:disc;padding-right:17px}
+.slp-next li{font-size:9px;line-height:1.75;color:var(--v9-text,var(--txt,#183b2b))}
+.slp-foot{margin:9px 0 0}
+@media(max-width:430px){.slp-columns{grid-template-columns:1fr}.slp-profile{padding:10px}.slp-stats small{font-size:7.5px}}
+[data-theme="dark"] .slp-profile{background:var(--v9-surface,var(--wh,#111d16));border-color:var(--v9-border,var(--bdr,#314338))}
+[data-theme="dark"] .slp-columns li,[data-theme="dark"] .slp-next{background:rgba(120,170,135,.09)}
