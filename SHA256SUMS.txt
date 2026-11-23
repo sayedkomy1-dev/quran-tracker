@@ -766,7 +766,7 @@ b1eada91066d3a70d9ed63c7e071d488cf784ebc0f7312d0b334094b96faed6b  ./tests/guardi
 abb1ae251502b75bd912e3cca58bbf2224e5c7fd4899f0bd98190486e8fc165b  ./tests/guardian-tahfeez-layout-check.js
 506d084cd43cd416a5260bcb67183f7b0c68f3b15902c544f9b1331d22b1a21e  ./tests/guardian-tahfeez-stage2-check.js
 f4a1df543acd79bcec5f46d503b30a69a2abaf4536d3d1bb8029269e484ab64a  ./tests/guest-role-update-batch-check.js
-c0bf10324d5b11033dcaa806e4dd128e925c9e882e3888dfd52626ecbb3c65a1  ./tests/home-recitation-check.js
+94704fcbbb9089d10d9afd6528e7159d4acceeae64a000b8c47a55cc2931407d  ./tests/home-recitation-check.js
 c390088bc65baebc74b548389c5b6cfa532169e80229371fb05122857a74f09b  ./tests/imam-absence-makeup-check.js
 bd8ac80d075110f6154c0a2953b573ff925c49746e5a39e305addc418cc6e270  ./tests/imam-board-beta6-corpus-check.js
 cc7f671de7644d5f0e48a3d2fdb9c2c5bb2ed52c9141beb3dbfd2b371403eb6e  ./tests/imam-board-mobile-entry-check.js
