@@ -441,6 +441,7 @@ d2f263a69ad882b6f2380ab8a841ee630a7fe0cc38afa2e6d05def02934d51f4  ./docs/IMAM-BO
 c176d6bbc183ab6b9a06a615f87beca7c641f8e2b521854cdd3d792be73c5394  ./docs/OP-BETA8-QUALITY-REPORT.md
 49152019056cd150fba0486e17702745d50088e578e27cba43952f80c3206148  ./docs/QA-BETA10-PHONE-HOME.md
 0d5fcda7fa3aac3be3721919ed4d6f3c0f3e4e1ce22bde54edda2f9a3859dd48  ./docs/QA-IMAM-BOARD-BETA6-ACCEPTANCE-125.md
+cc37d71a76e88dce1a708c6646f4720d3d193a28fbbad3a4779fb23269ef512e  ./docs/RC16-HOME-RECITATION-SETUP.md
 0b855ba0b8383c162b03f4033fde5644fe3e6a4fcf7b819df3ac735570e478df  ./docs/REVOLUTIONARY-UX-MASTER-PROMPT.md
 271318a13dbc6538f4129f4b38081a24105d94d711f8d7d9f446bcee665eb983  ./docs/TEST-BETA10-PHONE-HOME.md
 2014e7b1da836c28d3b4650347ff40b9e3bf770562a4f1c8ea9ebeaabee47750  ./docs/review-sources/#U062a#U0642#U0631#U064a#U0631-#U0627#U0644#U0641#U062d#U0635-#U0627#U0644#U0634#U0627#U0645#U0644-2026-11-21.md
@@ -461,6 +462,7 @@ ac7032bbf76eed3ba33c7b205a149671b21fad17ff0e812db40d44be35893599  ./guardian-man
 deef07ed7a27a618fbff248adfb2ca3b0e75690b030202ee79fb6ee4cd5d358d  ./guardian-tahfeez.css
 357fac939549760dcaa45ed3bde1b4752f70aec73bc641cc29bc00aacc7e1f0a  ./guest-practice.css
 f14e6151418aed2e6ae5223460aef9ddad869e43b981a1623bd9dfec9b2efc94  ./guest-practice.html
+de12db0db204f539130c21ef13967da338618452055c82ea9262e9010ca78700  ./home-recitation.css
 29a1c2cec9c1ab70bbc12584bf83aff2dba29948907736b766054ef65b37a6ad  ./icon-192.png
 0f792e6f7fb8584aad7528248b7b33e6e441f33e952ceb4bfae16addf1653dd0  ./icon-512.png
 3bce66e25ffd74c365cbbbfd68ce2a133edde8f61936f9894445054cad24b5a9  ./icon-96.png
@@ -505,6 +507,8 @@ c7f1040ff7f2760f4e83a6bff420ac3f0f3407baba3a8160df0a0b092aecc000  ./js/features/
 2590af2cc02dd97d417ffafdb65d27e6d39bcbd104b6c670e7b0406721b1262d  ./js/features/guardian-tahfeez.js
 0a2d64078e5861dd5447594673e982e2d30254691f87c302addd2b4f32194fe6  ./js/features/guest-palette.js
 7a52edf14ebed6d59997bc58ba7b3e0b3e88cb7b421091758d193a5cb3ede19f  ./js/features/guest-practice.js
+e2f4e5e1b0c4b3dc28698bd8190b93ed8b35f9efcb30c3dff7493aba23afe17d  ./js/features/home-recitation-core.js
+60d2ae1a2b08286610adfb9b0cfb07b22439dac5d6718fec594654b568b9dd1b  ./js/features/home-recitation.js
 a8fc6252d882f5b2926ddc3a72e6e9f3070eab356c988c00a641f3cfe15e6aa1  ./js/features/imam-absence-makeup.js
 199b325fc45d38d9aace9d3809d1b4294cf33b7ba5d3a8e242e28db3c1e55b56  ./js/features/imam-board-corpus.js
 6501213a72794e9de79f922abe4efaeedce3f9006001e906136ff9c3a43475d5  ./js/features/imam-board-tafsir.js
@@ -668,6 +672,7 @@ e2ee210099231f20d2005138bf3de83dcb0abb8c6344254d276981622fa025c7  ./sql/guardian
 9b5ec10dfdf5cc87979ef6f5e49d66365ecba41c792b7c6616742835659f776a  ./sql/guardian-portal-reset-requests.sql
 1b92591e9a6f8ff52ede48afe9a4c230fe611bf97045dda28552a50cbc5c5e57  ./sql/migrations/20261121_security_hardening_STAGING_ONLY.sql
 382154a84567c41e1ef0c175f3e303361f43c50681876c9f24c2163b4d89f325  ./sql/quran-guest-practice.sql
+b4a935a4815516202ea08e0cdaa06a521be478bfe43b4048449780db137bf2b2  ./sql/rc16-home-recitation.sql
 2acbd64053dc1c8dcca842278f44b8f401108097cc659d5bbf3051e624eadd54  ./sql/supabase-setup.sql
 5f4c5de555bf095e4c26978464bcffdfae6e31b00c6feb04adde596e5b55bbdc  ./sql/supabase-sync.sql
 ce5ebe40e60843b65f8dbc03d05e432691b13602a0570b3db582b197adc36c26  ./sql/supervision-roster-permissions.sql
@@ -675,6 +680,8 @@ ce5ebe40e60843b65f8dbc03d05e432691b13602a0570b3db582b197adc36c26  ./sql/supervis
 c63c5a3e7a4996aa3389a270049075a253477686edf089461f112fecab17e6ad  ./student-finance.css
 823913798c8cca71ee02b589688183a5cfbadcb719dc80b4f9ce620209ca6dc1  ./student-learning-profile.css
 ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
+13933d7f64916e3a45bc69156b80cf4aeaae39596809a7f5b648937a1c573044  ./supabase/config.toml
+40d944d8155d3524d05e73951844c99bc62c15c3f6ac33241cd3ec43ea05ecf1  ./supabase/functions/guardian-recitation/index.ts
 c5326fffe24cc1915fa86842b27b039f061726a35a73e963eeb21a2132224f75  ./sw.js
 d9af751d17bc441e6b39c24ec5a8ed5eaf24b93fac733e9e1ba036629534c319  ./sync-core.js
 c119463a48ab3e54f5d631af17484e8901f7f51029e8684f857860184efc9d07  ./teacher-error-marking.css
@@ -759,6 +766,7 @@ b1eada91066d3a70d9ed63c7e071d488cf784ebc0f7312d0b334094b96faed6b  ./tests/guardi
 abb1ae251502b75bd912e3cca58bbf2224e5c7fd4899f0bd98190486e8fc165b  ./tests/guardian-tahfeez-layout-check.js
 506d084cd43cd416a5260bcb67183f7b0c68f3b15902c544f9b1331d22b1a21e  ./tests/guardian-tahfeez-stage2-check.js
 f4a1df543acd79bcec5f46d503b30a69a2abaf4536d3d1bb8029269e484ab64a  ./tests/guest-role-update-batch-check.js
+9dc282c27089a636c6b65ea2b9360699e03114e42010dbe029d58f0978ae8970  ./tests/home-recitation-check.js
 c390088bc65baebc74b548389c5b6cfa532169e80229371fb05122857a74f09b  ./tests/imam-absence-makeup-check.js
 bd8ac80d075110f6154c0a2953b573ff925c49746e5a39e305addc418cc6e270  ./tests/imam-board-beta6-corpus-check.js
 cc7f671de7644d5f0e48a3d2fdb9c2c5bb2ed52c9141beb3dbfd2b371403eb6e  ./tests/imam-board-mobile-entry-check.js
