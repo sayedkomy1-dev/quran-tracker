@@ -231,6 +231,7 @@ ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./archive/hist
 e4d356ac5b94834eba94661c023afd6665a438edb64953aaf42240d2c09b78df  ./archive/historical-css/v10.css
 27d01ded6c327acd95c4efb1d4f84297345911c2236cd7d78bd512847396640b  ./archive/historical-css/v11.css
 eaa9d8827bd5898d605d3185a526f440e531ff9081ab07be6fd4001a712eedef  ./archive/historical-css/v9.css
+85d50cea2593c127f3b92687a396daad7a6034b4fef34ad0ae193abad51b0127  ./archive/historical-screenshots/index-v10.1.5.html
 38026c876edc6e1dfa61a4ba135fed0aa75d76fc9ff1ba1a784ad7d2576b5361  ./assets/kfgqpc/ayah-page-map.json
 1fb6f484cc835efbba72af0db596e7927489852878f10a2866031e4a31237b03  ./assets/kfgqpc/mushaf-meta.json
 cae16406edaadc4e68b3d44fd09b6addd68a32144fbd73db939ba195bb823599  ./assets/kfgqpc/mushaf604/frame.png
