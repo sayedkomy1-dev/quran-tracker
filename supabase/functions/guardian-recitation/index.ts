@@ -192,7 +192,7 @@ function parseAnnotations(value: unknown, row: Record<string, unknown>) {
     return { id: validUuid(item?.id) ? item.id : crypto.randomUUID(), time_ms: timeMs, ayah_no: ayahNo, note, order: index };
   });
 }
-async function uploadAudio(path: string, file: File) {
+async function validateAudioFile(file: File) {
   const mime = normalizeMime(file.type);
   const extension = extensionForMime(mime);
   if (!extension || !mime.startsWith("audio/") || file.size < 128 || file.size > MAX_FILE_BYTES) {
@@ -200,12 +200,16 @@ async function uploadAudio(path: string, file: File) {
   }
   const bytes = new Uint8Array(await file.arrayBuffer());
   if (!hasAudioSignature(bytes.subarray(0, Math.min(bytes.length, 32)), mime)) throw new Error("AUDIO_SIGNATURE_INVALID");
-  const body = new Blob([bytes], { type: mime });
+  return { mime, size: file.size, extension, bytes };
+}
+async function uploadAudio(path: string, file: File) {
+  const validated = await validateAudioFile(file);
+  const body = new Blob([validated.bytes], { type: validated.mime });
   const { error } = await admin.storage.from(BUCKET).upload(path, body, {
-    contentType: mime, cacheControl: "3600", upsert: true
+    contentType: validated.mime, cacheControl: "3600", upsert: true
   });
   if (error) throw error;
-  return { mime, size: file.size, extension };
+  return { mime: validated.mime, size: validated.size, extension: validated.extension };
 }
 function apiError(error: unknown) {
   const code = String((error as Error)?.message || error || "SERVER_ERROR");
@@ -248,9 +252,9 @@ async function studentUpload(req: Request) {
   if (!Number.isInteger(durationMs) || durationMs < 0 || durationMs > MAX_DURATION_MS) throw new Error("AUDIO_FILE_INVALID");
   if (!(file instanceof File)) throw new Error("AUDIO_FILE_INVALID");
   const access = await studentAccess(sessionToken, studentRef);
-  const mime = normalizeMime(file.type);
-  const extension = extensionForMime(mime);
-  if (!extension) throw new Error("AUDIO_FILE_INVALID");
+  const validatedFile = await validateAudioFile(file);
+  const mime = validatedFile.mime;
+  const extension = validatedFile.extension;
   const sessionHash = access.sessionHash;
   const { data: existing, error: existingError } = await admin.from("student_recitation_submissions")
     .select("*").eq("id", submissionId).maybeSingle();
