@@ -40,8 +40,8 @@
   function setNote(mode){
     const title=$('portalNoteTitle'),text=$('portalNoteText');setModeActions(mode);
     if(mode==='session'){
-      if(title)title.textContent='دخول آمن برقم الهاتف + PIN';
-      if(text)text.textContent='هذه جلسة قراءة فقط بعد التحقق من رقم الهاتف ورمز الدخول. رمز PIN نفسه يظل صالحًا حتى يغيّره المحفظ، بينما قد يحتاج تسجيل الدخول على هذا الجهاز إلى تجديد دوري.';
+      if(title)title.textContent='متابعة آمنة وإرسال التسميع المنزلي';
+      if(text)text.textContent='بيانات الأكاديمية للعرض فقط. يمكنك من هنا إرسال تسجيل التلاوة للمحفظ ومتابعة التصحيحات التي يعتمدها؛ ولا يمكن تعديل سجلات الأكاديمية أو درجات الطالب.';
     }else if(mode==='live'){
       if(title)title.textContent='رابط قراءة فقط قابل للتحديث';
       if(text)text.textContent='يعرض هذا الرابط آخر نسخة نشرها المحفظ. لا يمكن تعديل بيانات الأكاديمية من هذه الصفحة، ويمكن للمحفظ إيقاف الرابط في أي وقت.';

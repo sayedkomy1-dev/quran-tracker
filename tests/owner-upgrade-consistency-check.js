@@ -72,7 +72,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  }
  await installation;
  const currentName=vm.runInContext('ACTIVE_CACHE_NAME',ctx);
- assert(currentName.includes('-beta28-stage1')&&currentName.includes('-rc14-tahfeez-continuation')&&currentName.includes('-rc16-learning-profile1')&&currentName.endsWith('-rc16-learning-observations1'),'must preserve the RC14 namespace and Beta28 stage marker while advancing the RC16 cache');
+ assert(currentName.includes('-beta28-stage1')&&currentName.includes('-rc14-tahfeez-continuation')&&currentName.includes('-rc16-learning-profile1')&&currentName.includes('-rc16-learning-observations1')&&currentName.endsWith('-rc16-home-recitation1'),'must preserve the RC14 namespace and prior RC16 stages while advancing the home-recitation cache');
  const newCache=await cachesMock.open(currentName);
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
@@ -84,5 +84,6 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  await testWorker({staleIndex:true});
  await testWorker({offlineRuntime:true});
  await testWorker({});
- console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC16 root/index cache, retained RC14 namespace, and retained versioned offline scripts');
+ assert(sw.includes("'./js/features/home-recitation.js?v=beta28-rc16-home-recitation1'"),'home-recitation module must be part of the fresh shell');
+console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC16 root/index cache, retained RC14 namespace, and retained versioned offline scripts');
 })().catch(e=>{console.error(e);process.exitCode=1;});

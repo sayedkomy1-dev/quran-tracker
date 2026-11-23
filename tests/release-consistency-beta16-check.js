@@ -14,6 +14,12 @@ for(const name of ['app.js','js/core/runtime.js','js/core/boot-health.js','js/co
  assert(!read(name).includes('11.12.1-beta.14'),`${name} has old release marker`);
 const scripts=['app.js','v9.js','v10.js','js/features/imam-smart-board.js','js/features/platform-workflow.js','js/features/role-home.js','js/features/supervisor-dashboard.js'];
 const css=['css/platform/responsive.css','imam-smart-board.css','role-home.css','teacher-rating.css'];
+const homeAssets=['home-recitation.css','js/features/home-recitation-core.js','js/features/home-recitation.js'];
+for(const name of homeAssets){
+ const ref=`${name}?v=beta28-rc16-home-recitation1`;
+ assert(html.includes(ref)||read('guardian-portal.html').includes(ref),`HTML missing fresh ${name}`);
+ assert(sw.includes(`'./${ref}'`),`SW missing fresh ${name}`);
+}
 for(const name of [...scripts,...css]){
  const ref=`${name}?v=${version}`;
  const versionedV9=`${name}?v=${version}-guardian-reactivation-hotfix4`;
