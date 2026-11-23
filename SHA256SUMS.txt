@@ -820,7 +820,7 @@ c643bcc64cc29b4e7891a1ec9067a91fb3208b74e1cbb97170eac4bae085c878  ./tests/studen
 b4cd8cc69fb4bee52ac0920c1ad6694120bf0fa6124311d13f6440f611a3d8e9  ./tests/student-finance-stage2-check.js
 ec65855c062dd141848916149ba6e2da5eaed4b67518fdeedc59b3e029d49703  ./tests/student-learning-observations-check.js
 a585b0a02eda0b566447fb46bc6c7e4f66c0fd71d5329d90622f565e67640fd4  ./tests/student-learning-profile-check.js
-4265221f411d12ed4d42c2a2ada43d4b2e7f89964a9e2907cba7cfdf2ba894c7  ./tests/student-progress-check.js
+73451cc78d7570d81e60783a4fd8e33daeccbcfefb65bb7deedcd4fb8dee8b8d  ./tests/student-progress-check.js
 3bc1b214c76e0fa5d29235007052a5cb75c328b74e3927dc8317a7b869cc8452  ./tests/supervision-roster-permissions-stage2-check.js
 004977505a81764b8367114a39a5a4f83ad858d28568d5d64d1d280dcddb9f5e  ./tests/supervision-visible-entry-hotfix-check.js
 c71dd739a8950805b61786676d2783d24bda393b2d9a812d567cf8b9b967ace7  ./tests/surah-picker-beta17-check.js
