@@ -1,0 +1,4 @@
+project_id = "svtcntalwfmexthcnvqe"
+
+[functions.guardian-recitation]
+verify_jwt = false
