@@ -78,11 +78,11 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  const currentHtml=await newCache.match(base+'index.html');
  assert(currentRoot && currentHtml,'both root and index paths must have current HTML');
  assert((await currentRoot.text()).includes('name="application-version" content="11.12.1-beta.27"'),'root may not serve stale HTML');
- assert((await currentHtml.text()).includes('app.js?v=beta28-rc13'),'index may not serve old app.js');
+ assert((await currentHtml.text()).includes('app.js?v=beta28-rc16-learning-observations1'),'index may not serve old app.js');
 }
 (async()=>{
  await testWorker({staleIndex:true});
  await testWorker({offlineRuntime:true});
  await testWorker({});
- console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC16 root/index cache, retained RC14 namespace, and retained RC13 core scripts');
+ console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC16 root/index cache, retained RC14 namespace, and retained versioned offline scripts');
 })().catch(e=>{console.error(e);process.exitCode=1;});
