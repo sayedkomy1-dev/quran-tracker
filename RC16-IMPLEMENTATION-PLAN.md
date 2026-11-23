@@ -100,7 +100,9 @@ A work package is not complete until:
 
 ### Verification state
 - Isolated V8 runtime smoke checks passed for evidence thresholds, student/future-session isolation, attendance, existing error-engine integration, HTML escaping, script/style wiring, service-worker cache wiring, and test-runner wiring.
-- The repository's full Node `npm test`, SHA256 inventory check, linked-payload budget check, GitHub Actions result, and real Android/mobile acceptance are still pending.
+- GitHub Actions run **#176** passed the complete Node `npm test` suite, `node scripts/release-integrity.mjs` with all **837** file hashes, and `node scripts/release-budget.mjs`.
+- The RC16 learning-profile test reports **13/13** passing checks within the full suite.
+- Real Android/mobile acceptance, visual review on the target devices, and production rollout remain pending.
 - This is not a production release and has not been merged into `main`.
 
 ## Current execution note
