@@ -818,7 +818,7 @@ da6e8593441845cf8670f52dafa57fefb261d6ad39faa403cb6b01a959a98747  ./tests/storag
 cef16cdf1866b6697b1ea55effcf0de3726658a1d7b899a38c6760085556fcab  ./tests/storage-governor-sw-check.js
 c643bcc64cc29b4e7891a1ec9067a91fb3208b74e1cbb97170eac4bae085c878  ./tests/student-finance-stage1-check.js
 b4cd8cc69fb4bee52ac0920c1ad6694120bf0fa6124311d13f6440f611a3d8e9  ./tests/student-finance-stage2-check.js
-ec65855c062dd141848916149ba6e2da5eaed4b67518fdeedc59b3e029d49703  ./tests/student-learning-observations-check.js
+0de83fea51dd90f7b69cdbe6520e90c58a7767553f32bb680e73236fe2445b62  ./tests/student-learning-observations-check.js
 a585b0a02eda0b566447fb46bc6c7e4f66c0fd71d5329d90622f565e67640fd4  ./tests/student-learning-profile-check.js
 73451cc78d7570d81e60783a4fd8e33daeccbcfefb65bb7deedcd4fb8dee8b8d  ./tests/student-progress-check.js
 3bc1b214c76e0fa5d29235007052a5cb75c328b74e3927dc8317a7b869cc8452  ./tests/supervision-roster-permissions-stage2-check.js

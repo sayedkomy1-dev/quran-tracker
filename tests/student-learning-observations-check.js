@@ -42,12 +42,12 @@ check('merges append-only observations from both snapshots and keeps the newest 
   ]}];
   const remote=[{id:'st-1',updatedAt:'2026-11-22T10:00:00.000Z',learningObservations:[
     {id:'obs-b',updatedAt:'2026-11-22T09:00:00.000Z',category:'recall'},
-    {id:'obs-same',updatedAt:'2026-11-24T09:00:00.000Z',archivedAt:'2026-11-24T09:00:00.000Z'}
+    {id:'obs-same',updatedAt:'2026-11-23T11:00:00.000Z',archivedAt:'2026-11-23T11:00:00.000Z'}
   ]}];
   const merged=sync.mergeById(local,remote,'students');
   assert.equal(merged.length,1);
   assert.deepEqual(merged[0].learningObservations.map(x=>x.id).sort(),['obs-a','obs-b','obs-same']);
-  assert.equal(merged[0].learningObservations.find(x=>x.id==='obs-same').archivedAt,'2026-11-24T09:00:00.000Z');
+  assert.equal(merged[0].learningObservations.find(x=>x.id==='obs-same').archivedAt,'2026-11-23T11:00:00.000Z');
 });
 check('keeps observations for different students isolated',()=>{
   const merged=sync.mergeById(
