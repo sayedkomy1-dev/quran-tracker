@@ -84,5 +84,24 @@ A work package is not complete until:
 - No fake or inferred data is presented as a real event.
 - The change is reviewed on the working branch before merge.
 
+## Implementation progress — first work package
+
+### A1 — Evidence-based student learning profile
+- Added `js/features/student-learning-profile.js` and `student-learning-profile.css`.
+- Integrated the profile into the existing student progress card; no parallel student page or second analytics store.
+- Uses only teacher-entered numeric assessments, attendance records, and the existing `ImamErrorFollowup` queue.
+- Shows strengths only after at least 3 numeric samples across at least 2 sessions; potential support needs require at least 2 samples across at least 2 sessions.
+- Attendance percentage is withheld until at least 4 attendance/absence records exist.
+- Future-dated sessions and other students' records are excluded.
+- Open errors remain tied to the existing historical follow-up engine; the UI states that this is historical data.
+- No student record writes, SQL changes, storage changes, AI diagnosis, fixed learning-style labels, or automatic grading.
+- Added `tests/student-learning-profile-check.js`, wired it into `npm test`, and extended the offline asset integrity test.
+- Added the CSS/JS to the current HTML and both service-worker protected/offline shell lists; advanced the active cache suffix so the candidate cannot silently reuse the prior shell.
+
+### Verification state
+- Isolated V8 runtime smoke checks passed for evidence thresholds, student/future-session isolation, attendance, existing error-engine integration, HTML escaping, script/style wiring, service-worker cache wiring, and test-runner wiring.
+- The repository's full Node `npm test`, SHA256 inventory check, linked-payload budget check, GitHub Actions result, and real Android/mobile acceptance are still pending.
+- This is not a production release and has not been merged into `main`.
+
 ## Current execution note
-This file establishes the implementation contract only. It does not claim that the feature work, runtime tests, Supabase configuration, or Android acceptance has been completed.
+RC16 implementation is underway on the isolated feature branch. The first read-only student learning profile is integrated, but no feature package is considered release-complete until the repository CI checks and real-device acceptance gates pass.
