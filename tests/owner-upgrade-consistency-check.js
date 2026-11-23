@@ -72,7 +72,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  }
  await installation;
  const currentName=vm.runInContext('ACTIVE_CACHE_NAME',ctx);
- assert(currentName.includes('-beta28-stage1')&&currentName.includes('-rc14-tahfeez-continuation')&&currentName.endsWith('-rc16-learning-profile1'),'must preserve the RC14 namespace and Beta28 stage marker while advancing the RC16 cache');
+ assert(currentName.includes('-beta28-stage1')&&currentName.includes('-rc14-tahfeez-continuation')&&currentName.includes('-rc16-learning-profile1')&&currentName.endsWith('-rc16-learning-observations1'),'must preserve the RC14 namespace and Beta28 stage marker while advancing the RC16 cache');
  const newCache=await cachesMock.open(currentName);
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');

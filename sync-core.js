@@ -114,12 +114,27 @@
     }
     return result;
   }
+  function mergeLearningObservations(a,b){
+    const merged=new Map();
+    for(const item of [...(Array.isArray(b)?b:[]),...(Array.isArray(a)?a:[])]){
+      if(!item?.id)continue;
+      const key=String(item.id);
+      merged.set(key,chooseRecord(merged.get(key),item));
+    }
+    return [...merged.values()].sort((x,y)=>
+      (safeTimestamp(itemTimestamp(y))||0)-(safeTimestamp(itemTimestamp(x))||0)||
+      String(x.id).localeCompare(String(y.id)));
+  }
   function mergeStudent(a,b){
     const chosen=chooseRecord(a,b);
     if(!a||!b)return chosen;
-    if(!a.studentFinance&&!b.studentFinance)return chosen;
-    const finance=mergeFinance(a.studentFinance,b.studentFinance,chosen.studentFinance);
-    return {...chosen,studentFinance:finance};
+    const hasFinance=!!(a.studentFinance||b.studentFinance);
+    const hasObservations=Array.isArray(a.learningObservations)||Array.isArray(b.learningObservations);
+    if(!hasFinance&&!hasObservations)return chosen;
+    const merged={...chosen};
+    if(hasFinance)merged.studentFinance=mergeFinance(a.studentFinance,b.studentFinance,chosen.studentFinance);
+    if(hasObservations)merged.learningObservations=mergeLearningObservations(a.learningObservations,b.learningObservations);
+    return merged;
   }
   function financeReview(students){
     const results=[];
@@ -165,5 +180,5 @@
   function filterDeletedChildren(items,deletedStudents){
     return (items||[]).filter(x=>!x?.studentId||!deletedStudents.has(x.studentId));
   }
-  global.WLQSyncCore={KINDS,isoTime,itemTimestamp,safeTimestamp,clockSkewReview,normalizeTombstones,tombstoneTimestamp,mergeTombstones,markTombstone,mergeById,mergeFinance,financeReview,deletedStudentIds,filterDeletedChildren};
+  global.WLQSyncCore={KINDS,isoTime,itemTimestamp,safeTimestamp,clockSkewReview,normalizeTombstones,tombstoneTimestamp,mergeTombstones,markTombstone,mergeById,mergeFinance,mergeLearningObservations,financeReview,deletedStudentIds,filterDeletedChildren};
 })(globalThis);

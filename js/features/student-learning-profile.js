@@ -7,8 +7,14 @@
   if(root){root.ImamApp=root.ImamApp||{};root.ImamApp.StudentLearningProfile=api;}
 })(typeof globalThis==='object'?globalThis:null,function(){
   const SECTION_LABELS={new:'الحفظ الجديد',rec:'المراجعة القريبة',far:'المراجعة البعيدة',review:'مراجعة السور والأجزاء'};
+  const OBSERVATION_CATEGORIES=Object.freeze({
+    repetition:'الاستجابة للتكرار',chunking:'التقسيم والتدرج',recall:'استدعاء المحفوظ',
+    selfCorrection:'التصحيح الذاتي',attention:'الانتباه أثناء التسميع',
+    pronunciation:'ضبط التلاوة والمخارج',linking:'الربط بين الآيات',
+    independence:'استقلالية الأداء',revision:'المراجعة والتثبيت',other:'ملاحظة عامة'
+  });
   const clean=(value,max=140)=>String(value??'').replace(/[\u0000-\u001F\u007F]/g,' ').trim().slice(0,max);
-  const esc=value=>clean(value,220).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const esc=(value,max=500)=>clean(value,max).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   function validDay(value){
     const day=String(value??'').slice(0,10);
     if(!/^\d{4}-\d{2}-\d{2}$/.test(day))return '';
@@ -181,5 +187,51 @@
       '<p class="slp-foot">تعتمد درجات الأقسام والحضور على الفترة المختارة، بينما تُقرأ الأخطاء المفتوحة من سجل المتابعة التاريخي المتاح. المؤشرات على تقييم المحفظ؛ لا تصنّف الطالب إلى نمط تعلم ثابت ولا تصدر تشخيصًا أو درجة تلقائية ولا تغيّر الخطة أو السجلات.</p>'+
     '</section>';
   }
-  return Object.freeze({build,render,validDay});
+  function createObservation(input={}){
+    const category=String(input.category||'');
+    if(!Object.prototype.hasOwnProperty.call(OBSERVATION_CATEGORIES,category))return {ok:false,error:'اختر نوع الملاحظة من القائمة.'};
+    const date=validDay(input.date),today=validDay(input.today)||localDay();
+    if(!date||date>today)return {ok:false,error:'تاريخ الملاحظة غير صحيح أو يقع في المستقبل.'};
+    const evidence=clean(input.evidence,400),nextStep=clean(input.nextStep,400),id=clean(input.id,100);
+    if(!id)return {ok:false,error:'تعذر إنشاء معرّف للملاحظة. حاول مرة أخرى.'};
+    if(evidence.length<12)return {ok:false,error:'اكتب ما لاحظته فعليًا في 12 حرفًا على الأقل.'};
+    if(nextStep.length<8)return {ok:false,error:'اكتب خطوة تعليمية واضحة وقابلة للتنفيذ.'};
+    const now=clean(input.now,40)||new Date().toISOString();
+    return {ok:true,record:{id,category,date,evidence,nextStep,createdAt:now,updatedAt:now,archivedAt:''}};
+  }
+  function renderObservations(student){
+    const raw=Array.isArray(student?.learningObservations)?student.learningObservations:[];
+    const rows=raw.filter(item=>item&&item.id&&validDay(item.date)).slice().sort((a,b)=>
+      String(b.date).localeCompare(String(a.date))||
+      String(b.updatedAt||b.createdAt||'').localeCompare(String(a.updatedAt||a.createdAt||'')));
+    const active=rows.filter(item=>!item.archivedAt),archived=rows.filter(item=>!!item.archivedAt);
+    const options=Object.entries(OBSERVATION_CATEGORIES).map(([key,label])=>
+      '<option value="'+esc(key,40)+'">'+esc(label,80)+'</option>').join('');
+    const card=(item,isArchived)=>{
+      const label=OBSERVATION_CATEGORIES[item.category]||OBSERVATION_CATEGORIES.other;
+      const id=esc(item.id,100);
+      return '<article class="slp-observation-item'+(isArchived?' is-archived':'')+'">'+
+        '<div class="slp-observation-meta"><b>'+esc(label,80)+'</b><time datetime="'+esc(item.date,10)+'">'+esc(item.date,10)+'</time></div>'+
+        '<p><b>ما لوحظ فعليًا</b><span>'+esc(item.evidence,420)+'</span></p>'+
+        '<p><b>خطوة التدريس القادمة</b><span>'+esc(item.nextStep,420)+'</span></p>'+
+        '<button type="button" class="slp-observation-toggle" data-slp-observation-toggle="'+id+'" data-archived="'+(isArchived?'1':'0')+'">'+(isArchived?'استعادة الملاحظة':'أرشفة الملاحظة')+'</button>'+
+      '</article>';
+    };
+    return '<section class="slp-observations" aria-label="ملاحظات تربوية خاصة بالمحفظ">'+
+      '<div class="slp-observations-head"><div><b>📝 سجل الملاحظات التربوية</b><small>سلوك تعليمي شاهدته أثناء الحصة، وليس تصنيفًا ثابتًا للطالب</small></div><span>'+active.length+' نشطة</span></div>'+
+      '<div class="slp-observation-form">'+
+        '<div class="slp-observation-fields">'+
+          '<label>نوع الملاحظة<select id="slpObservationCategory">'+options+'</select></label>'+
+          '<label>تاريخ الملاحظة<input id="slpObservationDate" type="date" value="'+localDay()+'" max="'+localDay()+'" required></label>'+
+        '</div>'+
+        '<label>ما الذي لاحظته؟<textarea id="slpObservationEvidence" rows="2" maxlength="400" placeholder="مثال: استدعى الآية بعد تكرارها مرتين دون تلميح." required></textarea></label>'+
+        '<label>ما الخطوة التعليمية القادمة؟<textarea id="slpObservationNextStep" rows="2" maxlength="400" placeholder="مثال: ابدأ بآيتين ثم زد المقطع تدريجيًا بعد التأكد من الإتقان." required></textarea></label>'+
+        '<button type="button" class="btn btn-g btn-sm" data-slp-observation-save>حفظ الملاحظة الخاصة</button>'+
+      '</div>'+
+      '<div class="slp-observation-list">'+(active.length?active.map(item=>card(item,false)).join(''):'<p class="slp-empty">لا توجد ملاحظات تربوية مسجلة لهذا الطالب حتى الآن.</p>')+'</div>'+
+      (archived.length?'<details class="slp-observation-archive"><summary>الملاحظات المؤرشفة ('+archived.length+') — يمكن استعادتها</summary><div class="slp-observation-list">'+archived.map(item=>card(item,true)).join('')+'</div></details>':'')+
+      '<p class="slp-observation-privacy">هذه الملاحظات داخلية للمحفظ فقط، ولا تظهر في بوابة الطالب أو ولي الأمر. لا تُحذف نهائيًا؛ يمكن أرشفتها أو استعادتها.</p>'+
+    '</section>';
+  }
+  return Object.freeze({build,render,validDay,createObservation,renderObservations});
 });

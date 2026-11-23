@@ -98,6 +98,15 @@ A work package is not complete until:
 - Added `tests/student-learning-profile-check.js`, wired it into `npm test`, and extended the offline asset integrity test.
 - Added the CSS/JS to the current HTML and both service-worker protected/offline shell lists; advanced the active cache suffix so the candidate cannot silently reuse the prior shell.
 
+### A2 — Structured teacher observations
+- Added a teacher-only observation ledger to the existing student progress view.
+- Observation records require a dated, teacher-authored description of what was actually observed and a concrete next teaching step.
+- Categories describe observable learning behavior; they do not assign a fixed learning style or diagnosis.
+- Observations are stored inside the existing student snapshot, merged by stable observation ID across snapshot merges, and can be archived/restored without permanent deletion.
+- Guardian/student snapshot generation remains an explicit field whitelist and does not include the private observation array.
+- No SQL migration, new table, remote API, AI-generated observation, or automatic academic score was added.
+- Added targeted validation, escaping, merge, archive, and portal-privacy tests.
+
 ### Verification state
 - Isolated V8 runtime smoke checks passed for evidence thresholds, student/future-session isolation, attendance, existing error-engine integration, HTML escaping, script/style wiring, service-worker cache wiring, and test-runner wiring.
 - GitHub Actions run **#176** passed the complete Node `npm test` suite, `node scripts/release-integrity.mjs` with all **837** file hashes, and `node scripts/release-budget.mjs`.
@@ -106,4 +115,4 @@ A work package is not complete until:
 - This is not a production release and has not been merged into `main`.
 
 ## Current execution note
-RC16 implementation is underway on the isolated feature branch. The first read-only student learning profile is integrated, but no feature package is considered release-complete until the repository CI checks and real-device acceptance gates pass.
+RC16 implementation is underway on the isolated feature branch. A1 is integrated and passed CI; A2 is implemented on this branch and awaits its next full CI run and real-device acceptance. No feature package is considered production-ready before the acceptance gates pass.
