@@ -366,9 +366,16 @@
   function ensureTeacherModal(){
     if(teacherModal&&teacherModal.isConnected)return teacherModal;
     teacherModal=g.document.createElement('div');teacherModal.id='hrcTeacherModal';teacherModal.className='hrc-modal';teacherModal.hidden=true;
-    teacherModal.innerHTML='<div class="hrc-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="hrcTeacherTitle"><header><div><b id="hrcTeacherTitle">🎙️ مراجعة التسميع المنزلي</b><small id="hrcTeacherStudentName"></small></div><button type="button" data-hrc-close aria-label="إغلاق">×</button></header><p id="hrcTeacherStatus" class="hrc-status" role="status"></p><div class="hrc-teacher-layout"><div id="hrcTeacherList" class="hrc-teacher-list"></div><div id="hrcTeacherDetail" class="hrc-teacher-detail"><p class="hrc-empty">اختر تسجيلًا من القائمة لبدء المراجعة.</p></div></div></div>';
+    teacherModal.innerHTML='<div class="hrc-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="hrcTeacherTitle"><header><div><b id="hrcTeacherTitle">🎙️ مراجعة التسميع المنزلي</b><small id="hrcTeacherStudentName"></small></div><button type="button" data-hrc-close aria-label="إغلاق">×</button></header><p id="hrcTeacherStatus" class="hrc-status" role="status"></p><div class="hrc-teacher-layout"><div class="hrc-teacher-sidebar"><button type="button" class="hrc-secondary" id="hrcTeacherToggleArchive">عرض الأرشيف</button><div id="hrcTeacherList" class="hrc-teacher-list"></div></div><div id="hrcTeacherDetail" class="hrc-teacher-detail"><p class="hrc-empty">اختر تسجيلًا من القائمة لبدء المراجعة.</p></div></div></div>';
     g.document.body.append(teacherModal);
     teacherModal.querySelector('[data-hrc-close]')?.addEventListener('click',closeTeacherModal);
+    teacherModal.querySelector('#hrcTeacherToggleArchive')?.addEventListener('click',()=>{
+      if(!teacherState)return;
+      teacherState.includeArchived=!teacherState.includeArchived;teacherState.selectedId='';
+      const toggle=$('hrcTeacherToggleArchive');if(toggle)toggle.textContent=teacherState.includeArchived?'إخفاء الأرشيف':'عرض الأرشيف';
+      const detail=$('hrcTeacherDetail');if(detail)detail.innerHTML='<p class="hrc-empty">اختر تسجيلًا من القائمة.</p>';
+      loadTeacherRows();
+    });
     teacherModal.addEventListener('click',event=>{if(event.target===teacherModal)closeTeacherModal();});
     return teacherModal;
   }
@@ -393,7 +400,7 @@
       const auth=g.WeLiveQuranAuth?.getAccess?.(),token=await teacherAuthToken();
       if(!auth?.user_id||!token)throw new Error('سجّل دخول المحفظ بالإنترنت ثم أعد المحاولة.');
       const studentRef=await sha256Hex('guardian-portal-v1|'+auth.user_id+'|'+String(studentId));
-      teacherState={studentId:String(studentId),studentRef,token,rows:[],selectedId:'',annotations:[],record:null};
+      teacherState={studentId:String(studentId),studentRef,token,rows:[],selectedId:'',annotations:[],record:null,includeArchived:false};
       setText('hrcTeacherStudentName',(g.ImamApp?.State?.students||[]).find(x=>String(x.id)===String(studentId))?.name||'ملف الطالب');
       await loadTeacherRows();
     }catch(error){teacherStatus(error.message||'تعذر فتح التسجيلات.','error');}
@@ -402,7 +409,7 @@
     if(!teacherState)return;
     teacherStatus('جارٍ تحميل تسجيلات الطالب…','info');
     try{
-      const data=await callTeacherApi('teacher/list',{student_ref:teacherState.studentRef},teacherState.token);
+      const data=await callTeacherApi('teacher/list',{student_ref:teacherState.studentRef,include_archived:!!teacherState.includeArchived},teacherState.token);
       teacherState.rows=Array.isArray(data.submissions)?data.submissions:[];
       renderTeacherRows();
       teacherStatus(teacherState.rows.length?'تم تحميل التسجيلات.':'لا توجد تسجيلات منزلية لهذا الطالب حتى الآن.','success');
@@ -466,7 +473,11 @@
     visibility.append(checkbox,element('span','','اعتماد التصحيح وإظهاره للطالب وولي الأمر'));host.append(visibility);
     const actions=element('div','hrc-actions');
     const save=element('button','hrc-primary','حفظ المراجعة');save.type='button';save.id='hrcSaveFeedback';save.addEventListener('click',saveTeacherFeedback);actions.append(save);
-    const archive=element('button','hrc-secondary','أرشفة التسجيل');archive.type='button';archive.addEventListener('click',()=>archiveTeacherSubmission(row.id));actions.append(archive);
+    if(row.status==='archived'){
+      const restore=element('button','hrc-primary','استعادة من الأرشيف');restore.type='button';restore.addEventListener('click',()=>restoreTeacherSubmission(row.id));actions.append(restore);
+    }else{
+      const archive=element('button','hrc-secondary','أرشفة التسجيل');archive.type='button';archive.addEventListener('click',()=>archiveTeacherSubmission(row.id));actions.append(archive);
+    }
     host.append(actions);
     if(row.feedback?.audio_url){const old=element('section','hrc-existing-voice');old.append(element('b','','آخر تعليق صوتي محفوظ'));const oldAudio=element('audio','');oldAudio.controls=true;oldAudio.src=row.feedback.audio_url;old.append(oldAudio);host.append(old);}
   }
@@ -529,8 +540,17 @@
     }catch(error){teacherStatus(error.message||'تعذر حفظ المراجعة.','error');}
     finally{if(saveButton)saveButton.disabled=false;}
   }
+  async function restoreTeacherSubmission(id){
+    if(!teacherState)return;
+    try{
+      await callTeacherApi('teacher/restore',{submission_id:id},teacherState.token);
+      teacherState.selectedId='';teacherStatus('تمت استعادة التسجيل من الأرشيف دون تغيير الملف.','success');
+      await loadTeacherRows();
+      const detail=$('hrcTeacherDetail');if(detail)detail.innerHTML='<p class="hrc-empty">تمت الاستعادة. اختر التسجيل من القائمة.</p>';
+    }catch(error){teacherStatus(error.message||'تعذرت استعادة التسجيل.','error');}
+  }
   async function archiveTeacherSubmission(id){
-    if(!teacherState||!g.confirm('أرشفة هذا التسجيل؟ سيظل الملف محفوظًا ولن يُحذف، لكنه سيختفي من قائمة التسجيلات الحالية.'))return;
+    if(!teacherState||!g.confirm('أرشفة هذا التسجيل؟ سيظل الملف محفوظًا ويمكن استعادته من الأرشيف، ولن يُحذف.'))return;
     try{
       await callTeacherApi('teacher/archive',{submission_id:id},teacherState.token);
       teacherState.selectedId='';teacherStatus('تمت أرشفة التسجيل دون حذف الملف.','success');await loadTeacherRows();
