@@ -756,7 +756,7 @@ e625e00befe995cc36e75a57ed01df5ddb98cf5215d4336b07ca1cf4fb891eb6  ./tests/surah-
 366ce47250d5c79d2e4a856e812a2a24ec5c2e704730d8e6963fe7411cfbd2a8  ./tests/teacher-rating-supervision-stage1-check.js
 65ee226165d12a33cbde6f56b7ed5ac0b9a88e7d908bdf5690fb735d02825cee  ./tests/v11-premium-ui-check.js
 0bc95b04411ceef5c04877f859046d7d5168f6540f5353c236f1d9b92c1eb4d0  ./tests/v11-premium-ui-stage2-check.js
-afc3b0b09999b4f5b83e086a14536ead69270e29f1e7268047988231c1cd059c  ./tests/version-debt-beta11-check.js
+2e896096a1cc61fe3fabe3ee26e2bb7c31353d766af8e4683859192f393c2acd  ./tests/version-debt-beta11-check.js
 6bf2ddc51edfa02e54e1baa1bd078f37de3c9cbe7e83c9f87b32c583f84ea6b7  ./ux-guidance.css
 06e305a1222d8eba6ae1d32f165377b04aca412a84866d66b1455e0cb4c19f50  ./v10.js
 ee12fc2fedaba0043830f12f6f33e910166e06e87cb8cb45a28343fad37cac3f  ./v8.js
