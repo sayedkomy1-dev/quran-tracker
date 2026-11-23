@@ -14,7 +14,7 @@ const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
 // New reader-only shell must not overwrite an already-installed offline release.
-const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation';
+const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation' + '-rc16-learning-profile1';
 // Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
@@ -107,6 +107,7 @@ const CRITICAL_FRESH_SHELL = [
   './css/platform/academy-portals.css?v=11.12.1-beta.27-design-bridge1',
   './academy-portals.html',
   './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5-hotfix1',
+  './student-learning-profile.css?v=beta28-rc16-learning-profile1',
   './js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5',
   './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1',
   './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
@@ -118,6 +119,7 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/quran-coverage-progress.js?v=11.12.1-beta.27-coverage-review3',
   './js/features/imam-makeup-agenda.js?v=11.12.1-beta.27-combined-review4',
   './js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3',
+  './js/features/student-learning-profile.js?v=beta28-rc16-learning-profile1',
   './index.html',
   './css/platform/tokens.css?v=11.12.1-beta.27',
   './css/platform/legacy-features.css?v=11.12.1-beta.27',
@@ -180,6 +182,7 @@ const APP_SHELL = [
   './css/platform/academy-portals.css?v=11.12.1-beta.27-design-bridge1',
   './academy-portals.html',
   './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5-hotfix1',
+  './student-learning-profile.css?v=beta28-rc16-learning-profile1',
   './js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5',
   './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1',
   './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
@@ -262,6 +265,7 @@ const APP_SHELL = [
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './js/features/guardian-communication.js?v=11.0.0',
   './js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3',
+  './js/features/student-learning-profile.js?v=beta28-rc16-learning-profile1',
   './js/features/circle-analytics.js?v=11.0.0',
   './js/features/smart-revision.js?v=11.9.2',
   './js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3',
