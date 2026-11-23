@@ -72,7 +72,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  }
  await installation;
  const currentName=vm.runInContext('ACTIVE_CACHE_NAME',ctx);
- assert(currentName.includes('-beta28-stage1')&&currentName.endsWith('-rc14-tahfeez-continuation'),'must test the RC14 cache namespace while retaining the Beta28 stage marker');
+ assert(currentName.includes('-beta28-stage1')&&currentName.includes('-rc14-tahfeez-continuation')&&currentName.endsWith('-rc16-learning-profile1'),'must preserve the RC14 namespace and Beta28 stage marker while advancing the RC16 cache');
  const newCache=await cachesMock.open(currentName);
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
@@ -84,5 +84,5 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  await testWorker({staleIndex:true});
  await testWorker({offlineRuntime:true});
  await testWorker({});
- console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC14 root/index and retained RC13 core scripts');
+ console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC16 root/index cache, retained RC14 namespace, and retained RC13 core scripts');
 })().catch(e=>{console.error(e);process.exitCode=1;});
