@@ -401,6 +401,7 @@
       if(!auth?.user_id||!token)throw new Error('سجّل دخول المحفظ بالإنترنت ثم أعد المحاولة.');
       const studentRef=await sha256Hex('guardian-portal-v1|'+auth.user_id+'|'+String(studentId));
       teacherState={studentId:String(studentId),studentRef,token,rows:[],selectedId:'',annotations:[],record:null,includeArchived:false};
+      setText('hrcTeacherToggleArchive','عرض الأرشيف');
       setText('hrcTeacherStudentName',(g.ImamApp?.State?.students||[]).find(x=>String(x.id)===String(studentId))?.name||'ملف الطالب');
       await loadTeacherRows();
     }catch(error){teacherStatus(error.message||'تعذر فتح التسجيلات.','error');}
@@ -500,11 +501,11 @@
     try{
       try{teacherStream=await g.navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});}
       catch(_){teacherStream=await g.navigator.mediaDevices.getUserMedia({audio:true});}
-      const mime=getRecorderMime();teacherFeedbackFile=null;const fileInput=$('hrcTeacherFeedbackFile');if(fileInput)fileInput.value='';
+      const mime=getRecorderMime();teacherFeedbackBlob=null;teacherFeedbackFile=null;const fileInput=$('hrcTeacherFeedbackFile');if(fileInput)fileInput.value='';
       teacherRecorder=new g.MediaRecorder(teacherStream,mime?{mimeType:mime}:undefined);teacherChunks=[];
       const saveButton=$('hrcSaveFeedback');if(saveButton)saveButton.disabled=true;
       teacherRecorder.ondataavailable=event=>{if(event.data?.size)teacherChunks.push(event.data);};
-      teacherRecorder.onerror=()=>{teacherStatus('تعذر تسجيل التعليق الصوتي.','error');stopTeacherTracks();};
+      teacherRecorder.onerror=()=>{teacherStatus('تعذر تسجيل التعليق الصوتي.','error');const saveButton=$('hrcSaveFeedback');if(saveButton)saveButton.disabled=false;stopTeacherTracks();};
       teacherRecorder.onstop=()=>{
         const type=teacherRecorder?.mimeType||teacherChunks[0]?.type||'';
         teacherFeedbackBlob=new Blob(teacherChunks,{type});teacherChunks=[];teacherRecorder=null;stopTeacherTracks();
