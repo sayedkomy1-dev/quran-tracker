@@ -68,6 +68,6 @@ check('returns no profile without a valid student identity',()=>assert.equal(pro
 check('does not claim a fixed learning style, diagnosis, or automatic grade',()=>{
   const source=require('node:fs').readFileSync(require('node:path').join(__dirname,'../js/features/student-learning-profile.js'),'utf8');
   assert.match(source,/لا تصنّف الطالب إلى نمط تعلم ثابت/);
-  assert(!/localStorage|indexedDB|fetch\s*\(|XMLHttpRequest|assessmentScores\s*=/i.test(source));
+  assert(!/localStorage|indexedDB|fetch\s*\(|XMLHttpRequest|assessmentScores\s*=(?!=)/i.test(source));
 });
 console.log('OK RC16 student learning profile: '+checks+'/'+checks);
