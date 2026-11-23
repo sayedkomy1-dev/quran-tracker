@@ -419,7 +419,7 @@ async function cacheVerifiedCurrentShell(cache,url){
   const body=await response.clone().text();
   if(url==='./index.html' &&
      (!body.includes(`name="application-version" content="${APP_VERSION}"`)
-      ||!body.includes('app.js?v=beta28-rc13')
+      ||!body.includes('app.js?v=beta28-rc16-learning-observations1')
       ||!body.includes(`runtime.js?v=${APP_VERSION}`)))
     throw new Error('[SW] index.html is an older release');
   if(['./index.html','./guardian-portal.html','./guest-practice.html','./maqraa.html'].includes(url) && !body.includes('offline-audio-library.js?v=beta28-rc13'))
