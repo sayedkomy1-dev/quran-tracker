@@ -31,6 +31,7 @@ check('derives support needs from repeated low scores, not a single weak result'
 check('counts attendance from attended and absent records only',()=>{
   const result=make();assert.equal(result.attendance,60);
 });
+check('does not present an attendance percentage from fewer than four records',()=>{const result=profile.build({student,sessions:[sessions[0]],progress:{rows:[sessions[0]]},referenceDay:'2026-11-28'});assert.equal(result.attendance,null);});
 check('uses the existing error engine and reports recurrence from its evidence',()=>{
   const result=make();assert.equal(result.openErrors.count,1);assert.equal(result.openErrors.recurring,1);
 });
