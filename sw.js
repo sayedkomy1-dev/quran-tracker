@@ -157,7 +157,7 @@ const CRITICAL_FRESH_SHELL = [
   './teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker-hotfix2',
   './js/features/imam-board-tafsir.js?v=11.12.1-beta.27',
   './js/features/imam-board-corpus.js?v=11.12.1-beta.27',
-  './js/features/imam-smart-board.js?v=11.12.1-beta.27-quran-picker1',
+  './js/features/imam-smart-board.js?v=beta28-rc16-board-recovery1',
   './js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker-hotfix2',
   './imam-board-display.html',
   './imam-board-display.js?v=11.12.1-beta.27'
@@ -213,7 +213,7 @@ const APP_SHELL = [
   './teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker-hotfix2',
   './js/features/imam-board-tafsir.js?v=11.12.1-beta.27',
   './js/features/imam-board-corpus.js?v=11.12.1-beta.27',
-  './js/features/imam-smart-board.js?v=11.12.1-beta.27-quran-picker1',
+  './js/features/imam-smart-board.js?v=beta28-rc16-board-recovery1',
   './js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker-hotfix2',
   './imam-board-display.html',
   './imam-board-display.js?v=11.12.1-beta.27',

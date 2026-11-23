@@ -136,3 +136,13 @@ A work package is not complete until:
 
 ## Current execution note
 A1 and A2 are complete and CI-verified. B is implemented on the isolated branch and passed full GitHub Actions run #210, including 846 release hashes and payload budget. The remaining B gates are the documented staging Supabase migration/function deployment and real Android/iOS acceptance. No feature package is considered production-ready before those gates pass.
+
+### C1 — Non-destructive Smart Board emergency recovery
+- Added a dedicated emergency recovery action to the existing Smart Board.
+- The action first requires a successful save of dirty work; if saving fails, recovery is aborted rather than discarding edits.
+- Stops the lesson timer, audio/TTS, transient effects, and timeline timer; closes the native editor; returns the board to safe reading mode and pauses the student display.
+- Preserves the selected student, Quran range, drawings, notes, private teacher note, public explanation, lesson preparation, and saved session.
+- Does not delete or reset board content and does not create or approve an official lesson.
+- Cache-busted the board asset in the app shell and service worker.
+- Added regression assertions for save-before-recovery, emergency command wiring, safe pause, and preservation messaging.
+- This is a focused C1 safety improvement; broader board templates and group preparation remain to be reviewed.

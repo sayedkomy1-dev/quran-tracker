@@ -163,7 +163,7 @@ cfe25a13f38ecaddb51e49bcd995f73e5691b8666b1f25c95c48065a75d94d1e  ./QA-REPORT-v9
 54c678845974e33a9cf37b689579a077f397d6ae1cbbf486f7badaa14f9d5f13  ./QA-RUNTIME-v10.1.json
 52fd2a802b684bcb4be64d9633ad60ee95227914985ea976adaf1999c10693ee  ./QA-v11.4-Stage1-Mobile-Hotfix.md
 e1d31705b692604e5fbbe367cb80bee73cbedde234b8fa50902cb31f4d77b597  ./QURAN-ENGINE-10.3.md
-44d77634ac4ebc03227f8c050896f7ffe2ff4cf20e7624a91ba98ac78e6ca5d0  ./RC16-IMPLEMENTATION-PLAN.md
+09f4828e20db81134e9803a2a878180428497d82c0d2ff04beb834d46d634fe2  ./RC16-IMPLEMENTATION-PLAN.md
 0092006e7ba2c84266e67f2429b8d109a34f798d3d72c4c7e7f30f75f5ba4d69  ./README.md
 cf8657259dacc0e2743bc01a738d620c7461489b226198f83b9de0ef717d9aa0  ./RELEASE-10.0.0.md
 afd19db26fd6877d77d8455895c4f223f1b7940f2089fc756bb9deb721fdaabc  ./RELEASE-10.1.0.md
@@ -473,7 +473,7 @@ a5621b720d653801b0475f1b58786b1f9ab7ccdd0e46a8f0ee845e2dc253fcdf  ./imam-board-d
 03345b61e6cbe1fe97225df1518d1f515110c970558a477468195db71f4340fb  ./imam-makeup-agenda.css
 03eb52ed64c2f85bf9420c6d6a21f6520e03dbc7fcf1943a9551ab379fd94dd9  ./imam-smart-board.css
 4846b74dfd4aebb06a1844a43fa591c0e388642c5caf2a1f829512a46e4328cc  ./imam-teaching-insights.css
-b0e09ce7f156ff0b3af44eb91c9264390546fb5bbc253149302191df83a7894f  ./index.html
+eb03e3abc58b166042c6e3c16f8706c3649bb7612323bc95184e973c1101d6da  ./index.html
 47ce4d055146c84c6c71ef1029f8e029112dba8ea016ce13f096a1754bea7608  ./integrated-teacher-brief.css
 69d4270bc62d31c34e16af5692329f87c48147f6c84ab77546b3512581113add  ./js/core/boot-health.js
 c75ba2bd9578a52755e58ea22687299960ff68da1ccd08760fbd1facdcaa279b  ./js/core/mobile-navigation.js
@@ -513,7 +513,7 @@ a8fc6252d882f5b2926ddc3a72e6e9f3070eab356c988c00a641f3cfe15e6aa1  ./js/features/
 199b325fc45d38d9aace9d3809d1b4294cf33b7ba5d3a8e242e28db3c1e55b56  ./js/features/imam-board-corpus.js
 6501213a72794e9de79f922abe4efaeedce3f9006001e906136ff9c3a43475d5  ./js/features/imam-board-tafsir.js
 a474db584a74668572bc4caea0299e06d82b923803cd977c04947b17cf8c98b8  ./js/features/imam-makeup-agenda.js
-ed7af90c96143e09fa09978b32097c48a3022929c5be69f11651d99f564aa3f4  ./js/features/imam-smart-board.js
+edabed3d9c2068b9f997fa393e9ccbb37572a033b8b285cd50969962972404ac  ./js/features/imam-smart-board.js
 4512dcc0c2380bd2438fc4b637ae883196f96b02818178b82fc7dd99c4baa78e  ./js/features/imam-teaching-insights.js
 51893da927d974f978077f96ea3719478860a5bc1198b3e58235e81cd7af53ac  ./js/features/integrated-teacher-brief.js
 8557b29bad11dc14c5b7c5659977c215ab75407e79f417a4a848d2a5e7508c26  ./js/features/mushaf-entry-unifier.js
@@ -682,7 +682,7 @@ c63c5a3e7a4996aa3389a270049075a253477686edf089461f112fecab17e6ad  ./student-fina
 ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
 13933d7f64916e3a45bc69156b80cf4aeaae39596809a7f5b648937a1c573044  ./supabase/config.toml
 5e167e54456e042af4242c8cf3fe709852fd8d5702f6f0865a388d3d3403e5ca  ./supabase/functions/guardian-recitation/index.ts
-c5326fffe24cc1915fa86842b27b039f061726a35a73e963eeb21a2132224f75  ./sw.js
+ea7c79e66dbf8af719d52fc9e9525f33ee7e062e38c1d0f484af3e5c297bd96c  ./sw.js
 d9af751d17bc441e6b39c24ec5a8ed5eaf24b93fac733e9e1ba036629534c319  ./sync-core.js
 c119463a48ab3e54f5d631af17484e8901f7f51029e8684f857860184efc9d07  ./teacher-error-marking.css
 45d3066a29a49f56bc29852c4b65679fd9b64bb81a0a4228a9c2ad19f0773b7a  ./teacher-quran-range-picker.css
@@ -777,7 +777,7 @@ dbd8ba9559f093f62c62d69a304d36eff71e60f100f3462288d77c56f6a02e2c  ./tests/imam-b
 5a7948a703d2a0b5c4a03a79365ded646b06d5eb6e56a05acbcbd964413a666b  ./tests/imam-board-session-group-runtime-check.js
 1d10df21031bba41587e8d3cc33f3c544db0c2bbd0c5c972523b695c592dab0f  ./tests/imam-board-tafsir-fixture.html
 d52511b7f645d9e51f3f42220d565e1b6dc31dbe478021e01f2e70823f5f871f  ./tests/imam-makeup-agenda-check.js
-f6d02741ae6bfac62421f21efd1eccf3855bae6bc79d414d2ad34cd0f0055138  ./tests/imam-smart-board-check.js
+37a4b0082f5846a5788a309e05a8f60dca97138976a5ea342529d3baa282ca13  ./tests/imam-smart-board-check.js
 40f8733887e79b66642305997015640b4c41c46ede3a38b39731dab26181e0d6  ./tests/imam-teaching-insights-check.js
 d67b7b95e6c1d5d13d25374b903dcb42d5308c65d1aa936ff5f77302f4d9b6ab  ./tests/imam-teaching-visibility-hotfix-check.js
 08f9b5df7f556c69c81b2b055a6fcf1c31a3333c1fc82b4d6aae620f921770a7  ./tests/integrated-teacher-brief-check.js
