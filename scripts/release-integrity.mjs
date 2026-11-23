@@ -29,7 +29,7 @@ if(process.argv.includes('--write')){
 }else{
  const current=await readFile(path.join(root,'SHA256SUMS.txt'),'utf8');
  if(current!==expected){
-  const actual=new Map(current.trimEnd().split('\\n').map(line=>{const m=line.match(/^([0-9a-f]{64})  \.\/(.+)$/);return m?[m[2],m[1]]:['<invalid-line:'+line.slice(0,80)+'>',''];}));
+  const actual=new Map(current.trimEnd().split('\n').map(line=>{const m=line.match(/^([0-9a-f]{64})  \.\/(.+)$/);return m?[m[2],m[1]]:['<invalid-line:'+line.slice(0,80)+'>',''];}));
   const expectedMap=new Map(lines.map(line=>{const split=line.indexOf('  ./');return[line.slice(split+4),line.slice(0,split)];}));
   const pathsToCheck=new Set([...actual.keys(),...expectedMap.keys()]);
   const differences=[...pathsToCheck].filter(p=>actual.get(p)!==expectedMap.get(p)).sort();
