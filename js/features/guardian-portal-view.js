@@ -269,6 +269,7 @@
   function printPage(){window.print();}
   g.portalShare=share;g.portalPrint=printPage;g.portalRefresh=refresh;g.portalLogout=logout;g.portalSelectStudent=selectSessionStudent;g.portalToast=toast;
 
+  g.addEventListener('online',()=>{if(sessionToken&&!sessionRows.length)loadSession(sessionToken,{manual:true});});
   (async()=>{
     try{
       const sToken=tokenFromHash('s');

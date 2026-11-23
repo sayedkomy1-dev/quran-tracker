@@ -7,7 +7,7 @@ const BUCKET = "imam-home-recitations";
 const MAX_FILE_BYTES = 20 * 1024 * 1024;
 const MAX_DURATION_MS = 20 * 60 * 1000;
 const MAX_DAILY_SUBMISSIONS = 12;
-const SIGNED_URL_SECONDS = 180;
+const SIGNED_URL_SECONDS = 1800;
 const ALLOWED_ORIGINS = new Set([
   "https://welivequran.online",
   "https://www.welivequran.online",
@@ -261,13 +261,14 @@ async function studentUpload(req: Request) {
   if (existing) {
     if (existing.owner_user_id !== access.ownerId || existing.student_ref !== studentRef ||
         existing.guardian_account_id !== access.accountId || existing.surah_no !== surahNo ||
-        existing.ayah_from !== ayahFrom || existing.ayah_to !== ayahTo) {
+        existing.ayah_from !== ayahFrom || existing.ayah_to !== ayahTo || existing.mime_type !== mime) {
       throw new Error("STUDENT_NOT_AUTHORIZED");
     }
     if (existing.status !== "uploading" && existing.status !== "submitted") throw new Error("SUBMISSION_NOT_FOUND");
     if (existing.status === "submitted") return { ok: true, already_uploaded: true, submission_id: submissionId };
-    await admin.from("student_recitation_submissions").update({ session_token_hash: sessionHash })
-      .eq("id", submissionId).eq("owner_user_id", access.ownerId);
+    const { error: sessionUpdateError } = await admin.from("student_recitation_submissions")
+      .update({ session_token_hash: sessionHash }).eq("id", submissionId).eq("owner_user_id", access.ownerId);
+    if (sessionUpdateError) throw sessionUpdateError;
   } else {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
     const { count, error: countError } = await admin.from("student_recitation_submissions")

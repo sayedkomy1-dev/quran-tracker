@@ -42,7 +42,7 @@ If staging uses another origin, add that exact origin to ALLOWED_ORIGINS before 
 - Offline pending files stay in IndexedDB until the server confirms upload.
 - After confirmation, the local temporary audio blob is removed; the server copy remains.
 - Teacher archive is reversible metadata only. No hard-delete endpoint is provided.
-- Signed playback URLs expire after three minutes.
+- Signed playback URLs expire after 30 minutes.
 
 ## Required staging acceptance
 - Test Android Chrome recording and iOS Safari file/recording support where available.

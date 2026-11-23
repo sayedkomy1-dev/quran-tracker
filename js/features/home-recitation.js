@@ -8,7 +8,7 @@
   const DB_NAME='imam-home-recitation-queue-v1';
   const STORE_NAME='pending';
   const $=id=>g.document?.getElementById(id)||null;
-  let portalContext=null,dbPromise=null,portalRecorder=null,portalStream=null,portalChunks=[],portalStartedAt=0,portalTimer=null;
+  let portalContext=null,dbPromise=null,portalRecorder=null,portalStream=null,portalChunks=[],portalStartedAt=0,portalTimer=null,portalRecordingMeta=null;
   let portalUploading=false,portalDraftUrl='',teacherModal=null,teacherState=null,teacherRecorder=null,teacherStream=null,teacherChunks=[],teacherTimer=null,teacherFeedbackBlob=null,teacherFeedbackFile=null;
 
   function setText(id,value){const el=$(id);if(el)el.textContent=String(value??'');}
@@ -82,12 +82,16 @@
   async function pendingFor(studentRef){
     return (await allPending()).filter(row=>row.studentRef===studentRef).sort((a,b)=>String(a.createdAt).localeCompare(String(b.createdAt)));
   }
-  async function queueBlob(blob,durationMs,fileName){
+  function capturePortalMeta(){
     if(!portalContext)throw new Error('سجّل الدخول أولًا لربط التسجيل بملف الطالب.');
+    return{sessionToken:portalContext.sessionToken,studentRef:portalContext.studentRef,studentName:portalContext.studentName,range:currentRange(),note:Core.cleanText($('hrcStudentNote')?.value||'',500)};
+  }
+  async function queueBlob(blob,durationMs,fileName,meta){
+    const ctx=meta||capturePortalMeta();
+    if(!ctx?.studentRef||!ctx?.range)throw new Error('تعذر ربط التسجيل بملف الطالب.');
     if(!blob||!Core.fileAllowed(blob))throw new Error('الملف الصوتي غير مدعوم أو حجمه أكبر من 20 ميجابايت.');
     if(!Core.validDuration(Math.round(durationMs||0)))throw new Error('مدة التسجيل تجاوزت 20 دقيقة.');
-    const range=currentRange(),note=Core.cleanText($('hrcStudentNote')?.value||'',500);
-    const rows=await pendingFor(portalContext.studentRef);
+    const range=ctx.range,rows=await pendingFor(ctx.studentRef);
     const totalBytes=rows.reduce((sum,row)=>sum+(Number(row.fileSize)||0),0);
     if(!Core.canQueue(rows.length,totalBytes,blob.size))throw new Error('مساحة التسجيلات المعلقة ممتلئة. أرسل التسجيلات الموجودة أولًا أو احذف تسجيلًا غير مرسل.');
     try{
@@ -98,19 +102,23 @@
     }catch(error){if(String(error?.message||'').includes('غير كافية'))throw error;}
     const item={
       id:g.crypto?.randomUUID?.()||('hrc-'+Date.now()+'-'+Math.random().toString(36).slice(2,9)),
-      studentRef:portalContext.studentRef,studentName:selectedStudentName(),
+      studentRef:ctx.studentRef,studentName:ctx.studentName,
       surahNo:range.surahNo,surahName:range.surahName,ayahFrom:range.from,ayahTo:range.to,
-      studentNote:note,durationMs:Math.round(durationMs||0),mimeType:Core.normalizeMime(blob.type),
+      studentNote:ctx.note||'',durationMs:Math.round(durationMs||0),mimeType:Core.normalizeMime(blob.type),
       fileSize:blob.size,fileName:String(fileName||'recitation'),blob,createdAt:new Date().toISOString()
     };
     await savePending(item);
-    renderPending();
-    if(portalDraftUrl){try{g.URL.revokeObjectURL(portalDraftUrl);}catch(_){}portalDraftUrl='';}
-    const preview=$('hrcPortalPreview');
-    if(preview){preview.replaceChildren();const audio=g.document.createElement('audio');audio.controls=true;audio.preload='metadata';portalDraftUrl=g.URL.createObjectURL(blob);audio.src=portalDraftUrl;preview.append(audio);}
-    portalStatus('تم حفظ التسجيل مؤقتًا على هذا الجهاز. جارٍ إرساله للمحفظ…','success');
-    if(g.navigator?.onLine!==false)await syncPending();
-    else portalStatus('تم حفظ التسجيل دون إنترنت. سيُرسل تلقائيًا عند عودة الاتصال.','warning');
+    if(samePortalContext(ctx)){
+      renderPending();
+      if(portalDraftUrl){try{g.URL.revokeObjectURL(portalDraftUrl);}catch(_){}portalDraftUrl='';}
+      const preview=$('hrcPortalPreview');
+      if(preview){preview.replaceChildren();const audio=g.document.createElement('audio');audio.controls=true;audio.preload='metadata';portalDraftUrl=g.URL.createObjectURL(blob);audio.src=portalDraftUrl;preview.append(audio);}
+      portalStatus('تم حفظ التسجيل مؤقتًا على هذا الجهاز. جارٍ إرساله للمحفظ…','success');
+      if(g.navigator?.onLine!==false)await syncPending();
+      else portalStatus('تم حفظ التسجيل دون إنترنت. سيُرسل تلقائيًا عند عودة الاتصال.','warning');
+    }else{
+      portalStatus('تم حفظ التسجيل للطالب السابق على الجهاز. اختر ملفه مرة أخرى لإرساله.','success');
+    }
   }
   function getRecorderMime(){
     const candidates=['audio/webm;codecs=opus','audio/mp4;codecs=mp4a.40.2','audio/ogg;codecs=opus','audio/webm','audio/mp4'];
@@ -126,15 +134,15 @@
       try{portalStream=await g.navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});}
       catch(_){portalStream=await g.navigator.mediaDevices.getUserMedia({audio:true});}
       const mime=getRecorderMime(),options=mime?{mimeType:mime}:undefined;
-      portalRecorder=new g.MediaRecorder(portalStream,options);portalChunks=[];portalStartedAt=Date.now();
+      portalRecordingMeta=capturePortalMeta();portalRecorder=new g.MediaRecorder(portalStream,options);portalChunks=[];portalStartedAt=Date.now();
       portalRecorder.ondataavailable=event=>{if(event.data?.size)portalChunks.push(event.data);};
       portalRecorder.onerror=()=>{portalStatus('حدث خطأ أثناء التسجيل. لم يُنشأ تسجيل بديل.','error');stopPortalTracks();};
       portalRecorder.onstop=async()=>{
         const duration=Math.max(0,Date.now()-portalStartedAt),type=portalRecorder?.mimeType||portalChunks[0]?.type||'';
-        const blob=new Blob(portalChunks,{type});portalChunks=[];portalRecorder=null;stopPortalTracks();
+        const blob=new Blob(portalChunks,{type}),meta=portalRecordingMeta;portalChunks=[];portalRecorder=null;portalRecordingMeta=null;stopPortalTracks();
         const start=$('hrcRecordStart'),stop=$('hrcRecordStop');if(start)start.disabled=false;if(stop)stop.hidden=true;
         if(!blob.size){portalStatus('لم يصل صوت من الميكروفون. لم يتم حفظ تسجيل وهمي.','error');return;}
-        try{await queueBlob(blob,duration,'microphone-recording');}
+        try{await queueBlob(blob,duration,'microphone-recording',meta);}
         catch(error){portalStatus(error.message||'تعذر حفظ التسجيل.','error');}
       };
       portalRecorder.start(1000);
@@ -142,7 +150,7 @@
       portalStatus('جارٍ التسجيل… اقرأ بوضوح ثم اضغط إيقاف وحفظ.','info');
       portalTimer=g.setTimeout(()=>stopPortalRecording(),Core.MAX_DURATION_MS);
     }catch(error){
-      stopPortalTracks();
+      portalRecordingMeta=null;stopPortalTracks();
       portalStatus(error?.name==='NotAllowedError'?'لم تسمح باستخدام الميكروفون. يمكنك اختيار ملف صوتي بدلًا من ذلك.':'تعذر تشغيل الميكروفون على هذا الجهاز.','error');
     }
   }
@@ -168,9 +176,10 @@
   async function acceptPortalFile(file){
     if(!file)return;
     if(!Core.fileAllowed(file)){portalStatus('اختر ملفًا صوتيًا مدعومًا لا يتجاوز 20 ميجابايت.','error');return;}
+    let meta;try{meta=capturePortalMeta();}catch(error){portalStatus(error.message,'warning');return;}
     const duration=await audioDuration(file);
     if(duration>Core.MAX_DURATION_MS){portalStatus('مدة الملف تتجاوز 20 دقيقة.','error');return;}
-    try{await queueBlob(file,duration,file.name);}
+    try{await queueBlob(file,duration,file.name,meta);}
     catch(error){portalStatus(error.message||'تعذر حفظ الملف الصوتي.','error');}
     const input=$('hrcAudioFile');if(input)input.value='';
   }
@@ -207,8 +216,11 @@
         try{
           await uploadPendingItem(item,ctx);
           await deletePending(item.id);
-          portalStatus('وصل التسجيل إلى المحفظ بنجاح.','success');
-          if(portalDraftUrl){try{g.URL.revokeObjectURL(portalDraftUrl);}catch(_){}portalDraftUrl='';}
+          if(samePortalContext(ctx)){
+            portalStatus('وصل التسجيل إلى المحفظ بنجاح.','success');
+            if(portalDraftUrl){try{g.URL.revokeObjectURL(portalDraftUrl);}catch(_){}portalDraftUrl='';}
+            $('hrcPortalPreview')?.replaceChildren();
+          }
         }catch(error){
           portalStatus(error.message||'تعذر رفع التسجيل. احتفظنا به على الجهاز لإعادة المحاولة.','warning');
           break;
@@ -226,7 +238,9 @@
     const host=$('hrcPendingList');if(!host)return;
     host.replaceChildren();
     if(!portalContext)return;
-    let rows=[];try{rows=await pendingFor(portalContext.studentRef);}catch(error){portalStatus(error.message,'error');return;}
+    const ctx={...portalContext};
+    let rows=[];try{rows=await pendingFor(ctx.studentRef);}catch(error){portalStatus(error.message,'error');return;}
+    if(!samePortalContext(ctx))return;
     if(!rows.length){const empty=g.document.createElement('p');empty.className='hrc-empty';empty.textContent='لا توجد تسجيلات معلقة على هذا الجهاز.';host.append(empty);return;}
     const title=g.document.createElement('b');title.textContent='تسجيلات تنتظر الإرسال';host.append(title);
     rows.forEach(item=>{
@@ -279,15 +293,19 @@
     });
   }
   function setStudentContext(value){
-    const card=$('homeRecitationCard');
-    if(!value||!value.sessionToken||!/^[0-9a-f]{64}$/.test(String(value.studentRef||''))){
-      portalContext=null;if(card)card.hidden=true;stopPortalRecording();return;
-    }
-    portalContext={
+    const next=value&&value.sessionToken&&/^[0-9a-f]{64}$/.test(String(value.studentRef||''))?{
       sessionToken:String(value.sessionToken),studentRef:String(value.studentRef),
       studentName:String(value.studentName||'الطالب'),assignment:value.assignment||null
-    };
-    if(card)card.hidden=false;
+    }:null;
+    const changed=!!portalContext&&(!next||portalContext.studentRef!==next.studentRef||portalContext.sessionToken!==next.sessionToken);
+    if(changed&&portalRecorder&&portalRecorder.state!=='inactive')stopPortalRecording();
+    if(changed&&portalDraftUrl){try{g.URL.revokeObjectURL(portalDraftUrl);}catch(_){}portalDraftUrl='';$('hrcPortalPreview')?.replaceChildren();}
+    if(!next){
+      if(portalRecorder&&portalRecorder.state!=='inactive')stopPortalRecording();
+      portalContext=null;const card=$('homeRecitationCard');if(card)card.hidden=true;return;
+    }
+    portalContext=next;
+    const card=$('homeRecitationCard');if(card)card.hidden=false;
     const assignment=portalContext.assignment||{};
     const surahIndex=surahs().findIndex(row=>row[0]===String(assignment.surah||''));
     fillSurahSelect(surahIndex>=0?surahIndex+1:1);
@@ -333,7 +351,7 @@
   function ensureTeacherModal(){
     if(teacherModal&&teacherModal.isConnected)return teacherModal;
     teacherModal=g.document.createElement('div');teacherModal.id='hrcTeacherModal';teacherModal.className='hrc-modal';teacherModal.hidden=true;
-    teacherModal.innerHTML='<div class="hrc-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="hrcTeacherTitle"><header><div><b id="hrcTeacherTitle">🎙️ مراجعة التسميع المنزلي</b><small id="hrcTeacherStudentName"></small></div><button type="button" data-hrc-close aria-label="إغلاق">×</button></header><p id="hrcTeacherStatus" role="status"></p><div class="hrc-teacher-layout"><div id="hrcTeacherList" class="hrc-teacher-list"></div><div id="hrcTeacherDetail" class="hrc-teacher-detail"><p class="hrc-empty">اختر تسجيلًا من القائمة لبدء المراجعة.</p></div></div></div>';
+    teacherModal.innerHTML='<div class="hrc-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="hrcTeacherTitle"><header><div><b id="hrcTeacherTitle">🎙️ مراجعة التسميع المنزلي</b><small id="hrcTeacherStudentName"></small></div><button type="button" data-hrc-close aria-label="إغلاق">×</button></header><p id="hrcTeacherStatus" class="hrc-status" role="status"></p><div class="hrc-teacher-layout"><div id="hrcTeacherList" class="hrc-teacher-list"></div><div id="hrcTeacherDetail" class="hrc-teacher-detail"><p class="hrc-empty">اختر تسجيلًا من القائمة لبدء المراجعة.</p></div></div></div>';
     g.document.body.append(teacherModal);
     teacherModal.querySelector('[data-hrc-close]')?.addEventListener('click',closeTeacherModal);
     teacherModal.addEventListener('click',event=>{if(event.target===teacherModal)closeTeacherModal();});
@@ -432,7 +450,7 @@
     const checkbox=element('input','');checkbox.type='checkbox';checkbox.id='hrcStudentVisible';checkbox.checked=!!row.feedback?.student_visible;
     visibility.append(checkbox,element('span','','اعتماد التصحيح وإظهاره للطالب وولي الأمر'));host.append(visibility);
     const actions=element('div','hrc-actions');
-    const save=element('button','hrc-primary','حفظ المراجعة');save.type='button';save.addEventListener('click',saveTeacherFeedback);actions.append(save);
+    const save=element('button','hrc-primary','حفظ المراجعة');save.type='button';save.id='hrcSaveFeedback';save.addEventListener('click',saveTeacherFeedback);actions.append(save);
     const archive=element('button','hrc-secondary','أرشفة التسجيل');archive.type='button';archive.addEventListener('click',()=>archiveTeacherSubmission(row.id));actions.append(archive);
     host.append(actions);
     if(row.feedback?.audio_url){const old=element('section','hrc-existing-voice');old.append(element('b','','آخر تعليق صوتي محفوظ'));const oldAudio=element('audio','');oldAudio.controls=true;oldAudio.src=row.feedback.audio_url;old.append(oldAudio);host.append(old);}
@@ -474,7 +492,7 @@
   }
   async function saveTeacherFeedback(){
     if(!teacherState?.record)return;
-    const saveButton=$('hrcTeacherDetail')?.querySelector('.hrc-primary');
+    const saveButton=$('hrcSaveFeedback');
     if(saveButton)saveButton.disabled=true;
     try{
       const form=new FormData();
@@ -494,7 +512,7 @@
     finally{if(saveButton)saveButton.disabled=false;}
   }
   async function archiveTeacherSubmission(id){
-    if(!teacherState||!g.confirm('أرشفة هذا التسجيل؟ سيظل محفوظًا ويمكن استرجاعه لاحقًا من سجل الأرشيف.'))return;
+    if(!teacherState||!g.confirm('أرشفة هذا التسجيل؟ سيظل الملف محفوظًا ولن يُحذف، لكنه سيختفي من قائمة التسجيلات الحالية.'))return;
     try{
       await callTeacherApi('teacher/archive',{submission_id:id},teacherState.token);
       teacherState.selectedId='';teacherStatus('تمت أرشفة التسجيل دون حذف الملف.','success');await loadTeacherRows();
