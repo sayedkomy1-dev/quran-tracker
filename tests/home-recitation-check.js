@@ -62,6 +62,8 @@ assert(!studentList.includes('teacher_private_note'),'private teacher notes must
 const teacherList=edge.slice(edge.indexOf('async function teacherList'),edge.indexOf('async function teacherFeedback'));
 assert(teacherList.includes('teacher_private_note'),'private notes remain available to the authorized teacher');
 
+const sessionSql=read('sql/guardian-portal-engagement.sql');
+assert(sessionSql.includes("'student_ref',s.student_ref"),'guardian session must return the authorized student reference');
 const sql=read('sql/rc16-home-recitation.sql');
 assert(sql.includes("values (\n  'imam-home-recitations',\n  'imam-home-recitations',\n  false"),'storage bucket must be private');
 assert(sql.includes('enable row level security'),'submission and feedback tables must enable RLS');
