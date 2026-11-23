@@ -97,7 +97,7 @@
     const strengths=sections.filter(section=>section.average!==null&&section.average>=85&&section.samples>=3&&section.sessions>=2);
     const support=sections.filter(section=>section.average!==null&&section.average<=65&&section.samples>=2&&section.sessions>=2);
     const eligible=present.length+absent.length;
-    const attendance=eligible?Math.round(present.length/eligible*100):null;
+    const attendance=eligible>=4?Math.round(present.length/eligible*100):null;
     let trend=null;
     if(sessionAverages.length>=4){
       const split=Math.floor(sessionAverages.length/2);
@@ -178,7 +178,7 @@
       '</div>'+
       (result.trend?'<p class="slp-trend">اتجاه النتائج المسجلة: <b>'+esc(result.trend.label)+'</b> ('+(result.trend.delta>0?'+':'')+result.trend.delta+' نقطة)</p>':'')+
       '<div class="slp-next"><b>مقترح للحصة القادمة</b><ul>'+steps+'</ul></div>'+
-      '<p class="slp-foot">يعتمد على البيانات المتاحة في الفترة المختارة وعلى تقييم المحفظ. لا يصنّف الطالب إلى نمط تعلم ثابت، ولا يصدر تشخيصًا أو درجة تلقائية، ولا يغيّر الخطة أو السجلات.</p>'+
+      '<p class="slp-foot">تعتمد درجات الأقسام والحضور على الفترة المختارة، بينما تُقرأ الأخطاء المفتوحة من سجل المتابعة التاريخي المتاح. المؤشرات على تقييم المحفظ؛ لا تصنّف الطالب إلى نمط تعلم ثابت ولا تصدر تشخيصًا أو درجة تلقائية ولا تغيّر الخطة أو السجلات.</p>'+
     '</section>';
   }
   return Object.freeze({build,render,validDay});
