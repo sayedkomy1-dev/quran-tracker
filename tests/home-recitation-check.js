@@ -51,6 +51,7 @@ assert(edge.includes('guardian_portal_sessions'),'student endpoints must validat
 assert(edge.includes('guardian_portal_accounts'),'student endpoints must validate the linked guardian account');
 assert(edge.includes('guardian_portal_shares'),'student endpoints must validate the exact student link');
 assert(edge.includes('createSignedUrl'),'audio playback must use short-lived signed URLs');
+assert(edge.includes('teacher/restore')&&edge.includes('async function teacherRestore'),'archiving must be reversible from the teacher UI');
 assert(edge.includes('SIGNED_URL_SECONDS = 1800'),'signed URLs must remain available long enough for a full recording review');
 assert(edge.includes('MAX_FILE_BYTES = 20 * 1024 * 1024'),'server must enforce the upload size limit');
 assert(edge.includes('MAX_DAILY_SUBMISSIONS = 12'),'server must enforce per-student daily limits');
