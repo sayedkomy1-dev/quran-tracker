@@ -70,7 +70,7 @@ check('connects save/archive actions to the teacher progress panel',()=>{
 check('does not expose private teacher observations through the guardian snapshot whitelist',()=>{
   const share=fs.readFileSync(path.join(__dirname,'../js/features/guardian-portal-share.js'),'utf8');
   assert(!share.includes('learningObservations'));
-  assert.match(share,/student:\s*\{\s*id:\s*st\.id/);
+  assert.match(share,/student:\s*\{\s*name:\s*String\(st\.name/);
   assert(!/student:\s*\{\s*\.\.\.st/.test(share));
 });
 check('does not add SQL or network/storage access to the observation profile module',()=>{
