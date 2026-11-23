@@ -27,8 +27,9 @@ for(const name of [...scripts,...css]){
  const revision2=`${name}?v=${version}-absence-review2`;
  const rc7=`${name}?v=beta28-rc13`;
  const rc16=`${name}?v=beta28-rc16-learning-observations1`;
- assert(html.includes(ref)||html.includes(versionedV9)||html.includes(versionedBoard)||html.includes(revision2)||html.includes(rc7)||html.includes(rc16),`index missing fresh ${name}`);
- assert(sw.includes(`'./${ref}'`)||sw.includes(`'./${versionedV9}'`)||sw.includes(`'./${versionedBoard}'`)||sw.includes(`'./${revision2}'`)||sw.includes(`'./${rc7}'`)||sw.includes(`'./${rc16}'`),`SW missing fresh ${name}`);
+ const rc16Board=`${name}?v=beta28-rc16-board-recovery1`;
+ assert(html.includes(ref)||html.includes(versionedV9)||html.includes(versionedBoard)||html.includes(revision2)||html.includes(rc7)||html.includes(rc16)||html.includes(rc16Board),`index missing fresh ${name}`);
+ assert(sw.includes(`'./${ref}'`)||sw.includes(`'./${versionedV9}'`)||sw.includes(`'./${versionedBoard}'`)||sw.includes(`'./${revision2}'`)||sw.includes(`'./${rc7}'`)||sw.includes(`'./${rc16}'`)||sw.includes(`'./${rc16Board}'`),`SW missing fresh ${name}`);
 }
 for(const name of ['v9.js','v10.js','role-home.css','teacher-rating.css']){
  assert(sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./${name}?v=${version}`)

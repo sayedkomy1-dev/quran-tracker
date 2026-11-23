@@ -812,7 +812,7 @@ a4c4ede39436d6bc430a2a1a5ba60b541b154c41670105fa26094529ab686dad  ./tests/platfo
 ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-coverage-progress-check.js
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
-75cbfc2c197b697ecb01e5434dd2ec3cdf499483ecc776fe2495dfd6ff2eb600  ./tests/release-consistency-beta16-check.js
+c703b5fc099b16bc65f19005441f82aaeb6648f9140279103a7000e60dcacf83  ./tests/release-consistency-beta16-check.js
 ee2b06b565b49d1cc30b0af62df99070a5e303abd3bb24b94f0ecdb4cf78d6a7  ./tests/revision-text-boot-check.js
 48cc1e91796327f6e3c4db8016f94db8dfc7a2bde928004c129d56c18e2d7b20  ./tests/role-home-tab-visibility-hotfix-check.js
 41d5a8f3bf67290c91f5db38476017b7e31d0a43179892e50077bbeaaba7623e  ./tests/role-ux-errors-batch-check.js
