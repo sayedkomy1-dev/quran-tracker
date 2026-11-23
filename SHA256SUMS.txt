@@ -693,7 +693,7 @@ b8a9f6ca3fb7a86d908b84fb7d2aadd706753a17e481b48a387781bf7951fa42  ./tests/academ
 27a19e7e7c9492d9778576942b488eafe4e3350f3f39f10d86284c02da33f882  ./tests/academy-tenants-foundation-check.js
 7173dbc315daf7879803928cfdf74946752da90d5116231cbcaa51420a7b9c51  ./tests/academy-wide-overhaul-check.js
 cbcc7144c50f2a2d796faac13d58853e5cf2f1b4270997decb2adef1bd29e16a  ./tests/advanced-analytics-stage1-check.js
-ac9104832d7e7d63e2edde630c719f84e737e4d1914aa5cb72d44060c566ed60  ./tests/automatic-roster-sync-check.js
+df6f70cf9f3f3adf8b883150f382d4fdc5d025f09741a37ea6c6990086a156bb  ./tests/automatic-roster-sync-check.js
 a0ab0760c2cc0e56d5e484db3f1f37ddf8cc13d5ddcc8ee0e1bde6adf483e586  ./tests/ayah-page-map-check.js
 c4ac5b9125fb475450891803a32277b9beeb203af8eb11646af1761900aefa4e  ./tests/beta19-session-ux-check.js
 0690f6fbba53d702cbf2c71e4a24e6f41a935272d91f141f2d2c32f124862a2a  ./tests/beta20-lesson-board-ux-check.js
