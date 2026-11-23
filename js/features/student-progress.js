@@ -184,9 +184,24 @@ function renderV107Progress(studentId=curStId){
   const st=(Array.isArray(students)?students:[]).find(x=>x.id===studentId);if(!st)return;
   const data=v107Calculate(studentId),period=v107RangeLabel(),last=data.sessionPoints.at(-1)?.value??null;
   const grades=data.gradeCounts,totalGrades=Object.values(grades).reduce((a,b)=>a+b,0);
+  let learningProfileHtml='';
+  try{
+    const learningProfile=globalThis.ImamApp?.StudentLearningProfile;
+    if(typeof learningProfile?.build==='function'&&typeof learningProfile?.render==='function'){
+      const profileResult=learningProfile.build({
+        student:st,
+        sessions:typeof sessions!=='undefined'&&Array.isArray(sessions)?sessions:[],
+        progress:data
+      });
+      learningProfileHtml=learningProfile.render(profileResult);
+    }
+  }catch(_){
+    learningProfileHtml='<section class="slp-profile" role="status">تعذر إعداد الملف التعليمي الآن. لوحة التقدم الأصلية متاحة.</section>';
+  }
   const gradeRows=[['ممتاز','⭐⭐⭐',grades['ممتاز']],['جيد جدًا','⭐⭐',grades['جيد جداً']],['جيد','⭐',grades['جيد']],['يحتاج متابعة','😕',grades['ضعيف']],['إعادة','🔄',grades['إعادة']]];
   const scoreCoverage=data.present.length?`نسب رقمية في ${data.sessionPoints.length} من ${data.present.length} حصة حضور`:'لا توجد حصص حضور في الفترة';
   host.innerHTML=`
+    ${learningProfileHtml}
     <div class="v107-kpis">
       <div class="v107-kpi ${v107MasteryClass(data.mastery)}"><small>متوسط الإتقان</small><strong>${v107Metric(data.mastery,'%')}</strong><span>${v107Esc(scoreCoverage)}</span></div>
       <div class="v107-kpi"><small>نسبة الحضور</small><strong>${v107Metric(data.attendance,'%')}</strong><span>${data.present.length} حضور · ${data.absent.length} غياب</span></div>
