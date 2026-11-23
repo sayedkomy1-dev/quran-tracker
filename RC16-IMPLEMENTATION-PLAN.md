@@ -109,10 +109,10 @@ A work package is not complete until:
 
 ### Verification state
 - Isolated V8 runtime smoke checks passed for evidence thresholds, student/future-session isolation, attendance, existing error-engine integration, HTML escaping, script/style wiring, service-worker cache wiring, and test-runner wiring.
-- GitHub Actions run **#176** passed the complete Node `npm test` suite, `node scripts/release-integrity.mjs` with all **837** file hashes, and `node scripts/release-budget.mjs`.
-- The RC16 learning-profile test reports **13/13** passing checks within the full suite.
+- GitHub Actions run **#187** passed the complete Node `npm test` suite, `node scripts/release-integrity.mjs` with all **838** file hashes, and `node scripts/release-budget.mjs`.
+- RC16 learning-profile tests: **13/13**; structured observation tests: **9/9**.
 - Real Android/mobile acceptance, visual review on the target devices, and production rollout remain pending.
 - This is not a production release and has not been merged into `main`.
 
 ## Current execution note
-RC16 implementation is underway on the isolated feature branch. A1 is integrated and passed CI; A2 is implemented on this branch and awaits its next full CI run and real-device acceptance. No feature package is considered production-ready before the acceptance gates pass.
+A1 and A2 are implemented on the isolated feature branch and passed full GitHub Actions run #187. Real Android/mobile acceptance, visual review on target devices, and production rollout remain pending. No feature package is considered production-ready before these acceptance gates pass.
