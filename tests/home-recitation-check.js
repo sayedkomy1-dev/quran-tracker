@@ -88,7 +88,7 @@ assert(view.includes('setStudentContext?.({sessionToken,studentRef:row.student_r
 assert(view.includes('setStudentContext?.(null)'),'static/live/error views must not expose the upload control');
 assert(view.includes("g.addEventListener('online'"),'offline session recovery must retry after reconnect');
 assert(progress.includes('renderTeacherPanel?.(studentId)'),'teacher inbox must be connected to the existing student profile');
-assert(progress.includes('openTeacherInbox?.(studentId)'),'teacher can open the student's home recordings from the profile');
+assert(progress.includes('openTeacherInbox?.(studentId)'),"teacher can open the student's home recordings from the profile");
 assert(sw.includes("'-rc16-home-recitation1'"),'service-worker cache namespace must advance');
 for(const asset of ['home-recitation.css','js/features/home-recitation-core.js','js/features/home-recitation.js']){
   assert(sw.includes("'./"+asset+"?v=beta28-rc16-home-recitation1'"),'fresh shell missing '+asset);
