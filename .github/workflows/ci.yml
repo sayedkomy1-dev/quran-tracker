@@ -20,10 +20,6 @@ jobs:
           node-version: '22'
       - name: Run release checks
         run: npm test
-      - name: Generate canonical RC16 inventory snapshot (temporary maintenance step)
-        run: |
-          node scripts/release-integrity.mjs --write
-          node -e "const fs=require('node:fs'); console.log('RC16_SHA256_B64='+fs.readFileSync('SHA256SUMS.txt').toString('base64'))"
       - name: Verify release hashes
         run: node scripts/release-integrity.mjs
       - name: Check linked payload budget
