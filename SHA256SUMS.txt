@@ -748,7 +748,7 @@ ee2b06b565b49d1cc30b0af62df99070a5e303abd3bb24b94f0ecdb4cf78d6a7  ./tests/revisi
 f45fe6e2aad9820b85d655bbf634e8f5ca36ae5233e3d8fbf5ff03ec987e3744  ./tests/static-check.js
 c643bcc64cc29b4e7891a1ec9067a91fb3208b74e1cbb97170eac4bae085c878  ./tests/student-finance-stage1-check.js
 b4cd8cc69fb4bee52ac0920c1ad6694120bf0fa6124311d13f6440f611a3d8e9  ./tests/student-finance-stage2-check.js
-761b34179ac570b3746f5ebbb46abac9a6f035e45cab5b5094e4065143aa2369  ./tests/student-learning-profile-check.js
+967de8073cbb154ed8c1711345f1dfbee17f5255beccda44ebc86faa1fe24af5  ./tests/student-learning-profile-check.js
 4265221f411d12ed4d42c2a2ada43d4b2e7f89964a9e2907cba7cfdf2ba894c7  ./tests/student-progress-check.js
 3bc1b214c76e0fa5d29235007052a5cb75c328b74e3927dc8317a7b869cc8452  ./tests/supervision-roster-permissions-stage2-check.js
 92367bbfc236a61e0689ca8ee5031b2230b6dac72f019add3961e8a42a975cf2  ./tests/supervision-visible-entry-hotfix-check.js
