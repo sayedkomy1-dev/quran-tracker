@@ -502,7 +502,7 @@ eb57d1d6b485f8a2e4d696582ed52fb1be4bcac40954a1a0d38b1ebb0a616417  ./js/features/
 31abe5da6ef26eee76ba957e42c4c892f82204026c89717b23f42f4c5cb8fbd6  ./js/features/guardian-messages.js
 e5e7fe9ad9861ebb41e8ad49fbed320498b8b124a5961036db4a66c98cfc5d7d  ./js/features/guardian-portal-experience.js
 c7f1040ff7f2760f4e83a6bff420ac3f0f3407baba3a8160df0a0b092aecc000  ./js/features/guardian-portal-share.js
-c21053b425b82d38bf363e552e0ae02e53117a136097b31c5cf1e15e2916d071  ./js/features/guardian-portal-view.js
+2de36016fb85f0642a37968502dc0e4006c55c808eef73f10ca9ca166b5073ae  ./js/features/guardian-portal-view.js
 4631cbb1ca1a4040397d14b42cfdeac653508e58e67b44e5b3e2ebe50a51f757  ./js/features/guardian-ratings.js
 2590af2cc02dd97d417ffafdb65d27e6d39bcbd104b6c670e7b0406721b1262d  ./js/features/guardian-tahfeez.js
 0a2d64078e5861dd5447594673e982e2d30254691f87c302addd2b4f32194fe6  ./js/features/guest-palette.js
@@ -681,7 +681,7 @@ c63c5a3e7a4996aa3389a270049075a253477686edf089461f112fecab17e6ad  ./student-fina
 823913798c8cca71ee02b589688183a5cfbadcb719dc80b4f9ce620209ca6dc1  ./student-learning-profile.css
 ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
 13933d7f64916e3a45bc69156b80cf4aeaae39596809a7f5b648937a1c573044  ./supabase/config.toml
-40d944d8155d3524d05e73951844c99bc62c15c3f6ac33241cd3ec43ea05ecf1  ./supabase/functions/guardian-recitation/index.ts
+20b701fdcae139238c977f9157c3650f09d9e265f24b7db0056d9e4779d493ba  ./supabase/functions/guardian-recitation/index.ts
 c5326fffe24cc1915fa86842b27b039f061726a35a73e963eeb21a2132224f75  ./sw.js
 d9af751d17bc441e6b39c24ec5a8ed5eaf24b93fac733e9e1ba036629534c319  ./sync-core.js
 c119463a48ab3e54f5d631af17484e8901f7f51029e8684f857860184efc9d07  ./teacher-error-marking.css
