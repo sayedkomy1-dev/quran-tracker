@@ -443,10 +443,10 @@ c176d6bbc183ab6b9a06a615f87beca7c641f8e2b521854cdd3d792be73c5394  ./docs/OP-BETA
 0d5fcda7fa3aac3be3721919ed4d6f3c0f3e4e1ce22bde54edda2f9a3859dd48  ./docs/QA-IMAM-BOARD-BETA6-ACCEPTANCE-125.md
 0b855ba0b8383c162b03f4033fde5644fe3e6a4fcf7b819df3ac735570e478df  ./docs/REVOLUTIONARY-UX-MASTER-PROMPT.md
 271318a13dbc6538f4129f4b38081a24105d94d711f8d7d9f446bcee665eb983  ./docs/TEST-BETA10-PHONE-HOME.md
-2014e7b1da836c28d3b4650347ff40b9e3bf770562a4f1c8ea9ebeaabee47750  ./docs/review-sources/#U062a#U0642#U0631#U064a#U0631-#U0627#U0644#U0641#U062d#U0635-#U0627#U0644#U0634#U0627#U0645#U0644-2026-11-21.md
-8caf0ebc788c0d3578ed4b40f48c2fa69e35214f267fda8ef16a64c4fcd962d9  ./docs/review-sources/#U0631#U0624#U064a#U0629-#U0627#U0644#U062a#U0637#U0648#U064a#U0631-2026-11-21.md
-2014e7b1da836c28d3b4650347ff40b9e3bf770562a4f1c8ea9ebeaabee47750  ./docs/review-sources/ØªÙØ±ÙØ±-Ø§ÙÙØ­Øµ-Ø§ÙØ´Ø§ÙÙ-2026-11-21.md
-8caf0ebc788c0d3578ed4b40f48c2fa69e35214f267fda8ef16a64c4fcd962d9  ./docs/review-sources/Ø±Ø¤ÙØ©-Ø§ÙØªØ·ÙÙØ±-2026-11-21.md
+2014e7b1da836c28d3b4650347ff40b9e3bf770562a4f1c8ea9ebeaabee47750  ./docs/review-sources/تقرير-الفحص-الشامل-2026-11-21.md
+8caf0ebc788c0d3578ed4b40f48c2fa69e35214f267fda8ef16a64c4fcd962d9  ./docs/review-sources/رؤية-التطوير-2026-11-21.md
+2014e7b1da836c28d3b4650347ff40b9e3bf770562a4f1c8ea9ebeaabee47750  ./docs/review-sources/تقرير-الفحص-الشامل-2026-11-21.md
+8caf0ebc788c0d3578ed4b40f48c2fa69e35214f267fda8ef16a64c4fcd962d9  ./docs/review-sources/رؤية-التطوير-2026-11-21.md
 7e66751b38c53d6db1715d027f0682afb45696ceaa79fadccd97a2b3a37a720b  ./error-followup.css
 3bce66e25ffd74c365cbbbfd68ce2a133edde8f61936f9894445054cad24b5a9  ./favicon.png
 7c3a0a4d6225725f3c1adc13bbbb10a9a25ba6d42941bb6272dc5ae3fdf7e7d4  ./goal-planning.css
