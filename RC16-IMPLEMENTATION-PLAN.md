@@ -107,12 +107,32 @@ A work package is not complete until:
 - No SQL migration, new table, remote API, AI-generated observation, or automatic academic score was added.
 - Added targeted validation, escaping, merge, archive, and portal-privacy tests.
 
+### B — Home recitation submissions and audio feedback
+- Added a student/guardian home-recitation card to the authenticated phone/PIN portal. The student can record through the real microphone or choose a real audio file, select the surah/ayah range, and add an optional note.
+- Added a recoverable IndexedDB upload queue. It is bounded to 3 pending recordings / 50 MiB across the device, with a 20 MiB per-file limit and 20-minute maximum duration. The local blob is removed only after the server confirms successful upload.
+- Offline recovery uses the existing guardian session restoration flow; if the session expires, the queued blob remains local until the same guardian account signs in again.
+- Added a private Supabase Storage bucket and an additive SQL migration. The new tables use RLS with no direct anon/authenticated grants; the bucket is private and has no public read policy.
+- Added a Supabase Edge Function that validates the existing guardian session, linked account, active academy owner, student reference, actual audio file signature, size, duration, and per-student daily upload limit. Teacher endpoints require a real Supabase JWT and an active owner/teacher account.
+- Added a teacher inbox from the existing student progress panel. Teachers can play submissions, add annotations at the actual current playback time, optionally link an ayah within the assigned range, write student-visible feedback, add a separate private teacher note, and record/select a real voice comment.
+- Student/guardian APIs return only explicitly published feedback. The private teacher note is not included in those responses.
+- Added reversible archive/restore controls. Archiving changes status only; it never deletes the recording or its feedback.
+- Playback uses private signed URLs that expire after 30 minutes. Browser code contains no service-role key.
+- Existing Quran audio, offline Mushaf library, MP3 merge/export, WhatsApp handoff, Storage Governor, and Local Schema 12 remain unchanged.
+- Added targeted tests for all 114 surah ayah counts, actual audio validation, offline queue behavior, student isolation, teacher authorization/privacy, private storage, signed playback, archive/restore, and service-worker shell integration.
+
+### B deployment and acceptance boundary
+- SQL migration and Edge Function source are committed; they have not been applied/deployed to the live Supabase project.
+- The deployment checklist is in docs/RC16-HOME-RECITATION-SETUP.md. Staging deployment and real Android/iOS browser tests are still required.
+- B is code-complete and CI-verified, but is not production-ready until the staging backend and device acceptance gates pass.
+
 ### Verification state
-- Isolated V8 runtime smoke checks passed for evidence thresholds, student/future-session isolation, attendance, existing error-engine integration, HTML escaping, script/style wiring, service-worker cache wiring, and test-runner wiring.
-- GitHub Actions run **#187** passed the complete Node `npm test` suite, `node scripts/release-integrity.mjs` with all **838** file hashes, and `node scripts/release-budget.mjs`.
-- RC16 learning-profile tests: **13/13**; structured observation tests: **9/9**.
-- Real Android/mobile acceptance, visual review on the target devices, and production rollout remain pending.
-- This is not a production release and has not been merged into `main`.
+- GitHub Actions run #210 passed the complete Node npm test suite, SHA-256 release integrity for 846 files, and the linked-payload budget check.
+- A1 student learning profile: 13/13 targeted checks.
+- A2 structured teacher observations: 9/9 targeted checks.
+- B home recitation: targeted security, offline queue, Quran range, signed playback, student isolation, teacher privacy, and shell integration test passed.
+- Release payload: 493 KiB gzip JavaScript / 850 KiB limit and 120 KiB gzip CSS / 250 KiB limit.
+- Real Android/iOS acceptance, staging Supabase deployment, visual review on target devices, and production rollout remain pending.
+- This is not a production release and has not been merged into main.
 
 ## Current execution note
-A1 and A2 are implemented on the isolated feature branch and passed full GitHub Actions run #187. Real Android/mobile acceptance, visual review on target devices, and production rollout remain pending. No feature package is considered production-ready before these acceptance gates pass.
+A1 and A2 are complete and CI-verified. B is implemented on the isolated branch and passed full GitHub Actions run #210, including 846 release hashes and payload budget. The remaining B gates are the documented staging Supabase migration/function deployment and real Android/iOS acceptance. No feature package is considered production-ready before those gates pass.
