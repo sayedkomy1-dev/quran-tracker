@@ -100,9 +100,9 @@
     if(!ctx?.studentRef||!ctx?.range)throw new Error('تعذر ربط التسجيل بملف الطالب.');
     if(!blob||!Core.fileAllowed(blob))throw new Error('الملف الصوتي غير مدعوم أو حجمه أكبر من 20 ميجابايت.');
     if(!Core.validDuration(Math.round(durationMs||0)))throw new Error('مدة التسجيل تجاوزت 20 دقيقة.');
-    const range=ctx.range,rows=await pendingFor(ctx.studentRef);
-    const totalBytes=rows.reduce((sum,row)=>sum+(Number(row.fileSize)||0),0);
-    if(!Core.canQueue(rows.length,totalBytes,blob.size))throw new Error('مساحة التسجيلات المعلقة ممتلئة. أرسل التسجيلات الموجودة أولًا أو احذف تسجيلًا غير مرسل.');
+    const range=ctx.range,allRows=await allPending(),rows=allRows.filter(row=>row.studentRef===ctx.studentRef);
+    const totalBytes=allRows.reduce((sum,row)=>sum+(Number(row.fileSize)||0),0);
+    if(!Core.canQueue(allRows.length,totalBytes,blob.size))throw new Error('مساحة التسجيلات المعلقة ممتلئة على هذا الجهاز. أرسل التسجيلات الموجودة أولًا أو احذف تسجيلًا غير مرسل.');
     try{
       const estimate=await g.navigator?.storage?.estimate?.();
       if(estimate?.quota&&estimate?.usage!==undefined&&estimate.quota-estimate.usage<blob.size+5*1024*1024){
@@ -241,7 +241,7 @@
     finally{portalUploading=false;}
   }
   function makeStatusLabel(status){
-    return status==='feedback_ready'?'تم إرسال التصحيح':status==='reviewing'?'قيد المراجعة':status==='submitted'?'وصل إلى المحفظ':status==='uploading'?'جارٍ الرفع':'تم الإرسال';
+    return status==='feedback_ready'?'تم إرسال التصحيح':status==='reviewing'?'قيد المراجعة':status==='submitted'?'وصل إلى المحفظ':status==='uploading'?'جارٍ الرفع':status==='archived'?'مؤرشف':'تم الإرسال';
   }
   async function renderPending(){
     const host=$('hrcPendingList');if(!host)return;
@@ -466,7 +466,7 @@
     const recordButton=element('button','hrc-primary','🎙️ تسجيل تعليق صوتي');recordButton.type='button';recordButton.id='hrcTeacherRecordFeedback';voiceActions.append(recordButton);
     const fileInput=element('input','');fileInput.type='file';fileInput.accept='audio/*';fileInput.id='hrcTeacherFeedbackFile';voiceActions.append(fileInput);
     recordButton.addEventListener('click',toggleTeacherFeedbackRecording);
-    fileInput.addEventListener('change',()=>{teacherFeedbackFile=fileInput.files?.[0]||null;setText('hrcTeacherVoiceStatus',teacherFeedbackFile?'تم اختيار ملف صوتي: '+teacherFeedbackFile.name:'');});
+    fileInput.addEventListener('change',()=>{teacherFeedbackBlob=null;teacherFeedbackFile=fileInput.files?.[0]||null;setText('hrcTeacherVoiceStatus',teacherFeedbackFile?'تم اختيار ملف صوتي: '+teacherFeedbackFile.name:'');});
     voice.append(voiceActions,element('small','','يمكنك تسجيل ملاحظة صوتية أو اختيار ملف حقيقي من الجهاز.'),element('p','',''));const voiceStatus=element('small','');voiceStatus.id='hrcTeacherVoiceStatus';voice.append(voiceStatus);host.append(voice);
     const visibility=element('label','hrc-publish-check');
     const checkbox=element('input','');checkbox.type='checkbox';checkbox.id='hrcStudentVisible';checkbox.checked=!!row.feedback?.student_visible;
@@ -500,13 +500,16 @@
     try{
       try{teacherStream=await g.navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});}
       catch(_){teacherStream=await g.navigator.mediaDevices.getUserMedia({audio:true});}
-      const mime=getRecorderMime();teacherRecorder=new g.MediaRecorder(teacherStream,mime?{mimeType:mime}:undefined);teacherChunks=[];
+      const mime=getRecorderMime();teacherFeedbackFile=null;const fileInput=$('hrcTeacherFeedbackFile');if(fileInput)fileInput.value='';
+      teacherRecorder=new g.MediaRecorder(teacherStream,mime?{mimeType:mime}:undefined);teacherChunks=[];
+      const saveButton=$('hrcSaveFeedback');if(saveButton)saveButton.disabled=true;
       teacherRecorder.ondataavailable=event=>{if(event.data?.size)teacherChunks.push(event.data);};
       teacherRecorder.onerror=()=>{teacherStatus('تعذر تسجيل التعليق الصوتي.','error');stopTeacherTracks();};
       teacherRecorder.onstop=()=>{
         const type=teacherRecorder?.mimeType||teacherChunks[0]?.type||'';
         teacherFeedbackBlob=new Blob(teacherChunks,{type});teacherChunks=[];teacherRecorder=null;stopTeacherTracks();
         if(button){button.textContent='🎙️ تسجيل تعليق صوتي';button.disabled=false;}
+        const saveButton=$('hrcSaveFeedback');if(saveButton)saveButton.disabled=false;
         if(teacherFeedbackBlob.size<128||!Core.fileAllowed(teacherFeedbackBlob)){teacherFeedbackBlob=null;setText('hrcTeacherVoiceStatus','لم يتم إنشاء تعليق صوتي صالح.');}
         else{teacherFeedbackFile=null;setText('hrcTeacherVoiceStatus','تم تسجيل تعليق صوتي حقيقي ('+Core.formatBytes(teacherFeedbackBlob.size)+').');}
       };
@@ -514,7 +517,7 @@
       if(button){button.textContent='إيقاف التسجيل';button.disabled=false;}
       teacherTimer=g.setTimeout(()=>{if(teacherRecorder&&teacherRecorder.state!=='inactive')teacherRecorder.stop();},Core.MAX_DURATION_MS);
       setText('hrcTeacherVoiceStatus','جارٍ تسجيل تعليق المحفظ…');
-    }catch(error){stopTeacherTracks();teacherStatus('لم تسمح باستخدام الميكروفون أو تعذر تشغيله.','error');}
+    }catch(error){stopTeacherTracks();const saveButton=$('hrcSaveFeedback');if(saveButton)saveButton.disabled=false;teacherStatus('لم تسمح باستخدام الميكروفون أو تعذر تشغيله.','error');}
   }
   async function saveTeacherFeedback(){
     if(!teacherState?.record)return;
