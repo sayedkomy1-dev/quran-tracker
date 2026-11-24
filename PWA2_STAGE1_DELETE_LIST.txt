@@ -1,0 +1,10 @@
+PWA2 Stage 1 — manual deletion required
+
+Delete only:
+screenshots\.nojekyll
+
+Keep:
+.nojekyll
+
+The first path is inside the screenshots folder.
+The second path is in the project root.

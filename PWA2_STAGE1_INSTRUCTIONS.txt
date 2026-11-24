@@ -1,0 +1,29 @@
+PWA2 — Stage 1 Integrity Fix
+=============================
+
+This update contains only the files changed in this stage.
+
+Apply to your existing quran-tracker-main project:
+1. Copy the contents of the included quran-tracker-main folder into your existing project root.
+2. Approve replacement of existing files.
+3. Delete this exact obsolete file from your project:
+   screenshots\.nojekyll
+4. Keep the root-level .nojekyll file. Do NOT delete it.
+5. Do not copy this instruction file into the project.
+
+Changed files:
+- quran-tracker-main/SHA256SUMS.txt
+- quran-tracker-main/tests/repository-cleanup-stage1-check.js
+
+Deleted file:
+- quran-tracker-main/screenshots/.nojekyll
+
+No application runtime code, application version, database schema, Supabase configuration,
+student data, or recitation assets were changed.
+
+After applying:
+- Run: npm test
+- Run: node scripts/release-integrity.mjs
+
+Commit message:
+fix: restore repository integrity after cleanup

@@ -1,7 +1,7 @@
 0234ac299bad6ad512c5490edecbe5d0d9b2437d2bc8fa69e088df11e02b5b66  ./.github/workflows/ci.yml
 7eadcde5e605d5a249bd6372a332d302ccbce4e08fd7ab4d7e536ce379934950  ./.gitignore
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./.nojekyll
-906be81b2bb0f527c0bc2463b64525b7f7e528b7149ddb7541b4ad0ae376510b  ./APPLY_CLEANUP.bat
+5d5246a706a1098042d110ec1c8e678b670c87e136e855fc518261d2d5673efa  ./APPLY_CLEANUP.bat
 f829f71c3199616b76406d01cd20f2e27dbc8f6df508d37b7588f3c7620386a0  ./ARCHITECTURE-10.2.md
 ba89480f2ed05ba71df3c2871bb3072bb710c8c0eb91bb7ff487aee49a0c11a8  ./AUDIT-10.10.0-MOBILE-NAV.md
 f0e052ac32484cb1a2d5ae170ede42e50137775a1029e9c6c15d1f165fa3baa7  ./AUDIT-10.10.0-NAV-OFFLINE.md
@@ -754,7 +754,7 @@ ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
 96760972596a4bc86b8e76d71660ddf89ba1507fec37ce14590b93d16f33af16  ./tests/release-consistency-beta16-check.js
-b56c4fd5ff1ac8022e81cbf386eb6239a59a1c236a00f4348b759c6588400db8  ./tests/repository-cleanup-stage1-check.js
+4fe37aaf5fc3f4175813aaac4bd705afe221d6bd27b1950ebee5b371606ae105  ./tests/repository-cleanup-stage1-check.js
 ee2b06b565b49d1cc30b0af62df99070a5e303abd3bb24b94f0ecdb4cf78d6a7  ./tests/revision-text-boot-check.js
 48cc1e91796327f6e3c4db8016f94db8dfc7a2bde928004c129d56c18e2d7b20  ./tests/role-home-tab-visibility-hotfix-check.js
 41d5a8f3bf67290c91f5db38476017b7e31d0a43179892e50077bbeaaba7623e  ./tests/role-ux-errors-batch-check.js

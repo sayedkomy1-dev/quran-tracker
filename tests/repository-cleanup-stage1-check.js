@@ -48,6 +48,10 @@ assert.equal(fs.existsSync(path.join(root, 'review/SAFE-DELETE-HISTORICAL-SNAPSH
   'obsolete PowerShell helper must not remain in the active project');
 assert.equal(fs.existsSync(path.join(root, 'screenshots/index.html')), false,
   'historical screenshot application source must be removed from the active tree');
+assert.equal(fs.existsSync(path.join(root, 'screenshots/.nojekyll')), false,
+  'obsolete screenshots-level .nojekyll marker must be removed');
+assert.equal(fs.existsSync(path.join(root, '.nojekyll')), true,
+  'root-level .nojekyll marker must be retained for the active site');
 assert.equal(fs.existsSync(path.join(root, 'screenshots/desktop-home.png')), true,
   'reference screenshot must be retained');
 const retainedImages = [];
