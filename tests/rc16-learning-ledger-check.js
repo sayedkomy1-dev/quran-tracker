@@ -8,6 +8,7 @@ assert(ui.includes('/functions/v1/rc16-learning-ledger'));
 assert(!ui.includes('rc16AchievementEvents')&&!ui.includes('rc16Competitions'),'client must not use local account snapshots as the authority for points or competitions');
 assert(ui.includes('student_ref')&&ui.includes('approved_at')&&ui.includes('idempotency_key'));
 assert(sql.includes('enable row level security'));
+assert(!/\\b(?:drop\\s+table|truncate(?:\\s+table)?|delete\\s+from)\\b/i.test(sql),'ledger migration must remain additive and preserve existing academic data');
 assert(sql.includes('jsonb_object_keys(p_groups)')&&!sql.includes('jsonb_object_length(p_groups)'),'participant snapshot validation must use supported PostgreSQL JSONB functions');
 assert(sql.includes('v_group_count integer;')&&sql.includes('select count(*) into v_group_count'),'participant JSONB validator must declare its counter correctly');
 assert(sql.includes('revoke all on table public.student_achievement_events from public, anon, authenticated'));
@@ -20,6 +21,8 @@ assert(sql.includes('unique (owner_user_id,request_key)'),'competition creation 
 assert(sql.includes('grant select, insert on table public.student_achievement_events to service_role'));
 assert(sql.includes('grant select, insert, update on table public.student_learning_competitions to service_role'));
 assert(edge.includes('authClient.auth.getUser(bearer)'));
+assert(!ui.includes('SUPABASE_SERVICE_ROLE_KEY')&&!ui.includes('SERVICE_ROLE_KEY'),'service-role secret must never enter browser code');
+assert(edge.includes('SUPABASE_SERVICE_ROLE_KEY')&&edge.includes('ALLOWED_ORIGINS')&&edge.includes('ORIGIN_NOT_ALLOWED'),'server function must keep secrets server-side and enforce CORS allowlist');
 assert(edge.includes('from("app_users")')&&edge.includes('profile.status!=="active"')&&edge.includes('["owner","teacher"]'));
 assert(edge.includes('.eq("owner_user_id",ownerId)'));
 assert(edge.includes('.range(offset,offset+999)')&&edge.includes('has_more:events.length===1000'),'event history must paginate without truncation');
