@@ -36,14 +36,16 @@ jobs:
           deno-version: v2.x
       - name: Type-check every deployed Edge Function
         run: |
-          deno check supabase/functions/guardian-recitation/index.ts
-          deno check supabase/functions/rc16-learning-ledger/index.ts
-          deno check supabase/functions/teacher-recitation-analysis/index.ts
+          deno check --node-modules-dir=auto supabase/functions/guardian-recitation/index.ts
+          deno check --node-modules-dir=auto supabase/functions/rc16-learning-ledger/index.ts
+          deno check --node-modules-dir=auto supabase/functions/teacher-recitation-analysis/index.ts
       - name: Setup Supabase CLI
+        id: supabase_cli
         uses: supabase/setup-cli@v1
         with:
           version: latest
       - name: Start isolated local Supabase stack
+        id: start_supabase
         run: supabase start -x studio,imgproxy,inbucket,realtime,edge-runtime,logflare,vector
       - name: Apply all RC16 SQL and run database contract tests
         run: |
@@ -56,5 +58,5 @@ jobs:
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f sql/rc16-learning-ledger.sql
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f tests/rc16-learning-ledger-db.sql
       - name: Stop isolated local Supabase stack
-        if: always()
+        if: always() && steps.start_supabase.outcome == 'success'
         run: supabase stop --no-backup
