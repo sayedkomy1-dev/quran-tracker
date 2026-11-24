@@ -329,7 +329,7 @@ ae4ea6ae94f6ae57e2ee3d3b8b81f9d5aad38072ad7f5f44f09d5d53369f383a  ./imam-absence
 225f454ec796c4630444de7bb439a4c1674ec0ec93feec41a84e84df3a60ce22  ./imam-board-display.html
 a5621b720d653801b0475f1b58786b1f9ab7ccdd0e46a8f0ee845e2dc253fcdf  ./imam-board-display.js
 03345b61e6cbe1fe97225df1518d1f515110c970558a477468195db71f4340fb  ./imam-makeup-agenda.css
-03eb52ed64c2f85bf9420c6d6a21f6520e03dbc7fcf1943a9551ab379fd94dd9  ./imam-smart-board.css
+a8be31b16bd53bb297c18fdbd4dc5e365e72ff4d6203f27c7540884e59943bc9  ./imam-smart-board.css
 4846b74dfd4aebb06a1844a43fa591c0e388642c5caf2a1f829512a46e4328cc  ./imam-teaching-insights.css
 52f8a75de34d42af5ea6e0fc9f37769b9c11965b596e7d56dfbe10f765e94508  ./index.html
 47ce4d055146c84c6c71ef1029f8e029112dba8ea016ce13f096a1754bea7608  ./integrated-teacher-brief.css
@@ -386,7 +386,7 @@ a8fc6252d882f5b2926ddc3a72e6e9f3070eab356c988c00a641f3cfe15e6aa1  ./js/features/
 199b325fc45d38d9aace9d3809d1b4294cf33b7ba5d3a8e242e28db3c1e55b56  ./js/features/imam-board-corpus.js
 6501213a72794e9de79f922abe4efaeedce3f9006001e906136ff9c3a43475d5  ./js/features/imam-board-tafsir.js
 a474db584a74668572bc4caea0299e06d82b923803cd977c04947b17cf8c98b8  ./js/features/imam-makeup-agenda.js
-edabed3d9c2068b9f997fa393e9ccbb37572a033b8b285cd50969962972404ac  ./js/features/imam-smart-board.js
+e1e6a1e2b2ea7dfb9e53a9875ccbcd4a2091b30c9047a8fff954faea7cb8044e  ./js/features/imam-smart-board.js
 4512dcc0c2380bd2438fc4b637ae883196f96b02818178b82fc7dd99c4baa78e  ./js/features/imam-teaching-insights.js
 51893da927d974f978077f96ea3719478860a5bc1198b3e58235e81cd7af53ac  ./js/features/integrated-teacher-brief.js
 8557b29bad11dc14c5b7c5659977c215ab75407e79f417a4a848d2a5e7508c26  ./js/features/mushaf-entry-unifier.js
@@ -773,7 +773,7 @@ bd8ac80d075110f6154c0a2953b573ff925c49746e5a39e305addc418cc6e270  ./tests/imam-b
 cc7f671de7644d5f0e48a3d2fdb9c2c5bb2ed52c9141beb3dbfd2b371403eb6e  ./tests/imam-board-mobile-entry-check.js
 c1e66eb091f79359422194c84b348fc773754bb3ae10b03fb292f610d671f77f  ./tests/imam-board-native-editor-check.js
 8189106474de0aa4abe271388d0a6c7c75b6c81ce433c6bc9b6489803a3df998  ./tests/imam-board-official-science-source-check.js
-b9baef187562f820b2655d1e09acf551c52f02d0b9ade7908b8437e1e69a64c8  ./tests/imam-board-preparation-safety-check.js
+db81741323fd405ed98ff7c1c58966c318a98fb62412ce4baf22ec57ece4b351  ./tests/imam-board-preparation-safety-check.js
 dbd8ba9559f093f62c62d69a304d36eff71e60f100f3462288d77c56f6a02e2c  ./tests/imam-board-science-and-display-check.js
 5a7948a703d2a0b5c4a03a79365ded646b06d5eb6e56a05acbcbd964413a666b  ./tests/imam-board-session-group-runtime-check.js
 1d10df21031bba41587e8d3cc33f3c544db0c2bbd0c5c972523b695c592dab0f  ./tests/imam-board-tafsir-fixture.html
