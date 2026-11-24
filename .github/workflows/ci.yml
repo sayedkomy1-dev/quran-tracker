@@ -46,7 +46,10 @@ jobs:
           version: latest
       - name: Start isolated local Supabase stack
         id: start_supabase
-        run: supabase start -x studio,imgproxy,inbucket,realtime,edge-runtime,logflare,vector
+        run: |
+          sed -i "s/^project_id = .*/project_id = \"rc16ci${GITHUB_RUN_ID}\"/" supabase/config.toml
+          printf '\n[db]\nport = 55432\nshadow_port = 55430\n' >> supabase/config.toml
+          supabase start -x studio,imgproxy,inbucket,realtime,edge-runtime,logflare,vector
       - name: Apply all RC16 SQL and run database contract tests
         run: |
           sudo apt-get update
@@ -58,5 +61,5 @@ jobs:
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f sql/rc16-learning-ledger.sql
           psql "$DB_URL" -v ON_ERROR_STOP=1 -f tests/rc16-learning-ledger-db.sql
       - name: Stop isolated local Supabase stack
-        if: always() && steps.start_supabase.outcome == 'success'
-        run: supabase stop --no-backup
+        if: always() && steps.supabase_cli.outcome == 'success'
+        run: supabase stop --no-backup || true
