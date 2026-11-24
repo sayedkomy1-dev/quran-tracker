@@ -71,6 +71,7 @@ assert(sessionSql.includes("'student_ref',s.student_ref"),'guardian session must
 const sql=read('sql/rc16-home-recitation.sql');
 assert(sql.includes("values (\n  'imam-home-recitations',\n  'imam-home-recitations',\n  false"),'storage bucket must be private');
 assert(sql.includes('enable row level security'),'submission and feedback tables must enable RLS');
+assert(read('supabase/config.toml').includes('[functions.guardian-recitation]\nverify_jwt = false'),'guardian upload uses its own guardian-session validation at the function gateway');
 assert(sql.includes('revoke all on table public.student_recitation_submissions from public, anon, authenticated'));
 assert(sql.includes('revoke all on table public.student_recitation_feedback from public, anon, authenticated'));
 assert(sql.includes('grant all on table public.student_recitation_submissions to service_role'));

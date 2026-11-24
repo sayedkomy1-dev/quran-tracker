@@ -197,3 +197,13 @@ A1/A2 are complete; B, C1/C2, D, and the teacher-only AI recitation source are i
 - The isolated local Supabase database test exposed that Supabase default privileges were leaving UPDATE/DELETE rights on the append-only achievement table for service_role. The migration now revokes all service_role rights before granting only SELECT/INSERT on achievements and SELECT/INSERT/UPDATE on competitions.
 - GitHub Actions run #45348927868 passed: full npm regression/static checks, 862-file SHA-256 inventory, payload budgets, Deno checks for all three Edge Functions, all three RC16 SQL scripts applied to isolated local Supabase, and database contract assertions for RLS/grants, private bucket, append-only events, competition close-only behavior, and retention-safe foreign keys.
 - The staging acceptance script now hard-blocks the configured existing Supabase project ref and requires HTTPS. Remote staging acceptance and physical Android/iOS acceptance remain pending.
+
+
+## Latest CI acceptance — 2026-11-24
+
+- GitHub Actions run #45349273473 passed on commit 818e45ac5a391d5da3206cfc87577adacc26ab3a.
+- The full npm regression suite, release SHA-256 inventory, payload budgets, Deno type-checks for all three Edge Functions, local Supabase application of all three RC16 SQL scripts, and the database contract test passed.
+- The database contract test now verifies all five RC16 owner-history foreign keys use ON DELETE RESTRICT, the audio bucket is private, browser roles have no direct table grants, service_role cannot mutate achievement events, and competitions permit only closure.
+- The staging acceptance script refuses the configured existing project ref and only accepts HTTPS.
+- Explicit gateway JWT verification is set for teacher-recitation-analysis; guardian-recitation remains the only new function with gateway verification disabled because it performs its own guardian-session validation.
+- Remote staging deployment and physical Android/iOS acceptance remain pending.

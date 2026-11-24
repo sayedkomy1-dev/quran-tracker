@@ -163,7 +163,7 @@ cfe25a13f38ecaddb51e49bcd995f73e5691b8666b1f25c95c48065a75d94d1e  ./QA-REPORT-v9
 54c678845974e33a9cf37b689579a077f397d6ae1cbbf486f7badaa14f9d5f13  ./QA-RUNTIME-v10.1.json
 52fd2a802b684bcb4be64d9633ad60ee95227914985ea976adaf1999c10693ee  ./QA-v11.4-Stage1-Mobile-Hotfix.md
 e1d31705b692604e5fbbe367cb80bee73cbedde234b8fa50902cb31f4d77b597  ./QURAN-ENGINE-10.3.md
-fa1d48bf9e80d08ea1e703a9bccf9b39a8c5f92b346c9eaf287460f405a0510c  ./RC16-IMPLEMENTATION-PLAN.md
+959d1e2d0f01fc72a706e0659bb4bed96d46f9aecd839a914b6938d43fa031c5  ./RC16-IMPLEMENTATION-PLAN.md
 0092006e7ba2c84266e67f2429b8d109a34f798d3d72c4c7e7f30f75f5ba4d69  ./README.md
 cf8657259dacc0e2743bc01a738d620c7461489b226198f83b9de0ef717d9aa0  ./RELEASE-10.0.0.md
 afd19db26fd6877d77d8455895c4f223f1b7940f2089fc756bb9deb721fdaabc  ./RELEASE-10.1.0.md
@@ -687,7 +687,7 @@ ce5ebe40e60843b65f8dbc03d05e432691b13602a0570b3db582b197adc36c26  ./sql/supervis
 c63c5a3e7a4996aa3389a270049075a253477686edf089461f112fecab17e6ad  ./student-finance.css
 823913798c8cca71ee02b589688183a5cfbadcb719dc80b4f9ce620209ca6dc1  ./student-learning-profile.css
 ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
-19b226c9d3c83fb4e4085f02ac392aa598a8e2f1861f13cb04ac8d96c9c4279a  ./supabase/config.toml
+91a0d7e3bac402239352060f1fcd275be52cf9231ff34037f831905c27cfae74  ./supabase/config.toml
 5e167e54456e042af4242c8cf3fe709852fd8d5702f6f0865a388d3d3403e5ca  ./supabase/functions/guardian-recitation/index.ts
 f1f2dba64dbb072509ffffd74d611c2d6d13f43b42b2abadbd8d9d5f978282f7  ./supabase/functions/rc16-learning-ledger/index.ts
 0390a75e2e03e4b2fa50be35afb42c0cdfd1c88f244014f9b49db27780b8a9d9  ./supabase/functions/teacher-recitation-analysis/index.ts
@@ -775,7 +775,7 @@ b1eada91066d3a70d9ed63c7e071d488cf784ebc0f7312d0b334094b96faed6b  ./tests/guardi
 abb1ae251502b75bd912e3cca58bbf2224e5c7fd4899f0bd98190486e8fc165b  ./tests/guardian-tahfeez-layout-check.js
 506d084cd43cd416a5260bcb67183f7b0c68f3b15902c544f9b1331d22b1a21e  ./tests/guardian-tahfeez-stage2-check.js
 f4a1df543acd79bcec5f46d503b30a69a2abaf4536d3d1bb8029269e484ab64a  ./tests/guest-role-update-batch-check.js
-ada5376745cfabd767a1e1e4f151015b022e1dff193cb3cd7cf54ae373a32d53  ./tests/home-recitation-check.js
+d4e9b1a005ba7d7bfc201d1bea87252c40b150aa31414467e84aeff43154a71d  ./tests/home-recitation-check.js
 c390088bc65baebc74b548389c5b6cfa532169e80229371fb05122857a74f09b  ./tests/imam-absence-makeup-check.js
 bd8ac80d075110f6154c0a2953b573ff925c49746e5a39e305addc418cc6e270  ./tests/imam-board-beta6-corpus-check.js
 cc7f671de7644d5f0e48a3d2fdb9c2c5bb2ed52c9141beb3dbfd2b371403eb6e  ./tests/imam-board-mobile-entry-check.js
@@ -822,7 +822,7 @@ a4c4ede39436d6bc430a2a1a5ba60b541b154c41670105fa26094529ab686dad  ./tests/platfo
 63de55643332033bfa789b0f8dc01d8430dab3fca9d71bd3ea961c7f63091f42  ./tests/pwa-pull-refresh-check.js
 ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-coverage-progress-check.js
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
-7c278999d0cfc89b5bd38711064df1f3916209e57063f8c48e4504a894e85f48  ./tests/rc16-ai-recitation-check.js
+b40a5bcbea64e461be94f3527cb6b1bd64efd55ac82a138791905fe99c098ee4  ./tests/rc16-ai-recitation-check.js
 864ccfd8641496e1d3787610afedceaeb883e8b97e7bf81e633267c86fdc8e55  ./tests/rc16-learning-hub-check.js
 61a1d97ff780e4e61599ee967dde54aec81ed9ab7bed3511593a2008b93a57ae  ./tests/rc16-learning-ledger-check.js
 6923adace89904af09aa2cd8e04039ebd175aa724d3cb0195be158d28b77347b  ./tests/rc16-learning-ledger-db.sql
