@@ -5,6 +5,7 @@
   const SUPABASE_URL='https://svtcntalwfmexthcnvqe.supabase.co';
   const ANON_KEY='sb_publishable_qYw8VdT1IXQ5WsdB2rhtEA_F6dSAN-j';
   const EDGE_URL=SUPABASE_URL+'/functions/v1/guardian-recitation';
+  const AI_EDGE_URL=SUPABASE_URL+'/functions/v1/teacher-recitation-analysis';
   const DB_NAME='imam-home-recitation-queue-v1';
   const STORE_NAME='pending';
   const $=id=>g.document?.getElementById(id)||null;
@@ -435,6 +436,29 @@
   function element(tag,cls,text){
     const el=g.document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el;
   }
+  async function runTeacherAiReview(row,referenceText,button,resultHost){
+    if(!teacherState?.token||!row?.id||teacherState.record?.id!==row.id)return teacherStatus('اختر تسجيلًا صالحًا أولًا.','warning');
+    if(g.navigator?.onLine===false)return teacherStatus('تحليل التلاوة يحتاج اتصالًا بالإنترنت؛ التسجيل الأصلي محفوظ كما هو.','warning');
+    if(row.status==='archived')return teacherStatus('استعد التسجيل من الأرشيف قبل طلب التحليل.','warning');
+    button.disabled=true;button.textContent='جارٍ التحليل…';resultHost.replaceChildren(element('small','','جارٍ إرسال نسخة مؤقتة للتحليل؛ لا يتم تعديل سجل الطالب.'));
+    try{
+      const response=await g.fetch(AI_EDGE_URL,{method:'POST',headers:{...apiHeaders(teacherState.token),'Content-Type':'application/json'},body:JSON.stringify({submission_id:row.id,reference_text:Core.cleanText(referenceText,5000)})});
+      const data=await parseResponse(response),result=data.result||{};
+      if(teacherState.record?.id!==row.id)return;
+      resultHost.replaceChildren();
+      if(result.transcript_candidate)resultHost.append(element('b','','تفريغ صوتي مبدئي غير معتمد'),element('p','',result.transcript_candidate));
+      const differences=Array.isArray(result.differences)?result.differences:[];
+      if(differences.length){
+        resultHost.append(element('b','','مواضع محتملة تحتاج مراجعة المحفظ'));
+        differences.forEach((item,index)=>resultHost.append(element('p','hrc-ai-difference',(index+1)+'. '+(item.kind||'غير محدد')+' — المتوقع: '+(item.expected||'—')+' — المسموع: '+(item.heard||'—')+' — '+(item.note||'راجع التسجيل والمصحف'))));
+      }else resultHost.append(element('p','hrc-ai-empty',referenceText?'لم ينتج التحليل فروقًا محددة؛ هذا لا يثبت خلو التلاوة من الخطأ.':'لم يُقدَّم نص مرجعي؛ لذلك يقتصر الناتج على تفريغ صوتي مبدئي.'));
+      resultHost.append(element('small','hrc-ai-disclaimer',data.disclaimer||'اقتراح آلي للمحفظ فقط؛ لا يعتمد تلقائيًا ولا يحدد توقيت الخطأ.'));
+      teacherStatus('تم حفظ مقترح التحليل للمراجعة فقط. لم تُضف درجة أو خطأ رسمي إلى سجل الطالب.','success');
+    }catch(error){
+      resultHost.replaceChildren(element('p','hrc-ai-empty','تعذر تنفيذ التحليل: '+(error.message||'الخدمة غير متاحة')+'. لم يتم إنشاء نتيجة بديلة.'));
+      teacherStatus(error.message||'تعذر تنفيذ التحليل.','error');
+    }finally{button.disabled=false;button.textContent='تحليل استرشادي للتلاوة';}
+  }
   function renderTeacherDetail(row){
     if(!teacherState)return;
     teacherState.record=row;teacherState.selectedId=row.id;
@@ -444,6 +468,13 @@
     const heading=element('h3','', 'سورة '+(surahs()[Number(row.surah_no)-1]?.[0]||row.surah_no)+' — الآيات '+row.ayah_from+'–'+row.ayah_to);host.append(heading);
     if(row.student_note)host.append(element('p','hrc-student-note','ملاحظة الطالب: '+row.student_note));
     const audio=element('audio','hrc-review-audio');audio.controls=true;audio.preload='metadata';audio.src=row.audio_url||'';audio.id='hrcTeacherAudio';host.append(audio);
+    const aiBox=element('section','hrc-ai-review');aiBox.append(element('b','','مساعد تحليل التلاوة (استرشادي فقط)'));
+    const reference=element('textarea','');reference.id='hrcAiReferenceText';reference.rows=3;reference.maxLength=5000;reference.placeholder='اختياري: ألصق نص الآيات من مصحف موثوق للمقارنة الحرفية…';
+    aiBox.append(reference,element('small','','من دون نص مرجعي، سيعرض النظام تفريغًا صوتيًا مبدئيًا فقط. لا يقدم تشخيصًا للتجويد أو المخارج ولا يحدد توقيتات.'));
+    const aiButton=element('button','hrc-secondary','تحليل استرشادي للتلاوة');aiButton.type='button';aiButton.disabled=row.status==='archived'||!row.audio_url;
+    const aiResult=element('div','hrc-ai-results');aiResult.id='hrcAiResult';
+    aiButton.addEventListener('click',()=>runTeacherAiReview(row,reference.value,aiButton,aiResult));
+    aiBox.append(aiButton,aiResult);host.append(aiBox);
     const markerBox=element('section','hrc-marker-box');
     markerBox.append(element('b','','إضافة علامة عند موضع التصحيح'));
     const markerNote=element('textarea','');markerNote.id='hrcMarkerNote';markerNote.rows=2;markerNote.maxLength=300;markerNote.placeholder='اكتب ما يحتاج الطالب إلى مراجعته…';markerBox.append(markerNote);

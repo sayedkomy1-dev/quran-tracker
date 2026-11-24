@@ -14,7 +14,7 @@ const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
 // New reader-only shell must not overwrite an already-installed offline release.
-const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation' + '-rc16-learning-profile1' + '-rc16-learning-observations1' + '-rc16-home-recitation1' + '-rc16-learning-hub1';
+const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation' + '-rc16-learning-profile1' + '-rc16-learning-observations1' + '-rc16-home-recitation1' + '-rc16-learning-hub1' + '-rc16-ai-review1';
 // Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
@@ -68,9 +68,9 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/student-finance.js?v=11.5.1-s2',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
-  './home-recitation.css?v=beta28-rc16-home-recitation1',
+  './home-recitation.css?v=beta28-rc16-ai-review1',
   './js/features/home-recitation-core.js?v=beta28-rc16-home-recitation1',
-  './js/features/home-recitation.js?v=beta28-rc16-home-recitation1',
+  './js/features/home-recitation.js?v=beta28-rc16-ai-review1',
   './js/features/guardian-portal-view.js?v=11.7.4.2',
   './js/features/guest-practice.js?v=beta28-rc13',
   './js/features/session-intelligence-119.js?v=beta28-rc13',
@@ -127,9 +127,9 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/imam-makeup-agenda.js?v=11.12.1-beta.27-combined-review4',
   './js/features/student-progress.js?v=beta28-rc16-learning-observations1',
   './js/features/student-learning-profile.js?v=beta28-rc16-learning-observations1',
-  './home-recitation.css?v=beta28-rc16-home-recitation1',
+  './home-recitation.css?v=beta28-rc16-ai-review1',
   './js/features/home-recitation-core.js?v=beta28-rc16-home-recitation1',
-  './js/features/home-recitation.js?v=beta28-rc16-home-recitation1',
+  './js/features/home-recitation.js?v=beta28-rc16-ai-review1',
   './index.html',
   './css/platform/tokens.css?v=11.12.1-beta.27',
   './css/platform/legacy-features.css?v=11.12.1-beta.27',

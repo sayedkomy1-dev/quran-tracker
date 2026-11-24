@@ -49,3 +49,13 @@
 .hrc-publish-check input{width:20px;height:20px}
 @media(max-width:700px){.hrc-grid{grid-template-columns:1fr 1fr}.hrc-grid label:first-child{grid-column:1/-1}.hrc-teacher-layout{grid-template-columns:1fr}.hrc-teacher-list{max-height:220px}.hrc-modal-dialog{padding:12px}.hrc-actions>*{flex:1 1 auto}}
 @media(max-width:420px){.hrc-grid{grid-template-columns:1fr}.hrc-grid label:first-child{grid-column:auto}.hrc-card-head,.hrc-teacher-entry{align-items:flex-start;flex-direction:column}.hrc-card-head>span{align-self:flex-start}.hrc-file-pick{width:100%;box-sizing:border-box;justify-content:space-between}.hrc-file-pick input{max-width:62%}.hrc-annotation-row{align-items:flex-start;flex-direction:column}}
+
+/* RC16 teacher-only AI recitation suggestions */
+.hrc-ai-review{display:grid;gap:9px;border:1px solid #d8e5db;border-radius:12px;padding:12px;background:#f7fbf8}
+.hrc-ai-review textarea{width:100%;min-height:76px;box-sizing:border-box;border:1px solid #cbdccf;border-radius:9px;padding:9px;font:inherit;resize:vertical}
+.hrc-ai-results{display:grid;gap:7px;padding:10px;border-radius:9px;background:#fff;border:1px solid #e0e9e2}
+.hrc-ai-results p{margin:0;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}
+.hrc-ai-results small{line-height:1.8;color:#6b776e}
+.hrc-ai-difference{padding:8px;border-inline-start:3px solid #d7b96f;background:#fffbf1;border-radius:6px}
+.hrc-ai-empty{color:#69786d}
+.hrc-ai-disclaimer{display:block;padding:8px;background:#f3f4f0;border-radius:7px}

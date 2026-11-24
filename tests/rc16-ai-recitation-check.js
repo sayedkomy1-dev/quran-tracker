@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const edge=read('supabase/functions/teacher-recitation-analysis/index.ts'),sql=read('sql/rc16-ai-recitation.sql'),browser=read('js/features/home-recitation.js'),css=read('home-recitation.css'),setup=read('docs/RC16-HOME-RECITATION-SETUP.md');
+new vm.Script(browser,{filename:'home-recitation.js'});
+for(const term of ['authClient.auth.getUser(bearer)','profile.status!=="active"','profile.role','eq("owner_user_id",ownerId)','uploaded_at','audioSignature(bytes,submission.mime_type)','MAX_DAILY_REVIEWS=5','GEMINI_API_KEY','student_recitation_ai_reviews'])assert(edge.includes(term),'missing AI server safeguard: '+term);
+assert(edge.includes('time_ms:null'));assert(edge.includes('Do not diagnose tajweed, makharij'));assert(edge.includes('Do not invent timestamps'));assert(edge.includes('if(!GEMINI_API_KEY)'));assert(edge.includes('admin.storage.from(BUCKET).download'));
+assert(sql.includes('enable row level security')&&sql.includes('revoke all on table public.student_recitation_ai_reviews from public, anon, authenticated'));
+assert(sql.includes('grant all on table public.student_recitation_ai_reviews to service_role'));assert(sql.includes('time_ms is always null'));
+assert(browser.includes('teacher-recitation-analysis')&&browser.includes('teacherState.token'));assert(browser.includes('لم تُضف درجة أو خطأ رسمي'));
+assert(css.includes('.hrc-ai-review'));assert(setup.includes('GEMINI_API_KEY'));assert(!browser.includes('GEMINI_API_KEY')&&!browser.includes('SERVICE_ROLE_KEY'));
+console.log('PASS RC16 AI recitation: JWT/owner authorization, private audio, quota, server secret, no tajweed diagnosis, no invented timestamps, teacher-only results');

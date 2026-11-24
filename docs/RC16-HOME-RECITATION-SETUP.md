@@ -57,3 +57,12 @@ If staging uses another origin, add that exact origin to ALLOWED_ORIGINS before 
 
 ## Rollback
 Do not drop the tables or bucket after real recordings exist. To disable the feature, stop linking the feature UI and disable the Edge Function while retaining the private bucket and data. Any data removal requires a separately approved retention and export plan.
+
+## AI recitation analysis — safeguards and limits
+- The browser sends only the selected submission ID, optional teacher-supplied reference text, and authenticated teacher JWT. The private audio is fetched by the Edge Function from the private bucket.
+- The endpoint allows active owners and teachers only, checks academy ownership, submission status, actual audio signature, size/duration, and limits usage to five analyses per owner per 24 hours.
+- GEMINI_API_KEY is a server secret. Do not commit it.
+- AI output is a tentative transcript and possible text differences only. It is not a calibrated confidence score, tajweed/makhraj diagnosis, official grade, or student record.
+- AI-generated time positions are discarded by the server. Use the existing teacher playback controls to create real timestamp annotations manually.
+- AI suggestions are stored in a teacher-only RLS-protected table and are not returned by student/guardian endpoints.
+- A missing key, provider outage, or rate limit returns an explicit unavailable/error state. No synthetic audio, score, or fallback analysis is generated.

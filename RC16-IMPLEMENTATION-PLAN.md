@@ -146,3 +146,11 @@ A1 and A2 are complete and CI-verified. B is implemented on the isolated branch 
 - Cache-busted the board asset in the app shell and service worker.
 - Added regression assertions for save-before-recovery, emergency command wiring, safe pause, and preservation messaging.
 - This is a focused C1 safety improvement; broader board templates and group preparation remain to be reviewed.
+
+
+### E — AI-assisted recitation suggestions
+- Added a teacher-only Edge Function and additive SQL audit table for tentative audio transcription and optional comparison against text supplied by the teacher from a trusted Mushaf.
+- The endpoint validates the active teacher JWT, academy ownership, submission status, actual audio signature, file size/duration, private storage path, and a five-per-day owner quota.
+- The model is not allowed to diagnose tajweed/makhraj, assign scores, or invent timestamps. The server forcibly sets every AI difference timestamp to null.
+- AI output is stored as private teacher suggestions only. It is not written into official errors, grades, or student/guardian feedback.
+- Live use requires the staging SQL migration, Edge Function deployment, and GEMINI_API_KEY configured through Supabase secrets. No provider key is present in the repository.

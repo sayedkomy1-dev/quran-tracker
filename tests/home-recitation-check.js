@@ -41,6 +41,10 @@ assert(browserJs.includes("student_visible"),'student feedback requires explicit
 assert(browserJs.includes("hrcSaveFeedback"),'save action must target its own button');
 assert(!browserJs.includes('SERVICE_ROLE_KEY'),'service-role credentials must never reach browser code');
 assert(!browserJs.includes('createFallbackTeacherToneWav'),'no synthetic teacher/learner audio fallback');
+assert(browserJs.includes('AI_EDGE_URL')&&browserJs.includes('teacher-recitation-analysis'),'teacher AI review uses a separate server endpoint');
+assert(browserJs.includes('teacherState.token'),'AI endpoint receives the authenticated teacher token');
+assert(browserJs.includes('لم تُضف درجة أو خطأ رسمي'),'AI suggestions are not written as official grades/errors');
+assert(browserJs.includes('hrcAiReferenceText'),'teacher may supply reference text from a trusted Mushaf');
 
 const edge=read('supabase/functions/guardian-recitation/index.ts');
 const countsText=edge.match(/const SURAH_AYAH_COUNTS = \[([\s\S]*?)\];/);
@@ -79,9 +83,9 @@ const view=read('js/features/guardian-portal-view.js');
 const progress=read('js/features/student-progress.js');
 const sw=read('sw.js');
 for(const file of [portal,index]){
-  assert(file.includes('home-recitation.css?v=beta28-rc16-home-recitation1'));
+  assert(file.includes('home-recitation.css?v=beta28-rc16-ai-review1'));
   assert(file.includes('js/features/home-recitation-core.js?v=beta28-rc16-home-recitation1'));
-  assert(file.includes('js/features/home-recitation.js?v=beta28-rc16-home-recitation1'));
+  assert(file.includes('js/features/home-recitation.js?v=beta28-rc16-ai-review1'));
 }
 assert(portal.includes('id="homeRecitationCard"'),'home recording UI must exist in the phone/PIN portal');
 assert(view.includes('setStudentContext?.({sessionToken,studentRef:row.student_ref'),'student context must come from the authenticated session response');
@@ -89,9 +93,10 @@ assert(view.includes('setStudentContext?.(null)'),'static/live/error views must 
 assert(view.includes("g.addEventListener('online'"),'offline session recovery must retry after reconnect');
 assert(progress.includes('renderTeacherPanel?.(studentId)'),'teacher inbox must be connected to the existing student profile');
 assert(progress.includes('openTeacherInbox?.(studentId)'),"teacher can open the student's home recordings from the profile");
-assert(sw.includes("'-rc16-home-recitation1'"),'service-worker cache namespace must advance');
+assert(sw.includes("'-rc16-ai-review1'"),'service-worker cache namespace must advance for AI review');
 for(const asset of ['home-recitation.css','js/features/home-recitation-core.js','js/features/home-recitation.js']){
-  assert(sw.includes("'./"+asset+"?v=beta28-rc16-home-recitation1'"),'fresh shell missing '+asset);
+  const version=asset.includes('home-recitation-core')?'beta28-rc16-home-recitation1':'beta28-rc16-ai-review1';
+  assert(sw.includes("'./"+asset+"?v="+version+"'"),'fresh shell missing '+asset);
 }
 assert(read('docs/RC16-HOME-RECITATION-SETUP.md').includes('staging first'));
 console.log('PASS RC16 home recitation: Quran range, audio validation, offline queue, student isolation, teacher privacy, signed playback, and shell integration');
