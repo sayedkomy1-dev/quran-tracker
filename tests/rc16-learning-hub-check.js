@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),Core=require('../js/features/rc16-learning-hub-core.js');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),Core=require('../js/features/rc16-learning-hub-core.js'),sync=read('sync-core.js');
 const data=JSON.parse(read('data/academy-learning-materials.json')),surahs=[{n:'الفاتحة',a:7},{n:'البقرة',a:286},{n:'آل عمران',a:200},{n:'النساء',a:176},{n:'المائدة',a:120}];
 for(const category of ['foundation','tajweed','makharij','mutashabihat','surah']){const pool=Core.buildQuestionPool(data,surahs,category,1);assert(pool.length>0,category+' pool');const quiz=Core.makeQuiz(pool,5,()=>0.37);assert(quiz.length>0&&quiz.length<=5);quiz.forEach(q=>assert(q.correctIndex>=0&&q.correctIndex<q.options.length));}
 const q=[{id:'q1',options:['a','b'],correctIndex:1,explanation:'x'},{id:'q2',options:['c','d'],correctIndex:0,explanation:'y'}];

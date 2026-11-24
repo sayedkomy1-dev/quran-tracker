@@ -404,7 +404,7 @@ fd764a7cdeeafd1f062c21c3e580f912ee4e31ea73642580b7b94734302f0608  ./js/features/
 4433a83e3d931dc98e91f2524ef1b500598ccf501c361e62d46c43a7f9216ec7  ./js/features/rc10-teacher-fast-path.js
 0e32f75828928f7b0725c7b46adfd15333544777eee0b8f4bd74671039df4f2c  ./js/features/rc11-teacher-flow.js
 cdd6ec80dc6f984fa56a8b078ce44db5548831e1e2a35582303197be0df12004  ./js/features/rc16-learning-hub-core.js
-b83509aa7441d5cf7a1ae57fa5d5adb6a06fd7795264d5beb0265488c47febd4  ./js/features/rc16-learning-hub.js
+ed79b7c986b49c3098159c3b466695d21d97c8a25f3409c2491203918bcaeba9  ./js/features/rc16-learning-hub.js
 decb747eb57253390ae8de208947dbe16c4cc11c1ffe8b42b702caea89c5eb3b  ./js/features/rc3-experience.js
 275a76e7e0981a571c434b54549d8a1e3e2dc594ed3196a1da382a70468ec232  ./js/features/rc8-premium-workspace.js
 7e22c67e450b637e367d00ca4ab0ce2b225ce022054a35f1ffde3ddd9402ab7b  ./js/features/rc9-lesson-flow.js
@@ -817,7 +817,7 @@ a4c4ede39436d6bc430a2a1a5ba60b541b154c41670105fa26094529ab686dad  ./tests/platfo
 ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-coverage-progress-check.js
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
 10d1e650c4a13ccd38db41262253c983905bdc87292d1d62cfb17e0c6d40c8a6  ./tests/rc16-ai-recitation-check.js
-e76a1f1fb81041c48657aa503a63f65ab38745abc0aec807bd7fde64e803af9e  ./tests/rc16-learning-hub-check.js
+0ca86564dac39407ec5e57ba6f8410e7266a150cc37403d36ddd1a163c087bcb  ./tests/rc16-learning-hub-check.js
 aaf916b0379dd4c227ef161ea0229dbaae8f934b8a8b7e99bfb6a9d9ee4801f7  ./tests/rc16-quiz-sync-merge-check.js
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
 c703b5fc099b16bc65f19005441f82aaeb6648f9140279103a7000e60dcacf83  ./tests/release-consistency-beta16-check.js
