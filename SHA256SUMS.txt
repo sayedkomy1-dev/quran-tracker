@@ -678,7 +678,7 @@ e2ee210099231f20d2005138bf3de83dcb0abb8c6344254d276981622fa025c7  ./sql/guardian
 382154a84567c41e1ef0c175f3e303361f43c50681876c9f24c2163b4d89f325  ./sql/quran-guest-practice.sql
 909b75af36232d8e11c335858d00d1a8db505d5b4696b77665d6da2b804d947c  ./sql/rc16-ai-recitation.sql
 b4a935a4815516202ea08e0cdaa06a521be478bfe43b4048449780db137bf2b2  ./sql/rc16-home-recitation.sql
-c706c8330831e4b091b9df6f3e9de42e102b63983486440f69a550940a33f821  ./sql/rc16-learning-ledger.sql
+83438012265403c08114d74ec86ed4133aabb664530e9b54436f18783a1cc71a  ./sql/rc16-learning-ledger.sql
 2acbd64053dc1c8dcca842278f44b8f401108097cc659d5bbf3051e624eadd54  ./sql/supabase-setup.sql
 5f4c5de555bf095e4c26978464bcffdfae6e31b00c6feb04adde596e5b55bbdc  ./sql/supabase-sync.sql
 ce5ebe40e60843b65f8dbc03d05e432691b13602a0570b3db582b197adc36c26  ./sql/supervision-roster-permissions.sql
@@ -688,7 +688,7 @@ c63c5a3e7a4996aa3389a270049075a253477686edf089461f112fecab17e6ad  ./student-fina
 ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
 19b226c9d3c83fb4e4085f02ac392aa598a8e2f1861f13cb04ac8d96c9c4279a  ./supabase/config.toml
 5e167e54456e042af4242c8cf3fe709852fd8d5702f6f0865a388d3d3403e5ca  ./supabase/functions/guardian-recitation/index.ts
-9e2d19fdfd3642fd638df960071d70618eb4847cd9884dfcfc94d6b0f7966e43  ./supabase/functions/rc16-learning-ledger/index.ts
+f1f2dba64dbb072509ffffd74d611c2d6d13f43b42b2abadbd8d9d5f978282f7  ./supabase/functions/rc16-learning-ledger/index.ts
 16cbd7799a725b263fc9d8e2de9055f6d71da4dc379d335db581665679359565  ./supabase/functions/teacher-recitation-analysis/index.ts
 31ac79231923764197a8214dd17550712fca1cfee3f8c37238bcedd559b7f89b  ./sw.js
 7b605926b20b7baab372d9ec22d306cc357df68bd834b54437f7ea3ff1e6e956  ./sync-core.js
@@ -823,7 +823,7 @@ ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
 10d1e650c4a13ccd38db41262253c983905bdc87292d1d62cfb17e0c6d40c8a6  ./tests/rc16-ai-recitation-check.js
 864ccfd8641496e1d3787610afedceaeb883e8b97e7bf81e633267c86fdc8e55  ./tests/rc16-learning-hub-check.js
-1370f844cb862fdeec980800299eb66732679749e37b15742990b1d63c13d6aa  ./tests/rc16-learning-ledger-check.js
+cb97864c470a9f3eb363ade5f1b660c76e52e329585517a29e40560f0b506a79  ./tests/rc16-learning-ledger-check.js
 aaf916b0379dd4c227ef161ea0229dbaae8f934b8a8b7e99bfb6a9d9ee4801f7  ./tests/rc16-quiz-sync-merge-check.js
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
 722fdd171896037b101d596076d110eaca2308b1d24efe5a67415c5ac4b264f8  ./tests/release-consistency-beta16-check.js

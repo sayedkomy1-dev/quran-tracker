@@ -8,7 +8,7 @@ assert(ui.includes('/functions/v1/rc16-learning-ledger'));
 assert(!ui.includes('rc16AchievementEvents')&&!ui.includes('rc16Competitions'),'client must not use local account snapshots as the authority for points or competitions');
 assert(ui.includes('student_ref')&&ui.includes('approved_at')&&ui.includes('idempotency_key'));
 assert(sql.includes('enable row level security'));
-assert(sql.includes('as $rc16
+assert(sql.includes('jsonb_object_keys(p_groups)')&&!sql.includes('jsonb_object_length(p_groups)'),'participant snapshot validation must use supported PostgreSQL JSONB functions');
 assert(sql.includes('revoke all on table public.student_achievement_events from public, anon, authenticated'));
 assert(sql.includes('revoke all on table public.student_learning_competitions from public, anon, authenticated'));
 assert(sql.includes('before update or delete on public.student_achievement_events'));
@@ -27,6 +27,7 @@ assert(edge.includes('crypto.randomUUID()')&&edge.includes('quiz:"+studentRef+":
 assert(edge.includes('questionCount>20')&&edge.includes('Math.min(20,correctCount*2)'));
 assert(edge.includes('student_refs')&&edge.includes('opt_in'));
 assert(edge.includes('participant_groups:participantGroups')&&edge.includes('request_key:requestKey'));
+assert(edge.includes('participantGroupNames.size!==groups.length'),'every selected circle must have at least one participant in the competition snapshot');
 assert(edge.includes('.eq("request_key",requestKey)'),'competition retry must return the existing record');
 assert(ui.includes('participant_groups:participants')&&ui.includes('pendingCompetitionRequestKey'));
 assert(ui.includes("addEventListener?.('online'"),'restore central ledger when the app comes back online');

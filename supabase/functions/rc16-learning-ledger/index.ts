@@ -98,7 +98,9 @@ async function approveQuiz(ownerId:string,body:Record<string,unknown>) {
 async function createCompetition(ownerId:string,body:Record<string,unknown>) {
   const title=clean(body.title,100),scope=clean(body.scope,30);
   const startDate=clean(body.start_date,10),endDate=clean(body.end_date,10);
-  const requestKey=clean(body.request_key,120);
+  const rawRequestKey=String(body.request_key||'').trim();
+  if(!rawRequestKey||rawRequestKey.length>120)throw new Error("COMPETITION_REQUEST_KEY_INVALID");
+  const requestKey=clean(rawRequestKey,120);
   const refsRaw=Array.isArray(body.student_refs)?body.student_refs:[];
   const refs=[...new Set(refsRaw.map(x=>String(x)))];
   const groupsRaw=Array.isArray(body.group_names)?body.group_names:[];
@@ -117,9 +119,11 @@ async function createCompetition(ownerId:string,body:Record<string,unknown>) {
   if(!refs.length||refs.length>200||refs.some(x=>!validStudentRef(x)))throw new Error("COMPETITION_STUDENTS_INVALID");
   if(Object.keys(participantGroups).length!==refs.length)throw new Error("COMPETITION_PARTICIPANTS_INVALID");
   if(groups.length>50)throw new Error("COMPETITION_GROUPS_INVALID");
+  const participantGroupNames=new Set(Object.values(participantGroups));
+  if(scope!=="individual"&&(participantGroupNames.has("")||[...participantGroupNames].some(x=>!groups.includes(x))))throw new Error("COMPETITION_PARTICIPANTS_INVALID");
   if(scope==="individual"&&(refs.length!==1||groups.length!==0||optIn))throw new Error("COMPETITION_SCOPE_INVALID");
-  if(scope==="circle"&&(groups.length!==1||optIn))throw new Error("COMPETITION_SCOPE_INVALID");
-  if(scope==="circle-to-circle"&&(groups.length<2||!optIn))throw new Error("COMPETITION_OPT_IN_REQUIRED");
+  if(scope==="circle"&&(groups.length!==1||optIn||participantGroupNames.size!==1||!participantGroupNames.has(groups[0])))throw new Error("COMPETITION_SCOPE_INVALID");
+  if(scope==="circle-to-circle"&&(groups.length<2||!optIn||participantGroupNames.size!==groups.length))throw new Error("COMPETITION_OPT_IN_REQUIRED");
   if(!["individual","circle","circle-to-circle"].includes(scope))throw new Error("COMPETITION_SCOPE_INVALID");
   const result=await admin.from("student_learning_competitions").insert({
     id:crypto.randomUUID(),owner_user_id:ownerId,title,scope,student_refs:refs,participant_groups:participantGroups,
