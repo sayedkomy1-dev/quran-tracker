@@ -22,6 +22,22 @@ begin
   if has_table_privilege('service_role','public.student_learning_competitions','delete') then raise exception 'RC16_COMPETITION_DELETE_GRANT_PRESENT'; end if;
   if has_function_privilege('anon','public.rc16_valid_student_ref_array(text[])','execute') then raise exception 'RC16_VALIDATOR_EXPOSED_TO_ANON'; end if;
   if not exists(select 1 from storage.buckets where id='imam-home-recitations' and public=false) then raise exception 'RC16_AUDIO_BUCKET_NOT_PRIVATE'; end if;
+  if (
+    select count(*)
+      from pg_constraint c
+      join pg_attribute a on a.attrelid=c.conrelid and a.attnum=any(c.conkey)
+     where c.contype='f'
+       and c.conrelid in (
+         'public.student_recitation_submissions'::regclass,
+         'public.student_recitation_feedback'::regclass,
+         'public.student_recitation_ai_reviews'::regclass,
+         'public.student_achievement_events'::regclass,
+         'public.student_learning_competitions'::regclass
+       )
+       and a.attname='owner_user_id'
+       and c.confdeltype='r'
+  ) <> 5 then raise exception 'RC16_OWNER_HISTORY_DELETE_RESTRICTIONS_MISSING'; end if;
+
 end;
 $$;
 

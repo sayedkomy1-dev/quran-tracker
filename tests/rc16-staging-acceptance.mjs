@@ -3,6 +3,12 @@ import { createHash } from "node:crypto";
 const required = ["RC16_STAGING_SUPABASE_URL","RC16_STAGING_SUPABASE_ANON_KEY","RC16_STAGING_TEACHER_A_EMAIL","RC16_STAGING_TEACHER_A_PASSWORD","RC16_STAGING_TEACHER_B_EMAIL","RC16_STAGING_TEACHER_B_PASSWORD"];
 for (const key of required) if (!process.env[key]) throw new Error("Missing required environment variable: " + key);
 const baseUrl = process.env.RC16_STAGING_SUPABASE_URL.replace(/\/+$/, "");
+const parsedBaseUrl = new URL(baseUrl);
+if (parsedBaseUrl.protocol !== "https:") throw new Error("Staging Supabase URL must use HTTPS.");
+if (parsedBaseUrl.hostname === "svtcntalwfmexthcnvqe.supabase.co") {
+  throw new Error("Refusing to create append-only RC16 test data in the existing configured/live Supabase project.");
+}
+
 const anonKey = process.env.RC16_STAGING_SUPABASE_ANON_KEY;
 const runId = process.env.GITHUB_RUN_ID || process.env.RC16_STAGING_RUN_ID || String(Date.now());
 const endpoint = baseUrl + "/functions/v1/rc16-learning-ledger";

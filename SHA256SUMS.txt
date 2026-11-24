@@ -163,7 +163,7 @@ cfe25a13f38ecaddb51e49bcd995f73e5691b8666b1f25c95c48065a75d94d1e  ./QA-REPORT-v9
 54c678845974e33a9cf37b689579a077f397d6ae1cbbf486f7badaa14f9d5f13  ./QA-RUNTIME-v10.1.json
 52fd2a802b684bcb4be64d9633ad60ee95227914985ea976adaf1999c10693ee  ./QA-v11.4-Stage1-Mobile-Hotfix.md
 e1d31705b692604e5fbbe367cb80bee73cbedde234b8fa50902cb31f4d77b597  ./QURAN-ENGINE-10.3.md
-5fac163ecbf7d983846357f3331dc2d7ae5f9e95d862771fda4ee9a0f18589c3  ./RC16-IMPLEMENTATION-PLAN.md
+fa1d48bf9e80d08ea1e703a9bccf9b39a8c5f92b346c9eaf287460f405a0510c  ./RC16-IMPLEMENTATION-PLAN.md
 0092006e7ba2c84266e67f2429b8d109a34f798d3d72c4c7e7f30f75f5ba4d69  ./README.md
 cf8657259dacc0e2743bc01a738d620c7461489b226198f83b9de0ef717d9aa0  ./RELEASE-10.0.0.md
 afd19db26fd6877d77d8455895c4f223f1b7940f2089fc756bb9deb721fdaabc  ./RELEASE-10.1.0.md
@@ -444,7 +444,7 @@ c176d6bbc183ab6b9a06a615f87beca7c641f8e2b521854cdd3d792be73c5394  ./docs/OP-BETA
 0d5fcda7fa3aac3be3721919ed4d6f3c0f3e4e1ce22bde54edda2f9a3859dd48  ./docs/QA-IMAM-BOARD-BETA6-ACCEPTANCE-125.md
 0771cf2add6ebb7af85a11bf1159e1363a82798d6a96a24434959387f2946a28  ./docs/RC16-HOME-RECITATION-SETUP.md
 85723ca0afd31d18a95bb740722ef0c06c0061df1ce07a90d1d1f87e116c1e14  ./docs/RC16-LEARNING-LEDGER-SETUP.md
-a5f09ef102c2852ea3553415ecf6d3310a90674e4688717d7081f1163804d32b  ./docs/RC16-RELEASE-ACCEPTANCE.md
+1e222087f682fd168c9af2c2c436a5c9d6ee527fc67b1842c09a40fceda25c8b  ./docs/RC16-RELEASE-ACCEPTANCE.md
 0b855ba0b8383c162b03f4033fde5644fe3e6a4fcf7b819df3ac735570e478df  ./docs/REVOLUTIONARY-UX-MASTER-PROMPT.md
 271318a13dbc6538f4129f4b38081a24105d94d711f8d7d9f446bcee665eb983  ./docs/TEST-BETA10-PHONE-HOME.md
 2014e7b1da836c28d3b4650347ff40b9e3bf770562a4f1c8ea9ebeaabee47750  ./docs/review-sources/#U062a#U0642#U0631#U064a#U0631-#U0627#U0644#U0641#U062d#U0635-#U0627#U0644#U0634#U0627#U0645#U0644-2026-11-21.md
@@ -561,7 +561,7 @@ a29eff5aee0d11a9e536f63bbd79bebfbf23de8154cc1be4b95304dabc8626db  ./js/features/
 ff3097d5c4eb04b2a50bbdd83f76f099ebcb35411ca11fe84507465a92e9d72c  ./js/features/v11-ui.js
 36eef73a2ab5795f2680f7ea4d19842babf7d5f0fa7784bb75b1c78367587665  ./manifest.json
 66e7a7496b6df778ff666cd3aa83838f6b7ebd32a3155e67f8d129a4f289ca8c  ./maqraa.html
-5da0e36ce727dc5aab0eff0301a4396f22ae7fea44cb3c82e720c36a7c75b6ce  ./package.json
+a7175541252d45bad88909237691c14e029bc442c63ec856585974158c9c88a2  ./package.json
 006233681e5b9057b512f30a2d188752516a20b1d0c3728d5f463922d2c2e255  ./placement-center-1191.css
 714c0006dae19e65c61e5a4e353adc0e89317871d33ddbf4425dc48cdde72a80  ./privacy.html
 c328381c6471d948a58ff4542ada95bc77bebe7c3ac2842cc0faab347fd591cc  ./progress-bridge-1111.css
@@ -825,10 +825,10 @@ ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-
 7c278999d0cfc89b5bd38711064df1f3916209e57063f8c48e4504a894e85f48  ./tests/rc16-ai-recitation-check.js
 864ccfd8641496e1d3787610afedceaeb883e8b97e7bf81e633267c86fdc8e55  ./tests/rc16-learning-hub-check.js
 61a1d97ff780e4e61599ee967dde54aec81ed9ab7bed3511593a2008b93a57ae  ./tests/rc16-learning-ledger-check.js
-2fbc550e91d8ccf7c3d3bc8c6046352809929181ca098b31f59236c9d507c00d  ./tests/rc16-learning-ledger-db.sql
-30c6b0047e39e15956da909e82cce65182a53240d294de87a5a25de56d2cedaa  ./tests/rc16-migration-safety-check.js
+6923adace89904af09aa2cd8e04039ebd175aa724d3cb0195be158d28b77347b  ./tests/rc16-learning-ledger-db.sql
+63efe4721ecc4f1aacab91f59a2c2b19ccb70b2d8b52b29dfcbf27ca60f8dd2b  ./tests/rc16-migration-safety-check.js
 aaf916b0379dd4c227ef161ea0229dbaae8f934b8a8b7e99bfb6a9d9ee4801f7  ./tests/rc16-quiz-sync-merge-check.js
-eec3c124b9605b37f239132d04412109deaba75a73532c6ce50bc6ebfc9e79bc  ./tests/rc16-staging-acceptance.mjs
+dd575298535a8746520a880d927c5afb265b2eb0725ad3bbf4eceaca3d679061  ./tests/rc16-staging-acceptance.mjs
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
 722fdd171896037b101d596076d110eaca2308b1d24efe5a67415c5ac4b264f8  ./tests/release-consistency-beta16-check.js
 ee2b06b565b49d1cc30b0af62df99070a5e303abd3bb24b94f0ecdb4cf78d6a7  ./tests/revision-text-boot-check.js

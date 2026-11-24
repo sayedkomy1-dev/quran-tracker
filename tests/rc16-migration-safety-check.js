@@ -12,6 +12,9 @@ for(const file of migrations){
   assert(!/\bdelete\s+from\b/i.test(sql),file+' must not delete existing rows');
 }
 const home=read(migrations[0]),ai=read(migrations[1]),ledger=read(migrations[2]);
+const staging=read('tests/rc16-staging-acceptance.mjs');
+assert(staging.includes('svtcntalwfmexthcnvqe.supabase.co')&&staging.includes('Refusing to create append-only RC16 test data'),'staging acceptance must hard-block writes to the configured/live Supabase project');
+
 assert.equal((home.match(/owner_user_id uuid not null references auth\.users\(id\) on delete restrict/g)||[]).length,2);
 assert(ai.includes('owner_user_id uuid not null references auth.users(id) on delete restrict'));
 assert(ledger.includes('owner_user_id uuid not null references auth.users(id) on delete restrict'));

@@ -25,7 +25,7 @@ Both test accounts must be separate, active Supabase users with active app_users
 
     node tests/rc16-staging-acceptance.mjs
 
-The test creates a synthetic quiz achievement and individual competition for a synthetic hashed student reference. These rows are append-only/retained by design, contain no student names, and are scoped to the staging test accounts. Never run this script against production.
+The script refuses the configured project ref svtcntalwfmexthcnvqe and requires HTTPS. It creates a synthetic quiz achievement and individual competition for a synthetic hashed student reference. These rows are append-only/retained by design, contain no student names, and are scoped to the staging test accounts. Never bypass the guard or run this script against production.
 
 - [ ] All three SQL scripts applied successfully to staging.
 - [ ] guardian-recitation deployed with gateway JWT verification disabled; its own guardian-session/teacher-JWT checks remain active.
