@@ -2,7 +2,7 @@
 -- Additive migration. Suggestions are not official grades or Quran/tajweed rulings.
 create table if not exists public.student_recitation_ai_reviews (
   id uuid primary key,
-  owner_user_id uuid not null references auth.users(id) on delete cascade,
+  owner_user_id uuid not null references auth.users(id) on delete restrict,
   submission_id uuid not null references public.student_recitation_submissions(id) on delete restrict,
   model_name text not null,
   reference_text text not null default '',

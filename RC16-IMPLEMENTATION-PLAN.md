@@ -180,3 +180,12 @@ A1/A2 are complete; B, C1/C2, D, and the teacher-only AI recitation source are i
 ### G — Release hardening status
 - Targeted tests now cover learning question banks, teacher approval, idempotent awards, competition opt-in, group preparation copies, AI authorization/privacy/quota/signature validation, and no-fake-timestamp behavior.
 - Latest full GitHub Actions run #45344560052 passed: all existing and targeted RC16 checks, Edge TypeScript syntax validation, 858 SHA-256 file hashes, 507 KiB gzip JS / 850 KiB budget, and 122 KiB gzip CSS / 250 KiB budget. Staging SQL/Edge Function deployment, role/RLS end-to-end tests, visual review, and Android/iOS acceptance remain required before production.
+
+
+## Final release-gate hardening — 2026-11-24
+
+- Changed RC16 home-recitation, feedback, and AI-review owner foreign keys to ON DELETE RESTRICT; removing an academy auth user must not cascade-delete educational audio or review history.
+- CI now type-checks all three deployed Supabase Edge Functions with Deno and applies all three additive RC16 SQL scripts to an isolated local Supabase database before running database contract assertions.
+- Added a two-account staging acceptance script for owner isolation, direct table-access denial, idempotent approvals/competitions, close-only competition permissions, JWT enforcement, and CORS.
+- Added docs/RC16-RELEASE-ACCEPTANCE.md as the explicit Android/iOS, staging, regression, and release checklist.
+- The actual remote staging deployment and physical-device acceptance remain external gates. No migration or function has been deployed to the existing configured Supabase project, and main remains unchanged.

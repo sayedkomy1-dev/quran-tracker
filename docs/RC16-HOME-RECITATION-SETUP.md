@@ -12,17 +12,20 @@ This feature is committed on the isolated feature/rc16-complete-upgrade branch. 
 The Supabase service-role key is used only by the Edge Function. It must never be copied into index.html, guardian-portal.html, JavaScript files, or browser storage.
 
 ## Deployment — staging first
-1. Back up the Supabase project before applying SQL.
-2. Open the Supabase SQL Editor for project svtcntalwfmexthcnvqe.
-3. Run sql/rc16-home-recitation.sql once. It is additive and does not change Local Schema 12.
-4. From the repository root, install/use the Supabase CLI and link the project:
+1. Create or select a separate Supabase staging project cloned from the current academy schema. Back it up before applying SQL.
+2. Do not assume svtcntalwfmexthcnvqe is staging. It is the project ref currently recorded in supabase/config.toml; treat it as the existing/live project unless you independently verify otherwise. Never deploy RC16 to that project as part of this acceptance run.
+3. In the staging SQL Editor, run these additive scripts in order: sql/rc16-home-recitation.sql, sql/rc16-ai-recitation.sql, then sql/rc16-learning-ledger.sql. They preserve Local Schema 12 and existing academic rows. The home-recitation script expects the existing public.guardian_portal_accounts table.
+4. From the repository root, install/use the Supabase CLI and link only the separate staging project:
    supabase login
-   supabase link --project-ref svtcntalwfmexthcnvqe
-5. Deploy the function:
-   supabase functions deploy guardian-recitation
-6. Confirm the Edge Function has the standard Supabase secrets SUPABASE_URL, SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY. Supabase normally provides these to Edge Functions. If the service-role secret is absent, add it through Supabase project secrets; never commit or paste it into this repository.
-7. Confirm the function is deployed with JWT verification disabled at the gateway. The function performs its own authorization: guardian session validation for student routes and Supabase auth.getUser() plus active app_users checks for teacher routes.
-8. Test with a staging guardian account and staging teacher account before production.
+   supabase link --project-ref <STAGING_PROJECT_REF>
+5. Deploy the functions with the intended gateway JWT settings:
+   supabase functions deploy guardian-recitation --no-verify-jwt
+   supabase functions deploy teacher-recitation-analysis
+   supabase functions deploy rc16-learning-ledger
+6. Supabase normally provides SUPABASE_URL, SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY to Edge Functions. Keep the service-role key server-side; never commit it or put it in browser code. Set GEMINI_API_KEY only as a Supabase Edge Function secret if AI suggestions are enabled.
+7. Create two dedicated active staging teacher accounts (A and B) with matching active app_users rows and owner/teacher roles. Do not use real student accounts for automated acceptance.
+8. Run the two-account server acceptance script with the staging URL, anon key, and the two test teachers' email/password credentials. See docs/RC16-RELEASE-ACCEPTANCE.md for exact environment variable names and command. It creates synthetic append-only test rows in staging and intentionally retains them.
+9. Complete the Android Chrome and iOS Safari device checklist before any production rollout.
 
 ## Browser origins
 The Edge Function currently allows:
@@ -66,3 +69,8 @@ Do not drop the tables or bucket after real recordings exist. To disable the fea
 - AI-generated time positions are discarded by the server. Use the existing teacher playback controls to create real timestamp annotations manually.
 - AI suggestions are stored in a teacher-only RLS-protected table and are not returned by student/guardian endpoints.
 - A missing key, provider outage, or rate limit returns an explicit unavailable/error state. No synthetic audio, score, or fallback analysis is generated.
+
+
+## Data-retention hardening
+
+RC16 owner foreign keys use ON DELETE RESTRICT for submissions, feedback, and AI review rows. Deleting an academy auth user must not cascade-delete recitation history. Guardian-account unlinking may set the optional guardian reference to null while retaining the submission and its audio.

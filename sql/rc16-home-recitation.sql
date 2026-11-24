@@ -5,7 +5,7 @@
 
 create table if not exists public.student_recitation_submissions (
   id uuid primary key,
-  owner_user_id uuid not null references auth.users(id) on delete cascade,
+  owner_user_id uuid not null references auth.users(id) on delete restrict,
   guardian_account_id uuid references public.guardian_portal_accounts(id) on delete set null,
   student_ref text not null,
   session_token_hash text not null,
@@ -48,7 +48,7 @@ grant all on table public.student_recitation_submissions to service_role;
 create table if not exists public.student_recitation_feedback (
   id uuid primary key,
   submission_id uuid not null references public.student_recitation_submissions(id) on delete restrict,
-  owner_user_id uuid not null references auth.users(id) on delete cascade,
+  owner_user_id uuid not null references auth.users(id) on delete restrict,
   student_feedback text not null default '',
   teacher_private_note text not null default '',
   annotations jsonb not null default '[]'::jsonb,

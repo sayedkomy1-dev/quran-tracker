@@ -13,17 +13,15 @@ This feature is isolated on \`feature/rc16-complete-upgrade\`. It is not active 
 - Competition creation uses an owner-scoped request key, so retrying after a lost response does not create a duplicate.
 
 ## Staging deployment
-1. Back up the Supabase project and test against a staging project first.
-2. Run \`sql/rc16-learning-ledger.sql\` in the staging SQL Editor.
-3. Confirm the Edge Function secrets \`SUPABASE_URL\`, \`SUPABASE_ANON_KEY\`, and \`SUPABASE_SERVICE_ROLE_KEY\` are available. Never add the service-role key to browser code or Git.
-4. Deploy with:
-   \`\`\`
-   supabase functions deploy rc16-learning-ledger
-   \`\`\`
-5. Keep JWT verification enabled. The Edge Function independently calls \`auth.getUser()\` and checks that the account is active and has the owner/teacher role.
-6. Test teacher A and teacher B separately. A teacher must never read or write the other account's events or competitions.
-7. Test repeated approval of the same attempt and repeated submission of the same competition request key. Each retry must return the existing record without duplicating points or competitions.
-8. Confirm a direct browser query to either table is denied and that SQL update/delete attempts on achievement events are rejected.
+
+1. Back up a separate staging project and confirm it contains the current academy schema. Do not target the project ref recorded in supabase/config.toml unless it has been independently confirmed as disposable staging.
+2. Apply the additive SQL scripts in this order: sql/rc16-home-recitation.sql, sql/rc16-ai-recitation.sql, sql/rc16-learning-ledger.sql.
+3. Confirm the Edge Function has the standard SUPABASE_URL, SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY secrets. Never add the service-role key to browser code, Git, or GitHub Actions secrets.
+4. Deploy with supabase functions deploy rc16-learning-ledger and keep gateway JWT verification enabled.
+5. The Edge Function independently calls auth.getUser() and checks that the account is active and has the owner/teacher role.
+6. Create two dedicated active staging teacher accounts (A and B), then run node tests/rc16-staging-acceptance.mjs with the environment variables documented in docs/RC16-RELEASE-ACCEPTANCE.md.
+7. The automated staging test checks owner isolation, direct table-access denial, duplicate quiz approval, duplicate competition creation, close-only permissions, JWT enforcement, and CORS. It creates synthetic append-only staging rows and intentionally retains them; do not point it at production.
+8. The local CI database contract test also checks RLS/grants, private data tables, append-only triggers, competition close-only behavior, and retention-safe foreign keys.
 
 ## Scoring and privacy
 - A teacher must explicitly approve an attempt.

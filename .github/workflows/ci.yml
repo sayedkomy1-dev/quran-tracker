@@ -24,3 +24,37 @@ jobs:
         run: node scripts/release-integrity.mjs
       - name: Check linked payload budget
         run: node scripts/release-budget.mjs
+
+  rc16-backend-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check every deployed Edge Function
+        run: |
+          deno check supabase/functions/guardian-recitation/index.ts
+          deno check supabase/functions/rc16-learning-ledger/index.ts
+          deno check supabase/functions/teacher-recitation-analysis/index.ts
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start isolated local Supabase stack
+        run: supabase start -x studio,imgproxy,inbucket,realtime,edge-runtime,logflare,vector
+      - name: Apply all RC16 SQL and run database contract tests
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          eval "$(supabase status -o env)"
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -c "create table if not exists public.guardian_portal_accounts (id uuid primary key);"
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f sql/rc16-home-recitation.sql
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f sql/rc16-ai-recitation.sql
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f sql/rc16-learning-ledger.sql
+          psql "$DB_URL" -v ON_ERROR_STOP=1 -f tests/rc16-learning-ledger-db.sql
+      - name: Stop isolated local Supabase stack
+        if: always()
+        run: supabase stop --no-backup

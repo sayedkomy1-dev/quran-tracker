@@ -20,6 +20,8 @@ assert(sql.includes('rc16_valid_participant_groups')&&sql.includes('participant_
 assert(sql.includes('unique (owner_user_id,request_key)'),'competition creation must be idempotent');
 assert(sql.includes('grant select, insert on table public.student_achievement_events to service_role'));
 assert(sql.includes('grant select, insert, update on table public.student_learning_competitions to service_role'));
+assert(sql.includes('owner_user_id uuid not null references auth.users(id) on delete restrict'),'ledger ownership must preserve history if an academy auth user is removed');
+
 assert(edge.includes('authClient.auth.getUser(bearer)'));
 assert(!ui.includes('SUPABASE_SERVICE_ROLE_KEY')&&!ui.includes('SERVICE_ROLE_KEY'),'service-role secret must never enter browser code');
 assert(edge.includes('SUPABASE_SERVICE_ROLE_KEY')&&edge.includes('ALLOWED_ORIGINS')&&edge.includes('ORIGIN_NOT_ALLOWED'),'server function must keep secrets server-side and enforce CORS allowlist');

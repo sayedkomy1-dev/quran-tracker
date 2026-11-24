@@ -1,4 +1,4 @@
-0234ac299bad6ad512c5490edecbe5d0d9b2437d2bc8fa69e088df11e02b5b66  ./.github/workflows/ci.yml
+e2bf370b589f4deaf33b8062b90455918933256d256d3fb6e5d5a8900ed5a57a  ./.github/workflows/ci.yml
 c0d6688d56062002cad8ebf91503710424329ce4475818b2ceb6de049357eb56  ./.gitignore
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./.nojekyll
 f829f71c3199616b76406d01cd20f2e27dbc8f6df508d37b7588f3c7620386a0  ./ARCHITECTURE-10.2.md
@@ -163,7 +163,7 @@ cfe25a13f38ecaddb51e49bcd995f73e5691b8666b1f25c95c48065a75d94d1e  ./QA-REPORT-v9
 54c678845974e33a9cf37b689579a077f397d6ae1cbbf486f7badaa14f9d5f13  ./QA-RUNTIME-v10.1.json
 52fd2a802b684bcb4be64d9633ad60ee95227914985ea976adaf1999c10693ee  ./QA-v11.4-Stage1-Mobile-Hotfix.md
 e1d31705b692604e5fbbe367cb80bee73cbedde234b8fa50902cb31f4d77b597  ./QURAN-ENGINE-10.3.md
-2e1af728bb863a1ba553a3f1b8f983e183f43ea9d7f96b78cab507f0748228e2  ./RC16-IMPLEMENTATION-PLAN.md
+5fac163ecbf7d983846357f3331dc2d7ae5f9e95d862771fda4ee9a0f18589c3  ./RC16-IMPLEMENTATION-PLAN.md
 0092006e7ba2c84266e67f2429b8d109a34f798d3d72c4c7e7f30f75f5ba4d69  ./README.md
 cf8657259dacc0e2743bc01a738d620c7461489b226198f83b9de0ef717d9aa0  ./RELEASE-10.0.0.md
 afd19db26fd6877d77d8455895c4f223f1b7940f2089fc756bb9deb721fdaabc  ./RELEASE-10.1.0.md
@@ -442,8 +442,9 @@ d2f263a69ad882b6f2380ab8a841ee630a7fe0cc38afa2e6d05def02934d51f4  ./docs/IMAM-BO
 c176d6bbc183ab6b9a06a615f87beca7c641f8e2b521854cdd3d792be73c5394  ./docs/OP-BETA8-QUALITY-REPORT.md
 49152019056cd150fba0486e17702745d50088e578e27cba43952f80c3206148  ./docs/QA-BETA10-PHONE-HOME.md
 0d5fcda7fa3aac3be3721919ed4d6f3c0f3e4e1ce22bde54edda2f9a3859dd48  ./docs/QA-IMAM-BOARD-BETA6-ACCEPTANCE-125.md
-98acad1689ce9ae5ce0606474924e1c513afeff1a2c26660e014a32a6b316084  ./docs/RC16-HOME-RECITATION-SETUP.md
-54831e1bd144e7bf545bea150b57e1d3ecf562a4dd1328a3a683168b4ae89c02  ./docs/RC16-LEARNING-LEDGER-SETUP.md
+0771cf2add6ebb7af85a11bf1159e1363a82798d6a96a24434959387f2946a28  ./docs/RC16-HOME-RECITATION-SETUP.md
+85723ca0afd31d18a95bb740722ef0c06c0061df1ce07a90d1d1f87e116c1e14  ./docs/RC16-LEARNING-LEDGER-SETUP.md
+a5f09ef102c2852ea3553415ecf6d3310a90674e4688717d7081f1163804d32b  ./docs/RC16-RELEASE-ACCEPTANCE.md
 0b855ba0b8383c162b03f4033fde5644fe3e6a4fcf7b819df3ac735570e478df  ./docs/REVOLUTIONARY-UX-MASTER-PROMPT.md
 271318a13dbc6538f4129f4b38081a24105d94d711f8d7d9f446bcee665eb983  ./docs/TEST-BETA10-PHONE-HOME.md
 2014e7b1da836c28d3b4650347ff40b9e3bf770562a4f1c8ea9ebeaabee47750  ./docs/review-sources/#U062a#U0642#U0631#U064a#U0631-#U0627#U0644#U0641#U062d#U0635-#U0627#U0644#U0634#U0627#U0645#U0644-2026-11-21.md
@@ -560,7 +561,7 @@ a29eff5aee0d11a9e536f63bbd79bebfbf23de8154cc1be4b95304dabc8626db  ./js/features/
 ff3097d5c4eb04b2a50bbdd83f76f099ebcb35411ca11fe84507465a92e9d72c  ./js/features/v11-ui.js
 36eef73a2ab5795f2680f7ea4d19842babf7d5f0fa7784bb75b1c78367587665  ./manifest.json
 66e7a7496b6df778ff666cd3aa83838f6b7ebd32a3155e67f8d129a4f289ca8c  ./maqraa.html
-45e9a28569da0f51a9ae8d7dd601deadc3f1f97b2b78c28fc50f2357772a93a8  ./package.json
+5da0e36ce727dc5aab0eff0301a4396f22ae7fea44cb3c82e720c36a7c75b6ce  ./package.json
 006233681e5b9057b512f30a2d188752516a20b1d0c3728d5f463922d2c2e255  ./placement-center-1191.css
 714c0006dae19e65c61e5a4e353adc0e89317871d33ddbf4425dc48cdde72a80  ./privacy.html
 c328381c6471d948a58ff4542ada95bc77bebe7c3ac2842cc0faab347fd591cc  ./progress-bridge-1111.css
@@ -676,8 +677,8 @@ e2ee210099231f20d2005138bf3de83dcb0abb8c6344254d276981622fa025c7  ./sql/guardian
 9b5ec10dfdf5cc87979ef6f5e49d66365ecba41c792b7c6616742835659f776a  ./sql/guardian-portal-reset-requests.sql
 1b92591e9a6f8ff52ede48afe9a4c230fe611bf97045dda28552a50cbc5c5e57  ./sql/migrations/20261121_security_hardening_STAGING_ONLY.sql
 382154a84567c41e1ef0c175f3e303361f43c50681876c9f24c2163b4d89f325  ./sql/quran-guest-practice.sql
-909b75af36232d8e11c335858d00d1a8db505d5b4696b77665d6da2b804d947c  ./sql/rc16-ai-recitation.sql
-b4a935a4815516202ea08e0cdaa06a521be478bfe43b4048449780db137bf2b2  ./sql/rc16-home-recitation.sql
+9ed34437794ff64ac1fcb670d3a31dcfbbf4c5179ccbf58c5e70b977abb7023b  ./sql/rc16-ai-recitation.sql
+205a1127505608ea821dad515e0f4c22f6dd7844c9085d283fcb641f23aa99fc  ./sql/rc16-home-recitation.sql
 401680336d9dd1e0cb367913d40fc29cb5f995040fe752aeff0dee097d1201fd  ./sql/rc16-learning-ledger.sql
 2acbd64053dc1c8dcca842278f44b8f401108097cc659d5bbf3051e624eadd54  ./sql/supabase-setup.sql
 5f4c5de555bf095e4c26978464bcffdfae6e31b00c6feb04adde596e5b55bbdc  ./sql/supabase-sync.sql
@@ -774,7 +775,7 @@ b1eada91066d3a70d9ed63c7e071d488cf784ebc0f7312d0b334094b96faed6b  ./tests/guardi
 abb1ae251502b75bd912e3cca58bbf2224e5c7fd4899f0bd98190486e8fc165b  ./tests/guardian-tahfeez-layout-check.js
 506d084cd43cd416a5260bcb67183f7b0c68f3b15902c544f9b1331d22b1a21e  ./tests/guardian-tahfeez-stage2-check.js
 f4a1df543acd79bcec5f46d503b30a69a2abaf4536d3d1bb8029269e484ab64a  ./tests/guest-role-update-batch-check.js
-e75e7b0ef529ae2b88e372e6b7caa41af972e5790498ffb52290fbd9237ead82  ./tests/home-recitation-check.js
+ada5376745cfabd767a1e1e4f151015b022e1dff193cb3cd7cf54ae373a32d53  ./tests/home-recitation-check.js
 c390088bc65baebc74b548389c5b6cfa532169e80229371fb05122857a74f09b  ./tests/imam-absence-makeup-check.js
 bd8ac80d075110f6154c0a2953b573ff925c49746e5a39e305addc418cc6e270  ./tests/imam-board-beta6-corpus-check.js
 cc7f671de7644d5f0e48a3d2fdb9c2c5bb2ed52c9141beb3dbfd2b371403eb6e  ./tests/imam-board-mobile-entry-check.js
@@ -821,10 +822,13 @@ a4c4ede39436d6bc430a2a1a5ba60b541b154c41670105fa26094529ab686dad  ./tests/platfo
 63de55643332033bfa789b0f8dc01d8430dab3fca9d71bd3ea961c7f63091f42  ./tests/pwa-pull-refresh-check.js
 ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-coverage-progress-check.js
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
-10d1e650c4a13ccd38db41262253c983905bdc87292d1d62cfb17e0c6d40c8a6  ./tests/rc16-ai-recitation-check.js
+7c278999d0cfc89b5bd38711064df1f3916209e57063f8c48e4504a894e85f48  ./tests/rc16-ai-recitation-check.js
 864ccfd8641496e1d3787610afedceaeb883e8b97e7bf81e633267c86fdc8e55  ./tests/rc16-learning-hub-check.js
-f95d7411af75722e3e706fb719b0edc8fe11b2c33e4208f05dfcf56b3d9cf7a5  ./tests/rc16-learning-ledger-check.js
+aa1fe8976ff181417768e9cf4945ea10491f982b4ffe196aebc0779d5b1c92aa  ./tests/rc16-learning-ledger-check.js
+2fbc550e91d8ccf7c3d3bc8c6046352809929181ca098b31f59236c9d507c00d  ./tests/rc16-learning-ledger-db.sql
+30c6b0047e39e15956da909e82cce65182a53240d294de87a5a25de56d2cedaa  ./tests/rc16-migration-safety-check.js
 aaf916b0379dd4c227ef161ea0229dbaae8f934b8a8b7e99bfb6a9d9ee4801f7  ./tests/rc16-quiz-sync-merge-check.js
+eec3c124b9605b37f239132d04412109deaba75a73532c6ce50bc6ebfc9e79bc  ./tests/rc16-staging-acceptance.mjs
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
 722fdd171896037b101d596076d110eaca2308b1d24efe5a67415c5ac4b264f8  ./tests/release-consistency-beta16-check.js
 ee2b06b565b49d1cc30b0af62df99070a5e303abd3bb24b94f0ecdb4cf78d6a7  ./tests/revision-text-boot-check.js

@@ -76,6 +76,9 @@ assert(sql.includes('revoke all on table public.student_recitation_feedback from
 assert(sql.includes('grant all on table public.student_recitation_submissions to service_role'));
 assert(sql.includes('grant all on table public.student_recitation_feedback to service_role'));
 assert(!sql.includes('create policy'),'no direct browser storage/table policy is added');
+assert((sql.match(/owner_user_id uuid not null references auth\.users\(id\) on delete restrict/g)||[]).length===2,'owner deletion must not cascade-delete recitation history');
+assert(!/owner_user_id uuid not null references auth\.users\(id\) on delete cascade/.test(sql),'recitation owner foreign keys must preserve history');
+
 
 const portal=read('guardian-portal.html');
 const index=read('index.html');
