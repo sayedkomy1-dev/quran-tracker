@@ -33,6 +33,7 @@
 <link rel="stylesheet" href="imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5-hotfix1">
 <link rel="stylesheet" href="student-learning-profile.css?v=beta28-rc16-learning-observations1">
 <link rel="stylesheet" href="home-recitation.css?v=beta28-rc16-home-recitation1">
+<link rel="stylesheet" href="css/platform/rc16-learning-hub.css?v=beta28-rc16-learning-hub1">
 <link rel="stylesheet" href="correction-document.css?v=11.7.4.5">
 <link rel="stylesheet" href="smart-revision.css?v=11.3.0-s1">
 <link rel="stylesheet" href="goal-planning.css?v=11.4.2-s2">
@@ -340,6 +341,18 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
   <label>الشهر <input type="month" id="ac1111Month"></label>
   <div id="ac1111Panel" aria-live="polite"></div>
 </div>
+
+<div class="pg" id="pg-rc16-learning-hub" dir="rtl">
+<section class="rc16hub-shell">
+<header class="rc16hub-header"><div><span>أكاديمية الإمام · RC16</span><h2>الاختبارات والإنجازات والمسابقات</h2><p>تدريب من المواد المحلية، واعتماد المحفظ، وسجل إنجازات موثق.</p></div><a href="academy-learning.html#foundation" target="_blank" rel="noopener">منهج التأسيس والتجويد</a></header>
+<div class="rc16hub-toolbar"><label>الطالب الحالي<select id="rc16HubStudent"></select></label><div class="rc16hub-private">مساحة داخلية للمحفظ والإدارة فقط · لا تظهر النتائج أو الترتيبات في بوابة الأسرة.</div></div>
+<nav class="rc16hub-tabs" aria-label="مساحات التعلم"><button type="button" data-rc16-tab="quiz" aria-selected="true">🧩 الاختبارات</button><button type="button" data-rc16-tab="achievements" aria-selected="false">🏅 الإنجازات</button><button type="button" data-rc16-tab="competitions" aria-selected="false">🏆 المسابقات</button><button type="button" data-rc16-tab="coach" aria-selected="false">🧠 المساعد التربوي</button></nav>
+<p id="rc16HubStatus" class="rc16hub-status" role="status" aria-live="polite">جارٍ تجهيز المساحة التعليمية…</p>
+<section id="rc16Pane-quiz" class="rc16hub-pane"><div class="rc16hub-card"><h3>إنشاء اختبار تدريبي</h3><div class="rc16hub-fields"><label>نوع التدريب<select id="rc16QuizCategory"><option value="foundation">التأسيس القرائي</option><option value="tajweed">أحكام التجويد</option><option value="makharij">مخارج الحروف</option><option value="mutashabihat">مواضع المتشابهات</option><option value="surah">التعرف على السور</option><option value="verse_completion" disabled>إكمال الآية — يتطلب نصًا قرآنيًا موحدًا معتمدًا</option><option value="next_ayah" disabled>الآية التالية — يتطلب نصًا قرآنيًا موحدًا معتمدًا</option></select></label><label id="rc16QuizLevelWrap">المستوى<select id="rc16QuizLevel"><option value="1">المستوى 1</option><option value="2">المستوى 2</option><option value="3">المستوى 3</option><option value="4">المستوى 4</option><option value="5">المستوى 5</option><option value="6">المستوى 6</option><option value="7">المستوى 7</option><option value="8">المستوى 8</option></select></label><label>عدد الأسئلة<select id="rc16QuizCount"><option value="5">5 أسئلة</option><option value="8">8 أسئلة</option><option value="10">10 أسئلة</option></select></label></div><div class="rc16hub-actions"><button type="button" class="rc16hub-primary" id="rc16QuizStart">إنشاء اختبار</button><button type="button" class="rc16hub-secondary" id="rc16OpenLearningMaterials">فتح مكتبة التأسيس والمخارج والتجويد</button></div><div id="rc16QuizQuestions" class="rc16hub-questions"><p class="rc16hub-empty">اختر نوع التدريب ثم اضغط «إنشاء اختبار».</p></div><div class="rc16hub-actions"><button type="button" class="rc16hub-primary" id="rc16QuizFinish" hidden>حفظ نتيجة التدريب للمراجعة</button></div><div id="rc16QuizResult" class="rc16hub-result" aria-live="polite"></div><p class="rc16hub-note">الأسئلة مأخوذة من المادة التعليمية المحلية، وبعضها يحتاج مراجعة علمية. النتيجة ليست درجة رسمية ولا تمنح نقاطًا قبل اعتماد المحفظ. لا يوجد احتساب للسرعة.</p></div></section>
+<section id="rc16Pane-achievements" class="rc16hub-pane" hidden><div class="rc16hub-card"><div class="rc16hub-summary"><div><small>إجمالي النقاط المعتمدة</small><strong id="rc16HubPoints">0</strong></div><span>تُضاف النقاط من أحداث موثقة وبعد اعتماد المحفظ فقط.</span></div><h3>محاولات الاختبار ومراجعة المحفظ</h3><div id="rc16HubAttempts"></div><h3>سجل الإنجازات غير القابل للحذف من الواجهة</h3><div id="rc16HubLedger"></div><p class="rc16hub-note">كل إنجاز يحتفظ بمصدره والطالب والمُعتمد والتوقيت ومفتاح منع التكرار. لا تُنشر أسماء الطلاب أو ترتيبهم للأسرة تلقائيًا.</p></div></section>
+<section id="rc16Pane-competitions" class="rc16hub-pane" hidden><div class="rc16hub-card"><h3>إنشاء مسابقة</h3><div class="rc16hub-fields"><label>اسم المسابقة<input id="rc16CompetitionTitle" maxlength="100" placeholder="مثال: تحدي تثبيت المراجعة"></label><label>النطاق<select id="rc16CompetitionScope"><option value="individual">فردية</option><option value="circle">داخل حلقة واحدة</option><option value="circle-to-circle">بين حلقات بموافقة صريحة</option></select></label><label id="rc16CompetitionStudentWrap">الطالب<select id="rc16CompetitionStudent"></select></label><label>من تاريخ<input id="rc16CompetitionStart" type="date"></label><label>إلى تاريخ<input id="rc16CompetitionEnd" type="date"></label></div><div id="rc16CompetitionGroupsWrap" hidden><b>الحلقات المشاركة</b><div id="rc16CompetitionGroups" class="rc16hub-checks"></div></div><label id="rc16CompetitionOptInWrap" class="rc16hub-consent" hidden><input id="rc16CompetitionOptIn" type="checkbox"> أؤكد أن الحلقات المختارة وافقت صراحة على المشاركة المشتركة.</label><div class="rc16hub-actions"><button type="button" class="rc16hub-primary" id="rc16CompetitionCreate">إنشاء المسابقة</button></div><p class="rc16hub-note">تُحسب النتائج من سجل الإنجازات المعتمد فقط. ترتيب المسابقة داخلي للمحفظ؛ لا توجد لوحة عامة لأسماء الأطفال. لا نقاط للسرعة أو مدة التسميع.</p><h3>المسابقات والسجل</h3><div id="rc16CompetitionList"></div></div></section>
+<section id="rc16Pane-coach" class="rc16hub-pane" hidden><div class="rc16hub-card"><h3>المساعد التربوي للمحفظ</h3><div id="rc16CoachContent"></div><a class="rc16hub-secondary-link" href="academy-learning.html#strategy" target="_blank" rel="noopener">فتح دليل الاستراتيجيات والتدخلات التعليمية</a><p class="rc16hub-note">يعرض هذا القسم ما سجله المحفظ فعليًا ويقترح مواد استرشادية. لا يشخّص صعوبات تعلم ولا يستبدل التقدير المهني.</p></div></section>
+</section></div>
 
 <!-- ══════════════ STUDENTS ══════════════ -->
 <div class="pg" id="pg-students">
@@ -1242,7 +1255,9 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
 <script src="js/features/imam-board-tafsir.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/imam-board-corpus.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/rc16-learning-hub-core.js?v=beta28-rc16-learning-hub1" defer></script>
 <script src="js/features/imam-smart-board.js?v=beta28-rc16-board-recovery1" defer></script>
+<script src="js/features/rc16-learning-hub.js?v=beta28-rc16-learning-hub1" defer></script>
 <script src="js/features/platform-ux.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/platform-workflow.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/surah-picker-17.js?v=11.12.1-beta.27" defer></script>
