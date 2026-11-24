@@ -1,71 +1,77 @@
 {
-  "version": "11.12.1-beta.27",
-  "stage": "baseline stabilization",
-  "npm_test_exit": 0,
-  "test_files_passed": 124,
-  "test_files_failed": 0,
-  "removed_verified_duplicates": [
-    "screenshots/.github/workflows/ci.yml",
-    "screenshots/.gitignore",
-    "screenshots/.nojekyll",
-    "screenshots/AUDIT-V10.md",
-    "screenshots/CHANGELOG-v9.2.md",
-    "screenshots/CHANGELOG.md",
-    "screenshots/CNAME",
-    "screenshots/DEPLOYMENT.md",
-    "screenshots/HOTFIX-v9.2.1.md",
-    "screenshots/MUSHAF-SOURCES.md",
-    "screenshots/PROMPT-V2-AUDITED.md",
-    "screenshots/QA-REPORT-10.1.1.md",
-    "screenshots/QA-REPORT-10.1.2.md",
-    "screenshots/QA-REPORT-10.1.3.md",
-    "screenshots/QA-REPORT-10.1.4.md",
-    "screenshots/QA-REPORT-v9.1.md",
-    "screenshots/QA-REPORT-v9.2.2.md",
-    "screenshots/QA-REPORT-v9.2.md",
-    "screenshots/QA-RUNTIME-v10.1.json",
-    "screenshots/README.md",
-    "screenshots/RELEASE-10.0.0.md",
-    "screenshots/RELEASE-10.1.0.md",
-    "screenshots/RELEASE-10.1.1.md",
-    "screenshots/RELEASE-10.1.2.md",
-    "screenshots/RELEASE-10.1.3.md",
-    "screenshots/RELEASE-10.1.4.md",
-    "screenshots/RELEASE-10.1.5.md",
-    "screenshots/RELEASE-9.2.2.md",
-    "screenshots/RUNTIME-AUDIT-V10.1.md",
-    "screenshots/SHA256SUMS.txt",
-    "screenshots/V9-IMPLEMENTATION.md",
-    "screenshots/VERSION",
-    "screenshots/app.js",
-    "screenshots/auth.css",
-    "screenshots/auth.js",
-    "screenshots/index.html",
-    "screenshots/manifest.json",
-    "screenshots/package.json",
-    "screenshots/privacy.html",
-    "screenshots/sql/account-sync.sql",
-    "screenshots/sql/auth-access.sql",
-    "screenshots/sql/supabase-setup.sql",
-    "screenshots/sql/supabase-sync.sql",
-    "screenshots/styles.css",
-    "screenshots/sw.js",
-    "screenshots/sync-core.js",
-    "screenshots/terms.html",
-    "screenshots/tests/static-check.js",
-    "screenshots/v10.css",
-    "screenshots/v10.js",
-    "screenshots/v8.js",
-    "screenshots/v9.css",
-    "screenshots/v9.js",
-    "styles.css",
-    "v10.css",
-    "v11.css",
-    "v9.css"
-  ],
-  "changed_original_files": [],
-  "added_files": [
-    "review/STAGE1-BASELINE-CLEANUP.json"
-  ],
-  "browser_smoke": "Not verified: local navigation blocked by environment (ERR_BLOCKED_BY_ADMINISTRATOR). No live account or backend tested."
+  "stage": "IMAM Beta28 RC14 — Repository Cleanup Stage 1",
+  "date": "2026-11-24",
+  "application_version": "11.12.1-beta.27",
+  "local_schema": 12,
+  "runtime_files_changed": false,
+  "database_migration": false,
+  "results": {
+    "npm_test": {
+      "status": "PASS",
+      "exit_code": 0,
+      "note": "Full package test command completed, including the Beta28 RC14 Tahfeez and player runtime checks."
+    },
+    "javascript_syntax": {
+      "status": "PASS",
+      "files_checked": 227,
+      "failures": 0
+    },
+    "html_local_references": {
+      "status": "PASS",
+      "html_pages": 15,
+      "local_references": 249,
+      "missing": 0
+    },
+    "service_worker_shells": {
+      "status": "PASS",
+      "CRITICAL_FRESH_SHELL": {
+        "entries": 129,
+        "missing": 0
+      },
+      "APP_SHELL": {
+        "entries": 159,
+        "missing": 0
+      },
+      "CORE_SHELL": {
+        "entries": 47,
+        "missing": 0
+      }
+    },
+    "release_integrity": {
+      "status": "PASS",
+      "sha256_entries": 781
+    },
+    "release_payload_budget": {
+      "status": "PASS",
+      "javascript_gzip_kib": 475,
+      "javascript_limit_kib": 850,
+      "css_gzip_kib": 117,
+      "css_limit_kib": 250,
+      "local_linked_js_css_assets": 113
+    }
+  },
+  "cleanup": {
+    "historical_screenshot_source_archived": 53,
+    "obsolete_powershell_helper_archived": 1,
+    "root_duplicate_css_archived_and_removed": 4,
+    "reference_images_retained": 20,
+    "files_removed_by_safe_cleanup_script": 58,
+    "archive_file": "OP-BETA12-HISTORICAL-SCREENSHOT-SOURCE-ARCHIVE.zip",
+    "archive_sha256": "be6343fcd894f19d2ddf97a3696609d873b239efd3c1b7579bc08572d14a29c7",
+    "new_files": 5,
+    "modified_files": 10,
+    "files_in_full_project_package": 782,
+    "files_in_patch_package": 15
+  },
+  "not_verified": {
+    "real_android_device": "NOT TESTED",
+    "real_ios_device": "NOT TESTED",
+    "live_supabase": "NOT TESTED — no database or service configuration changed",
+    "live_browser_visual_acceptance": "NOT TESTED"
+  },
+  "notes": [
+    "No app runtime file was changed, so a PWA update notification is not expected from this repository cleanup alone.",
+    "No SQL was added or executed.",
+    "The cleanup batch file uses certutil SHA-256 checks and deletes only exact matching files; mismatched files are kept."
+  ]
 }

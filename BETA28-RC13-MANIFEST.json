@@ -15,7 +15,7 @@
   "added_files": {
     "BETA28-RC12-CHANGE-MANIFEST.json": "cb1b43fc867299a556754bbf3bd4137466f3287cf0ead34a81afad999841884f",
     "BETA28-RC13-ACCEPTANCE.md": "9d8a362605469951b0d23a4348f3f4af4732491a0236cf4441f36d3ba566d1dd",
-    "OP-BETA12-HISTORICAL-SCREENSHOT-SOURCE-ARCHIVE.zip": "bbd9629719659eff2c52fa75a318679ac3301b5990d1b5703e2d150c7dedb21d",
+    "OP-BETA12-HISTORICAL-SCREENSHOT-SOURCE-ARCHIVE.zip": "be6343fcd894f19d2ddf97a3696609d873b239efd3c1b7579bc08572d14a29c7",
     "RELEASE-BETA28-RC12-STORAGE.md": "7e1c58d95aa04351c03816dd94c4e4eca68dec560b8c582ebd46f3d49b326599",
     "RELEASE-BETA28-RC13.md": "4650d6a950b4952034b4fe1681374a6b27351c44307446b97f487d0d8f547e4a",
     "css/platform/rc13-portal-learning.css": "d57d41fb92f10262286fa01dec1d24ab71ef5a89f84ac039e0e42c0d0a98a26a",
@@ -147,9 +147,10 @@
   ],
   "historical_screenshot_archive": {
     "file": "OP-BETA12-HISTORICAL-SCREENSHOT-SOURCE-ARCHIVE.zip",
-    "sha256": "bbd9629719659eff2c52fa75a318679ac3301b5990d1b5703e2d150c7dedb21d",
+    "sha256": "be6343fcd894f19d2ddf97a3696609d873b239efd3c1b7579bc08572d14a29c7",
     "source_files_archived": 53,
-    "reference_images_retained": 20
+    "reference_images_retained": 20,
+    "reconstructed_from_sha256_manifest": true
   },
   "verification": {
     "npm_test": "PASS",

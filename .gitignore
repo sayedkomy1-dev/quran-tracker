@@ -12,3 +12,6 @@ npm-debug.log*
 *.zip
 *.tmp
 *.bak
+
+# Explicitly track the verified historical source archive
+!OP-BETA12-HISTORICAL-SCREENSHOT-SOURCE-ARCHIVE.zip

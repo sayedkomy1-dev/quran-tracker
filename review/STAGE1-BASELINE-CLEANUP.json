@@ -59,10 +59,17 @@
     "screenshots/v10.js": "1e1708045d16d866b93f7f5157cfd6e70df903d80f828b1b7c4c519ac5736733",
     "screenshots/v8.js": "8e34cf6189584e76df037727c03057446bc27463205571515ab1d2a11cca2fa4",
     "screenshots/v9.css": "eaa9d8827bd5898d605d3185a526f440e531ff9081ab07be6fd4001a712eedef",
-    "screenshots/v9.js": "dbfa9dc4a4ba982ff100b6fb9bac20fd15693302acf9e656cf276f1b9afdd186"
+    "screenshots/v9.js": "dbfa9dc4a4ba982ff100b6fb9bac20fd15693302acf9e656cf276f1b9afdd186",
+    "review/SAFE-DELETE-HISTORICAL-SNAPSHOTS.ps1": "79222e27696c1456452eb829e20f5f762e182eec67464d8ed4764c72d5ccdd58"
   },
   "archive_name": "IMAM-historical-screenshot-source.zip",
   "archive_sha256": "89e5f29974f92137c943b1ddd9288e173edc08e23e824908d24b0c0a08f6b4c3",
   "original_zip_preserved": "quran-tracker-main_5.zip",
-  "retained_screenshot_images": 20
+  "retained_screenshot_images": 20,
+  "historical_source_archive": {
+    "file": "OP-BETA12-HISTORICAL-SCREENSHOT-SOURCE-ARCHIVE.zip",
+    "sha256": "be6343fcd894f19d2ddf97a3696609d873b239efd3c1b7579bc08572d14a29c7",
+    "archived_files": 54,
+    "retained_reference_images": 20
+  }
 }

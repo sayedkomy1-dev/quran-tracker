@@ -1,8 +1,16 @@
 {
   "archive": "OP-BETA12-HISTORICAL-SCREENSHOT-SOURCE-ARCHIVE.zip",
-  "archived_files": 53,
-  "removed_from_active_tree": 53,
-  "archive_sha256": "bbd9629719659eff2c52fa75a318679ac3301b5990d1b5703e2d150c7dedb21d",
-  "retained_image_files": 20,
-  "policy": "Historical application source moved to a verifiable archive; screenshot/reference images retained."
+  "archive_sha256": "be6343fcd894f19d2ddf97a3696609d873b239efd3c1b7579bc08572d14a29c7",
+  "archived_files": 54,
+  "removed_from_active_tree": 54,
+  "historical_screenshot_source_files": 53,
+  "obsolete_cleanup_scripts_archived": 1,
+  "reference_images_retained": 20,
+  "css_duplicates_removed_from_root": {
+    "styles.css": "ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e",
+    "v9.css": "eaa9d8827bd5898d605d3185a526f440e531ff9081ab07be6fd4001a712eedef",
+    "v10.css": "e4d356ac5b94834eba94661c023afd6665a438edb64953aaf42240d2c09b78df",
+    "v11.css": "27d01ded6c327acd95c4efb1d4f84297345911c2236cd7d78bd512847396640b"
+  },
+  "policy": "The historical screenshot application source is preserved byte-for-byte in a repository archive. The 20 reference images remain available. Four root-level CSS files are removed only after matching their canonical historical archive copies. No runtime assets, database schema, or student records are changed."
 }
