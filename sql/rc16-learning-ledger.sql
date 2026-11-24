@@ -7,21 +7,21 @@ returns boolean
 language sql
 immutable
 set search_path = public, pg_temp
-as $$
+as $rc16$
   select coalesce(
     cardinality(p_refs) between 1 and 200
     and cardinality(p_refs) = (select count(distinct r) from unnest(p_refs) as x(r))
     and not exists (select 1 from unnest(p_refs) as x(r) where r !~ '^[0-9a-f]{64}$'),
     false
   );
-$;
+$rc16$;
 
 create or replace function public.rc16_valid_participant_groups(p_refs text[],p_groups jsonb)
 returns boolean
 language plpgsql
 immutable
 set search_path = public, pg_temp
-as $
+as $rc16helper$
 begin
   if p_refs is null or p_groups is null or jsonb_typeof(p_groups) <> 'object' then
     return false;
@@ -40,7 +40,7 @@ begin
   end if;
   return true;
 end;
-$;
+$rc16helper$;
 
 create table if not exists public.student_achievement_events (
   id uuid primary key,
