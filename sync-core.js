@@ -9,7 +9,7 @@
     const t=new Date(value||0).getTime();
     return Number.isFinite(t)?t:0;
   }
-  function itemTimestamp(x){return isoTime(x?.updatedAt||x?.createdAt||x?.date||0);}
+  function itemTimestamp(x){return isoTime(x?.updatedAt||x?.reviewedAt||x?.completedAt||x?.createdAt||x?.date||0);}
   function safeTimestamp(t,now=Date.now()){
     // A phone with clock set in the future must not permanently dominate a
     // valid newer copy. This is a mitigation, NOT server revision ordering.
@@ -114,6 +114,18 @@
     }
     return result;
   }
+  function mergeStableRecords(a,b,keyOf){
+    const merged=new Map();
+    for(const item of [...(Array.isArray(b)?b:[]),...(Array.isArray(a)?a:[])]){
+      if(!item||typeof item!=='object')continue;
+      const key=String(keyOf(item)||'');if(!key)continue;
+      merged.set(key,chooseRecord(merged.get(key),item));
+    }
+    return [...merged.values()].sort((x,y)=>(safeTimestamp(itemTimestamp(y))||0)-(safeTimestamp(itemTimestamp(x))||0)||String(x.id||'').localeCompare(String(y.id||'')));
+  }
+  function mergeQuizAttempts(a,b){return mergeStableRecords(a,b,x=>x.id);}
+  function mergeAchievementEvents(a,b){return mergeStableRecords(a,b,x=>x.idempotencyKey||x.id);}
+  function mergeCompetitions(a,b){return mergeStableRecords(a,b,x=>x.id);}
   function mergeLearningObservations(a,b){
     const merged=new Map();
     for(const item of [...(Array.isArray(b)?b:[]),...(Array.isArray(a)?a:[])]){
@@ -130,10 +142,16 @@
     if(!a||!b)return chosen;
     const hasFinance=!!(a.studentFinance||b.studentFinance);
     const hasObservations=Array.isArray(a.learningObservations)||Array.isArray(b.learningObservations);
-    if(!hasFinance&&!hasObservations)return chosen;
+    const hasQuizAttempts=Array.isArray(a.rc16QuizAttempts)||Array.isArray(b.rc16QuizAttempts);
+    const hasAchievementEvents=Array.isArray(a.rc16AchievementEvents)||Array.isArray(b.rc16AchievementEvents);
+    const hasCompetitions=Array.isArray(a.rc16Competitions)||Array.isArray(b.rc16Competitions);
+    if(!hasFinance&&!hasObservations&&!hasQuizAttempts&&!hasAchievementEvents&&!hasCompetitions)return chosen;
     const merged={...chosen};
     if(hasFinance)merged.studentFinance=mergeFinance(a.studentFinance,b.studentFinance,chosen.studentFinance);
     if(hasObservations)merged.learningObservations=mergeLearningObservations(a.learningObservations,b.learningObservations);
+    if(hasQuizAttempts)merged.rc16QuizAttempts=mergeQuizAttempts(a.rc16QuizAttempts,b.rc16QuizAttempts);
+    if(hasAchievementEvents)merged.rc16AchievementEvents=mergeAchievementEvents(a.rc16AchievementEvents,b.rc16AchievementEvents);
+    if(hasCompetitions)merged.rc16Competitions=mergeCompetitions(a.rc16Competitions,b.rc16Competitions);
     return merged;
   }
   function financeReview(students){
@@ -180,5 +198,5 @@
   function filterDeletedChildren(items,deletedStudents){
     return (items||[]).filter(x=>!x?.studentId||!deletedStudents.has(x.studentId));
   }
-  global.WLQSyncCore={KINDS,isoTime,itemTimestamp,safeTimestamp,clockSkewReview,normalizeTombstones,tombstoneTimestamp,mergeTombstones,markTombstone,mergeById,mergeFinance,mergeLearningObservations,financeReview,deletedStudentIds,filterDeletedChildren};
+  global.WLQSyncCore={KINDS,isoTime,itemTimestamp,safeTimestamp,clockSkewReview,normalizeTombstones,tombstoneTimestamp,mergeTombstones,markTombstone,mergeById,mergeFinance,mergeLearningObservations,mergeQuizAttempts,mergeAchievementEvents,mergeCompetitions,financeReview,deletedStudentIds,filterDeletedChildren};
 })(globalThis);

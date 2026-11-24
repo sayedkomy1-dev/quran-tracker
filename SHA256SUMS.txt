@@ -331,7 +331,7 @@ a5621b720d653801b0475f1b58786b1f9ab7ccdd0e46a8f0ee845e2dc253fcdf  ./imam-board-d
 03345b61e6cbe1fe97225df1518d1f515110c970558a477468195db71f4340fb  ./imam-makeup-agenda.css
 a8be31b16bd53bb297c18fdbd4dc5e365e72ff4d6203f27c7540884e59943bc9  ./imam-smart-board.css
 4846b74dfd4aebb06a1844a43fa591c0e388642c5caf2a1f829512a46e4328cc  ./imam-teaching-insights.css
-6a44fac8a5a94bbce3131541c32a6728d95ee9afa36984b2dbb8c871a2ad99cf  ./index.html
+e4044e9f7e229edbc7b90d6396b14767723bce2e70edb7686ea7df338330abc5  ./index.html
 47ce4d055146c84c6c71ef1029f8e029112dba8ea016ce13f096a1754bea7608  ./integrated-teacher-brief.css
 9ae622605d138937bc125c3fcf65acd3115ff647abb3c4e3c982d9fe32dc29e0  ./INTEGRATION-BETA27-COMBINED-REVIEW4.md
 735c2e9e8222e51c100a5205e1e60033d8080fda45b6242946e8e58725a34090  ./INTEGRATION-BETA27-DESIGN-BRIDGE-REVIEW6.md
@@ -403,8 +403,8 @@ fd764a7cdeeafd1f062c21c3e580f912ee4e31ea73642580b7b94734302f0608  ./js/features/
 9c1ee1b80e6daa26bfba14e1b2e8a88c5d270ec584a3298e85096fa5aecbb7a2  ./js/features/quran-structure.js
 4433a83e3d931dc98e91f2524ef1b500598ccf501c361e62d46c43a7f9216ec7  ./js/features/rc10-teacher-fast-path.js
 0e32f75828928f7b0725c7b46adfd15333544777eee0b8f4bd74671039df4f2c  ./js/features/rc11-teacher-flow.js
-2175d1dfd59b870975f5eea615f673f267911ff8c54c52bd75b18fdac3bd40c4  ./js/features/rc16-learning-hub-core.js
-b0a9e6d3c5172565715864891bed189569f9b76b480db596a648cff8b1f6b5f8  ./js/features/rc16-learning-hub.js
+cdd6ec80dc6f984fa56a8b078ce44db5548831e1e2a35582303197be0df12004  ./js/features/rc16-learning-hub-core.js
+b83509aa7441d5cf7a1ae57fa5d5adb6a06fd7795264d5beb0265488c47febd4  ./js/features/rc16-learning-hub.js
 decb747eb57253390ae8de208947dbe16c4cc11c1ffe8b42b702caea89c5eb3b  ./js/features/rc3-experience.js
 275a76e7e0981a571c434b54549d8a1e3e2dc594ed3196a1da382a70468ec232  ./js/features/rc8-premium-workspace.js
 7e22c67e450b637e367d00ca4ab0ce2b225ce022054a35f1ffde3ddd9402ab7b  ./js/features/rc9-lesson-flow.js
@@ -432,7 +432,7 @@ ff3097d5c4eb04b2a50bbdd83f76f099ebcb35411ca11fe84507465a92e9d72c  ./js/features/
 36eef73a2ab5795f2680f7ea4d19842babf7d5f0fa7784bb75b1c78367587665  ./manifest.json
 66e7a7496b6df778ff666cd3aa83838f6b7ebd32a3155e67f8d129a4f289ca8c  ./maqraa.html
 372afec0ff8078179122a1bc4e6ef3e776bde81139cb74c44cff818d1c9138d0  ./MUSHAF-SOURCES.md
-4362dc888417b8c8c2b99b4bf37e9a42bbe336547e1e38f826701e49b8a1da8b  ./package.json
+0f53d777a72524f0af50b93240998873599b9b45ca101f4bb7768c803d0398bc  ./package.json
 006233681e5b9057b512f30a2d188752516a20b1d0c3728d5f463922d2c2e255  ./placement-center-1191.css
 714c0006dae19e65c61e5a4e353adc0e89317871d33ddbf4425dc48cdde72a80  ./privacy.html
 c328381c6471d948a58ff4542ada95bc77bebe7c3ac2842cc0faab347fd591cc  ./progress-bridge-1111.css
@@ -685,8 +685,8 @@ ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
 13933d7f64916e3a45bc69156b80cf4aeaae39596809a7f5b648937a1c573044  ./supabase/config.toml
 5e167e54456e042af4242c8cf3fe709852fd8d5702f6f0865a388d3d3403e5ca  ./supabase/functions/guardian-recitation/index.ts
 16cbd7799a725b263fc9d8e2de9055f6d71da4dc379d335db581665679359565  ./supabase/functions/teacher-recitation-analysis/index.ts
-5a0a108edb80558ba28b023cd0177e95936cf0690ab0e18cece93f652ef7bf61  ./sw.js
-d9af751d17bc441e6b39c24ec5a8ed5eaf24b93fac733e9e1ba036629534c319  ./sync-core.js
+b032c2b12fefa9a7db5d006197590efe89d77b642fd3bcfa3571b1262d90f6ed  ./sw.js
+7b605926b20b7baab372d9ec22d306cc357df68bd834b54437f7ea3ff1e6e956  ./sync-core.js
 c119463a48ab3e54f5d631af17484e8901f7f51029e8684f857860184efc9d07  ./teacher-error-marking.css
 45d3066a29a49f56bc29852c4b65679fd9b64bb81a0a4228a9c2ad19f0773b7a  ./teacher-quran-range-picker.css
 24e55a6bf0c39f09b1e9f2c7faa98765caf56d7df2e10c7a276d7277faab87de  ./teacher-rating.css
@@ -804,7 +804,7 @@ d5d3e8895713a9c5021f33816f98b36a5abb8cda087f24ed41e50a58a20bdd42  ./tests/offlin
 44253e22f9a502b620016431d3f59d2585253750eb4638034256292c46e9701d  ./tests/offline-safety-snapshot-check.js
 e5e0e8cd7a548b418414487ab5febabade0bd866b11c9d64889a5c83a6b8a90d  ./tests/offline-style-fallback-check.js
 87132f6120cfb2ffd6777a5a27fe4aa3c7d6d57a316ab2c8a225e5fcd50eb677  ./tests/offline-whatsapp-check.js
-65a732015f1cf9da3f9dec4c4c335c54f2e955ec3c3c2070fa5e9eafc4f2ef67  ./tests/owner-upgrade-consistency-check.js
+8a0b6b970fb96e80f8266d8828cc637193a563a744c6722d8fc454ea46a98609  ./tests/owner-upgrade-consistency-check.js
 e5b99cf37af60ec556a3cd7db8631d01bd7d683c11752229bed5ce9d3ab3a79e  ./tests/parent-audio-stage4-check.js
 a82d3906e1de69c4e6398df520c07ad0bd57db7f125f8df770b6fafe1f0e10e1  ./tests/placement-center-1191-check.js
 99b12237696e2c24d849e09b72377d16b7c9b277688b30dfd4694f94afadf732  ./tests/platform-design-system-check.js
@@ -817,7 +817,8 @@ a4c4ede39436d6bc430a2a1a5ba60b541b154c41670105fa26094529ab686dad  ./tests/platfo
 ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-coverage-progress-check.js
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
 10d1e650c4a13ccd38db41262253c983905bdc87292d1d62cfb17e0c6d40c8a6  ./tests/rc16-ai-recitation-check.js
-c52933a3ca3f1f2cc4fe7670215dc94edd889fe56cb9144ddeb3b9a13dfebabb  ./tests/rc16-learning-hub-check.js
+e76a1f1fb81041c48657aa503a63f65ab38745abc0aec807bd7fde64e803af9e  ./tests/rc16-learning-hub-check.js
+aaf916b0379dd4c227ef161ea0229dbaae8f934b8a8b7e99bfb6a9d9ee4801f7  ./tests/rc16-quiz-sync-merge-check.js
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
 c703b5fc099b16bc65f19005441f82aaeb6648f9140279103a7000e60dcacf83  ./tests/release-consistency-beta16-check.js
 ee2b06b565b49d1cc30b0af62df99070a5e303abd3bb24b94f0ecdb4cf78d6a7  ./tests/revision-text-boot-check.js

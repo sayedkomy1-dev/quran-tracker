@@ -72,7 +72,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  }
  await installation;
  const currentName=vm.runInContext('ACTIVE_CACHE_NAME',ctx);
- assert(currentName.includes('-beta28-stage1')&&currentName.includes('-rc14-tahfeez-continuation')&&currentName.includes('-rc16-learning-profile1')&&currentName.includes('-rc16-learning-observations1')&&currentName.includes('-rc16-home-recitation1')&&currentName.includes('-rc16-learning-hub1')&&currentName.endsWith('-rc16-ai-review1'),'must preserve the RC14 namespace and prior RC16 stages while advancing the home-recitation cache');
+ assert(currentName.includes('-beta28-stage1')&&currentName.includes('-rc14-tahfeez-continuation')&&currentName.includes('-rc16-learning-profile1')&&currentName.includes('-rc16-learning-observations1')&&currentName.includes('-rc16-home-recitation1')&&currentName.includes('-rc16-learning-hub1')&&currentName.includes('-rc16-ai-review1')&&currentName.endsWith('-rc16-quiz-merge1'),'must preserve the RC14 namespace and prior RC16 stages while advancing the home-recitation cache');
  const newCache=await cachesMock.open(currentName);
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
@@ -85,6 +85,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  await testWorker({offlineRuntime:true});
  await testWorker({});
  assert(sw.includes("'./js/features/home-recitation.js?v=beta28-rc16-ai-review1'"),'home-recitation AI review module must be part of the fresh shell');
+ assert(sw.includes("'./sync-core.js?v=beta28-rc16-quiz-merge1'"),'quiz/achievement sync merge core must be part of the fresh shell');
 assert(sw.includes("'./js/features/rc16-learning-hub.js?v=beta28-rc16-learning-hub1'"),'RC16 learning hub must be part of the fresh shell');
 console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC16 root/index cache, retained RC14 namespace, and retained versioned offline scripts');
 })().catch(e=>{console.error(e);process.exitCode=1;});

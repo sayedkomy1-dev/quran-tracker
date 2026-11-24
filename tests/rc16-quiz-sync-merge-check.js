@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync(require('node:path').join(__dirname,'..','sync-core.js'),'utf8'),ctx={console,Date,Map,Set,JSON,Object,String,Number,Array,Math};ctx.globalThis=ctx;vm.runInNewContext(source,ctx,{filename:'sync-core.js'});
+const core=ctx.WLQSyncCore;
+const pending={id:'q1',category:'tajweed',status:'awaiting_teacher_review',score:80,createdAt:'2026-11-20T10:00:00.000Z',updatedAt:'2026-11-20T10:00:00.000Z'};
+const approved={...pending,status:'approved',reviewedAt:'2026-11-21T10:00:00.000Z',updatedAt:'2026-11-21T10:00:00.000Z',reviewedBy:'teacher'};
+const oldEvent={id:'event-device-a',idempotencyKey:'quiz:q1:approved',studentId:'s1',points:10,approvedAt:'2026-11-21T10:00:00.000Z',createdAt:'2026-11-21T10:00:00.000Z',updatedAt:'2026-11-21T10:00:00.000Z'};
+const duplicateEvent={...oldEvent,id:'event-device-b',points:10,approvedAt:'2026-11-21T10:00:00.000Z'};
+const compA={id:'c1',title:'مسابقة الحلقة',status:'active',createdAt:'2026-11-20T10:00:00.000Z',updatedAt:'2026-11-20T10:00:00.000Z'};
+const compClosed={...compA,status:'closed',closedAt:'2026-11-22T10:00:00.000Z',updatedAt:'2026-11-22T10:00:00.000Z'};
+const merged=core.mergeById([{id:'s1',name:'طالب',rc16QuizAttempts:[pending],rc16AchievementEvents:[oldEvent],rc16Competitions:[compA]}],[{id:'s1',name:'طالب',rc16QuizAttempts:[approved],rc16AchievementEvents:[duplicateEvent],rc16Competitions:[compClosed]}],'students',null)[0];
+assert.equal(merged.rc16QuizAttempts.length,1);assert.equal(merged.rc16QuizAttempts[0].status,'approved');
+assert.equal(merged.rc16AchievementEvents.length,1,'idempotency key prevents duplicate points across devices');
+assert.equal(merged.rc16Competitions.length,1);assert.equal(merged.rc16Competitions[0].status,'closed','latest close state wins');
+console.log('PASS RC16 quiz/achievement sync merge: approvals, idempotent points and competition state survive multi-device merges');
