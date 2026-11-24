@@ -20,7 +20,7 @@ function audioSignature(bytes:Uint8Array,mime:string){
  if(mime==="audio/webm")return starts(0x1a,0x45,0xdf,0xa3);
  if(mime==="audio/ogg")return starts(0x4f,0x67,0x67,0x53);
  if(mime==="audio/wav")return starts(0x52,0x49,0x46,0x46)&&bytes[8]===0x57&&bytes[9]===0x41&&bytes[10]===0x56&&bytes[11]===0x45;
- if(mime==="audio/mpeg")return starts(0x49,0x44,0x33)||(bytes[0]===0xff&&(bytes[1]&0xe0)===0xe0);
+ if(mime==="audio/mpeg")return (bytes[0]===0x49&&bytes[1]===0x44&&bytes[2]===0x33)||(bytes[0]===0xff&&(bytes[1]&0xe0)===0xe0);
  if(mime==="audio/mp4")return bytes.length>12&&bytes[4]===0x66&&bytes[5]===0x74&&bytes[6]===0x79&&bytes[7]===0x70;
  if(mime==="audio/aac")return bytes[0]===0xff&&(bytes[1]&0xf6)===0xf0;
  return false;

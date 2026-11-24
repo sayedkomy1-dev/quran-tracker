@@ -690,7 +690,7 @@ ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
 19b226c9d3c83fb4e4085f02ac392aa598a8e2f1861f13cb04ac8d96c9c4279a  ./supabase/config.toml
 5e167e54456e042af4242c8cf3fe709852fd8d5702f6f0865a388d3d3403e5ca  ./supabase/functions/guardian-recitation/index.ts
 f1f2dba64dbb072509ffffd74d611c2d6d13f43b42b2abadbd8d9d5f978282f7  ./supabase/functions/rc16-learning-ledger/index.ts
-16cbd7799a725b263fc9d8e2de9055f6d71da4dc379d335db581665679359565  ./supabase/functions/teacher-recitation-analysis/index.ts
+0390a75e2e03e4b2fa50be35afb42c0cdfd1c88f244014f9b49db27780b8a9d9  ./supabase/functions/teacher-recitation-analysis/index.ts
 31ac79231923764197a8214dd17550712fca1cfee3f8c37238bcedd559b7f89b  ./sw.js
 7b605926b20b7baab372d9ec22d306cc357df68bd834b54437f7ea3ff1e6e956  ./sync-core.js
 c119463a48ab3e54f5d631af17484e8901f7f51029e8684f857860184efc9d07  ./teacher-error-marking.css
