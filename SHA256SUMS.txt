@@ -701,7 +701,7 @@ cbcc7144c50f2a2d796faac13d58853e5cf2f1b4270997decb2adef1bd29e16a  ./tests/advanc
 df6f70cf9f3f3adf8b883150f382d4fdc5d025f09741a37ea6c6990086a156bb  ./tests/automatic-roster-sync-check.js
 a0ab0760c2cc0e56d5e484db3f1f37ddf8cc13d5ddcc8ee0e1bde6adf483e586  ./tests/ayah-page-map-check.js
 c4ac5b9125fb475450891803a32277b9beeb203af8eb11646af1761900aefa4e  ./tests/beta19-session-ux-check.js
-0690f6fbba53d702cbf2c71e4a24e6f41a935272d91f141f2d2c32f124862a2a  ./tests/beta20-lesson-board-ux-check.js
+8a3e188a1b4481f5fb67d4b2d8dfc5b28b351ba7e26c5a621f57a86a62ba5f7c  ./tests/beta20-lesson-board-ux-check.js
 8f11b8e0cdabb76fffd07efab1d9cf8228dbcaf82be998cfb6d9911464edf31f  ./tests/beta21-session-compression-check.js
 7124d4a3af6591e8e95f1001d76ebecda74bcb392919f5969e6a68925fb89119  ./tests/beta22-session-access-check.js
 a6a46769bdefe2110302d556df4e66dba45707cd38f7d73df9853df47aee27ec  ./tests/beta24-notes-only-actions-check.js
