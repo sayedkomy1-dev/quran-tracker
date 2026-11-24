@@ -823,7 +823,7 @@ ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
 10d1e650c4a13ccd38db41262253c983905bdc87292d1d62cfb17e0c6d40c8a6  ./tests/rc16-ai-recitation-check.js
 864ccfd8641496e1d3787610afedceaeb883e8b97e7bf81e633267c86fdc8e55  ./tests/rc16-learning-hub-check.js
-66f6cdb687c99649973e56c15153fdd75c86961c83525f543a9a409df08b4eba  ./tests/rc16-learning-ledger-check.js
+88fad16e2a86d0715fd768e8e58f068b1a2a24466d8164b6b3065ccfe1656bfe  ./tests/rc16-learning-ledger-check.js
 aaf916b0379dd4c227ef161ea0229dbaae8f934b8a8b7e99bfb6a9d9ee4801f7  ./tests/rc16-quiz-sync-merge-check.js
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
 722fdd171896037b101d596076d110eaca2308b1d24efe5a67415c5ac4b264f8  ./tests/release-consistency-beta16-check.js
