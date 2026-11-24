@@ -21,6 +21,9 @@ for(const name of homeAssets){
  assert(html.includes(ref)||read('guardian-portal.html').includes(ref),`HTML missing fresh ${name}`);
  assert(sw.includes(`'./${ref}'`),`SW missing fresh ${name}`);
 }
+const learningHubRef='js/features/rc16-learning-hub.js?v=beta28-rc16-learning-ledger1';
+assert(html.includes(learningHubRef),'HTML missing fresh RC16 learning ledger module');
+assert(sw.includes(`'./${learningHubRef}'`),'SW missing fresh RC16 learning ledger module');
 for(const name of [...scripts,...css]){
  const ref=`${name}?v=${version}`;
  const versionedV9=`${name}?v=${version}-guardian-reactivation-hotfix4`;

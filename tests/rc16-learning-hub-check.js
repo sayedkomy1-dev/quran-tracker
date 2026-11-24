@@ -18,9 +18,9 @@ const copies=Core.buildGroupCopies({id:'p1',studentIds:['s1','s2','s4'],lesson:[
 const ai=Core.normalizeAiResult({transcript_candidate:'نص مرشح',differences:[{kind:'omission',time_ms:1234,expected:'أ',heard:'',note:'راجع'}]});assert.equal(ai.differences[0].time_ms,null);
 const ui=read('js/features/rc16-learning-hub.js'),html=read('index.html'),suite=read('js/features/academy-suite.js'),sw=read('sw.js');
 for(const id of ['rc16HubStudent','rc16QuizStart','rc16QuizFinish','rc16CompetitionCreate','rc16HubLedger'])assert(html.includes(id),'missing UI '+id);
-assert(ui.includes('awaiting_teacher_review')&&ui.includes('teacher-approved-quiz'));assert(ui.includes('rc16AchievementEvents')&&ui.includes('idempotencyKey'));
-assert(ui.includes('rc16Competitions')&&ui.includes('competitions()'));
-assert(ui.includes('students().flatMap'));
+assert(ui.includes('awaiting_teacher_review')&&ui.includes('approve_quiz'));
+assert(ui.includes('rc16-learning-ledger')&&ui.includes('student_ref')&&ui.includes('idempotency_key'));
+assert(!ui.includes('rc16AchievementEvents')&&!ui.includes('rc16Competitions'),'server is authoritative for achievements and competitions');
 assert(sync.includes('mergeQuizAttempts')&&sync.includes('mergeAchievementEvents')&&sync.includes('mergeCompetitions'));assert(ui.includes('validateCompetition'));assert(suite.includes('learningHub')&&suite.includes('الاختبارات والمسابقات'));assert(sw.includes('rc16-learning-hub-core.js')&&sw.includes('rc16-learning-hub.js'));
 assert(html.includes('verse_completion" disabled')&&html.includes('next_ayah" disabled'));
 console.log('PASS RC16 learning hub: five source-backed quiz banks, teacher approval, idempotent achievement ledger, private opt-in competitions, and safe UI');

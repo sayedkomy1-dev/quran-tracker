@@ -162,7 +162,7 @@ A1 and A2 are complete and CI-verified. B is implemented on the isolated branch 
 - Practice question banks are generated from local source material: foundation, tajweed, makharij, mutashabihat references, and the app's 114-surah index.
 - Verse-completion and next-ayah quizzes remain disabled until a complete, verified Quran text corpus is available locally. No Quran text is fabricated.
 - Quiz attempts are stored as pending teacher review. They are not official grades and award no points until a teacher approves them.
-- Added an append-only-in-the-UI achievement ledger with event source, student, approving teacher, timestamps, points, and idempotency key. The current ledger is account-snapshot backed; it is not yet a tamper-proof server ledger.
+- Added an append-only-in-the-UI achievement ledger with event source, student, approving teacher, timestamps, points, and idempotency key. The achievement ledger and competitions now use dedicated Supabase tables with row-level security, owner-scoped hashed student references, append-only database triggers for achievement events, server timestamps, and idempotent teacher approvals. The browser no longer treats local account snapshots as the source of truth for points.
 - Added individual, single-circle, and circle-to-circle competitions. Cross-circle participation requires explicit opt-in; standings use approved ledger points only and remain teacher-only. No public child leaderboard and no speed-based points.
 - Added a pedagogical helper that reads the student's actual teacher observations and surfaces relevant local strategies; it is advisory, not a diagnosis.
 
@@ -179,7 +179,7 @@ A1 and A2 are complete and CI-verified. B is implemented on the isolated branch 
 
 ### G — Release hardening status
 - Targeted tests now cover learning question banks, teacher approval, idempotent awards, competition opt-in, group preparation copies, AI authorization/privacy/quota/signature validation, and no-fake-timestamp behavior.
-- The next complete CI run must pass before considering the branch test-clean. Staging SQL/function deployment and Android/iOS acceptance are still required before production.
+- The complete GitHub Actions release checks passed for the preceding UI build. The server-ledger integration has now been added to the branch and must pass a fresh full CI run. Staging SQL/function deployment and Android/iOS acceptance are still required before production.
 
 
 ### Educational materials and D — quizzes, achievements, competitions
@@ -188,7 +188,7 @@ A1 and A2 are complete and CI-verified. B is implemented on the isolated branch 
 - Practice question banks are generated from local source material: foundation, tajweed, makharij, mutashabihat references, and the app's 114-surah index.
 - Verse-completion and next-ayah quizzes remain disabled until a complete, verified Quran text corpus is available locally. No Quran text is fabricated.
 - Quiz attempts are stored as pending teacher review. They are not official grades and award no points until a teacher approves them.
-- Added an append-only-in-the-UI achievement ledger with event source, student, approving teacher, timestamps, points, and idempotency key. The current ledger is account-snapshot backed; it is not yet a tamper-proof server ledger.
+- Added an append-only-in-the-UI achievement ledger with event source, student, approving teacher, timestamps, points, and idempotency key. The achievement ledger and competitions now use dedicated Supabase tables with row-level security, owner-scoped hashed student references, append-only database triggers for achievement events, server timestamps, and idempotent teacher approvals. The browser no longer treats local account snapshots as the source of truth for points.
 - Added individual, single-circle, and circle-to-circle competitions. Cross-circle participation requires explicit opt-in; standings use approved ledger points only and remain teacher-only. No public child leaderboard and no speed-based points.
 - Added a pedagogical helper that reads the student's actual teacher observations and surfaces relevant local strategies; it is advisory, not a diagnosis.
 
@@ -205,4 +205,4 @@ A1 and A2 are complete and CI-verified. B is implemented on the isolated branch 
 
 ### G — Release hardening status
 - Targeted tests cover learning question banks, teacher approval, idempotent awards, competition opt-in, group preparation copies, AI authorization/privacy/quota/signature validation, and no-fake-timestamp behavior.
-- The next complete CI run must pass before considering the branch test-clean. Staging SQL/function deployment and Android/iOS acceptance are still required before production.
+- The complete GitHub Actions release checks passed for the preceding UI build. The server-ledger integration has now been added to the branch and must pass a fresh full CI run. Staging SQL/function deployment and Android/iOS acceptance are still required before production.

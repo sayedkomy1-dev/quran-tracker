@@ -14,7 +14,7 @@ const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
 // New reader-only shell must not overwrite an already-installed offline release.
-const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation' + '-rc16-learning-profile1' + '-rc16-learning-observations1' + '-rc16-home-recitation1' + '-rc16-learning-hub1' + '-rc16-ai-review1' + '-rc16-quiz-merge1';
+const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation' + '-rc16-learning-profile1' + '-rc16-learning-observations1' + '-rc16-home-recitation1' + '-rc16-learning-hub1' + '-rc16-ai-review1' + '-rc16-quiz-merge1' + '-rc16-learning-ledger1';
 // Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
@@ -103,7 +103,7 @@ const CRITICAL_FRESH_SHELL = [
   './data/academy-learning-materials.json',
   './css/platform/rc16-learning-hub.css?v=beta28-rc16-learning-hub1',
   './js/features/rc16-learning-hub-core.js?v=beta28-rc16-learning-hub1',
-  './js/features/rc16-learning-hub.js?v=beta28-rc16-learning-hub1',
+  './js/features/rc16-learning-hub.js?v=beta28-rc16-learning-ledger1',
 
   './css/platform/academy-portal-suite.css?v=11.12.1-beta.27-review7',
   './js/features/academy-portal-suite.js?v=beta28-rc13',
@@ -684,7 +684,7 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:ACTIVE_CACHE_NAME,offlineStage:'5.7-storage-audio-portal-rc13',uiStage:'11.12.1-beta.28-rc13'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:ACTIVE_CACHE_NAME,offlineStage:'5.7-storage-audio-portal-rc13',uiStage:'11.12.1-beta.28-rc16-learning-ledger1'});
   if(event.data?.type==='IMAM_STORAGE_SAFE_CLEAN'&&event.ports?.[0]){
     const port=event.ports[0];
     event.waitUntil((async()=>{

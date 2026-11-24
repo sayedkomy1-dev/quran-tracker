@@ -2,3 +2,6 @@ project_id = "svtcntalwfmexthcnvqe"
 
 [functions.guardian-recitation]
 verify_jwt = false
+
+[functions.rc16-learning-ledger]
+verify_jwt = true
