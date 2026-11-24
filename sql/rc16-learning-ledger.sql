@@ -14,7 +14,33 @@ as $$
     and not exists (select 1 from unnest(p_refs) as x(r) where r !~ '^[0-9a-f]{64}$'),
     false
   );
-$$;
+$;
+
+create or replace function public.rc16_valid_participant_groups(p_refs text[],p_groups jsonb)
+returns boolean
+language plpgsql
+immutable
+set search_path = public, pg_temp
+as $
+begin
+  if p_refs is null or p_groups is null or jsonb_typeof(p_groups) <> 'object' then
+    return false;
+  end if;
+  if jsonb_object_length(p_groups) <> cardinality(p_refs) then
+    return false;
+  end if;
+  if exists (select 1 from unnest(p_refs) as x(r) where not (p_groups ? r)) then
+    return false;
+  end if;
+  if exists (
+    select 1 from jsonb_each(p_groups) as x(k,v)
+    where jsonb_typeof(v) <> 'string' or char_length(v #>> '{}') > 100
+  ) then
+    return false;
+  end if;
+  return true;
+end;
+$;
 
 create table if not exists public.student_achievement_events (
   id uuid primary key,
@@ -72,7 +98,9 @@ create table if not exists public.student_learning_competitions (
   title text not null,
   scope text not null,
   student_refs text[] not null,
+  participant_groups jsonb not null default '{}'::jsonb,
   group_names text[] not null default '{}',
+  request_key text not null,
   opt_in boolean not null default false,
   start_date date not null,
   end_date date not null,
@@ -84,6 +112,9 @@ create table if not exists public.student_learning_competitions (
   constraint student_competition_title check (char_length(title) between 1 and 100),
   constraint student_competition_scope check (scope in ('individual','circle','circle-to-circle')),
   constraint student_competition_refs check (public.rc16_valid_student_ref_array(student_refs)),
+  constraint student_competition_participant_groups check (public.rc16_valid_participant_groups(student_refs,participant_groups)),
+  constraint student_competition_request_key check (char_length(request_key) between 1 and 120),
+  constraint student_competition_request_unique unique (owner_user_id,request_key),
   constraint student_competition_groups check (cardinality(group_names) between 0 and 50),
   constraint student_competition_dates check (start_date <= end_date),
   constraint student_competition_scope_members check (
@@ -115,11 +146,11 @@ begin
   if tg_op = 'DELETE' then
     raise exception 'RC16_COMPETITION_DELETE_BLOCKED';
   end if;
-  if row(new.id,new.owner_user_id,new.title,new.scope,new.student_refs,new.group_names,
-         new.opt_in,new.start_date,new.end_date,new.created_by,new.created_at)
+  if row(new.id,new.owner_user_id,new.title,new.scope,new.student_refs,new.participant_groups,new.group_names,
+         new.request_key,new.opt_in,new.start_date,new.end_date,new.created_by,new.created_at)
      is distinct from
-     row(old.id,old.owner_user_id,old.title,old.scope,old.student_refs,old.group_names,
-         old.opt_in,old.start_date,old.end_date,old.created_by,old.created_at) then
+     row(old.id,old.owner_user_id,old.title,old.scope,old.student_refs,old.participant_groups,old.group_names,
+         old.request_key,old.opt_in,old.start_date,old.end_date,old.created_by,old.created_at) then
     raise exception 'RC16_COMPETITION_CORE_FIELDS_IMMUTABLE';
   end if;
   if old.status <> 'active' or new.status <> 'closed'
@@ -137,6 +168,8 @@ for each row execute function public.rc16_guard_competition_mutation();
 
 revoke all on function public.rc16_valid_student_ref_array(text[]) from public, anon, authenticated;
 grant execute on function public.rc16_valid_student_ref_array(text[]) to service_role;
+revoke all on function public.rc16_valid_participant_groups(text[],jsonb) from public, anon, authenticated;
+grant execute on function public.rc16_valid_participant_groups(text[],jsonb) to service_role;
 revoke all on function public.rc16_reject_achievement_mutation() from public, anon, authenticated;
 grant execute on function public.rc16_reject_achievement_mutation() to service_role;
 revoke all on function public.rc16_guard_competition_mutation() from public, anon, authenticated;
@@ -149,4 +182,6 @@ comment on column public.student_achievement_events.student_ref is
 comment on column public.student_achievement_events.occurred_at is
   'Server approval timestamp used for competition windows; client clocks cannot backdate points.';
 comment on table public.student_learning_competitions is
-  'RC16 teacher-only competitions. Participant references are hashed; only active-to-closed transition is allowed.';
+  'RC16 teacher-only competitions. Participant references and group assignments are snapshotted; request keys prevent duplicate creation; only active-to-closed transition is allowed.';
+comment on column public.student_learning_competitions.participant_groups is
+  'Immutable JSON object keyed by owner-scoped hashed student reference; stores the group assignment at competition creation, not the current roster group.';

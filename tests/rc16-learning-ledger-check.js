@@ -13,6 +13,8 @@ assert(sql.includes('revoke all on table public.student_learning_competitions fr
 assert(sql.includes('before update or delete on public.student_achievement_events'));
 assert(sql.includes('before update or delete on public.student_learning_competitions'));
 assert(sql.includes('unique (owner_user_id,idempotency_key)'));
+assert(sql.includes('rc16_valid_participant_groups')&&sql.includes('participant_groups jsonb'));
+assert(sql.includes('unique (owner_user_id,request_key)'),'competition creation must be idempotent');
 assert(sql.includes('grant select, insert on table public.student_achievement_events to service_role'));
 assert(sql.includes('grant select, insert, update on table public.student_learning_competitions to service_role'));
 assert(edge.includes('authClient.auth.getUser(bearer)'));
@@ -23,6 +25,10 @@ assert(ui.includes('i+=200')&&ui.includes('event_offset:offset'),'large academie
 assert(edge.includes('crypto.randomUUID()')&&edge.includes('quiz:"+studentRef+":"+attemptId+":approved'));
 assert(edge.includes('questionCount>20')&&edge.includes('Math.min(20,correctCount*2)'));
 assert(edge.includes('student_refs')&&edge.includes('opt_in'));
+assert(edge.includes('participant_groups:participantGroups')&&edge.includes('request_key:requestKey'));
+assert(edge.includes('.eq("request_key",requestKey)'),'competition retry must return the existing record');
+assert(ui.includes('participant_groups:participants')&&ui.includes('pendingCompetitionRequestKey'));
+assert(ui.includes("addEventListener?.('online'"),'restore central ledger when the app comes back online');
 assert(!edge.includes('student_name')&&!edge.includes('guardian_phone'));
 assert(config.includes('[functions.rc16-learning-ledger]')&&config.includes('verify_jwt = true'));
 assert(html.includes('rc16-learning-hub.js?v=beta28-rc16-learning-ledger1'));

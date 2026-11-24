@@ -163,7 +163,7 @@ cfe25a13f38ecaddb51e49bcd995f73e5691b8666b1f25c95c48065a75d94d1e  ./QA-REPORT-v9
 54c678845974e33a9cf37b689579a077f397d6ae1cbbf486f7badaa14f9d5f13  ./QA-RUNTIME-v10.1.json
 52fd2a802b684bcb4be64d9633ad60ee95227914985ea976adaf1999c10693ee  ./QA-v11.4-Stage1-Mobile-Hotfix.md
 e1d31705b692604e5fbbe367cb80bee73cbedde234b8fa50902cb31f4d77b597  ./QURAN-ENGINE-10.3.md
-40b659a3a0902e70d59dd35401debfd4a21c38f1ce0490a125985720601a6c8e  ./RC16-IMPLEMENTATION-PLAN.md
+ea37c67def30fef2ad22b9232896edacf503a7df44e0bb45d6a8accf392d7ed9  ./RC16-IMPLEMENTATION-PLAN.md
 0092006e7ba2c84266e67f2429b8d109a34f798d3d72c4c7e7f30f75f5ba4d69  ./README.md
 cf8657259dacc0e2743bc01a738d620c7461489b226198f83b9de0ef717d9aa0  ./RELEASE-10.0.0.md
 afd19db26fd6877d77d8455895c4f223f1b7940f2089fc756bb9deb721fdaabc  ./RELEASE-10.1.0.md
@@ -443,7 +443,7 @@ c176d6bbc183ab6b9a06a615f87beca7c641f8e2b521854cdd3d792be73c5394  ./docs/OP-BETA
 49152019056cd150fba0486e17702745d50088e578e27cba43952f80c3206148  ./docs/QA-BETA10-PHONE-HOME.md
 0d5fcda7fa3aac3be3721919ed4d6f3c0f3e4e1ce22bde54edda2f9a3859dd48  ./docs/QA-IMAM-BOARD-BETA6-ACCEPTANCE-125.md
 98acad1689ce9ae5ce0606474924e1c513afeff1a2c26660e014a32a6b316084  ./docs/RC16-HOME-RECITATION-SETUP.md
-74af69089c81b51e63dc6e80fc5b372ab1df653aba80d0f5440c89c0f7b66e9e  ./docs/RC16-LEARNING-LEDGER-SETUP.md
+54831e1bd144e7bf545bea150b57e1d3ecf562a4dd1328a3a683168b4ae89c02  ./docs/RC16-LEARNING-LEDGER-SETUP.md
 0b855ba0b8383c162b03f4033fde5644fe3e6a4fcf7b819df3ac735570e478df  ./docs/REVOLUTIONARY-UX-MASTER-PROMPT.md
 271318a13dbc6538f4129f4b38081a24105d94d711f8d7d9f446bcee665eb983  ./docs/TEST-BETA10-PHONE-HOME.md
 2014e7b1da836c28d3b4650347ff40b9e3bf770562a4f1c8ea9ebeaabee47750  ./docs/review-sources/#U062a#U0642#U0631#U064a#U0631-#U0627#U0644#U0641#U062d#U0635-#U0627#U0644#U0634#U0627#U0645#U0644-2026-11-21.md
@@ -533,7 +533,7 @@ fd764a7cdeeafd1f062c21c3e580f912ee4e31ea73642580b7b94734302f0608  ./js/features/
 4433a83e3d931dc98e91f2524ef1b500598ccf501c361e62d46c43a7f9216ec7  ./js/features/rc10-teacher-fast-path.js
 0e32f75828928f7b0725c7b46adfd15333544777eee0b8f4bd74671039df4f2c  ./js/features/rc11-teacher-flow.js
 cdd6ec80dc6f984fa56a8b078ce44db5548831e1e2a35582303197be0df12004  ./js/features/rc16-learning-hub-core.js
-550ba0ffc3e0cb1f8b44a3b66bd7261f146732660052a1f166e0013b546f1444  ./js/features/rc16-learning-hub.js
+f42e95eaea72cdac17d14226242c441ead94569ee23514d5f286af3638b5d862  ./js/features/rc16-learning-hub.js
 decb747eb57253390ae8de208947dbe16c4cc11c1ffe8b42b702caea89c5eb3b  ./js/features/rc3-experience.js
 275a76e7e0981a571c434b54549d8a1e3e2dc594ed3196a1da382a70468ec232  ./js/features/rc8-premium-workspace.js
 7e22c67e450b637e367d00ca4ab0ce2b225ce022054a35f1ffde3ddd9402ab7b  ./js/features/rc9-lesson-flow.js
@@ -678,7 +678,7 @@ e2ee210099231f20d2005138bf3de83dcb0abb8c6344254d276981622fa025c7  ./sql/guardian
 382154a84567c41e1ef0c175f3e303361f43c50681876c9f24c2163b4d89f325  ./sql/quran-guest-practice.sql
 909b75af36232d8e11c335858d00d1a8db505d5b4696b77665d6da2b804d947c  ./sql/rc16-ai-recitation.sql
 b4a935a4815516202ea08e0cdaa06a521be478bfe43b4048449780db137bf2b2  ./sql/rc16-home-recitation.sql
-3cc183d1591f7c813b755e91b704fafca3c3a640a80d73827f5cb79bb4dff848  ./sql/rc16-learning-ledger.sql
+788007dbe58e6be371a83f2b33fbe6f993fd6401cc2e63345d85c225aa74e07d  ./sql/rc16-learning-ledger.sql
 2acbd64053dc1c8dcca842278f44b8f401108097cc659d5bbf3051e624eadd54  ./sql/supabase-setup.sql
 5f4c5de555bf095e4c26978464bcffdfae6e31b00c6feb04adde596e5b55bbdc  ./sql/supabase-sync.sql
 ce5ebe40e60843b65f8dbc03d05e432691b13602a0570b3db582b197adc36c26  ./sql/supervision-roster-permissions.sql
@@ -688,7 +688,7 @@ c63c5a3e7a4996aa3389a270049075a253477686edf089461f112fecab17e6ad  ./student-fina
 ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
 19b226c9d3c83fb4e4085f02ac392aa598a8e2f1861f13cb04ac8d96c9c4279a  ./supabase/config.toml
 5e167e54456e042af4242c8cf3fe709852fd8d5702f6f0865a388d3d3403e5ca  ./supabase/functions/guardian-recitation/index.ts
-797ab2fde1a3eb15287f8a370f7b04cdc5f2ae074143ab251b6ffa0a0ed6175f  ./supabase/functions/rc16-learning-ledger/index.ts
+9e2d19fdfd3642fd638df960071d70618eb4847cd9884dfcfc94d6b0f7966e43  ./supabase/functions/rc16-learning-ledger/index.ts
 16cbd7799a725b263fc9d8e2de9055f6d71da4dc379d335db581665679359565  ./supabase/functions/teacher-recitation-analysis/index.ts
 31ac79231923764197a8214dd17550712fca1cfee3f8c37238bcedd559b7f89b  ./sw.js
 7b605926b20b7baab372d9ec22d306cc357df68bd834b54437f7ea3ff1e6e956  ./sync-core.js
@@ -823,7 +823,7 @@ ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
 10d1e650c4a13ccd38db41262253c983905bdc87292d1d62cfb17e0c6d40c8a6  ./tests/rc16-ai-recitation-check.js
 864ccfd8641496e1d3787610afedceaeb883e8b97e7bf81e633267c86fdc8e55  ./tests/rc16-learning-hub-check.js
-d041909c0e05ba51c2b753130c07d02e59ebbdcf00e1f8aa4ba06b591f0e255c  ./tests/rc16-learning-ledger-check.js
+fac1238100be479ecd2d1928aabd614b30028aa90624374473e144dd6845a274  ./tests/rc16-learning-ledger-check.js
 aaf916b0379dd4c227ef161ea0229dbaae8f934b8a8b7e99bfb6a9d9ee4801f7  ./tests/rc16-quiz-sync-merge-check.js
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
 722fdd171896037b101d596076d110eaca2308b1d24efe5a67415c5ac4b264f8  ./tests/release-consistency-beta16-check.js

@@ -9,7 +9,8 @@ This feature is isolated on \`feature/rc16-complete-upgrade\`. It is not active 
 - Idempotent quiz approval using a unique owner/idempotency key.
 - Hashed student references only; no student names or direct local IDs are written to these tables.
 - Private teacher-only reads and writes. The tables have RLS enabled and no direct anon/authenticated grants.
-- Competitions retain their original participants and rules; only an active-to-closed transition is permitted.
+- Competitions retain immutable participant and group-assignment snapshots; only an active-to-closed transition is permitted.
+- Competition creation uses an owner-scoped request key, so retrying after a lost response does not create a duplicate.
 
 ## Staging deployment
 1. Back up the Supabase project and test against a staging project first.
@@ -21,13 +22,14 @@ This feature is isolated on \`feature/rc16-complete-upgrade\`. It is not active 
    \`\`\`
 5. Keep JWT verification enabled. The Edge Function independently calls \`auth.getUser()\` and checks that the account is active and has the owner/teacher role.
 6. Test teacher A and teacher B separately. A teacher must never read or write the other account's events or competitions.
-7. Test repeated approval of the same attempt. It must return the existing event and must not award points twice.
+7. Test repeated approval of the same attempt and repeated submission of the same competition request key. Each retry must return the existing record without duplicating points or competitions.
 8. Confirm a direct browser query to either table is denied and that SQL update/delete attempts on achievement events are rejected.
 
 ## Scoring and privacy
 - A teacher must explicitly approve an attempt.
 - The server computes points as \`min(20, correct_count × 2)\`; zero-point approvals are recorded for audit but do not contribute to standings.
 - The server approval time is used for competition windows; the client cannot choose a timestamp.
+- Competition group membership is frozen at creation, so later student transfers do not rewrite historical standings.
 - Competitions are never exposed through student or guardian portal APIs. There is no public child leaderboard.
 - Student references are SHA-256 hashes scoped to the authenticated owner account.
 

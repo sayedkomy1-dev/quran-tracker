@@ -63,7 +63,7 @@ async function listLearningData(ownerId:string,body:Record<string,unknown>) {
     events=result.data||[];
   }
   const competitions=await admin.from("student_learning_competitions")
-    .select("id,title,scope,student_refs,group_names,opt_in,start_date,end_date,status,created_by,created_at,closed_by,closed_at")
+    .select("id,title,scope,student_refs,participant_groups,group_names,opt_in,start_date,end_date,status,created_by,created_at,closed_by,closed_at")
     .eq("owner_user_id",ownerId).order("created_at",{ascending:false}).limit(200);
   if(competitions.error)throw new Error("LEARNING_COMPETITIONS_READ_FAILED");
   return json({events,has_more:events.length===1000,competitions:competitions.data||[]});
@@ -98,24 +98,42 @@ async function approveQuiz(ownerId:string,body:Record<string,unknown>) {
 async function createCompetition(ownerId:string,body:Record<string,unknown>) {
   const title=clean(body.title,100),scope=clean(body.scope,30);
   const startDate=clean(body.start_date,10),endDate=clean(body.end_date,10);
+  const requestKey=clean(body.request_key,120);
   const refsRaw=Array.isArray(body.student_refs)?body.student_refs:[];
   const refs=[...new Set(refsRaw.map(x=>String(x)))];
   const groupsRaw=Array.isArray(body.group_names)?body.group_names:[];
   const groups=[...new Set(groupsRaw.map(x=>clean(x,100)).filter(Boolean))];
+  const participantRows=Array.isArray(body.participant_groups)?body.participant_groups:[];
+  const participantGroups:Record<string,string>={};
+  for(const row of participantRows) {
+    const ref=String((row as Record<string,unknown>)?.student_ref||"");
+    const group=clean((row as Record<string,unknown>)?.group_name,100);
+    if(!validStudentRef(ref)||!refs.includes(ref)||Object.prototype.hasOwnProperty.call(participantGroups,ref))throw new Error("COMPETITION_PARTICIPANTS_INVALID");
+    participantGroups[ref]=group;
+  }
   const optIn=body.opt_in===true;
+  if(!requestKey)throw new Error("COMPETITION_REQUEST_KEY_INVALID");
   if(!title||!validDay(startDate)||!validDay(endDate)||endDate<startDate)throw new Error("COMPETITION_DATES_INVALID");
   if(!refs.length||refs.length>200||refs.some(x=>!validStudentRef(x)))throw new Error("COMPETITION_STUDENTS_INVALID");
+  if(Object.keys(participantGroups).length!==refs.length)throw new Error("COMPETITION_PARTICIPANTS_INVALID");
   if(groups.length>50)throw new Error("COMPETITION_GROUPS_INVALID");
   if(scope==="individual"&&(refs.length!==1||groups.length!==0||optIn))throw new Error("COMPETITION_SCOPE_INVALID");
   if(scope==="circle"&&(groups.length!==1||optIn))throw new Error("COMPETITION_SCOPE_INVALID");
   if(scope==="circle-to-circle"&&(groups.length<2||!optIn))throw new Error("COMPETITION_OPT_IN_REQUIRED");
   if(!["individual","circle","circle-to-circle"].includes(scope))throw new Error("COMPETITION_SCOPE_INVALID");
   const result=await admin.from("student_learning_competitions").insert({
-    id:crypto.randomUUID(),owner_user_id:ownerId,title,scope,student_refs:refs,group_names:groups,opt_in:optIn,
-    start_date:startDate,end_date:endDate,status:"active",created_by:ownerId
-  }).select("id,title,scope,student_refs,group_names,opt_in,start_date,end_date,status,created_by,created_at,closed_by,closed_at").single();
-  if(result.error)throw new Error("LEARNING_COMPETITION_WRITE_FAILED");
-  return json({competition:result.data});
+    id:crypto.randomUUID(),owner_user_id:ownerId,title,scope,student_refs:refs,participant_groups:participantGroups,
+    group_names:groups,request_key:requestKey,opt_in:optIn,start_date:startDate,end_date:endDate,status:"active",created_by:ownerId
+  }).select("id,title,scope,student_refs,participant_groups,group_names,opt_in,start_date,end_date,status,created_by,created_at,closed_by,closed_at").single();
+  if(!result.error)return json({competition:result.data,added:true});
+  if(result.error.code==="23505") {
+    const existing=await admin.from("student_learning_competitions")
+      .select("id,title,scope,student_refs,participant_groups,group_names,opt_in,start_date,end_date,status,created_by,created_at,closed_by,closed_at")
+      .eq("owner_user_id",ownerId).eq("request_key",requestKey).maybeSingle();
+    if(existing.error)throw new Error("LEARNING_COMPETITION_RECHECK_FAILED");
+    if(existing.data)return json({competition:existing.data,added:false});
+  }
+  throw new Error("LEARNING_COMPETITION_WRITE_FAILED");
 }
 async function closeCompetition(ownerId:string,body:Record<string,unknown>) {
   const id=String(body.competition_id||"");
@@ -123,11 +141,11 @@ async function closeCompetition(ownerId:string,body:Record<string,unknown>) {
   const updated=await admin.from("student_learning_competitions")
     .update({status:"closed",closed_at:new Date().toISOString(),closed_by:ownerId})
     .eq("id",id).eq("owner_user_id",ownerId).eq("status","active")
-    .select("id,title,scope,student_refs,group_names,opt_in,start_date,end_date,status,created_by,created_at,closed_by,closed_at").maybeSingle();
+    .select("id,title,scope,student_refs,participant_groups,group_names,opt_in,start_date,end_date,status,created_by,created_at,closed_by,closed_at").maybeSingle();
   if(updated.error)throw new Error("LEARNING_COMPETITION_CLOSE_FAILED");
   if(updated.data)return json({competition:updated.data,closed:true});
   const existing=await admin.from("student_learning_competitions")
-    .select("id,title,scope,student_refs,group_names,opt_in,start_date,end_date,status,created_by,created_at,closed_by,closed_at")
+    .select("id,title,scope,student_refs,participant_groups,group_names,opt_in,start_date,end_date,status,created_by,created_at,closed_by,closed_at")
     .eq("id",id).eq("owner_user_id",ownerId).maybeSingle();
   if(existing.error)throw new Error("LEARNING_COMPETITION_READ_FAILED");
   if(!existing.data)throw new Error("COMPETITION_NOT_FOUND");
@@ -156,7 +174,7 @@ Deno.serve(async(req:Request)=>{
       code==="TEACHER_NOT_ACTIVE"?403:
       code==="COMPETITION_NOT_FOUND"?404:
       code==="ORIGIN_NOT_ALLOWED"?403:400;
-    const exposed=new Set(["TEACHER_AUTH_REQUIRED","TEACHER_AUTH_INVALID","TEACHER_PROFILE_LOOKUP_FAILED","TEACHER_NOT_ACTIVE","STUDENT_REF_INVALID","STUDENT_REF_BATCH_TOO_LARGE","QUIZ_ATTEMPT_INVALID","QUIZ_SCORE_INVALID","COMPETITION_DATES_INVALID","COMPETITION_STUDENTS_INVALID","COMPETITION_GROUPS_INVALID","COMPETITION_SCOPE_INVALID","COMPETITION_OPT_IN_REQUIRED","COMPETITION_ID_INVALID","COMPETITION_NOT_FOUND","ACTION_NOT_ALLOWED","INVALID_JSON","LEARNING_LEDGER_NOT_CONFIGURED"]);
+    const exposed=new Set(["TEACHER_AUTH_REQUIRED","TEACHER_AUTH_INVALID","TEACHER_PROFILE_LOOKUP_FAILED","TEACHER_NOT_ACTIVE","STUDENT_REF_INVALID","STUDENT_REF_BATCH_TOO_LARGE","QUIZ_ATTEMPT_INVALID","QUIZ_SCORE_INVALID","COMPETITION_DATES_INVALID","COMPETITION_STUDENTS_INVALID","COMPETITION_GROUPS_INVALID","COMPETITION_SCOPE_INVALID","COMPETITION_OPT_IN_REQUIRED","COMPETITION_PARTICIPANTS_INVALID","COMPETITION_REQUEST_KEY_INVALID","COMPETITION_ID_INVALID","COMPETITION_NOT_FOUND","ACTION_NOT_ALLOWED","INVALID_JSON","LEARNING_LEDGER_NOT_CONFIGURED"]);
     return json({error:exposed.has(code)?code:"LEARNING_LEDGER_FAILED"},status,corsHeaders);
   }
 });
