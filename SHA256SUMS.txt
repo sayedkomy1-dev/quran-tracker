@@ -724,7 +724,7 @@ ecf818888fa4039e6c4e1174ddd11743d713d599141f2d677e8b7eaf662fad72  ./tests/beta27
 40c7bab239dc195bb7036ef96756a446f5d642c078339ae81b3ae351dac86b6c  ./tests/beta27-quran-picker-hotfix2-check.js
 a8521329b262c95c524ab30e8af90ffa5eed7afb609ab0bb15a10cf7035dd60b  ./tests/beta27-quran-text-board-check.js
 4bbbafcac7aacf2f9b83d7824a7717bd3120e2bc36077f9fbe5f2c002ad1573e  ./tests/beta27-student-management-check.js
-6b032a4adfd7e481b1320ea6aa75b45faaf88bdd123f8483c4b52efd4a725459  ./tests/beta27-student-modal-layout-hotfix-check.js
+855bb8731998a20e594203268c5e0675bfc103a03b5ae15fdd93f249d9760a9b  ./tests/beta27-student-modal-layout-hotfix-check.js
 2747c567a296256a32f330497ec4b5082c7b5eff8971c583314a2cd3afaf5b81  ./tests/beta28-candidate-regression-check.js
 1f9bfb8bf25882b79f119fc432cccd3d89409ee23354c4e978167b3fe0550bac  ./tests/beta28-rc10-fast-path-check.js
 26b5159aa16cc88912b581769b807b6f75c1ca43d2e3ebe44039e89f774afc0f  ./tests/beta28-rc11-teacher-flow-check.js
