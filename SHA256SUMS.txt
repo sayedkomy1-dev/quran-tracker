@@ -679,7 +679,7 @@ e2ee210099231f20d2005138bf3de83dcb0abb8c6344254d276981622fa025c7  ./sql/guardian
 382154a84567c41e1ef0c175f3e303361f43c50681876c9f24c2163b4d89f325  ./sql/quran-guest-practice.sql
 9ed34437794ff64ac1fcb670d3a31dcfbbf4c5179ccbf58c5e70b977abb7023b  ./sql/rc16-ai-recitation.sql
 205a1127505608ea821dad515e0f4c22f6dd7844c9085d283fcb641f23aa99fc  ./sql/rc16-home-recitation.sql
-401680336d9dd1e0cb367913d40fc29cb5f995040fe752aeff0dee097d1201fd  ./sql/rc16-learning-ledger.sql
+08210cd23c8fc92368105ad54ed206ae9f3f37774bc731563e4ee662011b7217  ./sql/rc16-learning-ledger.sql
 2acbd64053dc1c8dcca842278f44b8f401108097cc659d5bbf3051e624eadd54  ./sql/supabase-setup.sql
 5f4c5de555bf095e4c26978464bcffdfae6e31b00c6feb04adde596e5b55bbdc  ./sql/supabase-sync.sql
 ce5ebe40e60843b65f8dbc03d05e432691b13602a0570b3db582b197adc36c26  ./sql/supervision-roster-permissions.sql
@@ -824,7 +824,7 @@ ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
 7c278999d0cfc89b5bd38711064df1f3916209e57063f8c48e4504a894e85f48  ./tests/rc16-ai-recitation-check.js
 864ccfd8641496e1d3787610afedceaeb883e8b97e7bf81e633267c86fdc8e55  ./tests/rc16-learning-hub-check.js
-aa1fe8976ff181417768e9cf4945ea10491f982b4ffe196aebc0779d5b1c92aa  ./tests/rc16-learning-ledger-check.js
+61a1d97ff780e4e61599ee967dde54aec81ed9ab7bed3511593a2008b93a57ae  ./tests/rc16-learning-ledger-check.js
 2fbc550e91d8ccf7c3d3bc8c6046352809929181ca098b31f59236c9d507c00d  ./tests/rc16-learning-ledger-db.sql
 30c6b0047e39e15956da909e82cce65182a53240d294de87a5a25de56d2cedaa  ./tests/rc16-migration-safety-check.js
 aaf916b0379dd4c227ef161ea0229dbaae8f934b8a8b7e99bfb6a9d9ee4801f7  ./tests/rc16-quiz-sync-merge-check.js

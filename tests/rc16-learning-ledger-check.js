@@ -12,7 +12,8 @@ assert(!/\\b(?:drop\\s+table|truncate(?:\\s+table)?|delete\\s+from)\\b/i.test(sq
 assert(sql.includes('jsonb_object_keys(p_groups)')&&!sql.includes('jsonb_object_length(p_groups)'),'participant snapshot validation must use supported PostgreSQL JSONB functions');
 assert(sql.includes('v_group_count integer;')&&sql.includes('select count(*) into v_group_count'),'participant JSONB validator must declare its counter correctly');
 assert(sql.includes('revoke all on table public.student_achievement_events from public, anon, authenticated'));
-assert(sql.includes('revoke all on table public.student_learning_competitions from public, anon, authenticated'));
+assert(sql.includes('revoke all on table public.student_learning_competitions from public, anon, authenticated, service_role'));
+assert(sql.includes('revoke all on table public.student_achievement_events from public, anon, authenticated, service_role'));
 assert(sql.includes('before update or delete on public.student_achievement_events'));
 assert(sql.includes('before update or delete on public.student_learning_competitions'));
 assert(sql.includes('unique (owner_user_id,idempotency_key)'));

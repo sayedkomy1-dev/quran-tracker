@@ -77,7 +77,7 @@ create index if not exists student_achievement_owner_time_idx
   on public.student_achievement_events(owner_user_id,approved_at desc);
 
 alter table public.student_achievement_events enable row level security;
-revoke all on table public.student_achievement_events from public, anon, authenticated;
+revoke all on table public.student_achievement_events from public, anon, authenticated, service_role;
 grant select, insert on table public.student_achievement_events to service_role;
 
 create or replace function public.rc16_reject_achievement_mutation()
@@ -137,7 +137,7 @@ create index if not exists student_competitions_owner_status_idx
   on public.student_learning_competitions(owner_user_id,status,start_date,end_date);
 
 alter table public.student_learning_competitions enable row level security;
-revoke all on table public.student_learning_competitions from public, anon, authenticated;
+revoke all on table public.student_learning_competitions from public, anon, authenticated, service_role;
 grant select, insert, update on table public.student_learning_competitions to service_role;
 
 create or replace function public.rc16_guard_competition_mutation()
