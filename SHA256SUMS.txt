@@ -775,7 +775,7 @@ bd8ac80d075110f6154c0a2953b573ff925c49746e5a39e305addc418cc6e270  ./tests/imam-b
 cc7f671de7644d5f0e48a3d2fdb9c2c5bb2ed52c9141beb3dbfd2b371403eb6e  ./tests/imam-board-mobile-entry-check.js
 c1e66eb091f79359422194c84b348fc773754bb3ae10b03fb292f610d671f77f  ./tests/imam-board-native-editor-check.js
 8189106474de0aa4abe271388d0a6c7c75b6c81ce433c6bc9b6489803a3df998  ./tests/imam-board-official-science-source-check.js
-316de48ccb6cdf3cae794a04fbc645c053570f78361f5e3030769abad7d54712  ./tests/imam-board-preparation-safety-check.js
+2cd1cdd5458a0fbd15290b24321ccd3b38e9ae95345e1b3c8f6fe7e246fa6bb2  ./tests/imam-board-preparation-safety-check.js
 dbd8ba9559f093f62c62d69a304d36eff71e60f100f3462288d77c56f6a02e2c  ./tests/imam-board-science-and-display-check.js
 5a7948a703d2a0b5c4a03a79365ded646b06d5eb6e56a05acbcbd964413a666b  ./tests/imam-board-session-group-runtime-check.js
 1d10df21031bba41587e8d3cc33f3c544db0c2bbd0c5c972523b695c592dab0f  ./tests/imam-board-tafsir-fixture.html
