@@ -255,7 +255,7 @@ assert(!/grant execute on function public\.account_sync_(?:push|pull)(?:_v2)?[^\
 assert(manifest.short_name==='أكاديمية الإمام'&&manifest.display==='standalone','PWA install identity mismatch');
 
 // v10.1.4 safe multi-device sync behavior.
-assert(html.includes('src="sync-core.js?v=beta28-rc7-data-safety"'),'safe sync core script missing from HTML');
+assert(html.includes('src="sync-core.js?v=beta28-rc16-quiz-merge1"'),'safe sync core script missing from HTML');
 assert(app.includes('function markStudentCascadeDeletion')&&!v9.includes('markStudentCascadeDeletion(id)'),'student archive must never create a deletion tombstone');
 assert(app.includes("markSyncDeletion('tasks',t)"),'task deletion tombstone missing');
 assert(v8.includes('safeSyncVersion:2')&&v8.includes('settings.sync.auto=false'),'safe-sync migration must disable legacy auto-sync once');
@@ -322,8 +322,8 @@ console.log('Static checks passed for Imam Academy v11.2.0');
 
 // v11.0.0 student progress dashboard guards.
 assert(html.includes('id="profProgress"')&&html.includes('id="profProgressContent"')&&html.includes('id="v107Range"'),'student progress dashboard DOM missing');
-assert(html.includes('js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3'),'student progress feature missing from HTML');
-assert(sw.includes("'./js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3'"),'student progress feature missing from service worker');
+assert(html.includes('js/features/student-progress.js?v=beta28-rc16-learning-observations1'),'student progress feature missing from HTML');
+assert(sw.includes("'./js/features/student-progress.js?v=beta28-rc16-learning-observations1'"),'student progress feature missing from service worker');
 assert(html.includes('js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1'),'teacher follow-up feature missing from HTML');
 assert(sw.includes("'./js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1'"),'teacher follow-up feature missing from service worker');
 assert(studentProgress.includes('function v107Calculate')&&studentProgress.includes('function renderV107Progress'),'student progress analytics/render functions missing');

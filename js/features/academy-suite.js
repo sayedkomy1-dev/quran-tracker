@@ -14,6 +14,7 @@
     {group:'الأدوات التعليمية',icon:'🔤',title:'منهج الإمام للتأسيس',desc:'ثمانية مستويات وأنشطة واختبارات تدريبية',href:'academy-learning.html#foundation',tone:'violet'},
     {group:'الأدوات التعليمية',icon:'🗣️',title:'المخارج والتجويد',desc:'أطلس الحروف وأحكام التجويد وتدريباتها',href:'academy-learning.html#tajweed',tone:'blue'},
     {group:'الأدوات التعليمية',icon:'📘',title:'مصحف الإمام العام',desc:'صفحات المدينة والتلاوة والتدريب الحر',href:'academy-mushaf.html',tone:'emerald'},
+    {group:'الأدوات التعليمية',icon:'🏆',title:'الاختبارات والمسابقات',desc:'تدريب معتمد وإنجازات موثقة ومسابقات الحلقات',action:'learningHub',tone:'gold'},
     {group:'التواصل والإدارة',icon:'👨‍👩‍👧',title:'بوابة ولي الأمر',desc:'ملفات الأبناء بتسجيل الدخول المعتمد',href:'guardian-login.html',tone:'blue'},
     {group:'التواصل والإدارة',icon:'📊',title:'التقارير',desc:'متابعة الدرجات والحضور والتقدم الفعلي',action:'reports',tone:'violet'},
     {group:'التواصل والإدارة',icon:'💬',title:'مركز التواصل',desc:'مراسلة أولياء الأمور عبر القنوات المعتمدة',action:'broadcast',tone:'gold'},
@@ -25,6 +26,7 @@
     if(name==='circles')return !!g.ImamApp?.CircleManager?.open;
     if(name==='exams')return !!g.ImamApp?.AcademicExams?.open;
     if(name==='broadcast')return typeof g.openBroadcastComposer==='function';
+    if(name==='learningHub'){const a=g.WeLiveQuranAuth?.getAccess?.()||g.WeLiveQuranAuth?.getProfile?.();return !!doc.getElementById('pg-rc16-learning-hub')&&a?.status==='active'&&['owner','teacher'].includes(a.role);}
     const node=[...doc.querySelectorAll('#mainNav .nav-t')].find(e=>e.getAttribute('onclick')===sel);
     if(!node)return false;
     return g.getComputedStyle(node).display!=='none' && !node.hidden && !node.classList.contains('role-hidden');
@@ -36,6 +38,7 @@
       else if(action==='circles')g.ImamApp.CircleManager.open();
       else if(action==='exams')g.ImamApp.AcademicExams.open();
       else if(action==='broadcast')g.openBroadcastComposer();
+      else if(action==='learningHub')g.goPage('rc16-learning-hub');
       else if(typeof g.goPage==='function')g.goPage(action);
       else notify('تعذر فتح القسم، أعد تحميل التطبيق.');
     } catch(e){notify('تعذر فتح الخدمة. استخدم القائمة الأصلية ثم أعد المحاولة.');}
@@ -68,7 +71,7 @@
     hero.append(ornament);shell.append(hero);
     const heading=create('div','ias-heading');heading.append(create('div','', 'مساحات الأكاديمية'));
     const more=create('a','','استعراض البوابات والخدمات');more.href='academy-portals.html';heading.append(more);shell.append(heading);
-    const group=create('div','ias-card-grid');links.slice(0,9).forEach(x=>group.append(card(x)));shell.append(group);
+    const group=create('div','ias-card-grid');links.slice(0,10).forEach(x=>group.append(card(x)));shell.append(group);
     const line=create('div','ias-section-end');line.append(create('strong','','مؤشرات الأكاديمية المباشرة'),create('span','','الأرقام التالية من سجلاتك الحالية وليست بيانات تجريبية.'));shell.append(line);
     home.insertBefore(shell,home.firstChild);
     // Existing live scorecards remain the sole data nodes (never duplicated).

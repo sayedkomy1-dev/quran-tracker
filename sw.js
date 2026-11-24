@@ -14,7 +14,7 @@ const CACHE_NAME = 'quran-pwa-v11.12.1-beta.27-workspace-workflow' + '-candidate
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
 // New reader-only shell must not overwrite an already-installed offline release.
-const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation';
+const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation' + '-rc16-learning-profile1' + '-rc16-learning-observations1' + '-rc16-home-recitation1' + '-rc16-learning-hub1' + '-rc16-ai-review1' + '-rc16-quiz-merge1' + '-rc16-learning-ledger1';
 // Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.27';
@@ -38,8 +38,8 @@ const CRITICAL_FRESH_SHELL = [
   './maqraa.html',
   './js/features/tahfeez-flow-rc14.js?v=beta28-rc14',
   './css/platform/rc14-tahfeez-flow.css?v=beta28-rc14',
-  './sync-core.js?v=beta28-rc7-data-safety',
-  './app.js?v=beta28-rc13',
+  './sync-core.js?v=beta28-rc16-quiz-merge1',
+  './app.js?v=beta28-rc16-learning-observations1',
   './v8.js?v=beta28-rc7-data-safety',
   './css/platform/rc8-premium-workspace.css?v=beta28-rc8',
   './css/platform/rc9-lesson-flow.css?v=beta28-rc9',
@@ -68,6 +68,9 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/student-finance.js?v=11.5.1-s2',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
+  './home-recitation.css?v=beta28-rc16-ai-review1',
+  './js/features/home-recitation-core.js?v=beta28-rc16-home-recitation1',
+  './js/features/home-recitation.js?v=beta28-rc16-ai-review1',
   './js/features/guardian-portal-view.js?v=11.7.4.2',
   './js/features/guest-practice.js?v=beta28-rc13',
   './js/features/session-intelligence-119.js?v=beta28-rc13',
@@ -98,6 +101,10 @@ const CRITICAL_FRESH_SHELL = [
   './css/platform/academy-learning.css?v=11.12.1-beta.27-review7',
   './js/features/academy-learning.js?v=11.12.1-beta.27-review7',
   './data/academy-learning-materials.json',
+  './css/platform/rc16-learning-hub.css?v=beta28-rc16-learning-hub1',
+  './js/features/rc16-learning-hub-core.js?v=beta28-rc16-learning-hub1',
+  './js/features/rc16-learning-hub.js?v=beta28-rc16-learning-ledger1',
+
   './css/platform/academy-portal-suite.css?v=11.12.1-beta.27-review7',
   './js/features/academy-portal-suite.js?v=beta28-rc13',
 
@@ -107,6 +114,7 @@ const CRITICAL_FRESH_SHELL = [
   './css/platform/academy-portals.css?v=11.12.1-beta.27-design-bridge1',
   './academy-portals.html',
   './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5-hotfix1',
+  './student-learning-profile.css?v=beta28-rc16-learning-observations1',
   './js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5',
   './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1',
   './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
@@ -117,7 +125,11 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/imam-absence-makeup.js?v=11.12.1-beta.27-absence-review2',
   './js/features/quran-coverage-progress.js?v=11.12.1-beta.27-coverage-review3',
   './js/features/imam-makeup-agenda.js?v=11.12.1-beta.27-combined-review4',
-  './js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3',
+  './js/features/student-progress.js?v=beta28-rc16-learning-observations1',
+  './js/features/student-learning-profile.js?v=beta28-rc16-learning-observations1',
+  './home-recitation.css?v=beta28-rc16-ai-review1',
+  './js/features/home-recitation-core.js?v=beta28-rc16-home-recitation1',
+  './js/features/home-recitation.js?v=beta28-rc16-ai-review1',
   './index.html',
   './css/platform/tokens.css?v=11.12.1-beta.27',
   './css/platform/legacy-features.css?v=11.12.1-beta.27',
@@ -132,7 +144,7 @@ const CRITICAL_FRESH_SHELL = [
   './v8.js?v=11.12.1-beta.27-error-followup-candidate',
   './js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate',
   './error-followup.css?v=11.12.1-beta.27-error-followup-candidate',
-  './app.js?v=beta28-rc13',
+  './app.js?v=beta28-rc16-learning-observations1',
   './js/core/runtime.js?v=11.12.1-beta.27',
   './js/core/boot-health.js?v=11.12.1-beta.27',
   './js/core/offline-bootstrap.js?v=11.12.1-beta.27',
@@ -149,7 +161,7 @@ const CRITICAL_FRESH_SHELL = [
   './teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker-hotfix2',
   './js/features/imam-board-tafsir.js?v=11.12.1-beta.27',
   './js/features/imam-board-corpus.js?v=11.12.1-beta.27',
-  './js/features/imam-smart-board.js?v=11.12.1-beta.27-quran-picker1',
+  './js/features/imam-smart-board.js?v=beta28-rc16-board-recovery1',
   './js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker-hotfix2',
   './imam-board-display.html',
   './imam-board-display.js?v=11.12.1-beta.27'
@@ -180,6 +192,7 @@ const APP_SHELL = [
   './css/platform/academy-portals.css?v=11.12.1-beta.27-design-bridge1',
   './academy-portals.html',
   './imam-teaching-insights.css?v=11.12.1-beta.27-teaching-review5-hotfix1',
+  './student-learning-profile.css?v=beta28-rc16-learning-observations1',
   './js/features/imam-teaching-insights.js?v=11.12.1-beta.27-teaching-review5',
   './js/features/teacher-followup.js?v=11.12.1-beta.27-teaching-review5-hotfix1',
   './integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1',
@@ -204,7 +217,7 @@ const APP_SHELL = [
   './teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker-hotfix2',
   './js/features/imam-board-tafsir.js?v=11.12.1-beta.27',
   './js/features/imam-board-corpus.js?v=11.12.1-beta.27',
-  './js/features/imam-smart-board.js?v=11.12.1-beta.27-quran-picker1',
+  './js/features/imam-smart-board.js?v=beta28-rc16-board-recovery1',
   './js/features/teacher-quran-range-picker.js?v=11.12.1-beta.27-quran-picker-hotfix2',
   './imam-board-display.html',
   './imam-board-display.js?v=11.12.1-beta.27',
@@ -223,7 +236,7 @@ const APP_SHELL = [
   './js/features/ux-guidance.js?v=11.12.1-beta.27',
 
 
-  './app.js?v=beta28-rc13',
+  './app.js?v=beta28-rc16-learning-observations1',
   './v8.js?v=11.12.1-beta.27-error-followup-candidate',
   './js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate',
   './error-followup.css?v=11.12.1-beta.27-error-followup-candidate',
@@ -261,7 +274,8 @@ const APP_SHELL = [
   './js/features/teacher-error-marking.js?v=beta28-rc13',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './js/features/guardian-communication.js?v=11.0.0',
-  './js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3',
+  './js/features/student-progress.js?v=beta28-rc16-learning-observations1',
+  './js/features/student-learning-profile.js?v=beta28-rc16-learning-observations1',
   './js/features/circle-analytics.js?v=11.0.0',
   './js/features/smart-revision.js?v=11.9.2',
   './js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3',
@@ -370,7 +384,7 @@ const CORE_SHELL = [
   './js/features/v11-ui.js?v=11.12.1-beta.27',
   './js/features/teacher-error-marking.js?v=beta28-rc13',
   './js/features/teacher-correction-document.js?v=11.7.4.5',
-  './app.js?v=beta28-rc13',
+  './app.js?v=beta28-rc16-learning-observations1',
   './revision-quran-text.css?v=11.8.1',
   './js/features/revision-quran-text.js?v=11.8.1',
   './auth.js?v=beta28-rc13',
@@ -415,7 +429,7 @@ async function cacheVerifiedCurrentShell(cache,url){
   const body=await response.clone().text();
   if(url==='./index.html' &&
      (!body.includes(`name="application-version" content="${APP_VERSION}"`)
-      ||!body.includes('app.js?v=beta28-rc13')
+      ||!body.includes('app.js?v=beta28-rc16-learning-observations1')
       ||!body.includes(`runtime.js?v=${APP_VERSION}`)))
     throw new Error('[SW] index.html is an older release');
   if(['./index.html','./guardian-portal.html','./guest-practice.html','./maqraa.html'].includes(url) && !body.includes('offline-audio-library.js?v=beta28-rc13'))
@@ -670,7 +684,7 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:ACTIVE_CACHE_NAME,offlineStage:'5.7-storage-audio-portal-rc13',uiStage:'11.12.1-beta.28-rc13'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:ACTIVE_CACHE_NAME,offlineStage:'5.7-storage-audio-portal-rc13',uiStage:'11.12.1-beta.28-rc16-learning-ledger1'});
   if(event.data?.type==='IMAM_STORAGE_SAFE_CLEAN'&&event.ports?.[0]){
     const port=event.ports[0];
     event.waitUntil((async()=>{

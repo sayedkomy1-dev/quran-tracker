@@ -40,8 +40,8 @@
   function setNote(mode){
     const title=$('portalNoteTitle'),text=$('portalNoteText');setModeActions(mode);
     if(mode==='session'){
-      if(title)title.textContent='دخول آمن برقم الهاتف + PIN';
-      if(text)text.textContent='هذه جلسة قراءة فقط بعد التحقق من رقم الهاتف ورمز الدخول. رمز PIN نفسه يظل صالحًا حتى يغيّره المحفظ، بينما قد يحتاج تسجيل الدخول على هذا الجهاز إلى تجديد دوري.';
+      if(title)title.textContent='متابعة آمنة وإرسال التسميع المنزلي';
+      if(text)text.textContent='هذه جلسة موثقة بعد التحقق من رقم الهاتف ورمز PIN. بيانات الأكاديمية للقراءة فقط؛ ويمكنك إرسال تسجيل التلاوة للمحفظ ومتابعة التصحيحات المعتمدة. لا يمكنك تعديل سجلات الأكاديمية أو درجات الطالب. رمز PIN نفسه يظل صالحًا حتى يغيّره المحفظ، وقد يحتاج تسجيل الدخول على هذا الجهاز إلى تجديد دوري.';
     }else if(mode==='live'){
       if(title)title.textContent='رابط قراءة فقط قابل للتحديث';
       if(text)text.textContent='يعرض هذا الرابط آخر نسخة نشرها المحفظ. لا يمكن تعديل بيانات الأكاديمية من هذه الصفحة، ويمكن للمحفظ إيقاف الرابط في أي وقت.';
@@ -162,6 +162,7 @@
   async function fetchLive(token){const payload=await publicRpc('guardian_portal_read',{p_token:token});return payload&&validSnapshot(payload.snapshot)?payload:null;}
   async function loadLive(token,{manual=false}={}){
     liveToken=token;sessionToken='';sessionRows=[];setNote('live');setStudentSwitcher([]);setLiveState('loading',manual?'جارٍ تحديث البيانات…':'جارٍ تحميل آخر بيانات منشورة…');
+    try{g.ImamHomeRecitation?.setStudentContext?.(null);}catch(_){} 
     try{
       const payload=await fetchLive(token);
       if(!payload){showError('تم إيقاف هذا الرابط أو لم يعد متاحًا','اطلب من المحفظ إرسال رابط جديد.');return false;}
@@ -226,6 +227,7 @@
     const i=Math.max(0,Math.min(sessionRows.length-1,Number(value)||0)),row=sessionRows[i];if(!row||!validSnapshot(row.snapshot))return;
     try{g.ImamGuardianEngagement?.setContext?.({sessionToken,studentRef:row.student_ref,studentName:row.snapshot?.student?.name||''});}catch(err){console.warn('[guardian engagement context]',err);}
     render(row.snapshot,{session:true,updatedAt:row.updated_at,studentRef:row.student_ref});setStudentSwitcher(sessionRows,i);setLiveState('online','🔒 جلسة ولي الأمر موثّقة — قراءة فقط');
+    try{g.ImamHomeRecitation?.setStudentContext?.({sessionToken,studentRef:row.student_ref,studentName:row.snapshot?.student?.name||'الطالب',assignment:row.snapshot?.learning?.newAssignment||null});}catch(err){console.warn('[home recitation context]',err);}
     loadFinance(sessionToken,row.student_ref);
     g.ImamGuardianMessages?.setContext?.({sessionToken,studentRef:row.student_ref});
     g.ImamGuardianRatings?.setContext?.({sessionToken,studentRef:row.student_ref});
@@ -236,7 +238,7 @@
     try{sessionStorage.setItem(SESSION_KEY,token);history.replaceState(null,'',`${location.pathname}${location.search}#guardian`);}catch(_){/* fragment remains if storage is unavailable */}
   }
   function storedSession(){try{return uuid(sessionStorage.getItem(SESSION_KEY));}catch(_){return '';}}
-  function forgetSession(){hideFinance();g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}sessionToken='';sessionRows=[];try{g.ImamGuardianEngagement?.setContext?.({});}catch(_){} }
+  function forgetSession(){hideFinance();g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}sessionToken='';sessionRows=[];try{g.ImamGuardianEngagement?.setContext?.({});}catch(_){}try{g.ImamHomeRecitation?.setStudentContext?.(null);}catch(_){} }
   async function loadSession(token,{manual=false}={}){
     sessionToken=token;liveToken='';setNote('session');setLiveState('loading',manual?'جارٍ تحديث بيانات الطلاب…':'جارٍ تحميل صفحة الطالب…');
     try{
@@ -248,7 +250,7 @@
   }
   function showError(title='الرابط غير صالح أو غير مكتمل',message='اطلب من المحفظ إنشاء رابط جديد من ملف الطالب داخل التطبيق.',loginAgain=false){
     const e=$('portalError');if(e){e.hidden=false;$('portalErrorTitle').textContent=title;$('portalErrorText').textContent=message;const back=$('portalLoginAgain');if(back)back.hidden=!loginAgain;}
-    g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();g.ImamGuardianTahfeez?.close?.(true);g.ImamGuardianTahfeez?.setContext?.(null);g.ImamGuardianAudio?.setContext?.(null);hideFinance();const c=$('portalContent');if(c)c.hidden=true;setLiveState('','');setStudentSwitcher([]);
+    g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();g.ImamGuardianTahfeez?.close?.(true);g.ImamGuardianTahfeez?.setContext?.(null);g.ImamGuardianAudio?.setContext?.(null);hideFinance();const c=$('portalContent');if(c)c.hidden=true;setLiveState('','');setStudentSwitcher([]);try{g.ImamHomeRecitation?.setStudentContext?.(null);}catch(_){} 
   }
   function toast(msg){const t=document.createElement('div');t.className='portal-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1800);}
   async function share(){
@@ -267,6 +269,7 @@
   function printPage(){window.print();}
   g.portalShare=share;g.portalPrint=printPage;g.portalRefresh=refresh;g.portalLogout=logout;g.portalSelectStudent=selectSessionStudent;g.portalToast=toast;
 
+  g.addEventListener('online',()=>{if(sessionToken&&!sessionRows.length)loadSession(sessionToken,{manual:true});});
   (async()=>{
     try{
       const sToken=tokenFromHash('s');

@@ -1192,6 +1192,57 @@ function editSt(){
   const box=document.querySelector?.('#stModal > .mo-box');
   if(box)box.scrollTop=0;
 }
+function saveStudentLearningObservation(){
+  const studentId=String(curStId||'');
+  const st=students.find(item=>String(item.id)===studentId);
+  if(!st){toast('افتح ملف الطالب أولًا.','error');return false;}
+  const profile=globalThis.ImamApp?.StudentLearningProfile;
+  if(typeof profile?.createObservation!=='function'){toast('أداة الملاحظات غير جاهزة. أعد فتح التطبيق.','error');return false;}
+  const created=profile.createObservation({
+    id:makeId('obs'),
+    category:document.getElementById('slpObservationCategory')?.value||'',
+    date:document.getElementById('slpObservationDate')?.value||'',
+    evidence:document.getElementById('slpObservationEvidence')?.value||'',
+    nextStep:document.getElementById('slpObservationNextStep')?.value||'',
+    today:localDateKey(),
+    now:new Date().toISOString()
+  });
+  if(!created?.ok){toast(created?.error||'راجع بيانات الملاحظة.','error');return false;}
+  const previous=Array.isArray(st.learningObservations)?st.learningObservations:[];
+  const previousUpdatedAt=st.updatedAt;
+  st.learningObservations=[...previous,created.record];
+  st.updatedAt=created.record.updatedAt;
+  if(!save()){
+    st.learningObservations=previous;
+    st.updatedAt=previousUpdatedAt;
+    toast('تعذر حفظ الملاحظة. لم يتم اعتمادها.','error');
+    return false;
+  }
+  if(typeof renderV107Progress==='function')renderV107Progress(st.id);
+  toast('تم حفظ الملاحظة التربوية الخاصة بالمحفظ.','success');
+  return true;
+}
+function archiveStudentLearningObservation(id,archived=true){
+  const st=students.find(item=>String(item.id)===String(curStId||''));
+  if(!st)return false;
+  const key=String(id||'');
+  const previous=Array.isArray(st.learningObservations)?st.learningObservations:[];
+  if(!key||!previous.some(item=>String(item?.id)===key))return false;
+  const now=new Date().toISOString(),previousUpdatedAt=st.updatedAt;
+  st.learningObservations=previous.map(item=>String(item?.id)===key
+    ?{...item,archivedAt:archived?now:'',updatedAt:now}:item);
+  st.updatedAt=now;
+  if(!save()){
+    st.learningObservations=previous;
+    st.updatedAt=previousUpdatedAt;
+    toast('تعذر تحديث حالة الملاحظة. لم يتم تغيير السجل.','error');
+    return false;
+  }
+  if(typeof renderV107Progress==='function')renderV107Progress(st.id);
+  toast(archived?'تمت أرشفة الملاحظة ويمكن استعادتها لاحقًا.':'تمت استعادة الملاحظة.','success');
+  return true;
+}
+
 function deleteSt(){
   // The later v9 handler supplies guardian-access revocation before archiving.
   // Fail closed here rather than accidentally deleting student history if v9

@@ -137,3 +137,14 @@ body.ib-native-open > .mo.open,body.ib-native-open #im119Warning,body.ib-native-
  .imam-board-root .ia20-board-more-items>*{min-width:0;width:100%;font-size:13px}
  .imam-board-root .ib-students{max-height:none}
 }
+
+/* RC16 group lesson preparation */
+.imam-board-root .ib-prep-roster-wrap{display:grid;gap:8px;border:1px solid #d8e5db;border-radius:12px;padding:12px;background:#fbfdfb}
+.imam-board-root .ib-prep-roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:7px;max-height:220px;overflow:auto}
+.imam-board-root .ib-prep-roster-item{display:flex;align-items:center;gap:8px;min-height:42px;padding:7px 9px;border:1px solid #dbe7de;border-radius:9px;background:#fff;font-size:13px}
+.imam-board-root .ib-prep-roster-item input{width:18px;height:18px;flex:none}
+.imam-board-root .ib-prep-template-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.imam-board-root .ib-prep-template-actions b{width:100%;font-size:13px;color:#355c45}
+.imam-board-root .ib-prep-template-actions button{min-height:38px;border:1px solid #c8d9cd;border-radius:9px;background:#fff;color:#24513c;padding:7px 11px;font:inherit;font-weight:700}
+.imam-board-root .ib-prep-dialog footer button[data-prep="group"]{background:#edf5ef;border-color:#a8cbb5;color:#174b36}
+@media(max-width:650px){.imam-board-root .ib-prep-roster{grid-template-columns:1fr 1fr}.imam-board-root .ib-prep-template-actions button{flex:1 1 calc(50% - 8px)}}

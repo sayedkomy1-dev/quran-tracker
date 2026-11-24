@@ -28,6 +28,14 @@ if(process.argv.includes('--write')){
  console.log(`SHA256SUMS: generated ${lines.length} file hashes`);
 }else{
  const current=await readFile(path.join(root,'SHA256SUMS.txt'),'utf8');
- if(current!==expected){console.error('SHA256SUMS: stale or missing content; run node scripts/release-integrity.mjs --write');process.exitCode=1;}
- else console.log(`SHA256SUMS: verified ${lines.length} file hashes`);
+ if(current!==expected){
+  const actual=new Map(current.trimEnd().split('\n').map(line=>{const m=line.match(/^([0-9a-f]{64})  \.\/(.+)$/);return m?[m[2],m[1]]:['<invalid-line:'+line.slice(0,80)+'>',''];}));
+  const expectedMap=new Map(lines.map(line=>{const split=line.indexOf('  ./');return[line.slice(split+4),line.slice(0,split)];}));
+  const pathsToCheck=new Set([...actual.keys(),...expectedMap.keys()]);
+  const differences=[...pathsToCheck].filter(p=>actual.get(p)!==expectedMap.get(p)).sort();
+  console.error('SHA256SUMS: stale or missing content; run node scripts/release-integrity.mjs --write');
+  console.error('First inventory differences ('+differences.length+' total):');
+  for(const p of differences.slice(0,20))console.error('- '+p+' | expected: '+(expectedMap.get(p)||'missing')+' | actual: '+(actual.get(p)||'missing'));
+  process.exitCode=1;
+ }else console.log(`SHA256SUMS: verified ${lines.length} file hashes`);
 }

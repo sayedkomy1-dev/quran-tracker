@@ -28,6 +28,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <link rel="stylesheet" href="css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1">
 
 <link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-rc13">
+<link rel="stylesheet" href="home-recitation.css?v=beta28-rc16-ai-review1">
 <link rel="stylesheet" href="css/platform/reference-palette.css?v=beta28-candidate2">
 <link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc13">
 <link rel="stylesheet" href="css/platform/rc13-portal-learning.css?v=beta28-rc13">
@@ -131,6 +132,27 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
         <div class="portal-audio-controls"><select id="portalAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري راشد العفاسي</option><option value="husary">محمود خليل الحصري — مرتل</option><option value="husaryTeacher">محمود خليل الحصري — معلم</option><option value="minshawy">محمد صديق المنشاوي — مرتل</option><option value="minshawyTeacher">محمد صديق المنشاوي — معلم</option><option value="muaiqly">ماهر المعيقلي</option></select><button id="portalAudioShareBtn" type="button" onclick="guardianShareAssignmentAudio()">📲 مشاركة صوت التكليف</button></div>
         <small id="portalAudioStatus">يتم إنشاء ملف للتكليف الحالي فقط.</small>
       </div>
+    </section>
+
+    <section class="portal-card hrc-student-card" id="homeRecitationCard" hidden>
+      <div class="hrc-card-head"><div><b>🎙️ التسميع المنزلي</b><small>سجّل تلاوتك وأرسلها للمحفظ، وسيصلك التصحيح عند اعتماده.</small></div><span id="hrcPortalStudentName">الطالب</span></div>
+      <div class="hrc-grid">
+        <label>السورة<select id="hrcSurah" aria-label="سورة التسميع"></select></label>
+        <label>من آية<input id="hrcAyahFrom" type="number" min="1" value="1" inputmode="numeric"></label>
+        <label>إلى آية<input id="hrcAyahTo" type="number" min="1" value="7" inputmode="numeric"></label>
+      </div>
+      <label class="hrc-field">ملاحظة للمحفظ (اختياري)<textarea id="hrcStudentNote" rows="2" maxlength="500" placeholder="اكتب ما تريد إخبار المحفظ به عن هذا التسميع…"></textarea></label>
+      <div class="hrc-actions">
+        <button type="button" id="hrcRecordStart" class="hrc-primary">🎙️ ابدأ التسجيل</button>
+        <button type="button" id="hrcRecordStop" class="hrc-secondary" hidden>إيقاف وحفظ التسجيل</button>
+        <label class="hrc-file-pick">اختيار ملف صوتي<input id="hrcAudioFile" type="file" accept="audio/*"></label>
+        <button type="button" id="hrcSend" class="hrc-secondary">إرسال التسجيلات المعلقة</button>
+      </div>
+      <div id="hrcPortalPreview"></div>
+      <p id="hrcPortalStatus" class="hrc-status" role="status"></p>
+      <div id="hrcPendingList"></div>
+      <p id="hrcSubmittedStatus" class="hrc-status" role="status"></p>
+      <div id="hrcSubmittedList"></div>
     </section>
 
     <section class="portal-card portal-revision-card" id="portalSmartRevision" hidden data-rc3-section="learning">
@@ -264,6 +286,8 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <script src="js/features/guardian-tahfeez.js?v=beta28-rc14"></script>
 <script src="js/features/guardian-messages.js?v=11.6.0-s1"></script>
 <script src="js/features/guardian-portal-view.js?v=11.7.4.2"></script>
+<script src="js/features/home-recitation-core.js?v=beta28-rc16-home-recitation1"></script>
+<script src="js/features/home-recitation.js?v=beta28-rc16-ai-review1"></script>
 <script src="js/features/beta28-portal-ux.js?v=beta28-rc13" defer></script>
 <script src="js/features/rc3-experience.js?v=beta28-rc13" defer></script>
 </body>

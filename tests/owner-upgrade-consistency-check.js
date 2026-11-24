@@ -12,7 +12,7 @@ const app=read('app.js');
 const bootstrap=read('js/core/offline-bootstrap.js');
 const version='11.12.1-beta.27';
 assert(html.includes(`name="application-version" content="${version}"`));
-assert(html.includes("app.js?v=beta28-rc13"));
+assert(html.includes("app.js?v=beta28-rc16-learning-observations1"));
 assert(html.includes(`runtime.js?v=${version}`));
 assert(html.includes(`offline-bootstrap.js?v=${version}`));
 assert(sw.includes(`const APP_VERSION = '${version}'`));
@@ -72,17 +72,20 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  }
  await installation;
  const currentName=vm.runInContext('ACTIVE_CACHE_NAME',ctx);
- assert(currentName.includes('-beta28-stage1')&&currentName.endsWith('-rc14-tahfeez-continuation'),'must test the RC14 cache namespace while retaining the Beta28 stage marker');
+ assert(currentName.includes('-beta28-stage1')&&currentName.includes('-rc14-tahfeez-continuation')&&currentName.includes('-rc16-learning-profile1')&&currentName.includes('-rc16-learning-observations1')&&currentName.includes('-rc16-home-recitation1')&&currentName.includes('-rc16-learning-hub1')&&currentName.includes('-rc16-ai-review1')&&currentName.includes('-rc16-quiz-merge1')&&currentName.endsWith('-rc16-learning-ledger1'),'must preserve the RC14 namespace and prior RC16 stages while advancing the home-recitation cache');
  const newCache=await cachesMock.open(currentName);
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
  assert(currentRoot && currentHtml,'both root and index paths must have current HTML');
  assert((await currentRoot.text()).includes('name="application-version" content="11.12.1-beta.27"'),'root may not serve stale HTML');
- assert((await currentHtml.text()).includes('app.js?v=beta28-rc13'),'index may not serve old app.js');
+ assert((await currentHtml.text()).includes('app.js?v=beta28-rc16-learning-observations1'),'index may not serve old app.js');
 }
 (async()=>{
  await testWorker({staleIndex:true});
  await testWorker({offlineRuntime:true});
  await testWorker({});
- console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC14 root/index and retained RC13 core scripts');
+ assert(sw.includes("'./js/features/home-recitation.js?v=beta28-rc16-ai-review1'"),'home-recitation AI review module must be part of the fresh shell');
+ assert(sw.includes("'./sync-core.js?v=beta28-rc16-quiz-merge1'"),'quiz/achievement sync merge core must be part of the fresh shell');
+assert(sw.includes("'./js/features/rc16-learning-hub.js?v=beta28-rc16-learning-ledger1'"),'RC16 learning hub must be part of the fresh shell');
+console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC16 root/index cache, retained RC14 namespace, and retained versioned offline scripts');
 })().catch(e=>{console.error(e);process.exitCode=1;});

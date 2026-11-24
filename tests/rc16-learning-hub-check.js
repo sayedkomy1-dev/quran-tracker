@@ -1,0 +1,26 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p),'utf8'),Core=require('../js/features/rc16-learning-hub-core.js'),sync=read('sync-core.js');
+const data=JSON.parse(read('data/academy-learning-materials.json')),surahs=[{n:'الفاتحة',a:7},{n:'البقرة',a:286},{n:'آل عمران',a:200},{n:'النساء',a:176},{n:'المائدة',a:120}];
+for(const category of ['foundation','tajweed','makharij','mutashabihat','surah']){const pool=Core.buildQuestionPool(data,surahs,category,1);assert(pool.length>0,category+' pool');const quiz=Core.makeQuiz(pool,5,()=>0.37);assert(quiz.length>0&&quiz.length<=5);quiz.forEach(q=>assert(q.correctIndex>=0&&q.correctIndex<q.options.length));}
+const q=[{id:'q1',options:['a','b'],correctIndex:1,explanation:'x'},{id:'q2',options:['c','d'],correctIndex:0,explanation:'y'}];
+assert.deepEqual(Core.scoreQuiz(q,{0:1,1:1}),{correct:1,total:2,answered:2,score:50});
+const attempt=Core.createAttempt({id:'a1',studentId:'s1',category:'tajweed',questions:q,answers:{0:1}});assert.equal(attempt.status,'awaiting_teacher_review');assert.equal(attempt.score,50);assert(!('durationMs'in attempt));
+const event={id:'e1',studentId:'s1',source:'teacher-approved-quiz',sourceRef:'a1',eventType:'quiz_completed',points:2,approvedBy:'teacher-1',idempotencyKey:'quiz:a1:approved',note:'1/2'};
+const first=Core.appendLedgerEntry([],event),duplicate=Core.appendLedgerEntry(first.ledger,event);assert.equal(first.added,true);assert.equal(duplicate.added,false);assert.equal(duplicate.ledger.length,1);assert.throws(()=>Core.appendLedgerEntry([], {...event,points:-1}));
+const roster=[{id:'s1',group:'A'},{id:'s2',group:'B'},{id:'s3',group:'A'},{id:'s4',group:'A',archived:true}];
+assert.equal(Core.validateCompetition({title:'فردي',scope:'individual',studentId:'s1',startDate:'2026-01-01',endDate:'2026-01-07'},roster).ok,true);
+assert.equal(Core.validateCompetition({title:'حلقة',scope:'circle',groups:['A'],startDate:'2026-01-01',endDate:'2026-01-07'},roster).value.studentIds.length,2);
+assert.equal(Core.validateCompetition({title:'بين الحلقات',scope:'circle-to-circle',groups:['A','B'],optIn:false,startDate:'2026-01-01',endDate:'2026-01-07'},roster).error,'COMPETITION_OPT_IN_REQUIRED');
+assert.equal(Core.validateCompetition({title:'بين الحلقات',scope:'circle-to-circle',groups:['A','B'],optIn:true,startDate:'2026-01-01',endDate:'2026-01-07'},roster).value.studentIds.length,3);
+const totals=Core.competitionTotals({scope:'circle-to-circle',studentIds:['s1','s2','s3'],startDate:'2026-01-01',endDate:'2026-01-07'},[{studentId:'s1',points:2,occurredAt:'2026-01-02'},{studentId:'s3',points:3,occurredAt:'2026-01-03'},{studentId:'s2',points:9,occurredAt:'2025-12-31'}],roster);assert.deepEqual(totals,[{key:'A',points:5}]);
+const copies=Core.buildGroupCopies({id:'p1',studentIds:['s1','s2','s4'],lesson:[{id:'st1'}]},roster,(()=>{let n=0;return()=>String(++n)})());assert.equal(copies.length,2);assert.notEqual(copies[0].lesson[0].id,copies[1].lesson[0].id);
+const ai=Core.normalizeAiResult({transcript_candidate:'نص مرشح',differences:[{kind:'omission',time_ms:1234,expected:'أ',heard:'',note:'راجع'}]});assert.equal(ai.differences[0].time_ms,null);
+const ui=read('js/features/rc16-learning-hub.js'),html=read('index.html'),suite=read('js/features/academy-suite.js'),sw=read('sw.js');
+for(const id of ['rc16HubStudent','rc16QuizStart','rc16QuizFinish','rc16CompetitionCreate','rc16HubLedger'])assert(html.includes(id),'missing UI '+id);
+assert(ui.includes('approve_quiz'),'quiz approvals must call the server ledger');
+assert(ui.includes('rc16-learning-ledger')&&ui.includes('student_ref')&&ui.includes('idempotency_key'));
+assert(!ui.includes('rc16AchievementEvents')&&!ui.includes('rc16Competitions'),'server is authoritative for achievements and competitions');
+assert(sync.includes('mergeQuizAttempts')&&sync.includes('mergeAchievementEvents')&&sync.includes('mergeCompetitions'));assert(ui.includes('validateCompetition'));assert(suite.includes('learningHub')&&suite.includes('الاختبارات والمسابقات'));assert(sw.includes('rc16-learning-hub-core.js')&&sw.includes('rc16-learning-hub.js'));
+assert(html.includes('verse_completion" disabled')&&html.includes('next_ayah" disabled'));
+console.log('PASS RC16 learning hub: five source-backed quiz banks, teacher approval, idempotent achievement ledger, private opt-in competitions, and safe UI');
