@@ -673,6 +673,7 @@ e2ee210099231f20d2005138bf3de83dcb0abb8c6344254d276981622fa025c7  ./sql/guardian
 9b5ec10dfdf5cc87979ef6f5e49d66365ecba41c792b7c6616742835659f776a  ./sql/guardian-portal-reset-requests.sql
 1b92591e9a6f8ff52ede48afe9a4c230fe611bf97045dda28552a50cbc5c5e57  ./sql/migrations/20261121_security_hardening_STAGING_ONLY.sql
 382154a84567c41e1ef0c175f3e303361f43c50681876c9f24c2163b4d89f325  ./sql/quran-guest-practice.sql
+909b75af36232d8e11c335858d00d1a8db505d5b4696b77665d6da2b804d947c  ./sql/rc16-ai-recitation.sql
 b4a935a4815516202ea08e0cdaa06a521be478bfe43b4048449780db137bf2b2  ./sql/rc16-home-recitation.sql
 2acbd64053dc1c8dcca842278f44b8f401108097cc659d5bbf3051e624eadd54  ./sql/supabase-setup.sql
 5f4c5de555bf095e4c26978464bcffdfae6e31b00c6feb04adde596e5b55bbdc  ./sql/supabase-sync.sql
@@ -683,6 +684,7 @@ c63c5a3e7a4996aa3389a270049075a253477686edf089461f112fecab17e6ad  ./student-fina
 ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
 13933d7f64916e3a45bc69156b80cf4aeaae39596809a7f5b648937a1c573044  ./supabase/config.toml
 5e167e54456e042af4242c8cf3fe709852fd8d5702f6f0865a388d3d3403e5ca  ./supabase/functions/guardian-recitation/index.ts
+16cbd7799a725b263fc9d8e2de9055f6d71da4dc379d335db581665679359565  ./supabase/functions/teacher-recitation-analysis/index.ts
 3e527f9dede324afbac61217f68d381ee4cb41b2d32b99be206801f263101ceb  ./sw.js
 d9af751d17bc441e6b39c24ec5a8ed5eaf24b93fac733e9e1ba036629534c319  ./sync-core.js
 c119463a48ab3e54f5d631af17484e8901f7f51029e8684f857860184efc9d07  ./teacher-error-marking.css
