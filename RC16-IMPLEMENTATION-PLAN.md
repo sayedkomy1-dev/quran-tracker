@@ -130,12 +130,12 @@ A work package is not complete until:
 - A1 student learning profile: 13/13 targeted checks.
 - A2 structured teacher observations: 9/9 targeted checks.
 - B home recitation: targeted security, offline queue, Quran range, signed playback, student isolation, teacher privacy, and shell integration test passed.
-- Release payload: 493 KiB gzip JavaScript / 850 KiB limit and 120 KiB gzip CSS / 250 KiB limit.
+- Latest release payload: 507 KiB gzip JavaScript / 850 KiB limit and 122 KiB gzip CSS / 250 KiB limit; 121 local linked JS/CSS assets were checked.
 - Real Android/iOS acceptance, staging Supabase deployment, visual review on target devices, and production rollout remain pending.
 - This is not a production release and has not been merged into main.
 
 ## Current execution note
-A1 and A2 are complete and CI-verified. B is implemented on the isolated branch and passed full GitHub Actions run #210, including 846 release hashes and payload budget. The remaining B gates are the documented staging Supabase migration/function deployment and real Android/iOS acceptance. No feature package is considered production-ready before those gates pass.
+A1/A2 are complete; B, C1/C2, D, and the teacher-only AI recitation source are implemented on the isolated branch. The central achievement/competition ledger now uses Supabase RLS, owner-scoped hashed student references, append-only achievement events, server timestamps, idempotent approvals/competition creation, and frozen participant-group snapshots. Latest full GitHub Actions run #45344560052 passed, including all targeted RC16 checks, Edge TypeScript syntax validation, 858 SHA-256 file hashes, and payload budgets. Staging Supabase SQL/Edge deployment, cross-account RLS verification, visual review, and real Android/iOS acceptance remain required before merge or production.
 
 ### C1 — Non-destructive Smart Board emergency recovery
 - Added a dedicated emergency recovery action to the existing Smart Board.
@@ -145,7 +145,7 @@ A1 and A2 are complete and CI-verified. B is implemented on the isolated branch 
 - Does not delete or reset board content and does not create or approve an official lesson.
 - Cache-busted the board asset in the app shell and service worker.
 - Added regression assertions for save-before-recovery, emergency command wiring, safe pause, and preservation messaging.
-- This is a focused C1 safety improvement; broader board templates and group preparation remain to be reviewed.
+- C1 is complete; C2 group preparation templates and independent per-student copies are implemented below.
 
 
 ### E — AI-assisted recitation suggestions
@@ -162,7 +162,7 @@ A1 and A2 are complete and CI-verified. B is implemented on the isolated branch 
 - Practice question banks are generated from local source material: foundation, tajweed, makharij, mutashabihat references, and the app's 114-surah index.
 - Verse-completion and next-ayah quizzes remain disabled until a complete, verified Quran text corpus is available locally. No Quran text is fabricated.
 - Quiz attempts are stored as pending teacher review. They are not official grades and award no points until a teacher approves them.
-- Added an append-only-in-the-UI achievement ledger with event source, student, approving teacher, timestamps, points, and idempotency key. The achievement ledger and competitions now use dedicated Supabase tables with row-level security, owner-scoped hashed student references, append-only database triggers for achievement events, server timestamps, and idempotent teacher approvals and competition creation, and immutable group-membership snapshots. The browser no longer treats local account snapshots as the source of truth for points.
+- Added a server-authoritative achievement ledger in dedicated Supabase tables with RLS, owner-scoped hashed student references, append-only database triggers, server approval timestamps, and owner-scoped idempotency keys. The browser no longer treats local account snapshots as the source of truth for points. Competition participant references and group assignments are snapshotted and immutable.
 - Added individual, single-circle, and circle-to-circle competitions. Cross-circle participation requires explicit opt-in; standings use approved ledger points only and remain teacher-only. No public child leaderboard and no speed-based points.
 - Added a pedagogical helper that reads the student's actual teacher observations and surfaces relevant local strategies; it is advisory, not a diagnosis.
 
@@ -179,30 +179,4 @@ A1 and A2 are complete and CI-verified. B is implemented on the isolated branch 
 
 ### G — Release hardening status
 - Targeted tests now cover learning question banks, teacher approval, idempotent awards, competition opt-in, group preparation copies, AI authorization/privacy/quota/signature validation, and no-fake-timestamp behavior.
-- The complete GitHub Actions release checks passed for the preceding UI build. The server-ledger integration has now been added to the branch and must pass a fresh full CI run. Staging SQL/function deployment and Android/iOS acceptance are still required before production.
-
-
-### Educational materials and D — quizzes, achievements, competitions
-- The existing Academy Learning Center remains the source for the eight-level foundation curriculum, makharij, tajweed rules, and mutashabihat references; no duplicate content corpus was created.
-- Added a teacher-only learning hub from the Academy Suite home screen.
-- Practice question banks are generated from local source material: foundation, tajweed, makharij, mutashabihat references, and the app's 114-surah index.
-- Verse-completion and next-ayah quizzes remain disabled until a complete, verified Quran text corpus is available locally. No Quran text is fabricated.
-- Quiz attempts are stored as pending teacher review. They are not official grades and award no points until a teacher approves them.
-- Added an append-only-in-the-UI achievement ledger with event source, student, approving teacher, timestamps, points, and idempotency key. The achievement ledger and competitions now use dedicated Supabase tables with row-level security, owner-scoped hashed student references, append-only database triggers for achievement events, server timestamps, and idempotent teacher approvals. The browser no longer treats local account snapshots as the source of truth for points.
-- Added individual, single-circle, and circle-to-circle competitions. Cross-circle participation requires explicit opt-in; standings use approved ledger points only and remain teacher-only. No public child leaderboard and no speed-based points.
-- Added a pedagogical helper that reads the student's actual teacher observations and surfaces relevant local strategies; it is advisory, not a diagnosis.
-
-### C2 — Group lesson preparation
-- Added quick preparation templates for foundation, memorization, revision, and group lessons.
-- Added a student roster selector filtered by the preparation group.
-- Group preparation creates a separate preparation copy per selected active student with independent stage IDs; it does not create an official lesson or change an assignment.
-- Saved preparation templates remain account-scoped and available offline through the existing local store. The 100-item safety limit blocks new additions instead of silently evicting older saved preparations.
-
-### F — Portal and experience integration
-- Added the learning hub to the existing teacher home suite with explicit owner/teacher access.
-- Home-recitation teacher review includes an optional AI suggestion panel. Student/guardian endpoints continue to return only explicitly published feedback; private teacher notes and AI suggestions remain private.
-- Existing WhatsApp, Mushaf audio, offline library, MP3 export, and Storage Governor paths remain unchanged.
-
-### G — Release hardening status
-- Targeted tests cover learning question banks, teacher approval, idempotent awards, competition opt-in, group preparation copies, AI authorization/privacy/quota/signature validation, and no-fake-timestamp behavior.
-- The complete GitHub Actions release checks passed for the preceding UI build. The server-ledger integration has now been added to the branch and must pass a fresh full CI run. Staging SQL/function deployment and Android/iOS acceptance are still required before production.
+- Latest full GitHub Actions run #45344560052 passed: all existing and targeted RC16 checks, Edge TypeScript syntax validation, 858 SHA-256 file hashes, 507 KiB gzip JS / 850 KiB budget, and 122 KiB gzip CSS / 250 KiB budget. Staging SQL/Edge Function deployment, role/RLS end-to-end tests, visual review, and Android/iOS acceptance remain required before production.
