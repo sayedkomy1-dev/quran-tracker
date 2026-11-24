@@ -9,6 +9,7 @@ assert(!ui.includes('rc16AchievementEvents')&&!ui.includes('rc16Competitions'),'
 assert(ui.includes('student_ref')&&ui.includes('approved_at')&&ui.includes('idempotency_key'));
 assert(sql.includes('enable row level security'));
 assert(sql.includes('jsonb_object_keys(p_groups)')&&!sql.includes('jsonb_object_length(p_groups)'),'participant snapshot validation must use supported PostgreSQL JSONB functions');
+assert(sql.includes('declare\n  v_group_count integer;\nbegin'),'participant JSONB validator must declare its local counter before BEGIN');
 assert(sql.includes('revoke all on table public.student_achievement_events from public, anon, authenticated'));
 assert(sql.includes('revoke all on table public.student_learning_competitions from public, anon, authenticated'));
 assert(sql.includes('before update or delete on public.student_achievement_events'));

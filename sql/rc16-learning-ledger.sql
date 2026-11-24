@@ -22,17 +22,16 @@ language plpgsql
 immutable
 set search_path = public, pg_temp
 as $rc16helper$
+declare
+  v_group_count integer;
 begin
   if p_refs is null or p_groups is null or jsonb_typeof(p_groups) <> 'object' then
     return false;
   end if;
-  declare v_group_count integer;
-  begin
-    select count(*) into v_group_count from jsonb_object_keys(p_groups);
-    if v_group_count <> cardinality(p_refs) then
-      return false;
-    end if;
-  end;
+  select count(*) into v_group_count from jsonb_object_keys(p_groups);
+  if v_group_count <> cardinality(p_refs) then
+    return false;
+  end if;
   if exists (select 1 from unnest(p_refs) as x(r) where not (p_groups ? r)) then
     return false;
   end if;
