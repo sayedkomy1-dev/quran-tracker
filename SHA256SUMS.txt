@@ -820,7 +820,7 @@ ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-
 0ca86564dac39407ec5e57ba6f8410e7266a150cc37403d36ddd1a163c087bcb  ./tests/rc16-learning-hub-check.js
 aaf916b0379dd4c227ef161ea0229dbaae8f934b8a8b7e99bfb6a9d9ee4801f7  ./tests/rc16-quiz-sync-merge-check.js
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
-c703b5fc099b16bc65f19005441f82aaeb6648f9140279103a7000e60dcacf83  ./tests/release-consistency-beta16-check.js
+520477e33e1d0bfd2d98627c7b7533f95100efa0ec8af1b12365990ffd93611c  ./tests/release-consistency-beta16-check.js
 ee2b06b565b49d1cc30b0af62df99070a5e303abd3bb24b94f0ecdb4cf78d6a7  ./tests/revision-text-boot-check.js
 48cc1e91796327f6e3c4db8016f94db8dfc7a2bde928004c129d56c18e2d7b20  ./tests/role-home-tab-visibility-hotfix-check.js
 41d5a8f3bf67290c91f5db38476017b7e31d0a43179892e50077bbeaaba7623e  ./tests/role-ux-errors-batch-check.js

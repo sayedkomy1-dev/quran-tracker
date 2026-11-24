@@ -16,7 +16,8 @@ const scripts=['app.js','v9.js','v10.js','js/features/imam-smart-board.js','js/f
 const css=['css/platform/responsive.css','imam-smart-board.css','role-home.css','teacher-rating.css'];
 const homeAssets=['home-recitation.css','js/features/home-recitation-core.js','js/features/home-recitation.js'];
 for(const name of homeAssets){
- const ref=`${name}?v=beta28-rc16-home-recitation1`;
+ const version=name==='js/features/home-recitation-core.js'?'beta28-rc16-home-recitation1':'beta28-rc16-ai-review1';
+ const ref=`${name}?v=${version}`;
  assert(html.includes(ref)||read('guardian-portal.html').includes(ref),`HTML missing fresh ${name}`);
  assert(sw.includes(`'./${ref}'`),`SW missing fresh ${name}`);
 }
