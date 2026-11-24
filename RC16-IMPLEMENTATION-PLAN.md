@@ -180,3 +180,29 @@ A1 and A2 are complete and CI-verified. B is implemented on the isolated branch 
 ### G — Release hardening status
 - Targeted tests now cover learning question banks, teacher approval, idempotent awards, competition opt-in, group preparation copies, AI authorization/privacy/quota/signature validation, and no-fake-timestamp behavior.
 - The next complete CI run must pass before considering the branch test-clean. Staging SQL/function deployment and Android/iOS acceptance are still required before production.
+
+
+### Educational materials and D — quizzes, achievements, competitions
+- The existing Academy Learning Center remains the source for the eight-level foundation curriculum, makharij, tajweed rules, and mutashabihat references; no duplicate content corpus was created.
+- Added a teacher-only learning hub from the Academy Suite home screen.
+- Practice question banks are generated from local source material: foundation, tajweed, makharij, mutashabihat references, and the app's 114-surah index.
+- Verse-completion and next-ayah quizzes remain disabled until a complete, verified Quran text corpus is available locally. No Quran text is fabricated.
+- Quiz attempts are stored as pending teacher review. They are not official grades and award no points until a teacher approves them.
+- Added an append-only-in-the-UI achievement ledger with event source, student, approving teacher, timestamps, points, and idempotency key. The current ledger is account-snapshot backed; it is not yet a tamper-proof server ledger.
+- Added individual, single-circle, and circle-to-circle competitions. Cross-circle participation requires explicit opt-in; standings use approved ledger points only and remain teacher-only. No public child leaderboard and no speed-based points.
+- Added a pedagogical helper that reads the student's actual teacher observations and surfaces relevant local strategies; it is advisory, not a diagnosis.
+
+### C2 — Group lesson preparation
+- Added quick preparation templates for foundation, memorization, revision, and group lessons.
+- Added a student roster selector filtered by the preparation group.
+- Group preparation creates a separate preparation copy per selected active student with independent stage IDs; it does not create an official lesson or change an assignment.
+- Saved preparation templates remain account-scoped and available offline through the existing local store. The 100-item safety limit blocks new additions instead of silently evicting older saved preparations.
+
+### F — Portal and experience integration
+- Added the learning hub to the existing teacher home suite with explicit owner/teacher access.
+- Home-recitation teacher review includes an optional AI suggestion panel. Student/guardian endpoints continue to return only explicitly published feedback; private teacher notes and AI suggestions remain private.
+- Existing WhatsApp, Mushaf audio, offline library, MP3 export, and Storage Governor paths remain unchanged.
+
+### G — Release hardening status
+- Targeted tests cover learning question banks, teacher approval, idempotent awards, competition opt-in, group preparation copies, AI authorization/privacy/quota/signature validation, and no-fake-timestamp behavior.
+- The next complete CI run must pass before considering the branch test-clean. Staging SQL/function deployment and Android/iOS acceptance are still required before production.

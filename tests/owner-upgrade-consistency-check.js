@@ -84,6 +84,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  await testWorker({staleIndex:true});
  await testWorker({offlineRuntime:true});
  await testWorker({});
- assert(sw.includes("'./js/features/home-recitation.js?v=beta28-rc16-home-recitation1'"),'home-recitation module must be part of the fresh shell');
+ assert(sw.includes("'./js/features/home-recitation.js?v=beta28-rc16-ai-review1'"),'home-recitation AI review module must be part of the fresh shell');
+assert(sw.includes("'./js/features/rc16-learning-hub.js?v=beta28-rc16-learning-hub1'"),'RC16 learning hub must be part of the fresh shell');
 console.log('PASS 11.12.1-beta.27 owner upgrade: reject stale shell, preserve offline cache, verified RC16 root/index cache, retained RC14 namespace, and retained versioned offline scripts');
 })().catch(e=>{console.error(e);process.exitCode=1;});
