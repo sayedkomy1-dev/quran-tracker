@@ -533,7 +533,7 @@ fd764a7cdeeafd1f062c21c3e580f912ee4e31ea73642580b7b94734302f0608  ./js/features/
 4433a83e3d931dc98e91f2524ef1b500598ccf501c361e62d46c43a7f9216ec7  ./js/features/rc10-teacher-fast-path.js
 0e32f75828928f7b0725c7b46adfd15333544777eee0b8f4bd74671039df4f2c  ./js/features/rc11-teacher-flow.js
 cdd6ec80dc6f984fa56a8b078ce44db5548831e1e2a35582303197be0df12004  ./js/features/rc16-learning-hub-core.js
-c0c7e960e0df45ccdd5eff749d081db72a9353d752beef5eca1dbb499b6d176d  ./js/features/rc16-learning-hub.js
+550ba0ffc3e0cb1f8b44a3b66bd7261f146732660052a1f166e0013b546f1444  ./js/features/rc16-learning-hub.js
 decb747eb57253390ae8de208947dbe16c4cc11c1ffe8b42b702caea89c5eb3b  ./js/features/rc3-experience.js
 275a76e7e0981a571c434b54549d8a1e3e2dc594ed3196a1da382a70468ec232  ./js/features/rc8-premium-workspace.js
 7e22c67e450b637e367d00ca4ab0ce2b225ce022054a35f1ffde3ddd9402ab7b  ./js/features/rc9-lesson-flow.js
@@ -688,7 +688,7 @@ c63c5a3e7a4996aa3389a270049075a253477686edf089461f112fecab17e6ad  ./student-fina
 ca9ea955d72108b3a8cc7d2c9ec2c2e5486538cbeaaf05572c5ae47a6970822e  ./styles.css
 19b226c9d3c83fb4e4085f02ac392aa598a8e2f1861f13cb04ac8d96c9c4279a  ./supabase/config.toml
 5e167e54456e042af4242c8cf3fe709852fd8d5702f6f0865a388d3d3403e5ca  ./supabase/functions/guardian-recitation/index.ts
-370a98f355137b714ba60fe613ba9c03b9a9224a08bb99d419f5d89207e4653a  ./supabase/functions/rc16-learning-ledger/index.ts
+797ab2fde1a3eb15287f8a370f7b04cdc5f2ae074143ab251b6ffa0a0ed6175f  ./supabase/functions/rc16-learning-ledger/index.ts
 16cbd7799a725b263fc9d8e2de9055f6d71da4dc379d335db581665679359565  ./supabase/functions/teacher-recitation-analysis/index.ts
 31ac79231923764197a8214dd17550712fca1cfee3f8c37238bcedd559b7f89b  ./sw.js
 7b605926b20b7baab372d9ec22d306cc357df68bd834b54437f7ea3ff1e6e956  ./sync-core.js
@@ -822,8 +822,8 @@ a4c4ede39436d6bc430a2a1a5ba60b541b154c41670105fa26094529ab686dad  ./tests/platfo
 ea53e3bb44ef1bad0ca85f096a3aa03fc3694de70a12e35f1fff9704276a7941  ./tests/quran-coverage-progress-check.js
 6331a34f49af76034156f142298b48e18f966b267ee47f2e4cbf96262fb3aca8  ./tests/quran-structure-check.js
 10d1e650c4a13ccd38db41262253c983905bdc87292d1d62cfb17e0c6d40c8a6  ./tests/rc16-ai-recitation-check.js
-0de29eb005be91a64b6cd9c0a302d80533f0217c4f7e74f58825a493782de218  ./tests/rc16-learning-hub-check.js
-0a0baa37d0db690d77da83fe9fe75a67e69302f5379d4e076fd3719da93d8ad2  ./tests/rc16-learning-ledger-check.js
+864ccfd8641496e1d3787610afedceaeb883e8b97e7bf81e633267c86fdc8e55  ./tests/rc16-learning-hub-check.js
+d041909c0e05ba51c2b753130c07d02e59ebbdcf00e1f8aa4ba06b591f0e255c  ./tests/rc16-learning-ledger-check.js
 aaf916b0379dd4c227ef161ea0229dbaae8f934b8a8b7e99bfb6a9d9ee4801f7  ./tests/rc16-quiz-sync-merge-check.js
 1f9caa66a1bcdd6021aed913cc55e862253db4cb59fd21ab364c62ae089b19f4  ./tests/recitation-carry-check.js
 722fdd171896037b101d596076d110eaca2308b1d24efe5a67415c5ac4b264f8  ./tests/release-consistency-beta16-check.js

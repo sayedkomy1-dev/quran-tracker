@@ -18,6 +18,8 @@ assert(sql.includes('grant select, insert, update on table public.student_learni
 assert(edge.includes('authClient.auth.getUser(bearer)'));
 assert(edge.includes('from("app_users")')&&edge.includes('profile.status!=="active"')&&edge.includes('["owner","teacher"]'));
 assert(edge.includes('.eq("owner_user_id",ownerId)'));
+assert(edge.includes('.range(offset,offset+999)')&&edge.includes('has_more:events.length===1000'),'event history must paginate without truncation');
+assert(ui.includes('i+=200')&&ui.includes('event_offset:offset'),'large academies must load student refs in bounded batches and page through event history');
 assert(edge.includes('crypto.randomUUID()')&&edge.includes('quiz:"+studentRef+":"+attemptId+":approved'));
 assert(edge.includes('questionCount>20')&&edge.includes('Math.min(20,correctCount*2)'));
 assert(edge.includes('student_refs')&&edge.includes('opt_in'));

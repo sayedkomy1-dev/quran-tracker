@@ -50,11 +50,15 @@ async function listLearningData(ownerId:string,body:Record<string,unknown>) {
   if(raw.length>200)throw new Error("STUDENT_REF_BATCH_TOO_LARGE");
   const refs=[...new Set(raw.map(x=>String(x)))];
   if(refs.some(x=>!validStudentRef(x)))throw new Error("STUDENT_REF_INVALID");
+  const offset=Number(body.event_offset??0);
+  if(!Number.isInteger(offset)||offset<0||offset>100000)throw new Error("EVENT_OFFSET_INVALID");
   let events:any[]=[];
   if(refs.length) {
     const result=await admin.from("student_achievement_events")
       .select("id,student_ref,source,source_ref,event_type,category,points,approved_by,approved_at,occurred_at,idempotency_key,note,created_at")
-      .eq("owner_user_id",ownerId).in("student_ref",refs).order("approved_at",{ascending:false}).limit(5000);
+      .eq("owner_user_id",ownerId).in("student_ref",refs)
+      .order("approved_at",{ascending:false}).order("id",{ascending:true})
+      .range(offset,offset+999);
     if(result.error)throw new Error("LEARNING_EVENTS_READ_FAILED");
     events=result.data||[];
   }
@@ -62,7 +66,7 @@ async function listLearningData(ownerId:string,body:Record<string,unknown>) {
     .select("id,title,scope,student_refs,group_names,opt_in,start_date,end_date,status,created_by,created_at,closed_by,closed_at")
     .eq("owner_user_id",ownerId).order("created_at",{ascending:false}).limit(200);
   if(competitions.error)throw new Error("LEARNING_COMPETITIONS_READ_FAILED");
-  return json({events,competitions:competitions.data||[]});
+  return json({events,has_more:events.length===1000,competitions:competitions.data||[]});
 }
 async function approveQuiz(ownerId:string,body:Record<string,unknown>) {
   const studentRef=String(body.student_ref||"");
