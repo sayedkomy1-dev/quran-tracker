@@ -827,7 +827,7 @@ ee2b06b565b49d1cc30b0af62df99070a5e303abd3bb24b94f0ecdb4cf78d6a7  ./tests/revisi
 215cf6bebb2f215a34e7d6fc70c48fe004ba53c4109b77d899b86b0b40da2153  ./tests/session-draft-timer-regression-check.js
 29fc130d55df8d0eab1e12eeae83a7e875e8f0fdba6b068c9df20d70a5092ee8  ./tests/session-intelligence-119-check.js
 08d4710ac072e85c754ed1a421b610d5c8921e476b93202c3d5601157e32bd7e  ./tests/smart-revision-stage1-check.js
-d1ab51fd26c53a63b883655a357b76e448a00cff9190132f7c403f7721905e77  ./tests/static-check.js
+8fedf77f985f9e0fd1510a8c67380a3a44a3620f55a7c3cddcab9fa786f68e15  ./tests/static-check.js
 da6e8593441845cf8670f52dafa57fefb261d6ad39faa403cb6b01a959a98747  ./tests/storage-governor-check.js
 cef16cdf1866b6697b1ea55effcf0de3726658a1d7b899a38c6760085556fcab  ./tests/storage-governor-sw-check.js
 c643bcc64cc29b4e7891a1ec9067a91fb3208b74e1cbb97170eac4bae085c878  ./tests/student-finance-stage1-check.js

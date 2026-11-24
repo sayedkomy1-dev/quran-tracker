@@ -255,7 +255,7 @@ assert(!/grant execute on function public\.account_sync_(?:push|pull)(?:_v2)?[^\
 assert(manifest.short_name==='أكاديمية الإمام'&&manifest.display==='standalone','PWA install identity mismatch');
 
 // v10.1.4 safe multi-device sync behavior.
-assert(html.includes('src="sync-core.js?v=beta28-rc16-learning-observations1"'),'safe sync core script missing from HTML');
+assert(html.includes('src="sync-core.js?v=beta28-rc16-quiz-merge1"'),'safe sync core script missing from HTML');
 assert(app.includes('function markStudentCascadeDeletion')&&!v9.includes('markStudentCascadeDeletion(id)'),'student archive must never create a deletion tombstone');
 assert(app.includes("markSyncDeletion('tasks',t)"),'task deletion tombstone missing');
 assert(v8.includes('safeSyncVersion:2')&&v8.includes('settings.sync.auto=false'),'safe-sync migration must disable legacy auto-sync once');
