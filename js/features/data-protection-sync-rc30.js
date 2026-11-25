@@ -261,8 +261,6 @@
       v8Toast?.(/RESTORE_REQUIRES_INTERNET/.test(message)?'استعادة النسخة السحابية تحتاج اتصالًا بالإنترنت':/BACKUP_ACCOUNT_MISMATCH/.test(message)?'هذه النسخة تخص حساب محفظ آخر':/OperationError/.test(message)?'كلمة التشفير غير صحيحة أو الملف تالف':'تعذر استعادة النسخة: '+message.slice(0,160),'error');
     }finally{if(event?.target)event.target.value='';}
   }
-  g.restoreEncryptedCloudBackup=restoreEncryptedCloudBackup;
-
   const baseInit=g.initV8Layer;
   if(typeof baseInit==='function'){
     g.initV8Layer=async function(){const result=await baseInit.apply(this,arguments);start();return result;};
@@ -270,3 +268,8 @@
   g.ImamApp=g.ImamApp||{};
   g.ImamApp.DataProtection={start,pushCloudSync,autoCloudSync,pullRemoteIntoLocal,dailyCloudBackup,restoreEncryptedCloudBackup};
 })(globalThis);
+
+// Inline HTML entry point, kept global for the app's static handler contract.
+function restoreEncryptedCloudBackup(event){
+  return globalThis.ImamApp?.DataProtection?.restoreEncryptedCloudBackup?.(event);
+}
