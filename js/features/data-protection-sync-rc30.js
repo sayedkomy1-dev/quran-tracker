@@ -139,7 +139,6 @@
           renderHome?.();if(curPage==='students')renderSt?.();renderV8Settings?.();
           renderSyncStatus?.('✓ تمت المزامنة الآمنة ورفع التغييرات بنجاح.');
           if(!opts.silent)v8Toast?.('تمت مزامنة بيانات الحساب وإنشاء/التحقق من النسخة الاحتياطية','success');
-          retryMs=15000;
           return true;
         }catch(err){
           if(/SYNC_REVISION_CONFLICT/i.test(String(err?.message||''))&&attempt<2)continue;
