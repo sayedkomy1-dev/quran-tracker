@@ -8,7 +8,7 @@ assert(pkg.version==='11.12.1-beta.30','release version');
 assert(!/<link\s[^>]*href="(?:styles|v9|v10|v11)\.css/.test(html),'no edition stylesheets in runtime HTML');
 assert(['tokens','legacy-features','components','responsive'].every(p=>html.includes('css/platform/'+p+'.css?v=11.12.1-beta.27')),'new platform layers');
 assert(['tokens','legacy-features','components','responsive','public-experience','student-display'].every(p=>sw.includes('./css/platform/'+p+'.css?v=11.12.1-beta.27')),'offline platform assets');
-assert(/const CACHE_NAME = 'quran-pwa-v11\.12\.1-beta\.29/.test(sw),'cache version');
+assert(/const CACHE_NAME = 'quran-pwa-v11\.12\.1-beta\.30-data-protection/.test(sw),'cache version');
 assert(!/const APP_SHELL = \[[\s\S]*?'\.\/v11\.css\?v=/.test(sw),'no obsolete styles in app shell');
 assert(tokens.includes('--ui-primary:')&&tokens.includes('--v9-primary:var(--ui-primary)')&&tokens.includes('--v11-primary:var(--ui-primary)'),'single semantic palette');
 assert(!/(^|\n)\s*:root\s*\{/.test(legacy),'no old global root tokens');
