@@ -414,51 +414,5 @@ grant execute on function public.app_teacher_backup_list(uuid) to authenticated;
 grant execute on function public.app_teacher_backup_download(uuid,uuid) to authenticated;
 
 
--- Server-side daily backup job: runs even when every PWA is closed.
--- It stores the already-encrypted payload only; it never decrypts student data.
-create or replace function public.account_sync_backup_all_daily()
-returns jsonb
-language plpgsql security definer set search_path=public as $
-declare
-  v_row record;
-  v_created integer:=0;
-begin
-  for v_row in
-    select owner_user_id,revision,payload,student_count,session_count,task_count
-    from public.account_sync
-    where last_backup_at is null or last_backup_at<=now()-interval '24 hours'
-    for update skip locked
-  loop
-    insert into public.account_sync_backups(owner_user_id,revision,payload,student_count,
-      session_count,task_count,source_device_id,created_at)
-    values(v_row.owner_user_id,v_row.revision,v_row.payload,v_row.student_count,
-      v_row.session_count,v_row.task_count,null,now());
-    update public.account_sync set last_backup_at=now()
-      where owner_user_id=v_row.owner_user_id;
-    v_created:=v_created+1;
-  end loop;
-
-  delete from public.account_sync_backups
-    where created_at<now()-interval '90 days';
-  return jsonb_build_object('ok',true,'created',v_created,'retention_days',90);
-end;
-$;
-revoke all on function public.account_sync_backup_all_daily() from public,anon,authenticated;
-
--- Supabase projects with pg_cron enabled receive an unattended daily job.
--- If pg_cron is unavailable, client-side daily backups continue whenever a
--- teacher's app is online; the migration remains safe and succeeds.
-do $
-begin
-  if to_regnamespace('cron') is not null then
-    execute 'select cron.unschedule(jobid) from cron.job where jobname = $1'
-      using 'wlq-daily-cloud-backups';
-    execute 'select cron.schedule($1,$2,$3)'
-      using 'wlq-daily-cloud-backups','17 2 * * *',
-        'select public.account_sync_backup_all_daily();';
-  end if;
-exception when undefined_table or undefined_function then
-  raise notice 'pg_cron is not enabled; client-triggered daily backups remain active.';
-end $;
 
 commit;
