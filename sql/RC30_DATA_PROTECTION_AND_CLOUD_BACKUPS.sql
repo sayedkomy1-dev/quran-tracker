@@ -289,13 +289,18 @@ begin
 end;
 $$;
 
--- Server-side daily scheduler: backups continue even when no teacher has the PWA open.
+-- Server-side daily backup job: runs even when every PWA is closed.
+-- It stores the already-encrypted payload only; it never decrypts student data.
 create or replace function public.account_sync_backup_all_daily()
-returns integer language plpgsql security definer set search_path=public,pg_temp as $
-declare v_row public.account_sync%rowtype; v_count integer:=0;
+returns jsonb
+language plpgsql security definer set search_path=public,pg_temp as $$
+declare
+  v_row record;
+  v_created integer:=0;
 begin
   for v_row in
-    select * from public.account_sync
+    select owner_user_id,revision,payload,student_count,session_count,task_count
+    from public.account_sync
     where last_backup_at is null or last_backup_at<=now()-interval '24 hours'
     for update skip locked
   loop
@@ -305,32 +310,30 @@ begin
       v_row.session_count,v_row.task_count,null,now());
     update public.account_sync set last_backup_at=now()
       where owner_user_id=v_row.owner_user_id;
-    v_count:=v_count+1;
+    v_created:=v_created+1;
   end loop;
-  delete from public.account_sync_backups where created_at<now()-interval '90 days';
-  return v_count;
+
+  delete from public.account_sync_backups
+    where created_at<now()-interval '90 days';
+  return jsonb_build_object('ok',true,'created',v_created,'retention_days',90);
 end;
-$;
+$$;
 revoke all on function public.account_sync_backup_all_daily() from public,anon,authenticated;
 
--- pg_cron is optional. If enabled in Supabase, run one server-side snapshot daily at 02:15 UTC.
--- If not enabled, the PWA-triggered daily backup remains available.
+-- Supabase projects with pg_cron enabled receive an unattended daily job at 02:15 UTC.
+-- If pg_cron is unavailable, client-side daily backups continue whenever the PWA is online.
 do $$
-declare v_job_id bigint;
 begin
   if to_regnamespace('cron') is not null then
     begin
-      execute 'grant usage on schema cron to postgres';
-      execute 'grant all privileges on all tables in schema cron to postgres';
-      execute 'select cron.unschedule(jobid) from cron.job where jobname = ''wlq-account-sync-daily-backup''';
-      execute 'select cron.schedule(''wlq-account-sync-daily-backup'',''15 2 * * *'',''select public.account_sync_backup_all_daily();'')'
-        into v_job_id;
-      raise notice 'Daily cloud backup scheduled as cron job %',v_job_id;
+      execute 'select cron.unschedule(jobid) from cron.job where jobname = ''wlq-daily-cloud-backups''';
+      execute 'select cron.schedule(''wlq-daily-cloud-backups'',''15 2 * * *'',''select public.account_sync_backup_all_daily();'')';
+      raise notice 'Daily encrypted cloud backup job scheduled at 02:15 UTC.';
     exception when others then
-      raise notice 'Daily cron scheduling unavailable; PWA-triggered daily backup remains active: %',sqlerrm;
+      raise notice 'pg_cron scheduling unavailable; client-triggered daily backups remain active: %',sqlerrm;
     end;
   else
-    raise notice 'pg_cron is not enabled. Enable it in Supabase Integrations > Cron, then rerun this migration to schedule server-side backups.';
+    raise notice 'pg_cron is not enabled. Enable it in Supabase Integrations > Cron, then rerun this migration to schedule unattended daily backups.';
   end if;
 end $$;
 
