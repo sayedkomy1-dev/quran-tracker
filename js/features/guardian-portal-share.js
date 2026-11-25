@@ -126,11 +126,13 @@
       generatedAt:new Date().toISOString(),
       academy:{name:String(stateSettings().circle||'أكاديمية الإمام لتحفيظ القرآن الكريم'),teacher:String(stateSettings().name||'')},
       student:{name:String(st.name||'طالب'),guardian:String(st.parent||''),group:String(st.group||''),level:String(st.level||'')},
+      familyGuidance:String(st.pedagogicalProfileRC16?.familyGuidance||'').slice(0,600),
+      publicSkills:(Array.isArray(st.skillMasteryRC16)?st.skillMasteryRC16:[]).filter(x=>x&&x.publicToGuardian&&x.status&&x.status!=='not_assessed').slice(0,12).map(x=>({title:String(x.title||'مهارة').slice(0,80),status:String(x.status).slice(0,30),evidence:String(x.evidence||'').slice(0,250),assessedAt:String(x.assessedAt||'').slice(0,20)})),
       period:'آخر 30 يومًا',
       metrics:{mastery:score(progress.mastery),attendance:score(progress.attendance),repeats:Math.max(0,Number(progress.repeats)||0),newAyat:Math.max(0,Number(progress.newAyat)||0),quranProgress,trend:String(progress.trend?.label||'—')},
       assignment:{date:latest?dateLabel(latest):'—',items:assignmentItems(latest)},
       learning:{
-        newAssignment:latest?.new?.surah?{surah:String(latest.new.surah),from:Math.max(1,Number(latest.new.from)||1),to:Math.max(1,Number(latest.new.to)||Number(latest.new.from)||1),full:!!latest.new.full}:null,
+        newAssignment:latest?.new?.surah?{surah:String(latest.new.surah),surahNumber:Math.max(1,Number(latest.new.surahId)||0),from:Math.max(1,Number(latest.new.from)||1),to:Math.max(1,Number(latest.new.to)||Number(latest.new.from)||1),full:!!latest.new.full}:null,
         assignmentDate:latest?dateLabel(latest):'—'
       },
       smartRevision:(()=>{try{return g.ImamApp?.SmartRevision?.buildGuardian?.(studentId)||null;}catch(_){return null;}})(),

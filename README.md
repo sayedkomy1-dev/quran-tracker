@@ -4,7 +4,7 @@
 - RC13 release notes: `RELEASE-BETA28-RC13.md`.
 - Android acceptance checklist: `BETA28-RC13-ACCEPTANCE.md`.
 - RC13 automated checks: `npm run test:beta28-rc13`.
-- This is a candidate build based on application version `11.12.1-beta.27`; Local Schema remains `12`. Complete the Android acceptance checklist before production rollout.
+- This is a combined RC16 candidate build based on application version `11.12.1-beta.28`; Local Schema remains `12`. Complete the Android acceptance checklist before production rollout.
 
 ## v11.5 Stage 2 — Finance Quick Access & Guardian Statements (11.5.1)
 

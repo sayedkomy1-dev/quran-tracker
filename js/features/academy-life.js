@@ -12,7 +12,7 @@
   const first=add('article','ial-moment-card');first.append(add('span','ial-moment-kicker','رحلتك اليوم'));
   const greet=new Date().getHours()<12?'صباحٌ طيب مع القرآن':'مساءٌ طيب مع القرآن';first.append(add('strong','',greet));
   first.append(add('p','','اختر مساحة تعليمية تبدأ منها، أو افتح المصحف من آخر صفحة قرأتها. كل خطوة صغيرة تستحق الاستمرار.'));
-  const fa=add('div','ial-moment-actions');[['📖 افتح المصحف','academy-mushaf.html'],['🔤 منهج التأسيس','academy-learning.html#foundation'],['🗣️ المخارج والتجويد','academy-learning.html#makharij']].forEach(([label,href])=>{const a=add('a','',label);a.href=href;fa.append(a)});first.append(fa);
+  const fa=add('div','ial-moment-actions');[['📖 افتح المصحف','academy-mushaf.html'],['🔤 منهج التأسيس','academy-learning.html#foundation'],['🗣️ المخارج والتجويد','academy-learning.html#makharij'],['📜 المتون العلمية','academy-learning.html#matn']].forEach(([label,href])=>{const a=add('a','',label);a.href=href;fa.append(a)});first.append(fa);
   const second=add('article','ial-moment-card ial-moment-quiet');second.append(add('span','ial-moment-kicker','لفتة للمحفظ'));
   second.append(add('strong','', 'التشجيع يفتح باب الإتقان'));const p=add('p','',tips[0]);second.append(p);
   const sa=add('div','ial-moment-actions');const b=add('button','', 'فكرة تربوية أخرى');b.type='button';b.addEventListener('click',()=>{tip=(tip+1)%tips.length;p.textContent=tips[tip]});sa.append(b);second.append(sa);

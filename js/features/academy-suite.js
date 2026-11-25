@@ -13,6 +13,7 @@
     {group:'شؤون الطلاب',icon:'🎓',title:'الاختبارات والإجازات',desc:'التقييم وسجلات الاختبارات المعتمدة',action:'exams',tone:'gold'},
     {group:'الأدوات التعليمية',icon:'🔤',title:'منهج الإمام للتأسيس',desc:'ثمانية مستويات وأنشطة واختبارات تدريبية',href:'academy-learning.html#foundation',tone:'violet'},
     {group:'الأدوات التعليمية',icon:'🗣️',title:'المخارج والتجويد',desc:'أطلس الحروف وأحكام التجويد وتدريباتها',href:'academy-learning.html#tajweed',tone:'blue'},
+    {group:'الأدوات التعليمية',icon:'📜',title:'المتون العلمية',desc:'تحفة الأطفال والمقدمة الجزرية والشاطبية وخطط دراستها',href:'academy-learning.html#matn',tone:'amber'},
     {group:'الأدوات التعليمية',icon:'📘',title:'مصحف الإمام العام',desc:'صفحات المدينة والتلاوة والتدريب الحر',href:'academy-mushaf.html',tone:'emerald'},
     {group:'التواصل والإدارة',icon:'👨‍👩‍👧',title:'بوابة ولي الأمر',desc:'ملفات الأبناء بتسجيل الدخول المعتمد',href:'guardian-login.html',tone:'blue'},
     {group:'التواصل والإدارة',icon:'📊',title:'التقارير',desc:'متابعة الدرجات والحضور والتقدم الفعلي',action:'reports',tone:'violet'},
@@ -77,7 +78,7 @@
     const panel=doc.querySelector('#imamWorkspacePanel')||doc.querySelector('.imam-workspace-panel');
     if(!panel||panel.querySelector('.ias-workspace-tools'))return;
     const group=create('section','ias-workspace-tools');group.append(create('h3','','أدوات تعليمية إضافية'));
-    [['🔤 منهج الإمام للتأسيس','academy-learning.html#foundation'],['🗣️ أطلس التجويد والمخارج','academy-learning.html#tajweed'],['👨‍👩‍👧 بوابات الأكاديمية','academy-portals.html']].forEach(([label,href])=>{const a=create('a','ias-workspace-action',label);a.href=href;group.append(a)});panel.append(group);
+    [['🔤 منهج الإمام للتأسيس','academy-learning.html#foundation'],['🗣️ أطلس التجويد والمخارج','academy-learning.html#tajweed'],['📜 المتون العلمية','academy-learning.html#matn'],['👨‍👩‍👧 بوابات الأكاديمية','academy-portals.html']].forEach(([label,href])=>{const a=create('a','ias-workspace-action',label);a.href=href;group.append(a)});panel.append(group);
   }
   function setupPersonalize(){
     const panel=doc.getElementById('imamAcademySuite');if(!panel)return;

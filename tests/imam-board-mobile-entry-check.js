@@ -9,7 +9,7 @@ const tag='beta28-rc13';
 assert(index.includes(`v9.js?v=${tag}`),'HTML must request the updated mobile menu');
 assert(sw.includes(`'./v9.js?v=${tag}'`),'offline precache must use the patched menu');
 assert(sw.slice(sw.indexOf('const CRITICAL_FRESH_SHELL'),sw.indexOf('const APP_SHELL')).includes(`'./v9.js?v=${tag}'`),'menu must be installed fresh without an old-cache fallback');
-assert(sw.includes(`quran-pwa-v11.12.1-beta.27-workspace-workflow`),'cache generation must change');
+assert(sw.includes(`quran-pwa-v11.12.1-beta.28-workspace-workflow`),'cache generation must change');
 assert(index.includes('id="imamSmartBoardTab"'),'existing desktop entry must stay intact');
 const start=v9.indexOf('function v9CanOpenSmartBoard()');
 const end=v9.indexOf('function updateV9Nav(',start);

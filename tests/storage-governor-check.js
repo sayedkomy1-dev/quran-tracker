@@ -43,7 +43,7 @@ const context={
   assert(worker.includes("event.data?.type==='IMAM_STORAGE_SAFE_CLEAN'"),'worker safe-clean message missing');
   assert(worker.includes("name.startsWith('quran-pwa-')&&name!==ACTIVE_CACHE_NAME"),'only old app caches may be removed');
   assert(worker.includes('missingProtectedShellAssets')&&worker.includes('ACTIVE_OFFLINE_SHELL_INCOMPLETE'),'safe cleanup must validate core and critical offline assets first');
-  assert(worker.includes('5.7-storage-audio-portal-rc13'),'worker must expose the RC13 cache contract');
+  assert(worker.includes('5.8-guardian-home-recitation-rc16'),'worker must expose the RC13 cache contract');
   assert(worker.includes('maxRuntimeEntries=80'),'runtime cache must have a finite entry cap');
   const governor=source;
   assert(!governor.includes('indexedDB.deleteDatabase')&&!governor.includes('caches.delete('),'page manager must not delete databases or caches directly');

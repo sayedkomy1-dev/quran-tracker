@@ -139,6 +139,8 @@
     $('portalUpdatedLabel').textContent=meta.session?'آخر نشر من المحفظ':meta.live?'آخر نشر من المحفظ':'وقت إنشاء اللقطة';
     $('portalMastery').textContent=pct(data.metrics.mastery);$('portalAttendance').textContent=pct(data.metrics.attendance);$('portalNewAyat').textContent=String(Math.max(0,Number(data.metrics.newAyat)||0));$('portalRepeats').textContent=String(Math.max(0,Number(data.metrics.repeats)||0));$('portalTrend').textContent=data.metrics.trend||'—';
     const qp=Number(data.metrics.quranProgress);if(Number.isFinite(qp)){$('portalQuranCard').hidden=false;$('portalQuranProgress').textContent=pct(qp);$('portalQuranBar').style.width=`${Math.max(0,Math.min(100,qp))}%`;}else $('portalQuranCard').hidden=true;
+    const familyGuidance=String(data.familyGuidance||'').trim();const familyBox=$('portalFamilyGuidance');if(familyBox){familyBox.hidden=!familyGuidance;$('portalFamilyGuidanceText').textContent=familyGuidance;}
+    const publicSkills=Array.isArray(data.publicSkills)?data.publicSkills:[];const skillsBox=$('portalPublicSkills');if(skillsBox){skillsBox.hidden=!publicSkills.length;$('portalPublicSkillsList').innerHTML=publicSkills.map(x=>`<article class="portal-public-skill"><b>${esc(x.title||'مهارة')}</b><span>${esc(({developing:'قيد التدريب',good:'جيد',mastered:'متقن — باعتماد المحفظ'})[x.status]||'')}</span>${x.evidence?`<p>${esc(x.evidence)}</p>`:''}<small>${esc(x.assessedAt||'')}</small></article>`).join('');}
     $('portalAssignmentDate').textContent=data.assignment?.date&&data.assignment.date!=='—'?`من حصة ${data.assignment.date}`:'لا توجد حصة حضور بعد';
     const items=Array.isArray(data.assignment?.items)?data.assignment.items:[];$('portalAssignment').innerHTML=items.length?items.map(x=>`<article class="portal-assignment-item"><b>${esc(x.icon||'')} ${esc(x.label||'')}</b><p>${esc(x.text||'')}</p></article>`).join(''):'<div class="portal-empty">لا يوجد تكليف مسجل حاليًا.</div>';
     const attention=Array.isArray(data.attention)?data.attention:[];$('portalAttention').innerHTML=attention.length?attention.map(x=>`<div class="portal-attention-item"><b>${esc(x.label)}</b><span>${x.score!==null&&x.score!==undefined?`${esc(x.score)}%`:esc(x.grade||'يحتاج متابعة')}</span></div>`).join(''):'<div class="portal-good">✅ لا توجد إشارات حديثة تستدعي التثبيت.</div>';
@@ -152,6 +154,7 @@
     setNote(meta.session?'session':meta.live?'live':'snapshot');
     try{g.ImamGuardianTahfeez?.setContext?.(meta.studentRef?{...data,portalStudentRef:meta.studentRef}:data);}catch(err){console.warn('[guardian tahfeez context]',err);}
     try{g.ImamGuardianAudio?.setContext?.(data);}catch(err){console.warn('[guardian audio context]',err);}
+    try{g.ImamGuardianHomeRecitation?.setContext?.(meta.session?{sessionToken,studentRef:meta.studentRef,studentName:data.student?.name||'',assignment:data.learning?.newAssignment||null}:null);}catch(err){console.warn('[guardian home recitation context]',err);}
     $('portalContent').hidden=false;$('portalError').hidden=true;
   }
   async function publicRpc(name,args){
@@ -236,7 +239,7 @@
     try{sessionStorage.setItem(SESSION_KEY,token);history.replaceState(null,'',`${location.pathname}${location.search}#guardian`);}catch(_){/* fragment remains if storage is unavailable */}
   }
   function storedSession(){try{return uuid(sessionStorage.getItem(SESSION_KEY));}catch(_){return '';}}
-  function forgetSession(){hideFinance();g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}sessionToken='';sessionRows=[];try{g.ImamGuardianEngagement?.setContext?.({});}catch(_){} }
+  function forgetSession(){hideFinance();g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();g.ImamGuardianHomeRecitation?.clear?.();try{sessionStorage.removeItem(SESSION_KEY);}catch(_){}sessionToken='';sessionRows=[];try{g.ImamGuardianEngagement?.setContext?.({});}catch(_){} }
   async function loadSession(token,{manual=false}={}){
     sessionToken=token;liveToken='';setNote('session');setLiveState('loading',manual?'جارٍ تحديث بيانات الطلاب…':'جارٍ تحميل صفحة الطالب…');
     try{
@@ -248,7 +251,7 @@
   }
   function showError(title='الرابط غير صالح أو غير مكتمل',message='اطلب من المحفظ إنشاء رابط جديد من ملف الطالب داخل التطبيق.',loginAgain=false){
     const e=$('portalError');if(e){e.hidden=false;$('portalErrorTitle').textContent=title;$('portalErrorText').textContent=message;const back=$('portalLoginAgain');if(back)back.hidden=!loginAgain;}
-    g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();g.ImamGuardianTahfeez?.close?.(true);g.ImamGuardianTahfeez?.setContext?.(null);g.ImamGuardianAudio?.setContext?.(null);hideFinance();const c=$('portalContent');if(c)c.hidden=true;setLiveState('','');setStudentSwitcher([]);
+    g.ImamGuardianMessages?.clear?.();g.ImamGuardianRatings?.clear?.();g.ImamGuardianTahfeez?.close?.(true);g.ImamGuardianTahfeez?.setContext?.(null);g.ImamGuardianAudio?.setContext?.(null);g.ImamGuardianHomeRecitation?.clear?.();hideFinance();const c=$('portalContent');if(c)c.hidden=true;setLiveState('','');setStudentSwitcher([]);
   }
   function toast(msg){const t=document.createElement('div');t.className='portal-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1800);}
   async function share(){

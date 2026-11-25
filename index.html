@@ -12,13 +12,13 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#126044" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="11.12.1-beta.27">
-<link rel="manifest" href="manifest.json?v=11.12.1-beta.27">
+<meta name="application-version" content="11.12.1-beta.28">
+<link rel="manifest" href="manifest.json?v=11.12.1-beta.28">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<script src="js/core/boot-health.js?v=11.12.1-beta.27"></script>
-<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.27"></script>
+<script src="js/core/boot-health.js?v=11.12.1-beta.28"></script>
+<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.28"></script>
 <!-- Original style files retained in repository for compatibility/tests, but NOT loaded at runtime.
      Historical refs: styles.css?v=11.0.0 | v9.css?v=11.0.0 | v10.css?v=11.0.0 | v11.css?v=11.4.1-profile-ui -->
 <link rel="stylesheet" href="css/platform/tokens.css?v=11.12.1-beta.27">
@@ -52,7 +52,9 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <link rel="stylesheet" href="circle-management-1110.css?v=11.11.1">
 <link rel="stylesheet" href="academic-exams-1111.css?v=11.11.1">
 <link rel="stylesheet" href="progress-bridge-1111.css?v=11.11.1">
-<link rel="stylesheet" href="imam-smart-board.css?v=11.12.1-beta.27">
+<link rel="stylesheet" href="imam-smart-board.css?v=rc16">
+<link rel="stylesheet" href="learning-growth-rc16.css?v=rc16">
+<link rel="stylesheet" href="teacher-home-recitation-rc16.css?v=rc16">
 <link rel="stylesheet" href="teacher-quran-range-picker.css?v=11.12.1-beta.27-quran-picker-hotfix2">
 <link rel="stylesheet" href="css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2">
 <link rel="stylesheet" href="css/platform/responsive.css?v=11.12.1-beta.27">
@@ -1181,14 +1183,14 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <!-- ════════════ SCRIPTS ════════════ -->
 <!-- v11.2.0 Stage 2 interactive error marking -->
 
-<script src="js/core/runtime.js?v=11.12.1-beta.27" defer></script>
+<script src="js/core/runtime.js?v=11.12.1-beta.28" defer></script>
 <script src="js/features/v10-data.js?v=11.0.0" defer></script>
 <script src="auth.js?v=beta28-rc13" defer></script>
-<script src="js/features/role-home.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/role-home.js?v=rc16" defer></script>
 <script src="js/features/ux-guidance.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/academy-workspaces.js?v=11.7.4-foundation" defer></script>
 <script src="sync-core.js?v=beta28-rc7-data-safety" defer></script>
-<script src="app.js?v=beta28-rc13" defer></script>
+<script src="app.js?v=beta28-rc16" defer></script>
 <script src="v8.js?v=beta28-rc7-data-safety" defer></script>
 <script src="js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
 <script src="v9.js?v=beta28-rc13" defer></script>
@@ -1212,8 +1214,10 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/goal-planning.js?v=11.12.1-beta.27-guardian-both-hotfix3" defer></script>
 <script src="js/features/student-finance.js?v=11.5.1-s2" defer></script>
 <script src="js/features/teacher-inbox.js?v=11.6.0-s1" defer></script>
+<script src="js/features/learning-growth-rc16.js?v=rc16" defer></script>
+<script src="js/features/teacher-home-recitation-rc16.js?v=rc16" defer></script>
 <script src="js/features/supervisor-dashboard.js?v=11.12.1-beta.27" defer></script>
-<script src="js/features/guardian-portal-share.js?v=11.12.1-beta.27-guardian-reactivation-hotfix4" defer></script>
+<script src="js/features/guardian-portal-share.js?v=rc16" defer></script>
 
 <script src="js/features/storage-governor.js?v=beta28-rc13" defer></script>
 <script src="js/features/offline-audio-library.js?v=beta28-rc13" defer></script>
@@ -1237,7 +1241,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
 <script src="js/features/imam-board-tafsir.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/imam-board-corpus.js?v=11.12.1-beta.27" defer></script>
-<script src="js/features/imam-smart-board.js?v=11.12.1-beta.27-quran-picker1" defer></script>
+<script src="js/features/imam-smart-board.js?v=rc16" defer></script>
 <script src="js/features/platform-ux.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/platform-workflow.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/surah-picker-17.js?v=11.12.1-beta.27" defer></script>
@@ -1247,8 +1251,8 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/integrated-teacher-brief.js?v=11.12.1-beta.27-integration-review1" defer></script>
 <script src="js/features/imam-absence-makeup.js?v=11.12.1-beta.27-absence-review2" defer></script>
 <script src="js/features/design-bridge.js?v=beta28-rc13" defer></script>
-<script src="js/features/academy-suite.js?v=11.12.1-beta.27-visual-suite-review7" defer></script>
-<script src="js/features/academy-life.js?v=11.12.1-beta.27-life-review8" defer></script>
+<script src="js/features/academy-suite.js?v=rc16" defer></script>
+<script src="js/features/academy-life.js?v=rc16" defer></script>
 <script src="js/features/rc3-experience.js?v=beta28-rc13" defer></script>
 <script src="js/features/quiet-lesson-rc6.js?v=beta28-rc6" defer></script>
 <script src="js/features/rc8-premium-workspace.js?v=beta28-rc8" defer></script>

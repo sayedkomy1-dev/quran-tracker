@@ -137,3 +137,5 @@ body.ib-native-open > .mo.open,body.ib-native-open #im119Warning,body.ib-native-
  .imam-board-root .ia20-board-more-items>*{min-width:0;width:100%;font-size:13px}
  .imam-board-root .ib-students{max-height:none}
 }
+
+.ib-student-profile{border:1px solid #d4e0d6!important;background:#f2f7f2!important;color:#205b39!important;border-radius:9px!important;padding:8px 10px!important;font-weight:700!important}

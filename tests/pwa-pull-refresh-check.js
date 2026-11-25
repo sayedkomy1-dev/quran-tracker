@@ -9,7 +9,8 @@ const studentCSS=read('css/platform/student-display.css');
 const worker=read('sw.js');
 const appVersion=read('VERSION').trim();
 const version='11.12.1-beta.27';
-assert.equal(appVersion,version);
+const releaseVersion='11.12.1-beta.28';
+assert.equal(appVersion,releaseVersion);
 // Both root scrolling elements are guarded; no touch-action:none or JS touchmove cancellation.
 for(const [name,source] of Object.entries({main,css,publicCSS,studentCSS})){
   assert(/html\s*,\s*body\s*\{\s*overscroll-behavior-y\s*:\s*none\s*;?\s*\}/.test(source),`${name}: root scrolling overscroll guard missing`);
@@ -19,6 +20,6 @@ assert(!/addEventListener\s*\(\s*['"]touchmove/.test(css),'must not install touc
 for(const file of ['css/platform/components.css','css/platform/public-experience.css','css/platform/student-display.css']){
   assert(worker.includes(`./${file}?v=${version}`),`SW must cache fresh ${file}`);
 }
-assert(worker.includes(`quran-pwa-v${version}`),'SW cache namespace must change');
+assert(worker.includes(`quran-pwa-v${releaseVersion}`),'SW cache namespace must change for the new release');
 assert(main.includes(`css/platform/components.css?v=${version}`),'current CSS link must be refreshed');
 console.log('pwa-pull-refresh-check: PASS');

@@ -7,7 +7,7 @@
  function descItem(title,description,cl='al-info-card'){const e=mk('article',cl);addText(e,'strong','',title);addText(e,'p','',description);return e;}
  const section=id=>by('al'+id.charAt(0).toUpperCase()+id.slice(1));
  function selectTab(tab){
-   if(!['foundation','makharij','tajweed','quiz','coach','strategy','mutashabihat'].includes(tab))tab='foundation';
+   if(!['foundation','makharij','tajweed','quiz','coach','strategy','mutashabihat','matn'].includes(tab))tab='foundation';
    d.querySelectorAll('.al-page').forEach(x=>x.hidden=true);const current=section(tab);if(current)current.hidden=false;
    d.querySelectorAll('[data-page]').forEach(btn=>btn.setAttribute('aria-selected',String(btn.dataset.page===tab)));
    g.history.replaceState(null,'','#'+tab);
@@ -44,11 +44,13 @@
   addText(host,'h3','','أسئلة ملاحظة تربوية (ليست اختبارًا تشخيصيًا)');const b=mk('div','al-grid');data.observations.forEach(x=>{const card=descItem(x.dimension,x.question);addText(card,'small','',x.hint);b.append(card)});host.append(b);
   addText(host,'h3','','أفكار لتنويع الحصة عند وجود صعوبات تعلم');const c=mk('div','al-grid');data.challenges.forEach(x=>{const card=descItem(x.title,x.summary);const list=mk('ol');(x.plan||[]).forEach(t=>addText(list,'li','',t));card.append(list);c.append(card)});host.append(c);
  }
+
+ function renderMatn(){const host=by('alMatnBody');clear(host);const rows=Array.isArray(data.matn)?data.matn:[];if(!rows.length){addText(host,'p','','لا توجد بطاقات متون متاحة في هذه النسخة.');return;}const grid=mk('div','al-grid');rows.forEach(x=>{const card=mk('article','al-info-card');addText(card,'strong','',x.title);addText(card,'p','',`المؤلف: ${x.author}`);addText(card,'small','al-pill-text',`المستوى: ${x.level}`);addText(card,'p','',x.purpose);const topics=mk('details');addText(topics,'summary','','أبواب المتن');const ul=mk('ul');(x.topics||[]).forEach(t=>addText(ul,'li','',t));topics.append(ul);card.append(topics);const plan=mk('details');addText(plan,'summary','','خطة دراسة مقترحة');const steps=mk('ol');(x.plan||[]).forEach(t=>addText(steps,'li','',t));plan.append(steps);card.append(plan);addText(card,'small','',x.teacherNotes||'');addText(card,'small','',x.sourceNote||'');grid.append(card)});host.append(grid);}
  function renderMutashabihat(){
   const host=by('alMutashabihatBody');clear(host);const grid=mk('div','al-grid');
   data.mutashabihat.forEach((x,i)=>{const card=mk('article','al-info-card');addText(card,'strong','','مقارنة الموضع '+(i+1));addText(card,'p','',`${x.surahName||'السورة '+x.surahId} — الآية ${x.ayahNumber}`);addText(card,'p','',`${x.similarSurahName||'السورة '+x.similarSurahId} — الآية ${x.similarAyahNumber}`);addText(card,'small','','إحالة تعليمية للمقارنة، وليست نصًا مرجعيًا معتمدًا');grid.append(card)});host.append(grid);
  }
 
- async function init(){try{const resp=await fetch('data/academy-learning-materials.json',{cache:'no-cache'});if(!resp.ok)throw Error('HTTP '+resp.status);const json=await resp.json();if(!Array.isArray(json.foundation)||json.foundation.length<1||!Array.isArray(json.makharij))throw Error('invalid dataset');data=json;renderLevels();renderMakhraj();renderRules();renderQuestions(by('alQuizBody'),data.quiz);renderCoach();renderStrategy();renderMutashabihat();by('alStatus').hidden=true;selectTab(location.hash.replace('#',''));d.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>selectTab(b.dataset.page)));g.addEventListener('hashchange',()=>selectTab(location.hash.slice(1)));}catch(e){by('alStatus').textContent='تعذر تحميل المحتوى التعليمي. لا توجد نتائج محفوظة؛ اتصل بالإنترنت لتحديث مواد المركز ثم أعد المحاولة.';console.warn('Academy learning centre:',e)}}
+ async function init(){try{const resp=await fetch('data/academy-learning-materials.json',{cache:'no-cache'});if(!resp.ok)throw Error('HTTP '+resp.status);const json=await resp.json();if(!Array.isArray(json.foundation)||json.foundation.length<1||!Array.isArray(json.makharij))throw Error('invalid dataset');data=json;renderLevels();renderMakhraj();renderRules();renderQuestions(by('alQuizBody'),data.quiz);renderCoach();renderStrategy();renderMutashabihat();renderMatn();by('alStatus').hidden=true;selectTab(location.hash.replace('#',''));d.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>selectTab(b.dataset.page)));g.addEventListener('hashchange',()=>selectTab(location.hash.slice(1)));}catch(e){by('alStatus').textContent='تعذر تحميل المحتوى التعليمي. لا توجد نتائج محفوظة؛ اتصل بالإنترنت لتحديث مواد المركز ثم أعد المحاولة.';console.warn('Academy learning centre:',e)}}
  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(window);

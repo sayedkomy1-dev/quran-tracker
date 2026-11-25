@@ -15,7 +15,7 @@ assert(library.includes('statsAll')&&library.includes('canContinueAudioDownload'
 assert(library.includes('QuotaExceeded')&&library.includes('storageLimited'));
 assert(share.includes('navigator.share')&&!share.includes('data-chat'));
 assert(sw.includes('missingProtectedShellAssets')&&sw.includes('trimRuntimeCache(cache,0)'));
-assert(sw.includes('5.7-storage-audio-portal-rc13'));
+assert(sw.includes('5.8-guardian-home-recitation-rc16'));
 assert(app.includes('compactRedundantAccountMirrors')&&app.includes('byte-for-byte duplicates'));
 
 // All supported EveryAyah reciters are aligned between the player, local library and exporter.

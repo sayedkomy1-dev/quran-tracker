@@ -32,6 +32,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc13">
 <link rel="stylesheet" href="css/platform/rc13-portal-learning.css?v=beta28-rc13">
 <link rel="stylesheet" href="css/platform/rc14-tahfeez-flow.css?v=beta28-rc14">
+<link rel="stylesheet" href="guardian-home-recitation-rc16.css?v=rc16">
 </head>
 <body class="imam-portal-refresh">
 <main class="portal-shell">
@@ -123,6 +124,16 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <p id="portalMessageFeedback" class="msg-status" role="status"></p><div id="portalMessageList" class="msg-list"></div>
     </section>
 
+    <section class="portal-card portal-family-guidance" id="portalFamilyGuidance" hidden data-rc3-section="learning">
+      <div class="portal-card-head"><div><b>🏡 توجيه المحفظ للأسرة</b><small>إرشادات منزلية اعتمدها المحفظ للطالب</small></div></div>
+      <p id="portalFamilyGuidanceText"></p>
+    </section>
+
+    <section class="portal-card portal-skill-summary" id="portalPublicSkills" hidden data-rc3-section="learning">
+      <div class="portal-card-head"><div><b>🧩 مهارات يتابعها المحفظ</b><small>تقييمات معلنة اعتمدها المحفظ فقط</small></div></div>
+      <div id="portalPublicSkillsList"></div>
+    </section>
+
     <section class="portal-card" id="portalAssignmentCard" data-rc3-section="learning">
       <div class="portal-card-head"><div><b>📝 التكليف الحالي</b><small id="portalAssignmentDate">آخر حصة حضور</small></div></div>
       <div id="portalAssignment" class="portal-assignment"></div><button type="button" class="ia28-practice-assignment" onclick="openGuardianAssignmentPractice()">🎧 التدرب على تكليف الحفظ الجديد</button>
@@ -131,6 +142,21 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
         <div class="portal-audio-controls"><select id="portalAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري راشد العفاسي</option><option value="husary">محمود خليل الحصري — مرتل</option><option value="husaryTeacher">محمود خليل الحصري — معلم</option><option value="minshawy">محمد صديق المنشاوي — مرتل</option><option value="minshawyTeacher">محمد صديق المنشاوي — معلم</option><option value="muaiqly">ماهر المعيقلي</option></select><button id="portalAudioShareBtn" type="button" onclick="guardianShareAssignmentAudio()">📲 مشاركة صوت التكليف</button></div>
         <small id="portalAudioStatus">يتم إنشاء ملف للتكليف الحالي فقط.</small>
       </div>
+    </section>
+
+    <section class="portal-card hrr-card" id="portalHomeRecitationCard" hidden data-rc3-section="learning">
+      <div class="portal-card-head"><div><b>🎙️ التسميع المنزلي</b><small>سجّل قراءة التكليف وأرسلها للمحفظ للمراجعة</small></div><span class="hrr-private-tag">خاص</span></div>
+      <p id="portalHomeRecitationAssignment" class="hrr-assignment">لا يوجد تكليف حفظ جديد منشور حاليًا.</p>
+      <p id="portalHomeRecitationPrivacy" class="hrr-privacy">التسجيل خاص بولي الأمر والمحفظ المرتبط بالطالب.</p>
+      <div class="hrr-recorder-controls">
+        <button type="button" id="portalHomeRecitationStart">🎙️ بدء التسجيل</button>
+        <button type="button" id="portalHomeRecitationStop" disabled>إيقاف التسجيل</button>
+        <strong id="portalHomeRecitationClock">00:00</strong>
+      </div>
+      <audio id="portalHomeRecitationPreview" controls preload="none" hidden></audio>
+      <div class="hrr-send-row"><button type="button" id="portalHomeRecitationSend" disabled>إرسال للمحفظ</button><button type="button" id="portalHomeRecitationRefresh">↻ تحديث السجل</button></div>
+      <p id="portalHomeRecitationStatus" class="hrr-status" role="status" aria-live="polite">التسجيل متاح بعد الدخول برقم الهاتف ورمز PIN.</p>
+      <div id="portalHomeRecitationList" class="hrr-list"></div>
     </section>
 
     <section class="portal-card portal-revision-card" id="portalSmartRevision" hidden data-rc3-section="learning">
@@ -263,7 +289,8 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 <script src="js/features/tahfeez-flow-rc14.js?v=beta28-rc14"></script>
 <script src="js/features/guardian-tahfeez.js?v=beta28-rc14"></script>
 <script src="js/features/guardian-messages.js?v=11.6.0-s1"></script>
-<script src="js/features/guardian-portal-view.js?v=11.7.4.2"></script>
+<script src="js/features/guardian-home-recitation-rc16.js?v=rc16"></script>
+<script src="js/features/guardian-portal-view.js?v=rc16"></script>
 <script src="js/features/beta28-portal-ux.js?v=beta28-rc13" defer></script>
 <script src="js/features/rc3-experience.js?v=beta28-rc13" defer></script>
 </body>

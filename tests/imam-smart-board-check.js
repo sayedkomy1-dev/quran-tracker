@@ -5,8 +5,8 @@ const index=read('index.html'),sw=read('sw.js'),board=read('js/features/imam-sma
 new vm.Script(board);new vm.Script(display);
 assert(index.includes('id="imamSmartBoardTab"'));
 assert(index.includes('سبورة التفاعلية')||index.includes('السبورة التفاعلية'));
-assert(index.includes('imam-smart-board.js?v=11.12.1-beta.27'));
-assert(index.includes('imam-smart-board.css?v=11.12.1-beta.27'));
+assert(index.includes('imam-smart-board.js?v=rc16'));
+assert(index.includes('imam-smart-board.css?v=rc16'));
 assert(sw.includes('imam-board-display.html'));
 assert(sw.includes('imam-board-display.js?v=11.12.1-beta.27'));
 assert(board.includes('readStore')&&board.includes('writeStore')&&board.includes('flush()'));
