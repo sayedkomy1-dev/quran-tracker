@@ -1,0 +1,81 @@
+name: RC30 Data Protection Build
+
+on:
+  push:
+    branches:
+      - pwa2-data-protection-rc30
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch and main baseline
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install ZIP utility
+        run: sudo apt-get update && sudo apt-get install -y zip rsync
+
+      - name: Run complete project test suite
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p dist
+          npm test 2>&1 | tee dist/RC30_TEST_REPORT.txt
+
+      - name: Check every JavaScript file
+        shell: bash
+        run: |
+          set -euo pipefail
+          find . -type f \( -name '*.js' -o -name '*.mjs' \) \
+            -not -path './.git/*' -not -path './node_modules/*' \
+            -print0 | xargs -0 -n1 node --check
+
+      - name: Regenerate and verify SHA-256 inventory
+        run: |
+          node scripts/release-integrity.mjs --write
+          node scripts/release-integrity.mjs
+
+      - name: Build update-only and full-project ZIPs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main:refs/remotes/origin/main
+          mkdir -p dist/updates/quran-tracker-main
+          git diff --name-only origin/main...HEAD > dist/changed-files.txt
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            if [ -f "$file" ]; then
+              mkdir -p "dist/updates/quran-tracker-main/$(dirname "$file")"
+              cp "$file" "dist/updates/quran-tracker-main/$file"
+            fi
+          done < dist/changed-files.txt
+          cp SHA256SUMS.txt dist/updates/quran-tracker-main/SHA256SUMS.txt
+          cp RC30_INSTALL_AR.txt dist/updates/quran-tracker-main/RC30_INSTALL_AR.txt
+          (cd dist/updates && zip -qr ../Quran_Tracker_RC30_Updates_Only.zip quran-tracker-main)
+
+          mkdir -p dist/full/quran-tracker-main
+          rsync -a --exclude='.git' --exclude='node_modules' --exclude='dist' ./ dist/full/quran-tracker-main/
+          (cd dist/full && zip -qr ../Quran_Tracker_RC30_Full_Project.zip quran-tracker-main)
+
+      - name: Upload RC30 delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: Quran-Tracker-RC30-Delivery
+          path: |
+            dist/Quran_Tracker_RC30_Updates_Only.zip
+            dist/Quran_Tracker_RC30_Full_Project.zip
+            dist/RC30_TEST_REPORT.txt
+            RC30_RELEASE_NOTES_AR.md
+            RC30_INSTALL_AR.txt
+          retention-days: 14
