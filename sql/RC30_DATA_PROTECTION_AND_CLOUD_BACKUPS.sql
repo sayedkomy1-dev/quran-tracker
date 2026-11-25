@@ -313,22 +313,15 @@ end;
 $;
 revoke all on function public.account_sync_backup_all_daily() from public,anon,authenticated;
 
--- pg_cron is optional. If available, run one server-side snapshot every day at 02:15 UTC.
--- The PWA also requests a daily backup when an account reconnects, as a fallback.
-do $
+-- pg_cron is optional. If enabled in Supabase, run one server-side snapshot daily at 02:15 UTC.
+-- If not enabled, the PWA-triggered daily backup remains available.
+do $$
 declare v_job_id bigint;
 begin
-  begin
-    execute 'create extension if not exists pg_cron with schema pg_catalog';
-    if to_regnamespace('cron') is not null then
-      execute 'grant usage on schema cron to postgres';
-      execute 'grant all privileges on all tables in schema cron to postgres';
-    end if;
-  exception when others then
-    raise notice 'pg_cron could not be enabled here; PWA-triggered daily backup remains available: %',sqlerrm;
-  end;
   if to_regnamespace('cron') is not null then
     begin
+      execute 'grant usage on schema cron to postgres';
+      execute 'grant all privileges on all tables in schema cron to postgres';
       execute 'select cron.unschedule(jobid) from cron.job where jobname = ''wlq-account-sync-daily-backup''';
       execute 'select cron.schedule(''wlq-account-sync-daily-backup'',''15 2 * * *'',''select public.account_sync_backup_all_daily();'')'
         into v_job_id;
@@ -337,9 +330,9 @@ begin
       raise notice 'Daily cron scheduling unavailable; PWA-triggered daily backup remains active: %',sqlerrm;
     end;
   else
-    raise notice 'pg_cron schema is not available; PWA-triggered daily backup remains active.';
+    raise notice 'pg_cron is not enabled. Enable it in Supabase Integrations > Cron, then rerun this migration to schedule server-side backups.';
   end if;
-end $;
+end $$;
 
 create table if not exists public.app_teacher_backup_access_audit (
   id bigint generated always as identity primary key,
