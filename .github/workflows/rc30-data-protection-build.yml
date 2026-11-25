@@ -5,6 +5,9 @@ on:
     branches:
       - pwa2-data-protection-rc30
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
