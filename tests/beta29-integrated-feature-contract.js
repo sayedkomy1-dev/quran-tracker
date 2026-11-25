@@ -59,7 +59,7 @@ assert(assignmentAudio.includes('await openChat(ready)')&&assignmentAudio.includ
 assert(roleHome.includes('role-hero-action')&&roleHome.includes('role-hero-recitation')&&roleHome.includes('role-hero-maqraa'),'first-screen hero and independent Maqraa shortcut must be present');
 assert(index.includes('role-home.js?v=beta29-rc17')&&index.includes('maqraa.html'));
 
-assert(sw.includes("const APP_VERSION = '11.12.1-beta.29'"));
+assert(sw.includes("const APP_VERSION = '11.12.1-beta.30'"));
 assert(sw.includes("'-rc17-integrated-offline-teaching-audio'"));
 for(const ref of ['js/features/teacher-error-marking.js?v=beta29-rc17','js/features/imam-board-tafsir.js?v=beta29-rc17','js/features/assignment-audio-share.js?v=beta29-rc17','js/features/quran-reciter-registry.js?v=beta29-rc17','maqraa.webmanifest?v=beta29-rc17'])assert(sw.includes(ref),`service worker must precache ${ref}`);
 assert(sql.includes('guardian_home_recitation_complete_upload')&&sql.includes('teacher-assignment-audio')&&sql.includes('create policy'),'single additive SQL migration must cover guardian recitation and teacher audio link storage');
