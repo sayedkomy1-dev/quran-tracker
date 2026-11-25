@@ -151,9 +151,10 @@
     try{
       const d=await rpc('app_teacher_backup_list',{p_teacher_id:id});
       const items=Array.isArray(d?.backups)?d.backups:[];
+      const safeMetric=v=>v===null||v===undefined?'غير محدد':metric(v);
       const rows=items.map((b,i)=>`<article class="supervisor-detail-row">
         <b>نسخة ${i+1} · Revision ${esc(b.revision)}</b>
-        <p>${esc(formatDate(b.created_at))} · الطلاب: ${metric(b.student_count)} · الحصص: ${metric(b.session_count)} · المهام: ${metric(b.task_count)}</p>
+        <p>${esc(formatDate(b.created_at))} · الطلاب: ${safeMetric(b.student_count)} · الحصص: ${safeMetric(b.session_count)} · المهام: ${safeMetric(b.task_count)}</p>
         <button type="button" data-supervision="backup-download" data-teacher="${esc(id)}" data-backup="${esc(b.id)}">⬇️ تنزيل JSON المشفر</button>
       </article>`).join('');
       host.innerHTML=`<div class="supervision-subhead"><h3>💾 النسخ السحابية — ${esc(d?.teacher_name||'المحفظ')}</h3><button type="button" data-supervision="students-close">إغلاق</button></div>
