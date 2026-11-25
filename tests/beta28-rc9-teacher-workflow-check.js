@@ -9,7 +9,7 @@ const style=read('css/platform/rc9-lesson-flow.css');
 assert(html.includes('js/features/rc9-lesson-flow.js?v=beta28-rc9'));
 assert(html.includes('css/platform/rc9-lesson-flow.css?v=beta28-rc9'));
 for(const file of ['js/features/rc9-lesson-flow.js','css/platform/rc9-lesson-flow.css','js/features/offline-audio-library.js','js/features/quran-audio-export.js','js/features/session-intelligence-119.js','js/features/teacher-error-marking.js']){
-  const version=file==='js/features/session-intelligence-119.js'?'beta28-rc13':['js/features/offline-audio-library.js','js/features/quran-audio-export.js','js/features/teacher-error-marking.js'].includes(file)?'beta29-rc17':'beta28-rc9';
+  const version=['js/features/offline-audio-library.js','js/features/quran-audio-export.js','js/features/session-intelligence-119.js','js/features/teacher-error-marking.js'].includes(file)?'beta28-rc13':'beta28-rc9';
   assert(sw.includes(`'./${file}?v=${version}'`),`${file}: latest offline asset not included`);
 }
 assert(flow.includes("student.insertAdjacentElement('afterend',wizard)"),'lesson steps should follow student selector');
@@ -43,10 +43,10 @@ vm.runInContext(read('js/features/quran-audio-export.js'),ctx);
   assert.deepEqual(requests,['9:10','9:11','9:12'],'At-Tawbah must not prepend Basmala');assert.equal(f.size,9);
   requests.length=0;
   f=await ctx.ImamQuranAudioExport.buildFile({chapter:2,from:1,to:2,reciter:'mishary',surah:'البقرة'});
-  assert.deepEqual(requests,['1:1','2:1','2:2'],'every passage except At-Tawbah begins with Basmala; Al-Fatihah 1:1 is not duplicated');
-  assert.equal(f.size,9);
+  assert.deepEqual(requests,['2:1','2:2'],'verse one uses its own recorded opening, never double-prefix');
+  assert(!requests.includes('1:1'));
   const lib=read('js/features/offline-audio-library.js');
-  assert(lib.includes('async function downloadVerses')&&lib.includes("if(c!==9&&!(c===1&&f===1))rows.push([1,1,'basmala'])"),'offline download must include standalone Basmala for mid-surah');
+  assert(lib.includes('async function downloadVerses')&&lib.includes('if(c!==9&&f>1)rows.unshift([1,1])'),'offline download must include standalone Basmala for mid-surah');
   assert(lib.includes('data-assignment')&&flow.includes('ia29DownloadAudio'),'audio-download action must be reachable from lesson');
   console.log('PASS RC9: teacher tabs directly after student, foldable text tools and secondary panels, preserved V9 homepage, recipient error handoff, current-grade validation, Basmala MP3 on mid-surah, Tawbah exclusion, offline library wiring');
 })().catch(e=>{console.error(e);process.exitCode=1;});

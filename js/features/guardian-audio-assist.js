@@ -5,8 +5,6 @@
   const SURAS=['الفاتحة','البقرة','آل عمران','النساء','المائدة','الأنعام','الأعراف','الأنفال','التوبة','يونس','هود','يوسف','الرعد','إبراهيم','الحجر','النحل','الإسراء','الكهف','مريم','طه','الأنبياء','الحج','المؤمنون','النور','الفرقان','الشعراء','النمل','القصص','العنكبوت','الروم','لقمان','السجدة','الأحزاب','سبأ','فاطر','يس','الصافات','ص','الزمر','غافر','فصلت','الشورى','الزخرف','الدخان','الجاثية','الأحقاف','محمد','الفتح','الحجرات','ق','الذاريات','الطور','النجم','القمر','الرحمن','الواقعة','الحديد','المجادلة','الحشر','الممتحنة','الصف','الجمعة','المنافقون','التغابن','الطلاق','التحريم','الملك','القلم','الحاقة','المعارج','نوح','الجن','المزمل','المدثر','القيامة','الإنسان','المرسلات','النبأ','النازعات','عبس','التكوير','الانفطار','المطففين','الانشقاق','البروج','الطارق','الأعلى','الغاشية','الفجر','البلد','الشمس','الليل','الضحى','الشرح','التين','العلق','القدر','البينة','الزلزلة','العاديات','القارعة','التكاثر','العصر','الهمزة','الفيل','قريش','الماعون','الكوثر','الكافرون','النصر','المسد','الإخلاص','الفلق','الناس'];
   const TIMING_BASE='https://cdn.jsdelivr.net/gh/spa5k/quran-timings-api@main/data';const timingCache=new Map();let context=null,wordAudio=null,wordStopTimer=null,shareRequest=0;
   const $=id=>document.getElementById(id);
-  function populateReciters(){const select=$('portalAudioReciter'),map=g.ImamQuranAudioExport?.RECITERS;if(!select||!map)return;const current=select.value||'mishary';select.replaceChildren(...Object.entries(map).map(([id,row])=>{const o=document.createElement('option');o.value=id;o.textContent=String(row.label||id).replace(/^الشيخ\s*/, '');return o;}));select.value=map[current]?current:(map.mishary?'mishary':Object.keys(map)[0]);}
-
   function toast(msg){if(typeof g.portalToast==='function')return g.portalToast(msg);let t=document.createElement('div');t.className='portal-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2200);}
   function chapterOf(name){const n=String(name||'').replace(/^سورة\s+/,'').trim();const i=SURAS.indexOf(n);return i<0?0:i+1;}
   function normalizeArabic(v){return String(v||'').normalize('NFKD').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[^ء-ي]/g,'');}
@@ -43,6 +41,5 @@
     }catch(err){console.warn('[guardian word pronunciation]',err);toast('تعذر تشغيل النطق الآن');}
   }
   function setContext(data){shareRequest++;g.ImamTemporaryMedia?.cancel?.();context=data||null;clearTimeout(wordStopTimer);if(wordAudio){wordAudio.pause();wordAudio.removeAttribute('src');wordAudio.load();}const status=$('portalAudioStatus');if(status)status.textContent='يتم إنشاء ملف للتكليف الحالي فقط.';const box=$('portalAudioAssist');if(box)box.hidden=!context?.learning?.newAssignment;}
-  populateReciters();
   g.ImamGuardianAudio={setContext,shareAssignmentAudio,pronounce};g.guardianShareAssignmentAudio=shareAssignmentAudio;g.guardianPronounceCorrection=pronounce;
 })(globalThis);

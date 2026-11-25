@@ -9,7 +9,7 @@ const marker=fs.readFileSync('js/features/teacher-error-marking.js','utf8');
 const css=fs.readFileSync('teacher-quran-range-picker.css','utf8');
 const ver='11.12.1-beta.27-quran-picker-hotfix2';
 for(const file of ['teacher-quran-range-picker.css','js/features/teacher-quran-range-picker.js','js/features/teacher-error-marking.js']) {
- const requested=file==='js/features/teacher-error-marking.js'?'beta29-rc17':ver;
+ const requested=file==='js/features/teacher-error-marking.js'?'beta28-rc13':ver;
  assert(html.includes(file+'?v='+requested), 'new asset browser version: '+file);
  assert(sw.includes("'./"+file+'?v='+requested+"'"), 'new asset PWA cache version: '+file);
 }

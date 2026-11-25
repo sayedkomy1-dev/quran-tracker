@@ -14,8 +14,8 @@ new vm.Script(teacher,{filename:'teacher-error-marking.js'});
 new vm.Script(share,{filename:'guardian-portal-share.js'});
 new vm.Script(view,{filename:'guardian-portal-view.js'});
 ok(teacher.includes("new Intl.Segmenter('ar',{granularity:'grapheme'})"),'Arabic grapheme segmentation missing');
-ok(teacher.includes('qmarkCharChoices')&&teacher.includes('setTargetChar')&&teacher.includes("targetLevel:hasChar?'char':'word'")&&teacher.includes("const level=state.target.targetLevel==='ayah'?'ayah':targetIsChar()?'char':'word'"),'character target UI/data missing');
-ok(teacher.includes("const ch=ev.target?.closest?.('.qmark-char')")&&teacher.includes("onWordClick(word,ch?Number(ch.dataset.charIndex):null)"),'delegated tap on Quran letter must preselect that letter');
+ok(teacher.includes('qmarkCharChoices')&&teacher.includes('setTargetChar')&&teacher.includes("targetLevel:targetIsChar()?'char':'word'"),'character target UI/data missing');
+ok(teacher.includes("const ch=ev.target.closest?.('.qmark-char');onWordClick(w,ch?Number(ch.dataset.charIndex):null)"),'direct tap on Quran letter must preselect that letter');
 ok(teacher.includes('charIndex:targetIsChar()?Number(state.target.charIndex):-1')&&teacher.includes("charText:targetIsChar()?String(state.target.charText||'').slice(0,20):''"),'character target fields missing');
 ok(v8.includes("out.targetLevel=x.targetLevel==='char'")&&v8.includes('out.charIndex=out.targetLevel===')&&v8.includes('out.charText=out.targetLevel==='),'character target sanitizer persistence missing');
 ok(css.includes('.qmark-char-choice')&&css.includes('.qmark-char.qchar-pronunciation')&&css.includes('.qmark-char.qchar-tajweed'),'character-level visual markers missing');
@@ -24,6 +24,6 @@ ok(teacher.includes('🪶 *مواضع التصحيح على النص*')&&teacher
 ok(share.includes('function portalCorrections')&&share.includes('corrections:ses.status'), 'guardian snapshot correction details missing');
 ok(view.includes('portal-corrections')&&view.includes('الحرف «'), 'guardian correction rendering missing');
 ok(portalCss.includes('.portal-corrections')&&portalCss.includes('.portal-correction.resolved'),'guardian correction styling missing');
-ok(html.includes('teacher-error-marking.js?v=beta29-rc17')&&html.includes('v8.js?v=11.2.0-s2'),'Stage 2 cache-busting refs missing');
+ok(html.includes('teacher-error-marking.js?v=beta28-rc13')&&html.includes('v8.js?v=11.2.0-s2'),'Stage 2 cache-busting refs missing');
 ok(sw.includes("quran-pwa-v11.2.0-error2")&&sw.includes("uiStage:'11.2-error-marking-2'"),'Stage 2 service worker generation missing');
 console.log('PASS interactive-error-marking-stage2-check');

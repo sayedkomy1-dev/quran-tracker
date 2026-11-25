@@ -4,15 +4,13 @@
    more robust annotated PNG generation while preserving direct WhatsApp Save & Send. */
 (function teacherErrorMarking(g){
   const ERROR_TYPES=[
-    ['تشكيل / حركة','pronunciation'],['نطق حرف','pronunciation'],['مخرج حرف','pronunciation'],['إبدال حرف','pronunciation'],['حذف حرف','pronunciation'],['زيادة حرف','pronunciation'],
-    ['كلمة خاطئة','pronunciation'],['حذف كلمة','pronunciation'],['زيادة كلمة','pronunciation'],['تقديم / تأخير كلمة','pronunciation'],
+    ['تشكيل','pronunciation'],['نطق حرف','pronunciation'],['حذف حرف','pronunciation'],['زيادة حرف','pronunciation'],['كلمة خاطئة','pronunciation'],
     ['نسيان','memory'],['تردد','memory'],['تلقين','memory'],
-    ['إظهار','tajweed'],['إدغام بغنة','tajweed'],['إدغام بغير غنة','tajweed'],['إخفاء','tajweed'],['إقلاب','tajweed'],['غنة','tajweed'],['قلقلة','tajweed'],
-    ['مد طبيعي','tajweed'],['مد متصل','tajweed'],['مد منفصل','tajweed'],['مد لازم','tajweed'],['تفخيم','tajweed'],['ترقيق','tajweed'],['وقف/ابتداء','tajweed'],['حكم تجويدي آخر','tajweed']
+    ['مد','tajweed'],['غنة','tajweed'],['إخفاء','tajweed'],['إدغام','tajweed'],['إقلاب','tajweed'],['قلقلة','tajweed'],['وقف/ابتداء','tajweed'],['حكم تجويدي آخر','tajweed']
   ];
   const CONTEXTS={new_read:'الحفظ الجديد — قراءة الطالب',talaqqin:'التلقين — ترديد خلف الشيخ',recitation:'التسميع',review:'المراجعة'};
   const PREF_KEY='imam:qmark:prefs:v2';
-  const state={enabled:true,context:'recitation',target:null,observer:null,rootObserver:null,boundContent:null,installed:false,customTypes:[],previewFile:null,previewFiles:[],previewIndex:0,previewUrl:''};
+  const state={enabled:true,context:'recitation',target:null,observer:null,installed:false,customTypes:[],previewFile:null,previewFiles:[],previewIndex:0,previewUrl:''};
   let sendBusy=false,sendReleaseTimer=0;
   const $=id=>document.getElementById(id);
   const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -28,7 +26,7 @@
   function phaseLabel(v){return {new:'أخطاء الحفظ الجديد',recitation:'أخطاء التسميع',review:'أخطاء المراجعة'}[v]||'أخطاء التسميع';}
   function phaseStats(list=quranErrors()){return {new:list.filter(x=>phase(x.mode)==='new').length,recitation:list.filter(x=>phase(x.mode)==='recitation').length,review:list.filter(x=>phase(x.mode)==='review').length};}
 
-  function currentRange(){try{return V8.quranRange||g.quranRangeFromNew?.()||null;}catch(_){return g.quranRangeFromNew?.()||null;}}
+  function currentRange(){try{return V8.quranRange||null;}catch(_){return null;}}
   function ctxLabel(v){return CONTEXTS[v]||CONTEXTS.recitation;}
   function cleanType(v){return String(v||'').replace(/[\u0000-\u001f]/g,'').trim().replace(/\s+/g,' ').slice(0,60);}
   function presetGroup(type){return ERROR_TYPES.find(x=>x[0]===type)?.[1]||'';}
@@ -41,19 +39,19 @@
   }
   function rowIsChar(e){return e?.targetLevel==='char'&&Number.isInteger(Number(e.charIndex))&&Number(e.charIndex)>=0;}
   function targetIsChar(t=state.target){return t?.charIndex!==null&&t?.charIndex!==undefined&&Number.isInteger(Number(t.charIndex))&&Number(t.charIndex)>=0;}
-  function targetDescriptor(t=state.target){if(t?.targetLevel==='ayah')return 'الآية كاملة';return targetIsChar(t)?`الحرف «${t.charText||''}» داخل الكلمة`:'الكلمة كاملة';}
+  function targetDescriptor(t=state.target){return targetIsChar(t)?`الحرف «${t.charText||''}» داخل الكلمة`:'الكلمة كاملة';}
   function readPrefs(){try{const p=JSON.parse(localStorage.getItem(PREF_KEY)||'{}');state.enabled=p.enabled!==false;state.context=CONTEXTS[p.context]?p.context:'recitation';state.customTypes=Array.isArray(p.customTypes)?p.customTypes.map(cleanType).filter(Boolean).slice(0,12):[];}catch(_){state.enabled=true;}}
   function savePrefs(){try{localStorage.setItem(PREF_KEY,JSON.stringify({enabled:!!state.enabled,context:state.context,customTypes:state.customTypes.slice(0,12)}));}catch(_){}}
-  function sameWord(e,target){const r=currentRange();if(e?.source!=='quran-word'||Number(e.surahId||0)!==Number(r?.chapter||0)||Number(e.ayah)!==Number(target.ayah))return false;if(target?.targetLevel==='ayah')return e.targetLevel==='ayah';if(e.targetLevel==='ayah')return false;return Number(e.wordIndex)===Number(target.wordIndex);}
+  function sameWord(e,target){const r=currentRange();return e?.source==='quran-word'&&Number(e.surahId||0)===Number(r?.chapter||0)&&Number(e.ayah)===Number(target.ayah)&&Number(e.wordIndex)===Number(target.wordIndex);}
   function sameTarget(e,target){
     if(!sameWord(e,target))return false;
     if(targetIsChar(target))return rowIsChar(e)&&Number(e.charIndex)===Number(target.charIndex);
     return !rowIsChar(e);
   }
   function setContext(v){state.context=CONTEXTS[v]?v:'recitation';const sel=$('qmarkContext');if(sel&&sel.value!==state.context)sel.value=state.context;savePrefs();refreshHint();}
-  function refreshHint(){const h=$('qmarkHint');if(h)h.textContent=state.enabled?`وضع التصحيح نشط · ${ctxLabel(state.context)} · اضغط على كلمة أو حرف لتسجيل الخطأ، أو على رقم الآية لفتح التفسير أو تسجيل خطأ على الآية كاملة.`:'وضع التصحيح متوقف. فعّله أولًا، ثم اضغط على كلمة أو حرف. الضغط على رقم الآية يفتح التفسير أو إضافة خطأ على الآية.';}
+  function refreshHint(){const h=$('qmarkHint');if(h)h.textContent=state.enabled?`وضع التصحيح مفعّل · ${ctxLabel(state.context)} · اضغط على الكلمة، ثم اختر الحرف إن كان الخطأ في حرف بعينه`:'فعّل وضع التصحيح ثم اضغط على الكلمة التي أخطأ فيها الطالب.';}
   function refreshPanel(){
-    const btn=$('qmarkToggle'),count=$('qmarkCount');if(btn){btn.classList.toggle('active',state.enabled);btn.textContent=state.enabled?'✓ وضع التصحيح نشط — إيقاف':'✎ تفعيل وضع التصحيح';btn.setAttribute('aria-pressed',state.enabled?'true':'false');}
+    const btn=$('qmarkToggle'),count=$('qmarkCount');if(btn){btn.classList.toggle('active',state.enabled);btn.textContent=state.enabled?'✓ وضع التصحيح مفعّل':'✎ تفعيل وضع التصحيح';}
     if(count){const n=quranErrors().length;count.textContent=n===1?'علامة واحدة':`${n} علامات`;}
     const summary=$('qmarkPhaseSummary'),stats=phaseStats();
     if(summary)summary.innerHTML=`<span>الحفظ الجديد <b>${stats.new}</b></span><span>التسميع <b>${stats.recitation}</b></span><span>المراجعة <b>${stats.review}</b></span>`;
@@ -97,20 +95,14 @@
     words.forEach((word,i)=>{
       const w=document.createElement('button');w.type='button';w.className='qmark-word';w.dataset.ayah=String(ayah);w.dataset.wordIndex=String(i);w.dataset.word=word;
       graphemes(word).forEach((ch,ci)=>{const span=document.createElement('span');span.className='qmark-char';span.dataset.charIndex=String(ci);span.dataset.charText=ch;span.textContent=ch;w.appendChild(span);});
+      w.addEventListener('click',ev=>{ev.stopPropagation();const ch=ev.target.closest?.('.qmark-char');onWordClick(w,ch?Number(ch.dataset.charIndex):null);});
       ayahEl.appendChild(w);ayahEl.appendChild(document.createTextNode(' '));
     });
     if(num)ayahEl.appendChild(num);ayahEl.dataset.qmarkReady='1';ayahEl.dataset.qmarkRaw=raw;paintAllWords();
   }
-  function refreshOpeningGuide(){
-    const host=$('quranOpeningGuide');if(!host)return;
-    const r=currentRange();if(!r){host.hidden=true;host.textContent='';return;}
-    const chapter=Number(r.chapter),from=Number(r.from);
-    const showBasmala=chapter!==9&&!(chapter===1&&from===1);
-    host.hidden=false;
-    host.innerHTML=`<span class="quran-opening-istiadhah">أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</span>${showBasmala?'<span class="quran-opening-basmala">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</span>':''}<small>${chapter===9?'سورة التوبة: يبدأ النص بالاستعاذة دون بسملة.':chapter===1&&from===1?'البسملة موجودة في الآية الأولى من الفاتحة ولا تُكرر.':'تُقرأ الاستعاذة ثم البسملة قبل هذا المقدار.'}</small>`;
-  }
   function decorate(){
-    bindContent();refreshOpeningGuide();
+    // End-point selection needs only verse numbers, not thousands of per-letter buttons.
+    // Restore full word/character marking when the teacher leaves range selection.
     if(document.getElementById('quranTextModal')?.classList.contains('ia27-selecting-range'))return;
     const content=$('quranVerseContent');if(!content)return;
     content.querySelectorAll('.quran-ayah').forEach(decorateAyah);refreshPanel();
@@ -118,14 +110,12 @@
   function onWordClick(el,preferredCharIndex=null){
     if(!state.enabled){try{toast('فعّل وضع التصحيح أولًا','info');}catch(_){}return;}if(typeof curStId!=='undefined'&&!curStId){try{toast('اختر الطالب أولًا قبل تسجيل موضع الخطأ','error');}catch(_){}return;}
     const ayahEl=el.closest('.quran-ayah'),word=el.dataset.word||el.textContent.trim(),chars=graphemes(word),ci=Number(preferredCharIndex);const hasChar=preferredCharIndex!==null&&preferredCharIndex!==undefined&&Number.isInteger(ci)&&ci>=0&&ci<chars.length;
-    state.target={ayah:Number(el.dataset.ayah),wordIndex:Number(el.dataset.wordIndex),word,ayahText:ayahEl?.dataset?.qmarkRaw||'',charIndex:hasChar?ci:null,charText:hasChar?chars[ci]:'',targetLevel:hasChar?'char':'word',el};openSheet();
+    state.target={ayah:Number(el.dataset.ayah),wordIndex:Number(el.dataset.wordIndex),word,ayahText:ayahEl?.dataset?.qmarkRaw||'',charIndex:hasChar?ci:null,charText:hasChar?chars[ci]:'',el};openSheet();
   }
   function ensureSheet(){
-    if($('quranErrorSheet'))return;const sheet=document.createElement('div');sheet.id='quranErrorSheet';sheet.className='qmark-sheet';sheet.hidden=true;sheet.innerHTML=`<div class="qmark-sheet-backdrop" data-close="1"></div><section class="qmark-sheet-card" role="region" aria-label="أدوات تسجيل خطأ التلاوة"><div class="qmark-sheet-head"><div><small id="qmarkTargetMeta">موضع الخطأ</small><b id="qmarkTargetWord">—</b></div><div class="qmark-sheet-actions"><button type="button" id="qmarkWordMeaning" class="qmark-word-meaning" hidden>🔎 معنى الكلمة</button><button type="button" id="qmarkMinimize" aria-label="تصغير لوحة التصحيح" aria-expanded="true">▾ تصغير</button><button type="button" id="qmarkClose" aria-label="إغلاق">✕</button></div></div><div class="qmark-sheet-context"><span>السياق</span><strong id="qmarkTargetContext">التسميع</strong></div><div class="qmark-char-section"><div class="qmark-char-head"><b>حدد موضع الخطأ</b><small id="qmarkScopeLabel">الكلمة كاملة</small></div><div class="qmark-char-picker"><button type="button" class="qmark-char-choice whole active" data-char-index="-1">الكلمة كاملة</button><div id="qmarkCharChoices"></div></div><p>اختيار حرف اختياري؛ استخدمه عندما يكون الخطأ في نطق أو تشكيل أو زيادة/حذف حرف بعينه.</p></div><div class="qmark-types" id="qmarkTypes"></div><div class="qmark-custom-entry"><input id="qmarkCustomInput" maxlength="60" placeholder="اكتب خطأ مخصصًا… مثال: تفخيم الراء" autocomplete="off"><button type="button" id="qmarkCustomAdd">+ تسجيل</button></div><div id="qmarkCustomTypes" class="qmark-custom-types"></div><div class="qmark-current"><div class="qmark-current-head"><b>العلامات على هذه الكلمة</b><span id="qmarkWordCount">0</span></div><div id="qmarkCurrentList"></div></div></section>`;document.body.appendChild(sheet);
+    if($('quranErrorSheet'))return;const sheet=document.createElement('div');sheet.id='quranErrorSheet';sheet.className='qmark-sheet';sheet.hidden=true;sheet.innerHTML=`<div class="qmark-sheet-backdrop" data-close="1"></div><section class="qmark-sheet-card" role="region" aria-label="أدوات تسجيل خطأ التلاوة"><div class="qmark-sheet-head"><div><small id="qmarkTargetMeta">موضع الخطأ</small><b id="qmarkTargetWord">—</b></div><div class="qmark-sheet-actions"><button type="button" id="qmarkMinimize" aria-label="تصغير لوحة التصحيح" aria-expanded="true">▾ تصغير</button><button type="button" id="qmarkClose" aria-label="إغلاق">✕</button></div></div><div class="qmark-sheet-context"><span>السياق</span><strong id="qmarkTargetContext">التسميع</strong></div><div class="qmark-char-section"><div class="qmark-char-head"><b>حدد موضع الخطأ</b><small id="qmarkScopeLabel">الكلمة كاملة</small></div><div class="qmark-char-picker"><button type="button" class="qmark-char-choice whole active" data-char-index="-1">الكلمة كاملة</button><div id="qmarkCharChoices"></div></div><p>اختيار حرف اختياري؛ استخدمه عندما يكون الخطأ في نطق أو تشكيل أو زيادة/حذف حرف بعينه.</p></div><div class="qmark-types" id="qmarkTypes"></div><div class="qmark-custom-entry"><input id="qmarkCustomInput" maxlength="60" placeholder="اكتب خطأ مخصصًا… مثال: تفخيم الراء" autocomplete="off"><button type="button" id="qmarkCustomAdd">+ تسجيل</button></div><div id="qmarkCustomTypes" class="qmark-custom-types"></div><div class="qmark-current"><div class="qmark-current-head"><b>العلامات على هذه الكلمة</b><span id="qmarkWordCount">0</span></div><div id="qmarkCurrentList"></div></div></section>`;document.body.appendChild(sheet);
     $('qmarkTypes').innerHTML=ERROR_TYPES.map(([type,group])=>`<button type="button" class="qmark-type ${group}" data-type="${esc(type)}" data-group="${group}">${esc(type)}</button>`).join('');
-    $('qmarkTypes').addEventListener('click',e=>{const b=e.target.closest('[data-type]');if(b)addError(b.dataset.type,b.dataset.group);});
-    $('qmarkWordMeaning').addEventListener('click',openWordMeaning);
-    $('qmarkClose').addEventListener('click',closeSheet);$('qmarkMinimize').addEventListener('click',()=>{const panel=$('quranErrorSheet');const minimized=panel.classList.toggle('minimized');document.getElementById('quranTextModal')?.classList.toggle('qmark-minimized',minimized);$('qmarkMinimize').textContent=minimized?'▴ إظهار الأدوات':'▾ تصغير';$('qmarkMinimize').setAttribute('aria-expanded',String(!minimized));});sheet.addEventListener('click',e=>{if(e.target?.dataset?.close)closeSheet();});
+    $('qmarkTypes').addEventListener('click',e=>{const b=e.target.closest('[data-type]');if(b)addError(b.dataset.type,b.dataset.group);});$('qmarkClose').addEventListener('click',closeSheet);$('qmarkMinimize').addEventListener('click',()=>{const panel=$('quranErrorSheet');const minimized=panel.classList.toggle('minimized');document.getElementById('quranTextModal')?.classList.toggle('qmark-minimized',minimized);$('qmarkMinimize').textContent=minimized?'▴ إظهار الأدوات':'▾ تصغير';$('qmarkMinimize').setAttribute('aria-expanded',String(!minimized));});sheet.addEventListener('click',e=>{if(e.target?.dataset?.close)closeSheet();});
     sheet.querySelector('.qmark-char-choice.whole').addEventListener('click',()=>setTargetChar(-1));
     $('qmarkCharChoices').addEventListener('click',e=>{const b=e.target.closest('[data-char-index]');if(b)setTargetChar(Number(b.dataset.charIndex));});
     $('qmarkCustomAdd').addEventListener('click',addCustomError);$('qmarkCustomInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addCustomError();}});renderCustomTypes();
@@ -137,97 +127,39 @@
     renderCharPicker();renderCurrent();
   }
   function renderCharPicker(){
-    if(!state.target)return;const section=document.querySelector('#quranErrorSheet .qmark-char-section');if(section)section.hidden=state.target.targetLevel==='ayah';const chars=graphemes(state.target.word),host=$('qmarkCharChoices'),whole=document.querySelector('#quranErrorSheet .qmark-char-choice.whole');
+    if(!state.target)return;const chars=graphemes(state.target.word),host=$('qmarkCharChoices'),whole=document.querySelector('#quranErrorSheet .qmark-char-choice.whole');
     if(host)host.innerHTML=chars.map((ch,i)=>`<button type="button" class="qmark-char-choice ${targetIsChar()&&Number(state.target.charIndex)===i?'active':''}" data-char-index="${i}" title="الحرف ${i+1}">${esc(ch)}</button>`).join('');
     if(whole)whole.classList.toggle('active',!targetIsChar());
     if($('qmarkScopeLabel'))$('qmarkScopeLabel').textContent=targetDescriptor();
   }
   function addCustomError(){const input=$('qmarkCustomInput'),type=cleanType(input?.value);if(!type)return;addError(type,'custom');if(!state.customTypes.includes(type)){state.customTypes.unshift(type);state.customTypes=state.customTypes.slice(0,12);savePrefs();renderCustomTypes();}if(input)input.value='';}
   function renderCustomTypes(){const el=$('qmarkCustomTypes');if(!el)return;el.innerHTML=state.customTypes.length?`<span>أخطاء مخصصة محفوظة:</span>${state.customTypes.map(t=>`<button type="button" data-custom="${esc(t)}">${esc(t)}</button>`).join('')}`:'';el.querySelectorAll('[data-custom]').forEach(b=>b.addEventListener('click',()=>addError(b.dataset.custom,'custom')));}
-  function openSheet(){ensureSheet();const t=state.target,r=currentRange();if(!t||!r)return;$('qmarkTargetWord').textContent=t.targetLevel==='ayah'?'الآية كاملة':t.word;$('qmarkTargetMeta').textContent=`سورة ${r.surah||''} · الآية ${t.ayah} · ${targetDescriptor(t)}`;$('qmarkTargetContext').textContent=ctxLabel(state.context);const meaningButton=$('qmarkWordMeaning');if(meaningButton)meaningButton.hidden=t.targetLevel==='ayah';const currentHead=document.querySelector('#qmarkCurrent .qmark-current-head b');if(currentHead)currentHead.textContent=t.targetLevel==='ayah'?'العلامات على هذه الآية':'العلامات على هذه الكلمة';renderCharPicker();renderCurrent();const s=$('quranErrorSheet');s.hidden=false;s.classList.remove('minimized');const minimized=$('qmarkMinimize');if(minimized){minimized.textContent='▾ تصغير';minimized.setAttribute('aria-expanded','true');}document.getElementById('quranTextModal')?.classList.add('qmark-inspecting');document.getElementById('quranTextModal')?.classList.remove('qmark-minimized');requestAnimationFrame(()=>s.classList.add('open'));}
+  function openSheet(){ensureSheet();const t=state.target,r=currentRange();if(!t||!r)return;$('qmarkTargetWord').textContent=t.word;$('qmarkTargetMeta').textContent=`سورة ${r.surah||''} · الآية ${t.ayah} · الكلمة ${t.wordIndex+1}`;$('qmarkTargetContext').textContent=ctxLabel(state.context);renderCharPicker();renderCurrent();const s=$('quranErrorSheet');s.hidden=false;s.classList.remove('minimized');const minimized=$('qmarkMinimize');if(minimized){minimized.textContent='▾ تصغير';minimized.setAttribute('aria-expanded','true');}document.getElementById('quranTextModal')?.classList.add('qmark-inspecting');document.getElementById('quranTextModal')?.classList.remove('qmark-minimized');requestAnimationFrame(()=>s.classList.add('open'));}
   function closeSheet(){const s=$('quranErrorSheet');if(!s)return;s.classList.remove('open');document.getElementById('quranTextModal')?.classList.remove('qmark-inspecting','qmark-minimized');setTimeout(()=>{if(!s.classList.contains('open'))s.hidden=true;},160);}
   function persistSessionErrorsNow(){try{renderSessionErrors();scheduleDraftSave();if(typeof saveDraftNow==='function')saveDraftNow();}catch(_){} }
   function addError(type,group){
     type=cleanType(type);if(!state.target||!type)return;const r=currentRange();if(!r)return;group=['pronunciation','memory','tajweed','custom'].includes(group)?group:(presetGroup(type)||'custom');
-    const duplicate=quranErrors().find(e=>sameTarget(e,state.target)&&e.type===type&&e.mode===state.context&&!e.resolved);if(duplicate){try{toast(targetIsChar()?'هذا النوع مسجل بالفعل على نفس الحرف':state.target.targetLevel==='ayah'?'هذا النوع مسجل بالفعل على الآية':'هذا النوع مسجل بالفعل على نفس الكلمة','info');}catch(_){}return;}
-    const level=state.target.targetLevel==='ayah'?'ayah':targetIsChar()?'char':'word';
-    const row={id:errorId(),type,group,at:now(),source:'quran-word',mode:state.context,surah:r.surah||'',surahId:Number(r.chapter)||0,ayah:Number(state.target.ayah),wordIndex:level==='ayah'?-1:Number(state.target.wordIndex),word:level==='ayah'?'الآية كاملة':String(state.target.word||'').slice(0,120),ayahText:String(state.target.ayahText||'').slice(0,1200),targetLevel:level,charIndex:targetIsChar()?Number(state.target.charIndex):-1,charText:targetIsChar()?String(state.target.charText||'').slice(0,20):'',resolved:false,resolvedAt:''};
+    const duplicate=quranErrors().find(e=>sameTarget(e,state.target)&&e.type===type&&e.mode===state.context&&!e.resolved);if(duplicate){try{toast(targetIsChar()?'هذا النوع مسجل بالفعل على نفس الحرف':'هذا النوع مسجل بالفعل على نفس الكلمة','info');}catch(_){}return;}
+    const row={id:errorId(),type,group,at:now(),source:'quran-word',mode:state.context,surah:r.surah||'',surahId:Number(r.chapter)||0,ayah:Number(state.target.ayah),wordIndex:Number(state.target.wordIndex),word:String(state.target.word||'').slice(0,120),ayahText:String(state.target.ayahText||'').slice(0,1200),targetLevel:targetIsChar()?'char':'word',charIndex:targetIsChar()?Number(state.target.charIndex):-1,charText:targetIsChar()?String(state.target.charText||'').slice(0,20):'',resolved:false,resolvedAt:''};
     currentErrors().push(row);persistSessionErrorsNow();renderCurrent();paintAllWords();refreshPanel();
   }
   function findById(id){return currentErrors().find(x=>x?.id===id);}
   function toggleResolved(id){const e=findById(id);if(!e)return;e.resolved=!e.resolved;e.resolvedAt=e.resolved?now():'';persistSessionErrorsNow();renderCurrent();paintAllWords();}
   function removeError(id){const list=currentErrors(),i=list.findIndex(x=>x?.id===id);if(i<0)return;list.splice(i,1);persistSessionErrorsNow();renderCurrent();paintAllWords();refreshPanel();}
   function renderCurrent(){
-    if(!state.target)return;
-    const rows=quranErrors().filter(e=>sameWord(e,state.target));
-    $('qmarkWordCount').textContent=String(rows.length);
-    const el=$('qmarkCurrentList');if(!el)return;
-    el.innerHTML=rows.length?rows.map(e=>{
-      const targetMeta=rowIsChar(e)?` · الحرف «${esc(e.charText||'')}»`:e.targetLevel==='ayah'?' · الآية كاملة':'';
-      return `<div class="qmark-current-item ${e.resolved?'resolved':''}"><div><b>${esc(e.type)}</b><small>${esc(ctxLabel(e.mode))}${targetMeta}${e.resolved?' · تم التصحيح':''}</small></div><div><button type="button" data-resolve="${esc(e.id||'')}">${e.resolved?'إعادة فتح':'✓ تم التصحيح'}</button><button type="button" class="danger" data-remove="${esc(e.id||'')}">حذف</button></div></div>`;
-    }).join(''):'<p class="qmark-empty">لم تُسجل علامة على هذا الموضع بعد.</p>';
-    el.querySelectorAll('[data-resolve]').forEach(b=>b.addEventListener('click',()=>toggleResolved(b.dataset.resolve)));
-    el.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>removeError(b.dataset.remove)));
+    if(!state.target)return;const rows=quranErrors().filter(e=>sameWord(e,state.target));$('qmarkWordCount').textContent=String(rows.length);const el=$('qmarkCurrentList');if(!el)return;
+    el.innerHTML=rows.length?rows.map(e=>`<div class="qmark-current-item ${e.resolved?'resolved':''}"><div><b>${esc(e.type)}</b><small>${esc(ctxLabel(e.mode))}${rowIsChar(e)?` · الحرف «${esc(e.charText||'')}»`:''}${e.resolved?' · تم التصحيح':''}</small></div><div><button type="button" data-resolve="${esc(e.id||'')}">${e.resolved?'إعادة فتح':'✓ تم التصحيح'}</button><button type="button" class="danger" data-remove="${esc(e.id||'')}">حذف</button></div></div>`).join(''):'<p class="qmark-empty">لم تُسجل علامة على هذه الكلمة بعد.</p>';
+    el.querySelectorAll('[data-resolve]').forEach(b=>b.addEventListener('click',()=>toggleResolved(b.dataset.resolve)));el.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>removeError(b.dataset.remove)));
   }
-  function openWordMeaning(){
-    const t=state.target,r=currentRange();if(!t||t.targetLevel==='ayah'||!r)return;
-    const api=g.BoardTafsir||g.ImamApp?.BoardTafsir;
-    if(api?.openWord){closeSheet();api.openWord({chapter:Number(r.chapter),surah:String(r.surah||''),ayah:Number(t.ayah),word:String(t.word||''),verseText:String(t.ayahText||'')});}
-    else toast('خدمة معاني الكلمات غير محمّلة. حدّث التطبيق ثم أعد المحاولة.','error');
-  }
-  function closeAyahActions(){const el=$('qmarkAyahActions');if(el)el.hidden=true;}
-  function openAyahActions(ayahEl){
-    const r=currentRange(),ayah=Number(ayahEl?.dataset?.ayah);if(!r||!Number.isInteger(ayah)||ayah<1)return;
-    const raw=String(ayahEl.dataset.qmarkRaw||ayahEl.textContent||'').replace(/\s+\d+\s*$/,'').trim();
-    let box=$('qmarkAyahActions');
-    if(!box){box=document.createElement('div');box.id='qmarkAyahActions';box.className='qmark-ayah-actions';box.hidden=true;box.innerHTML=`<div class="qmark-ayah-backdrop" data-ayah-close="1"></div><section class="qmark-ayah-card" role="dialog" aria-modal="true" aria-label="خيارات الآية"><header><div><small id="qmarkAyahMeta"></small><b>ماذا تريد أن تفعل بهذه الآية؟</b></div><button type="button" data-ayah-close="1" aria-label="إغلاق">✕</button></header><p id="qmarkAyahText"></p><div class="qmark-ayah-actions-grid"><button type="button" id="qmarkAyahTafsir"><span>📖</span><b>تفسير الآية</b><small>معنى الآية من مصادر موثوقة</small></button><button type="button" id="qmarkAyahError"><span>✎</span><b>إضافة موضع خطأ</b><small>تسجيل خطأ على الآية كاملة</small></button></div></section>`;document.body.appendChild(box);
-      box.addEventListener('click',e=>{if(e.target?.dataset?.ayahClose)closeAyahActions();});
-      $('qmarkAyahTafsir').addEventListener('click',()=>{const d=box._detail;closeAyahActions();const api=g.BoardTafsir||g.ImamApp?.BoardTafsir;if(api?.openAyah)api.openAyah(d);else toast('واجهة التفسير غير محمّلة في هذه الصفحة','error');});
-      $('qmarkAyahError').addEventListener('click',()=>{const d=box._detail;closeAyahActions();state.target={ayah:d.ayah,wordIndex:-1,word:'الآية كاملة',ayahText:d.verseText,targetLevel:'ayah',charIndex:null,charText:'',el:d.ayahEl};openSheet();});
-    }
-    const detail={chapter:Number(r.chapter),surah:String(r.surah||''),ayah,verseText:raw,ayahEl};box._detail=detail;
-    $('qmarkAyahMeta').textContent=`سورة ${detail.surah} · الآية ${ayah}`;$('qmarkAyahText').textContent=raw;box.hidden=false;
-  }
-  function installAyahActions(){const c=$('quranVerseContent');if(!c||c.dataset.qmarkAyahActions==='1')return;c.dataset.qmarkAyahActions='1';c.addEventListener('click',ev=>{const num=ev.target?.closest?.('.quran-ayah-num');if(!num)return;const modal=$('quranTextModal');if(modal?.classList.contains('ia27-selecting-range'))return;const ayahEl=num.closest('.quran-ayah');if(!ayahEl)return;ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation?.();openAyahActions(ayahEl);},true);}
   function installPanel(){
     const note=$('quranSourceNote');if(!note||$('quranCorrectionPanel'))return;const panel=document.createElement('div');panel.id='quranCorrectionPanel';panel.className='qmark-panel';panel.innerHTML=`<div class="qmark-panel-top"><button type="button" id="qmarkToggle" class="qmark-toggle">✎ تفعيل وضع التصحيح</button><label><span>مرحلة القراءة</span><select id="qmarkContext"><option value="new_read">الحفظ الجديد — قراءة الطالب</option><option value="talaqqin">التلقين — ترديد خلف الشيخ</option><option value="recitation">التسميع</option><option value="review">المراجعة</option></select></label><span id="qmarkCount" class="qmark-count">0 علامات</span><button type="button" id="qmarkPreviewImage" class="qmark-preview">▣ معاينة بطاقة التصحيح</button><button type="button" id="qmarkShareImage" class="qmark-share">↗ مشاركة الصورة</button></div><div id="qmarkPhaseSummary" class="qmark-phase-summary" aria-label="أخطاء كل مرحلة"></div><div id="qmarkHint" class="qmark-hint"></div><div class="qmark-legend"><span class="pronunciation">نطق/حروف</span><span class="memory">حفظ/تردد</span><span class="tajweed">تجويد</span><span class="custom">مخصص</span><span class="char">تحديد حرف</span><span class="resolved">تم التصحيح</span></div>`;note.insertAdjacentElement('afterend',panel);$('qmarkToggle').addEventListener('click',toggle);$('qmarkContext').addEventListener('change',e=>setContext(e.target.value));$('qmarkPreviewImage').addEventListener('click',previewCurrentDraftImage);$('qmarkShareImage').addEventListener('click',shareCurrentDraftImage);refreshPanel();
   }
   function updateContextForOpen(kind){if(kind==='new')setContext('new_read');else if(kind==='talaqqin')setContext('talaqqin');else if(kind==='review')setContext('review');else setContext('recitation');}
-  function installWordActions(c){
-    if(!c||c.dataset.qmarkWordActions==='1')return;
-    c.dataset.qmarkWordActions='1';
-    c.addEventListener('click',ev=>{
-      const word=ev.target?.closest?.('.qmark-word');if(!word||!c.contains(word))return;
-      if(document.getElementById('quranTextModal')?.classList.contains('ia27-selecting-range'))return;
-      const ch=ev.target?.closest?.('.qmark-char');
-      ev.preventDefault();ev.stopPropagation();ev.stopImmediatePropagation?.();
-      onWordClick(word,ch?Number(ch.dataset.charIndex):null);
-    },true);
-  }
-  function bindContent(){
-    const c=$('quranVerseContent');if(!c)return null;
-    if(state.boundContent!==c){
-      state.observer?.disconnect();state.boundContent=c;state.observer=null;
-      state.observer=new MutationObserver(()=>decorate());
-      state.observer.observe(c,{childList:true,subtree:true});
-    }
-    installAyahActions();installWordActions(c);return c;
-  }
-  function observe(){
-    installPanel();ensureSheet();bindContent();
-    if(!state.rootObserver&&document.body){
-      state.rootObserver=new MutationObserver(()=>{
-        installPanel();
-        if($('quranVerseContent')!==state.boundContent){bindContent();decorate();}
-      });
-      state.rootObserver.observe(document.body,{childList:true,subtree:true});
-    }
-    decorate();
-  }
+  function observe(){const c=$('quranVerseContent');if(!c||state.observer)return;state.observer=new MutationObserver(()=>decorate());state.observer.observe(c,{childList:true,subtree:true});decorate();}
   function hookOpeners(){
-    const originalNew=g.openQuranTextModal;if(typeof originalNew==='function')g.openQuranTextModal=async function(...args){updateContextForOpen('new');const out=await originalNew.apply(this,args);setTimeout(()=>{bindContent();decorate();},0);return out;};
-    const originalPrev=g.openPrevQuranText;if(typeof originalPrev==='function')g.openPrevQuranText=function(key,...args){updateContextForOpen(key==='new'?'recitation':'review');const out=originalPrev.call(this,key,...args);setTimeout(()=>{bindContent();decorate();},0);return out;};
-    const originalRange=g.openQuranRangeText;if(typeof originalRange==='function')g.openQuranRangeText=function(...args){const out=originalRange.apply(this,args);setTimeout(()=>{bindContent();decorate();},0);return out;};
+    const originalNew=g.openQuranTextModal;if(typeof originalNew==='function')g.openQuranTextModal=async function(...args){updateContextForOpen('new');const out=await originalNew.apply(this,args);setTimeout(decorate,0);return out;};
+    const originalPrev=g.openPrevQuranText;if(typeof originalPrev==='function')g.openPrevQuranText=function(key,...args){updateContextForOpen(key==='new'?'recitation':'review');const out=originalPrev.call(this,key,...args);setTimeout(decorate,0);return out;};
+    const originalRange=g.openQuranRangeText;if(typeof originalRange==='function')g.openQuranRangeText=function(...args){const out=originalRange.apply(this,args);setTimeout(decorate,0);return out;};
   }
   function installPersistenceBridges(){
     const legacy=g.ImamApp?.Legacy;if(!legacy)return;
@@ -278,7 +210,7 @@
     const legend=[['#DB6A4A','نطق/حروف'],['#C69B35','حفظ/تردد'],['#5D83C4','تجويد'],['#8A64BF','مخصص'],['#4D9B62','تم التصحيح']];let lx=W-52;c.font='16px Arial';for(const [col,label] of legend){const tw=c.measureText(label).width;c.fillStyle=col;c.fillRect(lx-14,y,10,10);c.fillStyle='#5D6962';c.fillText(label,lx-20,y+10);lx-=tw+62;}y+=52;
     for(const grp of groups.slice(0,maxGroups)){
       rounded(c,38,y-24,W-76,62,15,'#E5EFE8');c.fillStyle='#174F36';c.font='700 23px Arial';c.fillText(`سورة ${grp.surah} — الآية ${grp.ayah}`,W-58,y+14);y+=78;
-      const text=grp.text||grp.errors.filter(e=>e.targetLevel!=='ayah').sort((a,b)=>a.wordIndex-b.wordIndex).map(e=>e.word).join(' '),words=String(text).split(/\s+/).filter(Boolean),byIndex=new Map(),ayahErrors=grp.errors.filter(e=>e.targetLevel==='ayah');for(const e of grp.errors){if(e.targetLevel==='ayah')continue;if(!byIndex.has(Number(e.wordIndex)))byIndex.set(Number(e.wordIndex),[]);byIndex.get(Number(e.wordIndex)).push(e);}
+      const text=grp.text||grp.errors.sort((a,b)=>a.wordIndex-b.wordIndex).map(e=>e.word).join(' '),words=String(text).split(/\s+/).filter(Boolean),byIndex=new Map();for(const e of grp.errors){if(!byIndex.has(Number(e.wordIndex)))byIndex.set(Number(e.wordIndex),[]);byIndex.get(Number(e.wordIndex)).push(e);}
       c.font='40px "Traditional Arabic","Amiri",serif';c.textAlign='right';c.direction='rtl';let x=W-58;const left=58,gap=16,lineH=76;
       for(let i=0;i<words.length;i++){
         const word=words[i],mw=c.measureText(word).width;if(x-mw<left){x=W-58;y+=lineH;}
@@ -289,7 +221,6 @@
         x-=mw+gap;
       }
       y+=55;c.font='700 18px Arial';
-      if(ayahErrors.length){const primary=ayahErrors.find(e=>!e.resolved)||ayahErrors[0],types=[...new Set(ayahErrors.map(e=>`${e.type}${e.resolved?' ✓':''}`))].join('، ');rounded(c,58,y-18,W-116,43,10,snapshotColor(primary));c.fillStyle=ayahErrors.some(e=>!e.resolved)?'#70472F':'#3A7149';c.fillText(`الآية كاملة: ${types}`,W-74,y+10);y+=50;}
       for(const [idx,errs] of [...byIndex.entries()].sort((a,b)=>a[0]-b[0])){
         const word=words[idx]||errs[0]?.word||'الموضع',types=[...new Set(errs.map(e=>`${rowIsChar(e)?`الحرف «${e.charText||''}» — `:''}${e.type}${e.resolved?' ✓':''}`))].join('، ');c.fillStyle=errs.some(e=>!e.resolved)?'#70472F':'#3A7149';c.fillText(`• ${word}: ${types}`,W-62,y);y+=31;
       }
@@ -431,7 +362,7 @@
       }finally{endSendLater(success);}
     },'v11.2.0-error1.3');
   }
-  function init(){if(state.installed)return;state.installed=true;readPrefs();installPersistenceBridges();installPanel();ensureSheet();observe();bindContent();hookOpeners();installReportBridge();installWhatsAppBridge();refreshPanel();document.addEventListener('visibilitychange',()=>{if(document.hidden){savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}}});g.addEventListener?.('pagehide',()=>{savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}},{capture:true});}
+  function init(){if(state.installed)return;state.installed=true;readPrefs();installPersistenceBridges();installPanel();ensureSheet();observe();hookOpeners();installReportBridge();installWhatsAppBridge();refreshPanel();document.addEventListener('visibilitychange',()=>{if(document.hidden){savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}}});g.addEventListener?.('pagehide',()=>{savePrefs();if(currentErrors().length)try{saveDraftNow();}catch(_){}},{capture:true});}
   g.ImamTeacherErrorMarking={init,toggle,setContext,decorate,paintAllWords,closeSheet,shareErrorSnapshot,shareCurrentDraftImage,previewCurrentDraftImage,graphemes,snapshotPages,phaseStats};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(globalThis);

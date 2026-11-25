@@ -28,10 +28,6 @@
 .role-hero-next:hover{background:#ffe4ab;transform:translateY(-1px)}
 .role-hero-board{color:#fff;border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.12);box-shadow:none}
 .role-hero-board:hover{background:rgba(255,255,255,.24)}
-.role-hero-maqraa{min-height:47px;padding:10px 16px;border-radius:12px;font-size:14px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;color:#fff;border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.08);text-decoration:none}
-.role-hero-maqraa:hover{background:rgba(255,255,255,.2)}
-.role-hero-recitation{min-height:47px;padding:10px 16px;border-radius:12px;font-size:14px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;color:#e9fff4;border:1px solid rgba(143,218,180,.55);background:rgba(25,106,68,.32);cursor:pointer}
-.role-hero-recitation:hover{background:rgba(25,106,68,.48)}
 .role-hero-caption{color:#d5e5de;font-size:12px}
 .role-actions-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 22px 12px}
 .role-actions-heading h3{font-size:17px;line-height:1.4;margin:0;color:var(--ui-ink)}
@@ -60,8 +56,7 @@
 @media(max-width:480px){
  .role-home-hub{border-radius:18px}.role-home-head{align-items:flex-start;flex-direction:column;gap:8px}.role-home-head h2{font-size:23px}.role-home-head small{font-size:12px}
  .role-home-tools{justify-content:flex-start}.role-hero-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- .role-hero-next,.role-hero-board,.role-hero-maqraa,.role-hero-recitation{width:100%;min-height:47px;font-size:13px;padding:8px}
- .role-hero-maqraa{grid-column:1/-1}
+ .role-hero-next,.role-hero-board{width:100%;min-height:47px;font-size:13px;padding:8px}
  .role-hero-caption{grid-column:1/-1;text-align:center}.role-home-action{flex-direction:row;align-items:center;min-height:74px;padding:10px;gap:7px}
  .role-home-action .role-icon{width:35px;height:35px;font-size:18px}.role-home-action b{font-size:12px}.role-home-action small{font-size:12px;line-height:1.4}
  .role-home-action.role-action-featured{grid-column:1/-1}.role-actions-heading{align-items:baseline;flex-wrap:wrap}
@@ -69,15 +64,8 @@
 @media(max-width:325px){.role-home-actions{grid-template-columns:1fr}.role-home-action.role-action-featured{grid-column:1}}
 :root[data-theme="dark"] .role-home-action.role-action-featured{background:var(--ui-soft)}
 :root[data-theme="dark"] .role-home-action.role-action-featured b{color:var(--ui-ink)}
-@media(prefers-reduced-motion:reduce){.role-home-action,.role-hero-next,.role-hero-board,.role-hero-maqraa,.role-hero-recitation{transition:none;transform:none}}
+@media(prefers-reduced-motion:reduce){.role-home-action,.role-hero-next,.role-hero-board{transition:none;transform:none}}
 
 /* beta15 review — admin shortcut is strictly singular even if legacy stylesheet loads later. */
 #pg-home[data-workspace-role].v9-home-ready > #supervisorShortcut.supervision-home-entry,
 #pg-home[data-workspace-role] > #supervisorShortcut[hidden].supervision-home-entry{display:none!important}
-
-/* RC17: the lesson start action is the first, full-width control on the home screen. */
-.role-hero-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(190px,.6fr);align-items:stretch}
-.role-hero-next{grid-column:1/-1;width:100%;min-height:64px;font-size:18px;letter-spacing:.01em}
-.role-hero-board{min-height:48px}
-.role-home-action[data-destination="home-recitation"]{border-color:color-mix(in srgb,var(--ui-primary) 38%,var(--ui-line));background:var(--ui-soft)}
-@media(max-width:480px){.role-hero-actions{grid-template-columns:1fr}.role-hero-next{min-height:62px;font-size:17px}.role-hero-board{width:100%;min-height:46px}}

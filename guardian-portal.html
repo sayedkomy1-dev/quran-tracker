@@ -12,7 +12,7 @@
 <meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="referrer" content="no-referrer">
 <title>بوابة ولي الأمر — أكاديمية الإمام</title>
-<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.29"></script>
+<script src="js/core/offline-bootstrap.js?v=11.0.0"></script>
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="manifest" href="guardian-manifest.json?v=11.2.0-s4.1">
 <link rel="stylesheet" href="guardian-portal.css?v=11.2.0-s4.1">
@@ -29,10 +29,10 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 
 <link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-rc13">
 <link rel="stylesheet" href="css/platform/reference-palette.css?v=beta28-candidate2">
-<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta29-rc17">
+<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc13">
 <link rel="stylesheet" href="css/platform/rc13-portal-learning.css?v=beta28-rc13">
-<link rel="stylesheet" href="css/platform/rc14-tahfeez-flow.css?v=beta29-rc17">
-<link rel="stylesheet" href="guardian-home-recitation-rc16.css?v=rc17">
+<link rel="stylesheet" href="css/platform/rc14-tahfeez-flow.css?v=beta28-rc14">
+<link rel="stylesheet" href="guardian-home-recitation-rc16.css?v=rc16">
 </head>
 <body class="imam-portal-refresh">
 <main class="portal-shell">
@@ -66,7 +66,6 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
     <p class="rc3-portal-empty" role="status" hidden>لا توجد بيانات متاحة في هذا القسم حاليًا لحسابك.</p>
     <nav class="portal-quick-nav" aria-label="اختصارات البوابة">
       <button type="button" onclick="openGuardianTahfeez()"><span>▶</span><b>ابدأ التحفيظ</b></button>
-      <button type="button" id="portalRecitationNav" onclick="guardianGoTo('portalHomeRecitationCard')" hidden><span>🎙️</span><b>أرسل التسميع</b></button>
       <button type="button" onclick="guardianGoTo('portalAssignmentCard')"><span>📝</span><b>التكليف</b></button>
       <button type="button" onclick="guardianGoTo('portalCorrectionFocus')"><span>✦</span><b>التصحيح</b></button>
       <button type="button" onclick="guardianGoTo('portalQuranCard')"><span>📈</span><b>التقدم</b></button>
@@ -135,22 +134,6 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       <div id="portalPublicSkillsList"></div>
     </section>
 
-    <section class="portal-card hrr-card" id="portalHomeRecitationCard" hidden data-rc3-section="learning">
-      <div class="portal-card-head"><div><b>🎙️ أرسل تسميعك للمحفظ</b><small>يمكن للطالب أو ولي الأمر تسجيل قراءة التكليف وإرسالها للمحفظ للمراجعة</small></div><span class="hrr-private-tag">خاص</span></div>
-      <p id="portalHomeRecitationAssignment" class="hrr-assignment">لا يوجد تكليف حفظ جديد منشور حاليًا.</p>
-      <p id="portalHomeRecitationPrivacy" class="hrr-privacy">التسجيل خاص بالطالب وولي الأمر والمحفظ المرتبط به. يعمل التسجيل دون إنترنت، ويُحفظ محليًا ثم يُرفع تلقائيًا إلى سجل المحفظ عند عودة الاتصال.</p>
-      <div class="hrr-recorder-controls">
-        <button type="button" id="portalHomeRecitationStart">🎙️ بدء التسجيل</button>
-        <button type="button" id="portalHomeRecitationStop" disabled>إيقاف التسجيل</button>
-        <strong id="portalHomeRecitationClock">00:00</strong>
-      </div>
-      <audio id="portalHomeRecitationPreview" controls preload="none" hidden></audio>
-      <div class="hrr-send-row"><button type="button" id="portalHomeRecitationSend" disabled>إرسال للمحفظ</button><button type="button" id="portalHomeRecitationRefresh">↻ تحديث السجل</button></div>
-      <p id="portalHomeRecitationStatus" class="hrr-status" role="status" aria-live="polite">يمكنك التسجيل دون إنترنت ثم حفظه في قائمة الإرسال.</p>
-      <div id="portalHomeRecitationOutbox" class="hrr-outbox" hidden></div>
-      <div id="portalHomeRecitationList" class="hrr-list"></div>
-    </section>
-
     <section class="portal-card" id="portalAssignmentCard" data-rc3-section="learning">
       <div class="portal-card-head"><div><b>📝 التكليف الحالي</b><small id="portalAssignmentDate">آخر حصة حضور</small></div></div>
       <div id="portalAssignment" class="portal-assignment"></div><button type="button" class="ia28-practice-assignment" onclick="openGuardianAssignmentPractice()">🎧 التدرب على تكليف الحفظ الجديد</button>
@@ -161,7 +144,20 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
       </div>
     </section>
 
-
+    <section class="portal-card hrr-card" id="portalHomeRecitationCard" hidden data-rc3-section="learning">
+      <div class="portal-card-head"><div><b>🎙️ التسميع المنزلي</b><small>سجّل قراءة التكليف وأرسلها للمحفظ للمراجعة</small></div><span class="hrr-private-tag">خاص</span></div>
+      <p id="portalHomeRecitationAssignment" class="hrr-assignment">لا يوجد تكليف حفظ جديد منشور حاليًا.</p>
+      <p id="portalHomeRecitationPrivacy" class="hrr-privacy">التسجيل خاص بولي الأمر والمحفظ المرتبط بالطالب.</p>
+      <div class="hrr-recorder-controls">
+        <button type="button" id="portalHomeRecitationStart">🎙️ بدء التسجيل</button>
+        <button type="button" id="portalHomeRecitationStop" disabled>إيقاف التسجيل</button>
+        <strong id="portalHomeRecitationClock">00:00</strong>
+      </div>
+      <audio id="portalHomeRecitationPreview" controls preload="none" hidden></audio>
+      <div class="hrr-send-row"><button type="button" id="portalHomeRecitationSend" disabled>إرسال للمحفظ</button><button type="button" id="portalHomeRecitationRefresh">↻ تحديث السجل</button></div>
+      <p id="portalHomeRecitationStatus" class="hrr-status" role="status" aria-live="polite">التسجيل متاح بعد الدخول برقم الهاتف ورمز PIN.</p>
+      <div id="portalHomeRecitationList" class="hrr-list"></div>
+    </section>
 
     <section class="portal-card portal-revision-card" id="portalSmartRevision" hidden data-rc3-section="learning">
       <div class="portal-card-head"><div><b>🧠 مراجعة اليوم</b><small>مقترحات ذكية مبنية على أخطاء التسميع السابقة</small></div><strong id="portalSmartRevisionCount">0</strong></div>
@@ -243,7 +239,6 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
           <summary><span><b>الاستماع دون إنترنت</b><small id="tahfeezOfflineStatus">يمكن تنزيل التكليف على هذا الجهاز</small></span><span>⌄</span></summary>
           <div class="tahfeez-offline-actions"><button type="button" onclick="tahfeezDownloadRange()">↓ تنزيل النطاق</button><button type="button" onclick="tahfeezDownloadSurah()">↓ تنزيل السورة</button><button type="button" class="danger" onclick="tahfeezClearDownloads()">حذف صوت السورة</button><button type="button" onclick="tahfeezCancelDownload()">إيقاف التنزيل</button></div>
           <div class="tahfeez-download-progress"><i id="tahfeezDownloadBar"></i></div>
-          <div class="tahfeez-text-pack"><button type="button" id="tahfeezDownloadTextPack" onclick="tahfeezDownloadAllText()">↓ تنزيل نص المصحف كاملًا</button><small id="tahfeezTextPackStatus">يُحفظ نص المصحف على هذا الجهاز للعمل دون إنترنت.</small></div>
         </details>
       </aside>
 
@@ -256,7 +251,7 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
           <div class="tahfeez-focus-foot"><span id="tahfeezRepeatBadge">جاهز</span><strong id="tahfeezCountdown" hidden></strong></div>
         </section>
         <div class="tahfeez-session-progress"><div><span id="tahfeezProgressText">جاهز لبدء الجلسة</span><span id="tahfeezProgressPct">0%</span></div><div class="tahfeez-progress-track"><i id="tahfeezProgressBar"></i></div></div>
-        <div id="tahfeezIstiadhah" class="tahfeez-opening tahfeez-istiadhah" hidden>أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</div><div id="tahfeezBasmala" class="tahfeez-opening tahfeez-basmala" hidden>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+        <div id="tahfeezBasmala" class="tahfeez-basmala" hidden>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
         <p class="tahfeez-tap-hint">اضغط على أي آية داخل المقدار لتبدأ منها وتستمر التلاوة إلى آخر المقدار.</p>
         <div id="tahfeezText" class="tahfeez-text"><div class="tahfeez-empty">اختر السورة والنطاق لعرض النص.</div></div>
       </main>
@@ -285,18 +280,17 @@ html{font-family:Arial,Tahoma,sans-serif;direction:rtl;background:#f6f7f2;color:
 
 <script src="js/features/guardian-engagement.js?v=11.2.0-s4.1"></script>
 <script src="js/features/guardian-portal-experience.js?v=11.2.0-s4.1"></script>
-<script src="js/features/quran-reciter-registry.js?v=beta29-rc17"></script>
-<script src="js/features/offline-audio-library.js?v=beta29-rc17"></script>
-<script src="js/features/quran-audio-export.js?v=beta29-rc17"></script>
-<script src="js/features/guardian-audio-assist.js?v=beta29-rc17"></script>
+<script src="js/features/quran-audio-export.js?v=beta28-rc13"></script>
+<script src="js/features/guardian-audio-assist.js?v=beta28-rc13"></script>
 
 <script src="js/features/storage-governor.js?v=beta28-rc13"></script>
+<script src="js/features/offline-audio-library.js?v=beta28-rc13"></script>
 <script src="js/features/temporary-media-share.js?v=beta28-rc13"></script>
-<script src="js/features/tahfeez-flow-rc14.js?v=beta29-rc17"></script>
-<script src="js/features/guardian-tahfeez.js?v=beta29-rc17"></script>
+<script src="js/features/tahfeez-flow-rc14.js?v=beta28-rc14"></script>
+<script src="js/features/guardian-tahfeez.js?v=beta28-rc14"></script>
 <script src="js/features/guardian-messages.js?v=11.6.0-s1"></script>
-<script src="js/features/guardian-home-recitation-rc16.js?v=rc17"></script>
-<script src="js/features/guardian-portal-view.js?v=rc17"></script>
+<script src="js/features/guardian-home-recitation-rc16.js?v=rc16"></script>
+<script src="js/features/guardian-portal-view.js?v=rc16"></script>
 <script src="js/features/beta28-portal-ux.js?v=beta28-rc13" defer></script>
 <script src="js/features/rc3-experience.js?v=beta28-rc13" defer></script>
 </body>

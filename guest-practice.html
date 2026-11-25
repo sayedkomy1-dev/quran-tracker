@@ -4,19 +4,19 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#202329"><meta name="description" content="تحفيظ القرآن الكريم للضيف دون حساب، مع الاستماع والتكرار والتلقين وحفظ موضع التوقف والعلامات">
 <title>مقرأة الإمام — أكاديمية الإمام</title>
-<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.29"></script>
+<script src="js/core/offline-bootstrap.js?v=11.0.0"></script>
 <link rel="canonical" href="maqraa.html"><link rel="icon" href="favicon.png"><link rel="stylesheet" href="guardian-tahfeez.css?v=11.2.0-s4.1">
-<link rel="stylesheet" href="guest-practice.css?v=beta29-rc17">
+<link rel="stylesheet" href="guest-practice.css?v=11.7.4.1">
 <link rel="stylesheet" href="css/platform/public-experience.css?v=11.12.1-beta.27">
 <link rel="stylesheet" href="css/platform/portal-design-bridge.css?v=11.12.1-beta.27-design-bridge1">
 
 <link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-rc13">
 <link rel="stylesheet" href="css/platform/reference-palette.css?v=beta28-candidate2">
 <script src="js/features/guest-palette.js?v=beta28-candidate2" defer></script>
-<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta29-rc17">
-<link rel="stylesheet" href="css/platform/rc14-tahfeez-flow.css?v=beta29-rc17">
+<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc13">
+<link rel="stylesheet" href="css/platform/rc14-tahfeez-flow.css?v=beta28-rc14">
 </head><body class="imam-portal-refresh">
-<main class="guest-shell"><p class="guest-maqraa-link"><a href="maqraa.html">افتح المقرأة الحرة الجديدة — تنزيل القرآن واختيار القراء وتثبيتها كتطبيق مستقل</a></p>
+<main class="guest-shell">
 <header class="guest-top"><a href="guardian-login.html" aria-label="العودة">→ رجوع</a><span>أكاديمية الإمام — مقرأة الإمام</span><img src="icon-96.png" alt="شعار الأكاديمية"><button type="button" id="guestThemeToggle" class="guest-theme-toggle" aria-label="تبديل الوضع الليلي والنهاري" aria-pressed="true">☀ نهاري</button></header>
 <section class="guest-hero"><span class="guest-mark">📿</span><div><small>مساحة تعلّم مفتوحة للجميع</small><h1>مقرأة الإمام</h1><p>مساحتك المستقلة للتلاوة والحفظ والمراجعة. اختر القارئ والسورة والآيات، واستمع وكرّر وتدرّب بالتلقين دون الحاجة إلى حساب.</p></div></section>
 <section class="guest-card"><div class="guest-head"><h2>مساحتي الخاصة</h2><span class="guest-local" id="guestSaveMode">محفوظ على هذا الجهاز</span></div>
@@ -87,7 +87,6 @@
           <summary><span><b>الاستماع دون إنترنت</b><small id="tahfeezOfflineStatus">يمكن تنزيل التكليف على هذا الجهاز</small></span><span>⌄</span></summary>
           <div class="tahfeez-offline-actions"><button type="button" onclick="tahfeezDownloadRange()">↓ تنزيل النطاق</button><button type="button" onclick="tahfeezDownloadSurah()">↓ تنزيل السورة</button><button type="button" class="danger" onclick="tahfeezClearDownloads()">حذف صوت السورة</button><button type="button" onclick="tahfeezCancelDownload()">إيقاف التنزيل</button></div>
           <div class="tahfeez-download-progress"><i id="tahfeezDownloadBar"></i></div>
-          <div class="tahfeez-text-pack"><button type="button" id="tahfeezDownloadTextPack" onclick="tahfeezDownloadAllText()">↓ تنزيل نص المصحف كاملًا</button><small id="tahfeezTextPackStatus">يُحفظ نص المصحف على هذا الجهاز للعمل دون إنترنت.</small></div>
         </details>
       </aside>
 
@@ -100,7 +99,7 @@
           <div class="tahfeez-focus-foot"><span id="tahfeezRepeatBadge">جاهز</span><strong id="tahfeezCountdown" hidden></strong></div>
         </section>
         <div class="tahfeez-session-progress"><div><span id="tahfeezProgressText">جاهز لبدء الجلسة</span><span id="tahfeezProgressPct">0%</span></div><div class="tahfeez-progress-track"><i id="tahfeezProgressBar"></i></div></div>
-        <div id="tahfeezIstiadhah" class="tahfeez-opening tahfeez-istiadhah" hidden>أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ</div><div id="tahfeezBasmala" class="tahfeez-opening tahfeez-basmala" hidden>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+        <div id="tahfeezBasmala" class="tahfeez-basmala" hidden>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
         <p class="tahfeez-tap-hint">اضغط على أي آية داخل المقدار لتبدأ منها وتستمر التلاوة إلى آخر المقدار.</p>
         <div id="tahfeezText" class="tahfeez-text"><div class="tahfeez-empty">اختر السورة والنطاق لعرض النص.</div></div>
       </main>
@@ -128,11 +127,10 @@
 </section>
 
 <script src="js/features/storage-governor.js?v=beta28-rc13"></script>
-<script src="js/features/quran-reciter-registry.js?v=beta29-rc17"></script>
-<script src="js/features/offline-audio-library.js?v=beta29-rc17"></script>
+<script src="js/features/offline-audio-library.js?v=beta28-rc13"></script>
 <script src="js/features/temporary-media-share.js?v=beta28-rc13"></script>
-<script src="js/features/tahfeez-flow-rc14.js?v=beta29-rc17"></script>
-<script src="js/features/guardian-tahfeez.js?v=beta29-rc17"></script>
+<script src="js/features/tahfeez-flow-rc14.js?v=beta28-rc14"></script>
+<script src="js/features/guardian-tahfeez.js?v=beta28-rc14"></script>
 <script src="js/features/guest-practice.js?v=beta28-rc13"></script>
 <script src="js/features/beta28-portal-ux.js?v=beta28-rc13" defer></script>
 <script src="js/features/rc3-experience.js?v=beta28-rc13" defer></script>

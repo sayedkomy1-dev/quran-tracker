@@ -4,7 +4,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('nod
 const read=x=>fs.readFileSync(x,'utf8');
 const v9=read('v9.js'),workflow=read('js/features/platform-workflow.js'),board=read('js/features/imam-smart-board.js'),session=read('js/features/session-intelligence-119.js'),html=read('index.html'),css=read('css/platform/responsive.css'),boardCss=read('imam-smart-board.css'),sound=read('js/features/beta19-experience.js'),sw=read('sw.js');
 for(const rel of ['v9.js','js/features/platform-workflow.js','js/features/imam-smart-board.js','js/features/session-intelligence-119.js','js/features/beta19-experience.js'])new vm.Script(read(rel),{filename:rel});
-assert.equal(read('VERSION').trim(),'11.12.1-beta.29');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.28');
 assert.equal((html.match(/id="saveSessionBtn"/g)||[]).length,1);
 assert.equal((html.match(/id="saveSendSessionBtn"/g)||[]).length,1);
 assert.equal((html.match(/id="teacherAssignmentAudioBtn"/g)||[]).length,1);

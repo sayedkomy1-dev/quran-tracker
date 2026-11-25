@@ -21,12 +21,7 @@
     return {sequence,index:index>=0?index:0,start:index>=0?preferred:lo,from:lo,to:hi};
   }
   function showOpeningBasmala(chapter,from) {
-    const ch=whole(chapter,0),f=whole(from,0);
-    // Add the Basmala before every selected passage except At-Tawbah.
-    // Al-Fatihah 1:1 already is the Basmala, so do not duplicate it.
-    return ch>=1&&ch<=114&&ch!==9&&!(ch===1&&f===1);
+    const ch=whole(chapter,0); return ch>=2&&ch<=114&&ch!==9&&whole(from,0)===1;
   }
-  function showOpeningIstiadhah(chapter,from){const ch=whole(chapter,0),f=whole(from,0);return ch>=1&&ch<=114&&f>=1;}
-  function openingGuide(chapter,from){return{istiadhah:showOpeningIstiadhah(chapter,from),basmala:showOpeningBasmala(chapter,from)};}
-  g.ImamTahfeezFlow=Object.freeze({plan,showOpeningBasmala,showOpeningIstiadhah,openingGuide});
+  g.ImamTahfeezFlow=Object.freeze({plan,showOpeningBasmala});
 })(globalThis);

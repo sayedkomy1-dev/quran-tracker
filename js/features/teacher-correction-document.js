@@ -9,7 +9,7 @@
   const labels={new:'الحفظ الجديد',rec:'المراجعة القريبة',far:'المراجعة البعيدة',juz:'مراجعة الأجزاء',surahReview:'مراجعة السور والأرباع'};
   const errorFields=entry=>({
     phase:phase(entry?.mode),surah:text(entry?.surah)||'—',surahId:Number(entry?.surahId)||0,
-    ayah:Number(entry?.ayah)||0,word:text(entry?.targetLevel==='ayah'?'الآية كاملة':entry?.word)||'—',targetLevel:text(entry?.targetLevel)||'word',char:entry?.targetLevel==='char'?text(entry?.charText):'',
+    ayah:Number(entry?.ayah)||0,word:text(entry?.word)||'—',char:entry?.targetLevel==='char'?text(entry?.charText):'',
     kind:text(entry?.type)||'خطأ غير مصنف',resolved:entry?.resolved===true,mode:entry?.mode||'',
     note:text(entry?.customText||entry?.note||'')
   });
@@ -124,7 +124,7 @@
   // Unified export: includes manual recitation chips plus every Quran word/character mark.
   // Media must be shared by an explicit native user gesture, never silently attached to a wa.me message.
   function rowsForPng(ses){return (Array.isArray(ses?.recitationErrors)?ses.recitationErrors:[]).filter(Boolean).map((e,i)=>{
-    const position=e.source==='quran-word'?[e.surah&&`سورة ${e.surah}`,e.ayah&&`آية ${e.ayah}`,e.targetLevel==='ayah'?'الآية كاملة':e.word&&`«${e.word}»`,e.targetLevel==='char'&&e.charText&&`حرف «${e.charText}»`].filter(Boolean).join(' · '):'';
+    const position=e.source==='quran-word'?[e.surah&&`سورة ${e.surah}`,e.ayah&&`آية ${e.ayah}`,e.word&&`«${e.word}»`,e.targetLevel==='char'&&e.charText&&`حرف «${e.charText}»`].filter(Boolean).join(' · '):'';
     const phaseLabel=e.mode==='new_read'?'قراءة الحفظ الجديد':e.mode==='talaqqin'?'التلقين':e.mode==='review'?'المراجعة':e.mode==='recitation'?'التسميع':String(e.section||e.context||'');
     return `${i+1}. ${phaseLabel?phaseLabel+' — ':''}${e.type||'خطأ'}${position?' — '+position:''}${e.resolved?' — تم التصحيح':''}${e.note?' — '+e.note:''}`;
   });}

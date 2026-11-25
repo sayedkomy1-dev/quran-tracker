@@ -69,11 +69,11 @@ const version = read('VERSION').toString('utf8').trim();
 const pkg = JSON.parse(read('package.json').toString('utf8'));
 const html = read('index.html').toString('utf8');
 const sw = read('sw.js').toString('utf8');
-assert.equal(version, '11.12.1-beta.29', 'combined RC29 release version must be consistent');
+assert.equal(version, '11.12.1-beta.28', 'combined RC16 release version must be consistent');
 assert.equal(pkg.version, version);
 assert(html.includes(`application-version" content="${version}"`));
 assert(sw.includes(`const APP_VERSION = '${version}'`));
-assert.equal(pkg.version, '11.12.1-beta.29');
+assert.equal(pkg.version, '11.12.1-beta.28');
 assert.equal(JSON.parse(read('review/STAGE1-TEST-REPORT.json').toString('utf8')).local_schema, 12);
 
 console.log('repository-cleanup-stage1-check: PASS — archive, SHA-guarded cleanup, CSS snapshots, 20 reference images, runtime version and Schema 12');

@@ -3,8 +3,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const read=f=>fs.readFileSync(f,'utf8');
 const player=read('js/features/guardian-tahfeez.js'),library=read('js/features/offline-audio-library.js'),guest=read('js/features/guest-practice.js'),sw=read('sw.js'),teacher=read('js/features/role-home.js');
 for(const source of [player,library,guest,teacher,read('js/features/rc3-experience.js'),sw])new vm.Script(source);
-for(const page of ['index.html','guest-practice.html','guardian-portal.html','guardian-login.html','academy-portals.html','academy-learning.html','academy-mushaf.html'])assert(read(page).includes('css/platform/rc3-experience.css?v=beta29-rc17'),page+' missing RC3 CSS');
-assert(sw.includes(`'./css/platform/rc3-experience.css?v=beta29-rc17'`));assert(sw.includes(`'./js/features/rc3-experience.js?v=beta28-rc13'`));
+for(const page of ['index.html','guest-practice.html','guardian-portal.html','guardian-login.html','academy-portals.html','academy-learning.html','academy-mushaf.html'])assert(read(page).includes('css/platform/rc3-experience.css?v=beta28-rc13'),page+' missing RC3 CSS');
+for(const asset of ['css/platform/rc3-experience.css','js/features/rc3-experience.js'])assert(sw.includes(`'./${asset}?v=beta28-rc13'`));
 assert(sw.includes('RC3 HTML is not available'));
 assert(read('index.html').includes('id="rc3HomeIntro"'));
 assert(read('guardian-portal.html').includes('data-rc3-tab="family"'));

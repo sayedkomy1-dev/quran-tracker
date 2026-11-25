@@ -1,22 +1,3 @@
-# We Live Quran — Quran Academy PWA
-
-## الإصدار الحالي: 11.12.1-beta.29 — RC29 Integrated Offline Recitation & Correction
-
-- إصلاح التصحيح التفاعلي بالضغط على الكلمة/الحرف ورقم الآية، مع تفسير الآية ومعنى الكلمة.
-- إضافة الاستعاذة والبسملة إلى دليل افتتاح المقدار، وإدراج البسملة في ملف صوت التكليف عند الحاجة.
-- تسجيل التسميع المنزلي للطالب/ولي الأمر مع طابور IndexedDB يرفع التسجيلات عند عودة الاتصال.
-- مشاركة صوت التكليف عبر رابط خاص يفتح محادثة واتساب لرقم ولي الأمر، مع بقاء الإرسال النهائي بيد المحفظ.
-- بوابة المقرأة الحرة العامة المستقلة والقابلة للتثبيت: https://welivequran.online/maqraa.html
-- فهرس مشترك يضم 46 قارئًا/مجموعة صوتية متاحة في EveryAyah، مع تنزيل النص والصوت للعمل دون اتصال.
-- زر سريع في الشاشة الأولى لمراجعة التسميعات المنزلية، وزر مباشر للسبورة والمقرأة الحرة.
-- قاعدة البيانات تبقى Schema 12. شغّل ملف SQL الموحد `sql/RC29_Complete_Offline_Recitation_And_Assignment_Audio.sql` مرة واحدة فقط.
-
-**التركيب:** راجع `RC29_INSTALL_AR.txt` و`RC29_RELEASE_NOTES_AR.md`. لا تشغّل ملفات RC16/RC17 القديمة بشكل منفصل بعد ملف SQL الموحد.
-
-**Commit:** `feat: ship Quran Academy RC29 integrated offline recitation and correction`
-
----
-
 ## Beta28 RC13 candidate
 
 - Public independent practice portal: `maqraa.html` — «مقرأة الإمام» (the previous `guest-practice.html` route remains for compatibility).

@@ -8,15 +8,15 @@ const critical=sw.split('const CRITICAL_FRESH_SHELL = [')[1]?.split('];')[0]||''
 const guardian=read('js/features/guardian-home-recitation-rc16.js'),teacher=read('js/features/teacher-home-recitation-rc16.js');
 const growth=read('js/features/learning-growth-rc16.js'),academy=read('js/features/academy-learning.js'),academyHtml=read('academy-learning.html'),academySuite=read('js/features/academy-suite.js'),academyPortalSuite=read('js/features/academy-portal-suite.js'),academyLife=read('js/features/academy-life.js'),roleHome=read('js/features/role-home.js'),smartBoard=read('js/features/imam-smart-board.js');
 const sql=read('sql/guardian-home-recitation-rc16.sql'),css=read('learning-growth-rc16.css')+read('teacher-home-recitation-rc16.css')+read('guardian-home-recitation-rc16.css');
-assert.equal(pkg.version,'11.12.1-beta.29');assert.equal(read('VERSION').trim(),'11.12.1-beta.29');assert.equal(manifest.version,'11.12.1-beta.29');
-assert(index.includes('content="11.12.1-beta.29"')&&runtime.includes("version:'11.12.1-beta.29'"));
-assert(app.includes('WLQ_RELEASE_11.12.1-beta.29')&&boot.includes('WLQ_RELEASE_11.12.1-beta.29'));
-assert(sw.includes("const APP_VERSION = '11.12.1-beta.29'"));
-assert(sw.includes("'-rc17-integrated-offline-teaching-audio'"));
+assert.equal(pkg.version,'11.12.1-beta.28');assert.equal(read('VERSION').trim(),'11.12.1-beta.28');assert.equal(manifest.version,'11.12.1-beta.28');
+assert(index.includes('content="11.12.1-beta.28"')&&runtime.includes("version:'11.12.1-beta.28'"));
+assert(app.includes('WLQ_RELEASE_11.12.1-beta.28')&&boot.includes('WLQ_RELEASE_11.12.1-beta.28'));
+assert(sw.includes("const APP_VERSION = '11.12.1-beta.28'"));
+assert(sw.includes("'-rc16-combined-learning-home-recitation'"));
 for(const ref of ['learning-growth-rc16.js?v=rc16','teacher-home-recitation-rc16.js?v=rc16']){
  assert(index.includes(ref),`index missing ${ref}`);assert(critical.includes(`'./js/features/${ref}'`),`critical shell missing ${ref}`);assert(core.includes(`'./js/features/${ref}'`),`core shell missing ${ref}`);
 }
-for(const ref of ['guardian-home-recitation-rc16.js?v=rc17','guardian-home-recitation-rc16.css?v=rc17']){assert(portal.includes(ref),`guardian portal missing ${ref}`);const path=`'./${ref.startsWith('guardian-home-recitation-rc16.css')?'':'js/features/'}${ref}'`;assert(critical.includes(path)&&core.includes(path),`worker shell missing ${ref}`);}
+for(const ref of ['guardian-home-recitation-rc16.js?v=rc16','guardian-home-recitation-rc16.css?v=rc16']){assert(portal.includes(ref),`guardian portal missing ${ref}`);const path=`'./${ref.startsWith('guardian-home-recitation-rc16.css')?'':'js/features/'}${ref}'`;assert(critical.includes(path)&&core.includes(path),`worker shell missing ${ref}`);}
 assert(index.includes('learning-growth-rc16.css?v=rc16')&&index.includes('teacher-home-recitation-rc16.css?v=rc16'));assert(critical.includes('./learning-growth-rc16.css?v=rc16')&&core.includes('./learning-growth-rc16.css?v=rc16'));assert(appShell.includes('./css/platform/academy-learning.css?v=rc16')&&appShell.includes('./js/features/academy-learning.js?v=rc16'));
 assert(view.includes('sessionToken,studentRef')&&view.includes('ImamGuardianHomeRecitation?.setContext'));assert(view.includes('portalFamilyGuidance')&&view.includes('portalPublicSkills'));
 assert(share.includes('surahNumber:')&&share.includes('familyGuidance:')&&share.includes('publicSkills:'));

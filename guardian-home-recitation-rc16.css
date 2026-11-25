@@ -24,24 +24,3 @@
 @media(max-width:480px){.hrr-recorder-controls button,.hrr-send-row button{flex:1 1 100%}.hrr-recorder-controls strong{margin:0 auto}}
 .portal-family-guidance{border-inline-start:4px solid #b58a35;background:#fffdf6}.portal-family-guidance p{margin:8px 0;line-height:1.9;color:#405344;white-space:pre-wrap}
 .portal-public-skill{display:grid;grid-template-columns:1fr auto;gap:5px 9px;padding:9px 0;border-bottom:1px solid #edf0ec}.portal-public-skill span{font-size:11px;color:#23623b}.portal-public-skill p{grid-column:1/-1;margin:0;font-size:12px;line-height:1.7}.portal-public-skill small{grid-column:1/-1;color:#7a857d;font-size:10px}
-
-
-/* RC17 persistent offline outbox for student/guardian audio submissions. */
-.hrr-outbox{margin:12px 0;padding:12px;border:1px solid var(--ui-line,#d8e3da);border-radius:14px;background:var(--ui-soft,#f4f8f4)}
-.hrr-outbox[hidden]{display:none!important}
-.hrr-outbox-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
-.hrr-outbox-head b{font-size:13px;color:var(--ui-ink,#17392c)}
-.hrr-outbox-head span{display:grid;place-items:center;min-width:26px;height:26px;border-radius:20px;background:#d8eadf;color:#174a34;font-weight:900;font-size:12px}
-.hrr-outbox-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--ui-line,#d8e3da)}
-.hrr-outbox-item>div:first-child{min-width:0;display:grid;gap:4px}
-.hrr-outbox-item b{font-size:12px;color:var(--ui-ink,#17392c)}
-.hrr-outbox-item small{font-size:11px;line-height:1.5;color:var(--ui-muted,#65756a)}
-.hrr-outbox-item>div:last-child{display:flex;gap:6px;flex:none}
-.hrr-outbox-item button{min-height:34px;padding:6px 10px;border-radius:9px;border:1px solid var(--ui-line,#d8e3da);background:#1c6b49;color:white;font-weight:800;font-size:11px}
-.hrr-outbox-item button:disabled{opacity:.45;cursor:not-allowed}
-.hrr-outbox-item button.danger{background:transparent;color:#9b3d36;border-color:#d9b3af}
-@media(max-width:560px){.hrr-outbox-item{align-items:flex-start;flex-direction:column}.hrr-outbox-item>div:last-child{width:100%}.hrr-outbox-item button{flex:1}}
-
-/* RC17: make the student-to-teacher submission action visible from the portal overview tab. */
-#portalContent[data-rc3-tab="overview"]>#portalHomeRecitationCard:not([hidden]){display:block!important;grid-column:1/-1}
-#portalContent.ia28-student-view #portalHomeRecitationCard:not([hidden]){border-color:#d4b65e!important;background:color-mix(in srgb,var(--ui-soft,#f5f7f3) 82%,#f4d783 18%)!important}
