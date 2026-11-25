@@ -490,7 +490,7 @@ async function unlockWithBiometric(){if(!settings.security?.credentialId)return;
 function renderSecurityStatus(){const el=document.getElementById('securityStatus');if(!el)return;const s=settings.security||{};el.innerHTML=`<span class="security-chip ${s.lockEnabled?'':'off'}">${s.lockEnabled?'القفل مفعّل':'القفل غير مفعّل'}</span><span class="security-chip ${s.pinHash?'':'off'}">PIN ${s.pinHash?'مضبوط':'غير مضبوط'}</span><span class="security-chip ${s.credentialId?'':'off'}">جهاز ${s.credentialId?'مرتبط':'غير مرتبط'}</span>`;}
 
 // ──────────────────────────────────────
-// Automatic local backups (last 5) — account scoped
+// Automatic local backups (last 7 daily checkpoints) — account scoped
 // ──────────────────────────────────────
 function v8BackupPayload(){return{app:'imam-academy',version:APP_VERSION,schemaVersion:SCHEMA_VERSION,createdAt:v8Now(),accountUserId:storageScopeUserId||'',students:typeof structuredClone==='function'?structuredClone(students):JSON.parse(JSON.stringify(students)),sessions:typeof structuredClone==='function'?structuredClone(sessions):JSON.parse(JSON.stringify(sessions)),tasks:typeof structuredClone==='function'?structuredClone(tasks):JSON.parse(JSON.stringify(tasks)),settings:JSON.parse(JSON.stringify(settings))};}
 function autoBackupPrefix(){return `autobackup:${storageScopeUserId}:`;}
