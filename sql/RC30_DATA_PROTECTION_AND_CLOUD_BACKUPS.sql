@@ -35,6 +35,21 @@ create table if not exists public.account_sync_backups (
 );
 create index if not exists account_sync_backups_owner_date_idx
   on public.account_sync_backups(owner_user_id,created_at desc);
+-- Take an immediate pre-upgrade encrypted snapshot of every existing cloud account.
+-- This protects the current RC29 cloud state before any RC30 client can write.
+insert into public.account_sync_backups(owner_user_id,revision,payload,student_count,
+  session_count,task_count,source_device_id,created_at)
+select s.owner_user_id,s.revision,s.payload,s.student_count,s.session_count,s.task_count,null,now()
+from public.account_sync s
+where not exists (
+  select 1 from public.account_sync_backups b
+  where b.owner_user_id=s.owner_user_id and b.revision=s.revision
+);
+update public.account_sync s set last_backup_at=now()
+where s.last_backup_at is null
+  and exists(select 1 from public.account_sync_backups b
+             where b.owner_user_id=s.owner_user_id and b.revision=s.revision);
+
 alter table public.account_sync_backups enable row level security;
 revoke all on public.account_sync_backups from public,anon,authenticated;
 
