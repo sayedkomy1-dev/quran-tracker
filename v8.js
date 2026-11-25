@@ -102,10 +102,11 @@ function migrateV8Data(){
   settings.security={lockEnabled:false,pinHash:'',credentialId:'',...(settings.security||{})};
   const previousSync=settings.sync&&typeof settings.sync==='object'?settings.sync:{};
   settings.sync={mode:'account',passphrase:'',auto:true,lastPush:'',lastPull:'',deviceId:'',serverRevision:0,safeSyncVersion:2,lastLocalSaveAt:'',...previousSync};
-  if(Number(previousSync.autoSyncPolicyVersion)!==1){settings.sync.auto=true;settings.sync.autoSyncPolicyVersion=1;changed=true;}
+
   if(settings.sync.mode!=='account'||settings.sync.id||settings.sync.authSecret){settings.sync.mode='account';settings.sync.id='';settings.sync.authSecret='';changed=true;}
   if(!settings.sync.deviceId){settings.sync.deviceId=makeId('device');changed=true;}
   if(Number(previousSync.safeSyncVersion)!==2){settings.sync.safeSyncVersion=2;settings.sync.serverRevision=0;settings.sync.auto=false;changed=true;}
+  if(Number(previousSync.autoSyncPolicyVersion)!==1){settings.sync.auto=true;settings.sync.autoSyncPolicyVersion=1;changed=true;}
   const syncCore=globalThis.WLQSyncCore;
   if(syncCore?.normalizeTombstones){const normalized=syncCore.normalizeTombstones(settings.syncTombstones);if(JSON.stringify(normalized)!==JSON.stringify(settings.syncTombstones||{}))changed=true;settings.syncTombstones=normalized;}
   for(const list of [students,sessions,tasks])for(const item of list){if(item&&!item.updatedByDevice){item.updatedByDevice=settings.sync.deviceId;changed=true;}}
