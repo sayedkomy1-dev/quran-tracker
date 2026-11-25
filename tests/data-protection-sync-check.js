@@ -27,6 +27,8 @@ assert.match(sync,/restoreEncryptedCloudBackup/);
 assert.match(sync,/p_allow_destructive:allowDestructive/);
 assert.doesNotMatch(sync,/settings\.sync\.auto=true;/,'manual sync must preserve the teacher auto-sync preference');
 assert.match(sql,/create table if not exists public\.account_sync_backups/);
+assert.match(sql,/Take an immediate pre-upgrade encrypted snapshot/);
+assert.match(sql,/where not exists \(/);
 assert.match(sql,/alter table public\.account_sync_backups enable row level security/);
 assert.match(sql,/revoke all on public\.account_sync_backups from public,anon,authenticated/);
 assert.match(sql,/create or replace function public\.account_sync_backup_daily/);
