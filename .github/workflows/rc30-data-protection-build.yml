@@ -29,6 +29,9 @@ jobs:
       - name: Install ZIP utility
         run: sudo apt-get update && sudo apt-get install -y zip rsync
 
+      - name: Regenerate SHA-256 inventory before integrity tests
+        run: node scripts/release-integrity.mjs --write
+
       - name: Run complete project test suite
         shell: bash
         run: |
