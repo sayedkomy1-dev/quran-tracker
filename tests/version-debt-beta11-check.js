@@ -17,7 +17,7 @@ for(const tag of tags){
  assert(!/^(styles|v9|v10|v11)\.css$/.test(pathname),`historical cascade loaded: ${pathname}`);
 }
 assert(sw.includes("const APP_VERSION = '11.12.1-beta.30'"));
-assert(sw.includes("const CACHE_NAME = 'quran-pwa-v11.12.1-beta.30-workspace-workflow'"));
+assert(sw.includes("const CACHE_NAME = 'quran-pwa-v11.12.1-beta.30-data-protection'"));
 assert(sw.includes("'-rc17-integrated-offline-teaching-audio'"));
 assert(nav.includes('RELOAD_PAGES')&&nav.includes("g.WeLiveQuranAuth?.isActive?.()===true"),'auth-gated reload recovery missing');
 assert(!nav.includes('exitPromptAt'),'unsafe timed PWA exit remains');
