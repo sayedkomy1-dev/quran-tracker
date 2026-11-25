@@ -1,0 +1,20 @@
+/* RC17 — direct guardian WhatsApp link + local audio outbox. */
+#pg-session .assignment-audio-details{border:1px solid var(--ui-line);border-radius:14px;padding:12px;margin:12px 0;background:var(--ui-surface)}
+#pg-session .assignment-audio-details>summary{cursor:pointer;font-weight:850;color:var(--ui-ink);min-height:38px;display:flex;align-items:center}
+#pg-session .assignment-audio-details[open]>summary{margin-bottom:10px}
+#pg-session .assignment-audio-share{display:grid;grid-template-columns:minmax(180px,.9fr) repeat(2,minmax(180px,1fr));gap:8px;align-items:stretch}
+#pg-session .assignment-audio-share select,#pg-session .assignment-audio-share button{min-height:44px;width:100%;font-size:13px}
+#pg-session .assignment-audio-note{display:block;margin-top:8px;color:var(--ui-muted);font-size:11px;line-height:1.7}
+.taa-outbox{margin-top:12px;padding:12px;border:1px solid var(--ui-line);border-radius:13px;background:var(--ui-soft)}
+.taa-outbox[hidden]{display:none!important}
+.taa-outbox-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.taa-outbox-head b{font-size:13px;color:var(--ui-ink)}
+.taa-outbox-head span{min-width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:var(--ui-primary);color:#fff;font-size:11px;font-weight:900}
+.taa-outbox-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--ui-line)}
+.taa-outbox-item>div:first-child{min-width:0;display:grid;gap:4px}
+.taa-outbox-item b{font-size:12px;color:var(--ui-ink)}
+.taa-outbox-item small{font-size:11px;color:var(--ui-muted);line-height:1.5}
+.taa-outbox-actions{display:flex;flex-wrap:wrap;gap:6px;flex:none}
+.taa-outbox-actions button{min-height:34px;padding:6px 10px;border-radius:9px;border:1px solid var(--ui-line);background:var(--ui-primary);color:#fff;font-size:11px;font-weight:800}
+.taa-outbox-actions button.danger{background:transparent;color:#a43e35;border-color:#d7b2ae}
+@media(max-width:650px){#pg-session .assignment-audio-share{grid-template-columns:1fr}.taa-outbox-item{align-items:flex-start;flex-direction:column}.taa-outbox-actions{width:100%}.taa-outbox-actions button{flex:1}}

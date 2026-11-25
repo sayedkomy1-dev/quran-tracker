@@ -10,17 +10,18 @@ const validator=read('js/features/session-intelligence-119.js'),app=read('app.js
 
 // Storage and offline safety
 assert(index.includes('id="imamStorageManager"')&&index.includes('data-imam-audio-library'));
-for(const page of [portal,guest,maqraa])assert(!page.includes('data-imam-audio-library'),'full library management belongs in teacher settings only');
+for(const page of [portal,guest])assert(!page.includes('data-imam-audio-library'),'full library management must stay out of the authenticated guardian portal and legacy guest page');assert(maqraa.includes('data-imam-audio-library'),'the standalone public Maqraa must provide offline reciter downloads');
 assert(library.includes('statsAll')&&library.includes('canContinueAudioDownload'));
 assert(library.includes('QuotaExceeded')&&library.includes('storageLimited'));
 assert(share.includes('navigator.share')&&!share.includes('data-chat'));
 assert(sw.includes('missingProtectedShellAssets')&&sw.includes('trimRuntimeCache(cache,0)'));
-assert(sw.includes('5.8-guardian-home-recitation-rc16'));
+assert(sw.includes('5.9-guardian-home-recitation-rc17-offline-outbox'));
 assert(app.includes('compactRedundantAccountMirrors')&&app.includes('byte-for-byte duplicates'));
 
 // All supported EveryAyah reciters are aligned between the player, local library and exporter.
-const ctx={globalThis:null,console,Blob,URL,TextEncoder,Uint8Array,AbortController,document:{readyState:'loading',addEventListener(){}},navigator:{onLine:true}};ctx.globalThis=ctx;vm.createContext(ctx);vm.runInContext(library,ctx);vm.runInContext(exporter,ctx);
-const expected=['Alafasy_128kbps','Husary_128kbps','Husary_Muallim_128kbps','Minshawy_Murattal_128kbps','Minshawy_Teacher_128kbps','MaherAlMuaiqly128kbps'];
+const ctx={globalThis:null,console,Blob,URL,TextEncoder,Uint8Array,AbortController,document:{readyState:'loading',addEventListener(){}},navigator:{onLine:true}};ctx.globalThis=ctx;vm.createContext(ctx);vm.runInContext(read('js/features/quran-reciter-registry.js'),ctx);vm.runInContext(library,ctx);vm.runInContext(exporter,ctx);
+const expected=Object.values(ctx.ImamQuranReciters.list).map(x=>x.folder);
+assert(expected.length>=40,'public reader catalog should include a broad verified reciter selection');
 assert.deepEqual(Object.values(ctx.ImamOfflineAudio.RECITERS).map(x=>x.folder),expected);
 assert.deepEqual(Object.values(ctx.ImamQuranAudioExport.RECITERS).map(x=>x.folder),expected);
 assert(player.includes('downloadVerses(key,chapter,from,to'));
@@ -52,4 +53,4 @@ assert(v9.includes('v9RestoreActiveStudents(list,{force:true})'));
 assert(v9.includes('err.rollbackRestoredIds'));
 assert(/async function deleteSt\(\)[\s\S]*?await setStudentStatusWithUndo\(id,'archived'\)/.test(v9),'delete action must be reversible archive only');assert(!/sessions\s*=\s*sessions\.filter\([^)]*studentId/.test(v9),'archive must not delete session history');
 
-console.log('PASS Beta28 RC13 acceptance: storage safety, unified six-reader library, gapless-intent single-file export, guarded player, WhatsApp handoff, student/guardian UX, maqraa route, session validation, reversible archive');
+console.log('PASS Beta29 RC17 acceptance: storage safety, unified public reciter catalog, offline assignment audio, guarded player, guardian handoff, student/guardian UX, standalone maqraa, session validation, reversible archive');

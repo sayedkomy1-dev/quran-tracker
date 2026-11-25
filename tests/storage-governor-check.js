@@ -35,7 +35,7 @@ const context={
   assert(text.includes('id="imamStorageManager"')&&text.includes('imamStorageClean'),'settings must expose storage manager');
   assert(text.includes('storage-governor.js?v=beta28-rc13'),'main shell must load storage governor');
   assert(text.includes('id="imamStorageManager"')&&text.includes('data-imam-audio-library'),'teacher settings must expose the audio library manager');
-  for(const page of ['guardian-portal.html','guest-practice.html','maqraa.html'])assert(!fs.readFileSync(page,'utf8').includes('data-imam-audio-library'),`${page} must not expose full-library administration`);
+  for(const page of ['guardian-portal.html','guest-practice.html'])assert(!fs.readFileSync(page,'utf8').includes('data-imam-audio-library'),`${page} must not expose full-library administration`);assert(fs.readFileSync('maqraa.html','utf8').includes('data-imam-audio-library'),'the independent public Maqraa must expose its own offline recitation library');
   for(const page of ['guardian-portal.html','guest-practice.html','maqraa.html'])assert(fs.readFileSync(page,'utf8').includes('storage-governor.js?v=beta28-rc13'),`${page} must enforce the audio download headroom guard`);
   const audio=fs.readFileSync('js/features/offline-audio-library.js','utf8');
   assert(audio.includes('canContinueAudioDownload')&&audio.includes('storageLimited'),'audio library must stop safely when storage headroom is low');
@@ -43,7 +43,7 @@ const context={
   assert(worker.includes("event.data?.type==='IMAM_STORAGE_SAFE_CLEAN'"),'worker safe-clean message missing');
   assert(worker.includes("name.startsWith('quran-pwa-')&&name!==ACTIVE_CACHE_NAME"),'only old app caches may be removed');
   assert(worker.includes('missingProtectedShellAssets')&&worker.includes('ACTIVE_OFFLINE_SHELL_INCOMPLETE'),'safe cleanup must validate core and critical offline assets first');
-  assert(worker.includes('5.8-guardian-home-recitation-rc16'),'worker must expose the RC13 cache contract');
+  assert(worker.includes('5.9-guardian-home-recitation-rc17-offline-outbox'),'worker must expose the RC17 offline-outbox cache contract');
   assert(worker.includes('maxRuntimeEntries=80'),'runtime cache must have a finite entry cap');
   const governor=source;
   assert(!governor.includes('indexedDB.deleteDatabase')&&!governor.includes('caches.delete('),'page manager must not delete databases or caches directly');

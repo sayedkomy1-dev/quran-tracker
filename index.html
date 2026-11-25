@@ -12,19 +12,20 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#126044" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="11.12.1-beta.28">
-<link rel="manifest" href="manifest.json?v=11.12.1-beta.28">
+<meta name="application-version" content="11.12.1-beta.29">
+<link rel="manifest" href="manifest.json?v=11.12.1-beta.29">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
-<script src="js/core/boot-health.js?v=11.12.1-beta.28"></script>
-<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.28"></script>
+<script src="js/core/boot-health.js?v=11.12.1-beta.29"></script>
+<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.29"></script>
 <!-- Original style files retained in repository for compatibility/tests, but NOT loaded at runtime.
      Historical refs: styles.css?v=11.0.0 | v9.css?v=11.0.0 | v10.css?v=11.0.0 | v11.css?v=11.4.1-profile-ui -->
 <link rel="stylesheet" href="css/platform/tokens.css?v=11.12.1-beta.27">
 <link rel="stylesheet" href="css/platform/legacy-features.css?v=11.12.1-beta.27">
 <link rel="stylesheet" href="quran-engine.css?v=11.0.0">
-<link rel="stylesheet" href="teacher-error-marking.css?v=11.8.0">
+<link rel="stylesheet" href="teacher-error-marking.css?v=beta29-rc17">
+<link rel="stylesheet" href="css/platform/assignment-audio-rc17.css?v=beta29-rc17">
 <link rel="stylesheet" href="error-followup.css?v=11.12.1-beta.27-error-followup-candidate">
 <link rel="stylesheet" href="integrated-teacher-brief.css?v=11.12.1-beta.27-integration-review1">
 <link rel="stylesheet" href="imam-absence-makeup.css?v=11.12.1-beta.27-absence-review2">
@@ -38,7 +39,7 @@
 <link rel="stylesheet" href="guardian-messages.css?v=11.6.0-s1">
 <link rel="stylesheet" href="teacher-rating.css?v=11.12.1-beta.27">
 <link rel="stylesheet" href="auth.css?v=11.0.0">
-<link rel="stylesheet" href="role-home.css?v=11.12.1-beta.27">
+<link rel="stylesheet" href="role-home.css?v=beta29-rc17">
 <link rel="stylesheet" href="ux-guidance.css?v=11.7.4.2">
 <link rel="stylesheet" href="academy-workspaces.css?v=11.7.4-foundation">
 <style id="wlqCriticalOfflineStyle">
@@ -135,7 +136,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 </style>
 
 <link rel="stylesheet" href="css/platform/temporary-media.css?v=beta28-rc13">
-<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta28-rc13">
+<link rel="stylesheet" href="css/platform/rc3-experience.css?v=beta29-rc17">
 <link rel="stylesheet" href="css/platform/rc5-teacher-actions.css?v=beta28-rc5">
 <link rel="stylesheet" href="css/platform/quiet-lesson-rc6.css?v=beta28-rc6">
 <link rel="stylesheet" href="css/platform/rc8-premium-workspace.css?v=beta28-rc8">
@@ -214,7 +215,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
 <!-- ══════════════ HOME ══════════════ -->
 <div class="pg on" id="pg-home">
-  <div id="rc3HomeIntro" class="rc3-home-intro"><div><span>أكاديمية الإمام / منصة العمل · rc.8 (اختباري)</span><h1>مساحة العمل اليومية</h1><p>الحصص، المتابعة، إدارة الحلقة والطلاب في مكان واحد.</p></div><a href="academy-portals.html">دليل الخدمات ←</a></div>
+  <div id="rc3HomeIntro" class="rc3-home-intro"><div><span>أكاديمية الإمام / منصة العمل · rc.8 (اختباري)</span><h1>مساحة العمل اليومية</h1><p>الحصص، المتابعة، إدارة الحلقة والطلاب في مكان واحد.</p></div><div class="rc3-home-intro-links"><a href="academy-portals.html">دليل الخدمات ←</a><a href="maqraa.html" target="_blank" rel="noopener">المقرأة الحرة · تطبيق مستقل</a></div></div>
   <!-- إحصائيات سريعة -->
   <div class="sg">
     <div class="sc"><div class="sn" id="stTotal">0</div><div class="sl">إجمالي الطلاب</div></div>
@@ -644,7 +645,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
         <audio id="voiceNotePreview" controls style="display:none"></audio>
         <button type="button" class="btn btn-red btn-xs" id="voiceNoteDeleteBtn" onclick="deletePendingVoiceNote()" style="display:none">حذف</button>
       </div>
-      <details class="assignment-audio-details"><summary>🎧 مشاركة صوت التكليف (اختياري)</summary><div class="assignment-audio-share"><select id="teacherAssignmentAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري العفاسي</option><option value="husary">الحصري — مرتل</option><option value="husaryTeacher">الحصري — معلم</option><option value="minshawy">المنشاوي — مرتل</option><option value="minshawyTeacher">المنشاوي — معلم</option><option value="muaiqly">المعيقلي</option></select><button type="button" class="btn btn-out" id="teacherAssignmentAudioBtn" onclick="shareCurrentAssignmentAudio()">مشاركة صوت الحفظ الجديد</button></div></details>
+      <details class="assignment-audio-details" open><summary>🎧 صوت التكليف وإرساله لولي الأمر</summary><div class="assignment-audio-share"><select id="teacherAssignmentAudioReciter" aria-label="قارئ صوت التكليف"><option value="mishary">مشاري العفاسي</option></select><button type="button" class="btn btn-out" id="teacherAssignmentAudioBtn" onclick="shareCurrentAssignmentAudio()">تجهيز وفتح واتساب لولي الأمر</button><button type="button" class="btn btn-out" id="teacherAssignmentAudioFileBtn" onclick="shareLatestAssignmentAudioFile()">مشاركة ملف MP3</button></div><small class="assignment-audio-note">للعمل دون إنترنت: نزّل المصحف كاملًا للقارئ المختار مسبقًا من مكتبة الصوت. رابط واتساب يفتح محادثة ولي الأمر مع رابط صوت خاص، ويظل ضغط إرسال بيد المحفظ.</small><div id="teacherAssignmentAudioOutbox" class="taa-outbox" hidden></div></details>
     </div>
 
     <button class="btn btn-g mb8" id="saveSessionBtn" onclick="saveSession()">💾 حفظ الحصة</button>
@@ -1052,6 +1053,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
   <div class="mo-box quran-box">
     <div class="mo-title"><span id="quranModalTitle">📖 النص القرآني</span><button class="mo-x" onclick="closeQuranTextModal()">✕</button></div>
     <div id="quranSourceNote" class="quran-source-note">الرسم: QPC Hafs / الرسم العثماني. الصوت يحتاج اتصالاً بالإنترنت.</div>
+    <div id="quranOpeningGuide" class="quran-opening-guide" hidden></div>
     <div id="quranVerseContent" class="quran-verse-content"><div class="empty"><p>اختر السورة وافتح النص، ثم حدّد آية النهاية من داخل المصحف.</p></div></div>
     <div class="quran-toolbar"><div class="fld"><label>القارئ</label><select id="quranReciter"><option value="Husary_128kbps">الشيخ محمود خليل الحصري</option><option value="Alafasy_128kbps">الشيخ مشاري راشد العفاسي</option></select></div><button class="btn btn-g btn-sm" id="quranPlayAllBtn" onclick="playQuranRange()">▶ تشغيل الآيات</button><button class="btn btn-out btn-sm" onclick="stopQuranAudio()">■ إيقاف</button></div>
     <audio id="quranAudioPlayer" preload="none"></audio>
@@ -1183,25 +1185,26 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <!-- ════════════ SCRIPTS ════════════ -->
 <!-- v11.2.0 Stage 2 interactive error marking -->
 
-<script src="js/core/runtime.js?v=11.12.1-beta.28" defer></script>
+<script src="js/core/runtime.js?v=11.12.1-beta.29" defer></script>
 <script src="js/features/v10-data.js?v=11.0.0" defer></script>
 <script src="auth.js?v=beta28-rc13" defer></script>
-<script src="js/features/role-home.js?v=rc16" defer></script>
+<script src="js/features/role-home.js?v=beta29-rc17" defer></script>
 <script src="js/features/ux-guidance.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/academy-workspaces.js?v=11.7.4-foundation" defer></script>
 <script src="sync-core.js?v=beta28-rc7-data-safety" defer></script>
-<script src="app.js?v=beta28-rc16" defer></script>
+<script src="app.js?v=beta29-rc17" defer></script>
 <script src="v8.js?v=beta28-rc7-data-safety" defer></script>
 <script src="js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate" defer></script>
 <script src="v9.js?v=beta28-rc13" defer></script>
 <script src="js/features/mushaf-offline.js?v=11.7.4.2" defer></script>
-<script src="js/features/quran-engine.js?v=11.0.0" defer></script>
+<script src="js/features/quran-reciter-registry.js?v=beta29-rc17" defer></script>
+<script src="js/features/quran-engine.js?v=beta29-rc17" defer></script>
 <script src="js/features/quran-structure.js?v=11.0.0" defer></script>
 <script src="js/features/recitation-carry.js?v=11.0.0" defer></script>
 <script src="v10.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/mushaf-entry-unifier.js?v=11.12.1-beta.27-review9-hotfix2" defer></script>
 <script src="js/features/revision-quran-text.js?v=11.8.1" defer></script>
-<script src="js/features/teacher-error-marking.js?v=beta28-rc13" defer></script>
+<script src="js/features/teacher-error-marking.js?v=beta29-rc17" defer></script>
 <script src="js/features/teacher-correction-document.js?v=11.7.4.5" defer></script>
 <script src="js/features/guardian-communication.js?v=11.0.0" defer></script>
 <script src="js/features/student-progress.js?v=11.12.1-beta.27-coverage-review3" defer></script>
@@ -1217,13 +1220,13 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/learning-growth-rc16.js?v=rc16" defer></script>
 <script src="js/features/teacher-home-recitation-rc16.js?v=rc16" defer></script>
 <script src="js/features/supervisor-dashboard.js?v=11.12.1-beta.27" defer></script>
-<script src="js/features/guardian-portal-share.js?v=rc16" defer></script>
+<script src="js/features/guardian-portal-share.js?v=rc17" defer></script>
 
 <script src="js/features/storage-governor.js?v=beta28-rc13" defer></script>
-<script src="js/features/offline-audio-library.js?v=beta28-rc13" defer></script>
+<script src="js/features/offline-audio-library.js?v=beta29-rc17" defer></script>
 <script src="js/features/temporary-media-share.js?v=beta28-rc13" defer></script>
-<script src="js/features/quran-audio-export.js?v=beta28-rc13" defer></script>
-<script src="js/features/assignment-audio-share.js?v=beta28-rc13" defer></script>
+<script src="js/features/quran-audio-export.js?v=beta29-rc17" defer></script>
+<script src="js/features/assignment-audio-share.js?v=beta29-rc17" defer></script>
 <script src="js/features/v11-ui.js?v=11.12.1-beta.27" defer></script>
 <script src="js/core/mobile-navigation.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/achievement-certificates.js?v=11.9.0" defer></script>
@@ -1239,7 +1242,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/progress-bridge-1111.js?v=11.11.1" defer></script>
 <script src="js/features/academy-analytics-1112.js?v=11.12.1-beta.27" defer></script>
 
-<script src="js/features/imam-board-tafsir.js?v=11.12.1-beta.27" defer></script>
+<script src="js/features/imam-board-tafsir.js?v=beta29-rc17" defer></script>
 <script src="js/features/imam-board-corpus.js?v=11.12.1-beta.27" defer></script>
 <script src="js/features/imam-smart-board.js?v=rc16" defer></script>
 <script src="js/features/platform-ux.js?v=11.12.1-beta.27" defer></script>

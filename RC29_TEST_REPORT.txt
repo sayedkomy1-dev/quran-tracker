@@ -1,0 +1,36 @@
+RC29 TEST REPORT
+================
+Release: 11.12.1-beta.29
+Date: 2026-11-25
+
+Automated checks
+----------------
+- npm test: PASS (exit code 0)
+- Node syntax validation: 233 JavaScript files checked; 0 syntax errors.
+- Interactive correction contract: PASS (dynamic number/word/letter event binding, tafsir and word lookup).
+- Basmala contract: PASS (opening guide and MP3 export; At-Tawbah excluded; Al-Fatihah 1:1 not duplicated).
+- Offline audio contract: PASS (selected-range download includes Basmala track from Al-Fatihah 1:1 where needed).
+- Guardian/student offline recording queue: PASS (IndexedDB persistence and upload retry on reconnect).
+- Teacher assignment audio queue: PASS (IndexedDB persistence, signed URL, guardian WhatsApp deep link).
+- Public Maqraa PWA: PASS (separate manifest/start URL, reciter catalog and offline library).
+- Service Worker/version contract: PASS (11.12.1-beta.29 and RC17 integrated cache namespace).
+- SQL contract: PASS (consolidated migration includes guardian recording completion and private teacher assignment audio bucket).
+
+Static source checks do not prove behavior on a physical Android/iOS device or on the user's live Supabase project.
+
+Not executed from this environment
+----------------------------------
+- RC29 SQL migration was not run against the user's Supabase project.
+- Real microphone recording, Android share sheet, WhatsApp handoff and audio playback were not exercised on a physical phone.
+- Live login/session renewal and cloud sync were not tested against production credentials.
+- GitHub Pages deployment was not performed from this environment.
+
+Required acceptance after deployment
+------------------------------------
+1. Run the single consolidated SQL migration once in Supabase SQL Editor.
+2. Push the RC29 project from GitHub Desktop.
+3. Open https://welivequran.online while online; confirm the update banner appears and approve the update.
+4. Test correction by tapping a Quran word, a letter, and an ayah number.
+5. Test offline reading/audio after downloading the text/audio packs.
+6. Record a student recitation offline, restore internet, and verify it appears in the teacher's home-recitation review.
+7. Create an assignment audio while online and offline; verify the WhatsApp link opens the linked guardian chat and the final Send action remains manual.

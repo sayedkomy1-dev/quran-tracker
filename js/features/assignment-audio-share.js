@@ -1,33 +1,71 @@
 'use strict';
-/* Imam Academy v11.2.0 Stage 4 — teacher-side assignment audio share. */
+/* RC17 — offline assignment-audio outbox + direct guardian WhatsApp link.
+   WhatsApp deep links can prefill a message to a number; they cannot silently attach/send a file.
+   This module therefore offers a private, expiring audio link plus native file sharing as a separate action. */
 (function teacherAssignmentAudio(g){
-  const $=id=>document.getElementById(id);
-  function say(msg,type='info'){try{if(typeof g.toast==='function')g.toast(msg,type);else alert(msg);}catch(_){} }
+  const $=id=>g.document?.getElementById?.(id);
+  const BUCKET='teacher-assignment-audio',DB_NAME='imam-teacher-assignment-audio-outbox-v1',STORE='items',LINK_TTL=30*24*60*60;
+  let dbPromise=null,working=false,lastItemId='';
+  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function say(msg,type='info'){try{if(typeof g.toast==='function')g.toast(msg,type);else if($('teacherAssignmentAudioStatus'))$('teacherAssignmentAudioStatus').textContent=msg;}catch(_){} }
   function resolveGuardian(studentId){
     const student=(g.ImamApp?.State?.students||[]).find(s=>String(s.id)===String(studentId));
     const phone=typeof g.normalizeWhatsAppPhone==='function'?g.normalizeWhatsAppPhone(student?.phone||''):String(student?.phone||'').replace(/\D/g,'');
     return {student,phone,valid:/^20(10|11|12|15)\d{8}$/.test(phone)};
   }
+  function populateReciters(){const select=$('teacherAssignmentAudioReciter'),map=g.ImamQuranAudioExport?.RECITERS;if(!select||!map)return;const current=select.value||'mishary';select.replaceChildren(...Object.entries(map).map(([id,row])=>{const o=g.document.createElement('option');o.value=id;o.textContent=String(row.label||id).replace(/^الشيخ\s*/,'');return o;}));select.value=map[current]?current:(map.mishary?'mishary':Object.keys(map)[0]);}
   function sectionSignature(section){return section?[section.surahId,section.surah,section.from,section.to,section.full?'1':'0'].join('|'):'';}
   function currentSignature(){try{return sectionSignature(typeof g.readSection==='function'?g.readSection('new'):null);}catch(_){return '';}}
+  function localId(){try{return g.crypto.randomUUID();}catch(_){return `assignment-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;}}
+  function client(){return g.WeLiveQuranAuth?.getClient?.()||null;}
+  function authReady(){return !!(g.WeLiveQuranAuth?.isActive?.()&&client());}
+  function openDb(){if(!g.indexedDB)return Promise.reject(Error('AUDIO_OUTBOX_UNAVAILABLE'));if(!dbPromise)dbPromise=new Promise((resolve,reject)=>{const req=g.indexedDB.open(DB_NAME,1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(STORE)){const st=req.result.createObjectStore(STORE,{keyPath:'id'});st.createIndex('createdAt','createdAt');}};req.onsuccess=()=>{const db=req.result;db.onversionchange=()=>{db.close();dbPromise=null;};resolve(db);};req.onerror=()=>reject(req.error||Error('AUDIO_OUTBOX_OPEN'));}).catch(e=>{dbPromise=null;throw e;});return dbPromise;}
+  async function put(item){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(item);tx.oncomplete=()=>resolve(item);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}
+  async function get(id){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readonly'),req=tx.objectStore(STORE).get(String(id));req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);tx.onerror=()=>reject(tx.error);});}
+  async function all(){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readonly'),req=tx.objectStore(STORE).getAll();req.onsuccess=()=>resolve((req.result||[]).sort((a,b)=>Number(b.createdAt)-Number(a.createdAt)));req.onerror=()=>reject(req.error);tx.onerror=()=>reject(tx.error);});}
+  async function remove(id){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).delete(String(id));tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}
+  async function uploadAndSign(item){
+    if(g.navigator?.onLine===false)throw Error('OFFLINE');if(!authReady())throw Error('TEACHER_AUTH_REQUIRED');
+    const sb=client(),{data:userData,error:userError}=await sb.auth.getUser();if(userError||!userData?.user?.id)throw Error('TEACHER_AUTH_REQUIRED');
+    if(!item.path)item.path=`${userData.user.id}/${item.id}.mp3`;
+    if(!item.uploaded){
+      const {error}=await sb.storage.from(BUCKET).upload(item.path,item.blob,{contentType:'audio/mpeg',upsert:false,cacheControl:'3600'});
+      if(error){const existing=await sb.storage.from(BUCKET).createSignedUrl(item.path,60).catch(()=>null);if(!existing?.data?.signedUrl)throw error;}
+      item.uploaded=true;await put(item);
+    }
+    const {data,error}=await sb.storage.from(BUCKET).createSignedUrl(item.path,LINK_TTL);if(error||!data?.signedUrl)throw error||Error('SIGNED_URL_FAILED');
+    item.signedUrl=data.signedUrl;item.expiresAt=Date.now()+LINK_TTL*1000;item.status=item.lastOpenedAt?'awaiting_confirmation':'ready';item.lastError='';await put(item);return item;
+  }
+  async function flushItem(id){const item=await get(id);if(!item||item.status==='sent')return item;try{return await uploadAndSign(item);}catch(err){item.status='queued';item.lastError=String(err?.message||err);await put(item);return item;}}
+  async function flushQueue(){if(working||g.navigator?.onLine===false||!authReady())return;working=true;try{for(const item of await all()){if(g.navigator?.onLine===false)break;if(item.status==='sent')continue;if(!item.signedUrl||Number(item.expiresAt||0)<Date.now())await flushItem(item.id);}await renderQueue();}catch(err){console.warn('[assignment audio outbox]',err);}finally{working=false;}}
+  function chatText(item){return `تكليف الحفظ الجديد للطالب ${item.studentName}: سورة ${item.assignment.surah}، الآيات ${item.assignment.from}–${item.assignment.to}.\nالقارئ: ${item.reciterLabel}.\nرابط الملف الصوتي (صالح لمدة 30 يومًا):\n${item.signedUrl}\nيمكنك فتح الرابط للاستماع أو تنزيل ملف MP3.`;}
+  async function openChat(item){if(!item?.signedUrl||Number(item.expiresAt||0)<Date.now())return say('رابط الصوت غير جاهز أو انتهت صلاحيته. أعد رفعه أولًا.','error');const current=resolveGuardian(item.studentId);if(!current.valid||current.phone!==item.phone)return say('رقم ولي الأمر تغيّر أو لم يعد صحيحًا. حدّث ملف الطالب قبل فتح واتساب.','error');item.lastOpenedAt=Date.now();item.status='awaiting_confirmation';await put(item);const url=`https://wa.me/${item.phone}?text=${encodeURIComponent(chatText(item))}`;g.location.assign(url);}
+  async function renderQueue(){const host=$('teacherAssignmentAudioOutbox');if(!host)return;try{const rows=await all();host.hidden=!rows.length;if(!rows.length){host.replaceChildren();return;}host.innerHTML=`<div class="taa-outbox-head"><b>قائمة صوت التكليف</b><span>${rows.length}</span></div>${rows.map(x=>{const ready=!!x.signedUrl&&Number(x.expiresAt||0)>Date.now(),status=x.status==='sent'?'تم تأكيد الإرسال':ready?'الرابط جاهز — افتح محادثة ولي الأمر':g.navigator?.onLine===false?'محفوظ محليًا — بانتظار الإنترنت':'بانتظار الرفع';return `<article class="taa-outbox-item"><div><b>${esc(x.studentName)} · سورة ${esc(x.assignment?.surah||'—')} (${Number(x.assignment?.from)||1}–${Number(x.assignment?.to)||1})</b><small>${esc(status)} · ${esc(new Date(x.createdAt||Date.now()).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'}))}</small></div><div class="taa-outbox-actions">${ready&&x.status!=='sent'?`<button type="button" data-taa-open="${esc(x.id)}">فتح واتساب</button><button type="button" data-taa-file="${esc(x.id)}">مشاركة MP3</button><button type="button" data-taa-confirm="${esc(x.id)}">تم الإرسال</button>`:''}${!ready?`<button type="button" data-taa-retry="${esc(x.id)}">إعادة المحاولة</button>`:''}<button type="button" class="danger" data-taa-delete="${esc(x.id)}">حذف</button></div></article>`;}).join('')}`;}catch(err){host.hidden=false;host.textContent='تعذر قراءة قائمة صوت التكليف المحفوظة.';console.warn('[assignment audio queue render]',err);}}
+  async function shareFile(id){const item=await get(id);if(!item?.blob)return say('ملف الصوت غير موجود في قائمة الانتظار.','error');try{const file=new File([item.blob],item.fileName||'assignment.mp3',{type:'audio/mpeg',lastModified:item.createdAt||Date.now()});const out=await g.ImamQuranAudioExport.shareFile(file,{title:`صوت تكليف ${item.studentName}`,text:`تكليف ${item.studentName}: سورة ${item.assignment.surah}، الآيات ${item.assignment.from}–${item.assignment.to}`});say(out.shared?'تم فتح مشاركة الملف. اختر واتساب والمحادثة المطلوبة ثم أكمل الإرسال.':out.cancelled?'أُلغيت المشاركة':'المشاركة المباشرة للملف غير مدعومة في هذا المتصفح. استخدم رابط واتساب الجاهز.',out.shared?'success':'info');}catch(err){console.warn('[assignment audio file share]',err);say('تعذرت مشاركة ملف MP3 من هذا الجهاز.','error');}}
+  async function queueDelete(id){const item=await get(id);if(!item)return;if(item.path&&authReady()){try{await client().storage.from(BUCKET).remove([item.path]);}catch(err){console.warn('[assignment audio cloud delete]',err);}}await remove(id);await renderQueue();say('تم حذف ملف التكليف من قائمة هذا الجهاز.','success');}
   async function share(){
     const section=typeof g.readSection==='function'?g.readSection('new'):null;if(!section?.surahId){say('حدد الحفظ الجديد أولًا','error');return;}
     const limit=g.ImamOfflineAudio?.SURAHS?.[section.surahId-1]?.[1];if(!$('new-full')?.checked&&$('new-f')&&$('new-t')){const from=Number($('new-f').value),to=Number($('new-t').value);if(!Number.isInteger(from)||!Number.isInteger(to)||from<1||to<1||from>limit||to>limit||from>to){say('راجع نطاق آيات تكليف الحفظ الجديد قبل المشاركة','error');return;}}
-    const selectedStudent=$('sesSt')?.value,selectedDate=$('sesDate')?.value;
-    if(!selectedStudent){say('اختر الطالب لتحديد رقم ولي أمره قبل مشاركة الصوت','error');return;}
-    const guardian=resolveGuardian(selectedStudent);
-    if(!guardian.student){say('لم يتم العثور على ملف الطالب الحالي','error');return;}
-    if(!guardian.valid){say('رقم واتساب ولي الأمر مفقود أو غير صحيح. صحّحه من ملف الطالب أولًا','error');return;}
-    const reciter=$('teacherAssignmentAudioReciter')?.value||'mishary',sectionAtStart=sectionSignature(section),btn=$('teacherAssignmentAudioBtn');const original=btn?.textContent;if(btn)btn.disabled=true;
-    try{say('جارٍ تجهيز صوت التكليف…');const file=await g.ImamQuranAudioExport.buildFile({chapter:section.surahId,surah:section.surah,from:section.from,to:section.to,reciter},p=>{if(btn)btn.textContent=`تجهيز ${p.done}/${p.total}`;});if($('sesSt')?.value!==selectedStudent||$('sesDate')?.value!==selectedDate||currentSignature()!==sectionAtStart||($('teacherAssignmentAudioReciter')?.value||'mishary')!==reciter){say('تغير الطالب أو التاريخ أو نطاق الآيات أو القارئ أثناء تجهيز الصوت؛ أعد المشاركة من الحصة الحالية','info');return;}const latest=resolveGuardian(selectedStudent);
-      if(!latest.valid||latest.phone!==guardian.phone){say('تغير رقم ولي الأمر أثناء تجهيز الصوت؛ راجعه وأعد المشاركة','info');return;}
-      const out=await g.ImamQuranAudioExport.shareFile(file,{
-        title:`صوت تكليف ${guardian.student.name||'الطالب'} — ${section.surah}`,
-        text:`تكليف ${guardian.student.name||'الطالب'}: سورة ${section.surah}، الآيات ${section.from}–${section.to}`,
-      });
-      say(out.shared?'تم فتح مشاركة الملف؛ تأكد من اختيار محادثة ولي الأمر وإتمام الإرسال':out.cancelled?'أُلغيت المشاركة':out.unsupported?'المشاركة الصوتية غير مدعومة هنا، ويمكن فتح محادثة ولي الأمر برسالة نصية':'انتهت نافذة مشاركة التكليف؛ تحقق من إتمام الإرسال',out.shared?'success':'info');}
-    catch(err){if(err?.name!=='AbortError'){console.warn('[teacher assignment audio]',err);say(g.ImamOfflineAudio?.message(err)||'تعذر تجهيز ملف الصوت الآن','error');}}
-    finally{if(btn){btn.disabled=false;btn.textContent=original;}}
+    const selectedStudent=$('sesSt')?.value,selectedDate=$('sesDate')?.value;if(!selectedStudent)return say('اختر الطالب لتحديد رقم ولي أمره قبل مشاركة الصوت','error');
+    const guardian=resolveGuardian(selectedStudent);if(!guardian.student)return say('لم يتم العثور على ملف الطالب الحالي','error');if(!guardian.valid)return say('رقم واتساب ولي الأمر مفقود أو غير صحيح. صحّحه من ملف الطالب أولًا','error');
+    const reciter=$('teacherAssignmentAudioReciter')?.value||'mishary',sectionAtStart=sectionSignature(section),btn=$('teacherAssignmentAudioBtn'),original=btn?.textContent;if(btn)btn.disabled=true;
+    try{
+      say(g.navigator?.onLine===false?'جارٍ إنشاء ملف التكليف من الصوت المحفوظ على الجهاز…':'جارٍ تجهيز صوت التكليف…');
+      const file=await g.ImamQuranAudioExport.buildFile({chapter:section.surahId,surah:section.surah,from:section.from,to:section.to,reciter},p=>{if(btn)btn.textContent=`تجهيز ${p.done}/${p.total}`;});
+      if($('sesSt')?.value!==selectedStudent||$('sesDate')?.value!==selectedDate||currentSignature()!==sectionAtStart||($('teacherAssignmentAudioReciter')?.value||'mishary')!==reciter){say('تغير الطالب أو التاريخ أو نطاق الآيات أو القارئ أثناء تجهيز الصوت؛ أعد المحاولة من الحصة الحالية','info');return;}
+      const latest=resolveGuardian(selectedStudent);if(!latest.valid||latest.phone!==guardian.phone)return say('تغير رقم ولي الأمر أثناء تجهيز الصوت؛ راجعه وأعد المشاركة','info');
+      const item={id:localId(),studentId:String(selectedStudent),studentName:String(guardian.student.name||'الطالب'),phone:guardian.phone,assignment:{surah:String(section.surah),number:Number(section.surahId),from:Number(section.from),to:Number(section.to)},reciter,reciterLabel:String(g.ImamQuranAudioExport.RECITERS[reciter]?.label||reciter),fileName:file.name,blob:file,createdAt:Date.now(),status:'queued',path:'',uploaded:false,signedUrl:'',expiresAt:0};
+      await put(item);lastItemId=item.id;await renderQueue();
+      if(g.navigator?.onLine===false){say('تم حفظ صوت التكليف على الجهاز. عند عودة الإنترنت سيُرفع ويصبح زر فتح واتساب متاحًا.','success');return;}
+      const ready=await flushItem(item.id);await renderQueue();
+      if(ready?.signedUrl){say('تم رفع الصوت وتجهيز رابط خاص لولي الأمر. سيتم فتح محادثته الآن؛ اضغط إرسال داخل واتساب.','success');await openChat(ready);}
+      else say(authReady()?'حُفظ الملف، لكن تعذر رفع الرابط الآن. سيظهر زر إعادة المحاولة.':'حُفظ الملف. يلزم اتصال بحساب المحفظ لرفع رابط مباشر؛ يمكنك مشاركة MP3 من القائمة.','warn');
+    }catch(err){if(err?.name!=='AbortError'){console.warn('[teacher assignment audio]',err);say(g.ImamOfflineAudio?.message(err)||'تعذر تجهيز ملف الصوت. إذا كنت دون إنترنت فتأكد من تنزيل تلاوة القارئ المحدد مسبقًا.','error');}}
+    finally{if(btn){btn.disabled=false;btn.textContent=original;}await renderQueue();}
   }
-  g.ImamTeacherAssignmentAudio={share};g.shareCurrentAssignmentAudio=share;
+  async function shareLatestAssignmentAudioFile(){const rows=await all();if(!rows.length)return say('لا يوجد ملف صوت محفوظ للمشاركة.','warn');return shareFile(rows[0].id);}
+  async function handleQueueClick(e){const b=e.target.closest('[data-taa-open],[data-taa-file],[data-taa-confirm],[data-taa-retry],[data-taa-delete]');if(!b)return;const id=b.dataset.taaOpen||b.dataset.taaFile||b.dataset.taaConfirm||b.dataset.taaRetry||b.dataset.taaDelete;if(b.dataset.taaOpen){const item=await get(id);await openChat(item);return;}if(b.dataset.taaFile){await shareFile(id);return;}if(b.dataset.taaRetry){const item=await flushItem(id);await renderQueue();if(item?.signedUrl)say('الرابط جاهز. اضغط فتح واتساب لإرساله للرقم المرتبط بالطالب.','success');else say('تعذرت إعادة الرفع؛ بقي الملف محفوظًا محليًا.','warn');return;}if(b.dataset.taaConfirm){const item=await get(id);if(item){item.status='sent';item.confirmedAt=Date.now();await put(item);await renderQueue();say('سُجل تأكيدك لإرسال رسالة واتساب.','success');}return;}if(b.dataset.taaDelete){if(g.confirm?.('حذف ملف الصوت من الجهاز والتخزين الخاص؟ قد يتوقف الرابط المرسل لولي الأمر.'))await queueDelete(id);}}
+  function bindQueue(){const host=$('teacherAssignmentAudioOutbox');if(host&&!host.dataset.bound){host.dataset.bound='1';host.addEventListener('click',e=>void handleQueueClick(e));}g.addEventListener?.('online',()=>void flushQueue());}
+  populateReciters();bindQueue();void renderQueue();if(g.document?.readyState==='loading')g.document.addEventListener('DOMContentLoaded',()=>{bindQueue();void renderQueue();},{once:true});
+  g.ImamTeacherAssignmentAudio={share,shareFile,shareLatestAssignmentAudioFile,flushQueue,renderQueue};g.shareCurrentAssignmentAudio=share;g.shareLatestAssignmentAudioFile=shareLatestAssignmentAudioFile;
 })(globalThis);

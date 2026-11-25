@@ -9,7 +9,7 @@ const studentCSS=read('css/platform/student-display.css');
 const worker=read('sw.js');
 const appVersion=read('VERSION').trim();
 const version='11.12.1-beta.27';
-const releaseVersion='11.12.1-beta.28';
+const releaseVersion='11.12.1-beta.29';
 assert.equal(appVersion,releaseVersion);
 // Both root scrolling elements are guarded; no touch-action:none or JS touchmove cancellation.
 for(const [name,source] of Object.entries({main,css,publicCSS,studentCSS})){

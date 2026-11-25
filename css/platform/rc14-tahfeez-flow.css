@@ -18,3 +18,15 @@ html[data-portal-theme="dark"] .tahfeez-continuation-actions button{background:#
 html[data-portal-theme="dark"] .tahfeez-basmala{color:#dfbe81}
 @media(max-width:600px){.rc14-learning-steps{grid-template-columns:1fr;gap:7px}.rc14-learning-steps>div{padding:10px 13px}.tahfeez-continuation-actions button{flex:1 1 130px;padding:7px 8px}.tahfeez-tap-hint{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.tahfeez-text .tahfeez-ayah{transition:none}}
+
+/* RC17 opening formula: isti'adhah always; basmala only at surah openings except At-Tawbah. */
+.tahfeez-opening{max-width:920px;margin:0 auto 7px;text-align:center;font-family:"Amiri","Noto Naskh Arabic","Traditional Arabic",serif;font-size:clamp(19px,2.8vw,25px);line-height:1.8;letter-spacing:.01em}
+.tahfeez-opening[hidden]{display:none!important}
+.tahfeez-istiadhah{color:#486b57}
+.tahfeez-basmala{margin-bottom:9px}
+.tahfeez-text-pack{display:grid;gap:6px;margin:12px 0;padding:11px;border:1px solid #c8dfd0;border-radius:12px;background:#f6fbf7}
+.tahfeez-text-pack button{min-height:42px;border:1px solid #1c6b49;border-radius:10px;background:#1c6b49;color:#fff;font-weight:800;padding:8px 12px}
+.tahfeez-text-pack small{color:#617267;line-height:1.6}
+html[data-portal-theme="dark"] .tahfeez-istiadhah{color:#c4d9c9}
+html[data-portal-theme="dark"] .tahfeez-text-pack{background:#1d3027;border-color:#365c45}
+html[data-portal-theme="dark"] .tahfeez-text-pack small{color:#c4d9c9}

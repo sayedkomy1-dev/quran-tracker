@@ -1,3 +1,4 @@
+-- HISTORICAL RC16 MIGRATION: for reference only. For a fresh RC29 setup, run sql/RC29_Complete_Offline_Recitation_And_Assignment_Audio.sql once; do not run both files separately.
 -- أكاديمية الإمام — RC16: تسجيل التسميع المنزلي والتعليقات الزمنية
 -- Migration additive-only. Does not alter students, sessions, account_sync, or local Schema 12.
 -- Requires guardian-portal-login.sql and guardian-portal-engagement.sql.
@@ -236,6 +237,8 @@ begin
 end;
 $$;
 
+-- أكاديمية الإمام — RC17: إصلاح اعتماد رفع التسميع بعد حفظ الملف.
+-- Migration additive/idempotent: replaces one function only; no tables or Schema version changes.
 create or replace function public.guardian_home_recitation_complete_upload(
   p_session uuid,p_student_ref text,p_upload_token uuid
 )
@@ -246,30 +249,54 @@ set search_path = public, storage, pg_temp
 as $$
 declare v_row public.guardian_home_recitations%rowtype;
 begin
+  if p_session is null or p_student_ref is null or p_student_ref !~ '^[0-9a-f]{64}$' or p_upload_token is null then
+    raise exception 'INVALID_REQUEST';
+  end if;
+
+  -- First load and lock the pending upload. Do not compare against v_row before it is populated.
   select r.* into v_row
   from public.guardian_home_recitations r
   join public.guardian_portal_sessions sess on sess.session_token=p_session
-  join public.guardian_portal_shares sh on sh.owner_user_id=r.owner_user_id and sh.guardian_account_id=r.guardian_account_id and sh.student_ref=r.student_ref
+  join public.guardian_portal_shares sh on sh.owner_user_id=r.owner_user_id
+    and sh.guardian_account_id=r.guardian_account_id and sh.student_ref=r.student_ref
   join public.guardian_portal_accounts a on a.id=sh.guardian_account_id and a.disabled_at is null
   join public.app_users u on u.user_id=r.owner_user_id and u.status='active'
   where r.upload_token=p_upload_token and r.student_ref=p_student_ref
     and r.guardian_account_id=any(sess.account_ids)
     and sess.revoked_at is null and sess.expires_at>now()
-    and sh.snapshot#>>'{learning,newAssignment,surah}'=v_row.assignment_surah
-    and coalesce((sh.snapshot#>>'{learning,newAssignment,surahNumber}')::integer,0)=v_row.assignment_surah_number
-    and coalesce((sh.snapshot#>>'{learning,newAssignment,from}')::integer,1)=v_row.assignment_from_ayah
-    and coalesce((sh.snapshot#>>'{learning,newAssignment,to}')::integer,1)=v_row.assignment_to_ayah
     and r.status='pending' and r.expires_at>now()
-  for update;
+  limit 1
+  for update of r;
+
   if not found then raise exception 'UPLOAD_NOT_AUTHORIZED_OR_EXPIRED'; end if;
-  if not exists(select 1 from storage.objects o where o.bucket_id='guardian-recitation-media' and o.name=v_row.object_path) then
-    raise exception 'AUDIO_OBJECT_MISSING';
-  end if;
-  update public.guardian_home_recitations set status='submitted',submitted_at=now(),expires_at=now()+interval '365 days'
+
+  -- Validate the saved assignment against the currently published assignment after v_row is loaded.
+  if not exists(
+    select 1 from public.guardian_portal_shares sh
+    where sh.owner_user_id=v_row.owner_user_id
+      and sh.guardian_account_id=v_row.guardian_account_id
+      and sh.student_ref=v_row.student_ref
+      and sh.snapshot#>>'{learning,newAssignment,surah}'=v_row.assignment_surah
+      and coalesce((sh.snapshot#>>'{learning,newAssignment,surahNumber}')::integer,0)=v_row.assignment_surah_number
+      and coalesce((sh.snapshot#>>'{learning,newAssignment,from}')::integer,1)=v_row.assignment_from_ayah
+      and coalesce((sh.snapshot#>>'{learning,newAssignment,to}')::integer,1)=v_row.assignment_to_ayah
+  ) then raise exception 'ASSIGNMENT_NOT_CURRENT'; end if;
+
+  if not exists(
+    select 1 from storage.objects o
+    where o.bucket_id='guardian-recitation-media' and o.name=v_row.object_path
+  ) then raise exception 'AUDIO_OBJECT_MISSING'; end if;
+
+  update public.guardian_home_recitations
+  set status='submitted',submitted_at=now(),expires_at=now()+interval '365 days'
   where id=v_row.id;
+
   return jsonb_build_object('ok',true,'id',v_row.id,'status','submitted');
 end;
 $$;
+
+revoke all on function public.guardian_home_recitation_complete_upload(uuid,text,uuid) from public;
+grant execute on function public.guardian_home_recitation_complete_upload(uuid,text,uuid) to anon,authenticated;
 
 create or replace function public.guardian_home_recitation_session_list(p_session uuid,p_student_ref text)
 returns jsonb
@@ -460,3 +487,37 @@ grant execute on function public.guardian_home_recitation_comment_finish(uuid,te
 -- • Teacher can read only recordings owned by auth.uid(); voice feedback uploads require a pending comment row.
 -- • No recording is auto-graded, auto-scored, or auto-published as an achievement.
 -- • Local app Schema stays 12; this migration adds backend tables and one private bucket only.
+
+
+-- Private, teacher-owned temporary audio links used by the offline assignment outbox.
+insert into storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
+values('teacher-assignment-audio','teacher-assignment-audio',false,50331648,array['audio/mpeg']::text[])
+on conflict(id) do update set name=excluded.name,public=false,file_size_limit=excluded.file_size_limit,allowed_mime_types=excluded.allowed_mime_types;
+
+drop policy if exists teacher_assignment_audio_insert on storage.objects;
+drop policy if exists teacher_assignment_audio_select on storage.objects;
+drop policy if exists teacher_assignment_audio_delete on storage.objects;
+create policy teacher_assignment_audio_insert on storage.objects
+for insert to authenticated
+with check (
+  bucket_id='teacher-assignment-audio'
+  and (storage.foldername(name))[1]=auth.uid()::text
+  and exists(select 1 from public.app_users u where u.user_id=auth.uid() and u.status='active')
+);
+create policy teacher_assignment_audio_select on storage.objects
+for select to authenticated
+using (
+  bucket_id='teacher-assignment-audio'
+  and (storage.foldername(name))[1]=auth.uid()::text
+  and exists(select 1 from public.app_users u where u.user_id=auth.uid() and u.status='active')
+);
+create policy teacher_assignment_audio_delete on storage.objects
+for delete to authenticated
+using (
+  bucket_id='teacher-assignment-audio'
+  and (storage.foldername(name))[1]=auth.uid()::text
+  and exists(select 1 from public.app_users u where u.user_id=auth.uid() and u.status='active')
+);
+
+-- Links are signed for 30 days by the authenticated owner. The file itself remains private.
+-- Deleting an outbox item in the app removes its storage object; do not make this bucket public.

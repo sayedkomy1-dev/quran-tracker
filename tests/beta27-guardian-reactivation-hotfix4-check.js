@@ -48,6 +48,6 @@ function sandbox({failAt=0,localFail=false,existing=false}={}){
  {const x=await simulatePortal({invalid:true});assert(x.error);assert(!x.ops.some(t=>t.startsWith('rpc:')));}
  assert(portalSource.includes("if(st.studentStatus&&st.studentStatus!=='active'&&!forReactivation)throw new Error('STUDENT_NOT_ACTIVE')"));
  assert(portalSource.includes('p_reset_pin:false'));assert(portalSource.includes('pendingReactivationSecrets'));assert(portalSource.includes('showReactivationCredentials'));
- assert(page.includes('guardian-portal-share.js?v=rc16')&&worker.includes('guardian-portal-share.js?v=rc16'));
+ assert(page.includes('guardian-portal-share.js?v=rc17')&&worker.includes('guardian-portal-share.js?v=rc17'));
  console.log('PASS beta27 automatic student reactivation, rollback and guardian PIN display (offline mocks)');
 })().catch(e=>{console.error(e);process.exitCode=1;});

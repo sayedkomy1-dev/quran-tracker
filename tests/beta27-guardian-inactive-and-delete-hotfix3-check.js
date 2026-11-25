@@ -71,7 +71,7 @@ function sandbox({deny=false,denyAt=0,portalMissing=false,saveResult=true}={}){
   assert(events.includes('restore:a'),'failed local save after remote revoke must restore guardian access');}
  assert(portal.includes("if(st.studentStatus&&st.studentStatus!=='active'&&!forReactivation)throw new Error('STUDENT_NOT_ACTIVE')"),'inactive snapshots blocked for normal requests');
  assert(portal.includes('revokeForStudentDeactivation:revokeForStudentDeletion'),'all status routes reuse verified cleanup');
- assert(index.includes('guardian-portal-share.js?v=rc16')&&worker.includes('guardian-portal-share.js?v=rc16'),'fresh worker asset versioning');
+ assert(index.includes('guardian-portal-share.js?v=rc17')&&worker.includes('guardian-portal-share.js?v=rc17'),'fresh worker asset versioning');
  for(const f of ['js/features/goal-planning.js','js/features/session-intelligence-119.js']){
    const t=fs.readFileSync(path.join(root,f),'utf8');assert(t.includes("typeof out.then==='function'"),`${f} must await deferred status save`);
  }

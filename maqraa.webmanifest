@@ -1,0 +1,67 @@
+{
+  "id": "./maqraa.html",
+  "name": "المقرأة الحرة — أكاديمية الإمام",
+  "short_name": "المقرأة الحرة",
+  "description": "مقرأة عامة مستقلة للتلاوة والحفظ والمراجعة، مع تنزيل المصحف والتلاوات للعمل دون إنترنت.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./maqraa.html?source=installed-maqraa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait",
+  "background_color": "#f5f3ed",
+  "theme_color": "#202329",
+  "categories": [
+    "education",
+    "books",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "فتح المقرأة",
+      "short_name": "المقرأة",
+      "url": "./maqraa.html",
+      "icons": [
+        {
+          "src": "./icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "التلاوات المحفوظة",
+      "short_name": "التلاوات",
+      "url": "./maqraa.html#offline-audio",
+      "icons": [
+        {
+          "src": "./icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

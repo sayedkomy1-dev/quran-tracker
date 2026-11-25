@@ -6,18 +6,17 @@
   const SURAS=[
     ['الفاتحة',7],['البقرة',286],['آل عمران',200],['النساء',176],['المائدة',120],['الأنعام',165],['الأعراف',206],['الأنفال',75],['التوبة',129],['يونس',109],['هود',123],['يوسف',111],['الرعد',43],['إبراهيم',52],['الحجر',99],['النحل',128],['الإسراء',111],['الكهف',110],['مريم',98],['طه',135],['الأنبياء',112],['الحج',78],['المؤمنون',118],['النور',64],['الفرقان',77],['الشعراء',227],['النمل',93],['القصص',88],['العنكبوت',69],['الروم',60],['لقمان',34],['السجدة',30],['الأحزاب',73],['سبأ',54],['فاطر',45],['يس',83],['الصافات',182],['ص',88],['الزمر',75],['غافر',85],['فصلت',54],['الشورى',53],['الزخرف',89],['الدخان',59],['الجاثية',37],['الأحقاف',35],['محمد',38],['الفتح',29],['الحجرات',18],['ق',45],['الذاريات',60],['الطور',49],['النجم',62],['القمر',55],['الرحمن',78],['الواقعة',96],['الحديد',29],['المجادلة',22],['الحشر',24],['الممتحنة',13],['الصف',14],['الجمعة',11],['المنافقون',11],['التغابن',18],['الطلاق',12],['التحريم',12],['الملك',30],['القلم',52],['الحاقة',52],['المعارج',44],['نوح',28],['الجن',28],['المزمل',20],['المدثر',56],['القيامة',40],['الإنسان',31],['المرسلات',50],['النبأ',40],['النازعات',46],['عبس',42],['التكوير',29],['الانفطار',19],['المطففين',36],['الانشقاق',25],['البروج',22],['الطارق',17],['الأعلى',19],['الغاشية',26],['الفجر',30],['البلد',20],['الشمس',15],['الليل',21],['الضحى',11],['الشرح',8],['التين',8],['العلق',19],['القدر',5],['البينة',8],['الزلزلة',8],['العاديات',11],['القارعة',11],['التكاثر',8],['العصر',3],['الهمزة',9],['الفيل',5],['قريش',4],['الماعون',7],['الكوثر',3],['الكافرون',6],['النصر',3],['المسد',5],['الإخلاص',4],['الفلق',5],['الناس',6]
   ];
-  const RECITERS=[
-    ['Husary_128kbps','الشيخ محمود خليل الحصري — مرتل'],
-    ['Husary_Muallim_128kbps','الشيخ محمود خليل الحصري — معلم'],
-    ['Minshawy_Murattal_128kbps','الشيخ محمد صديق المنشاوي — مرتل'],
-    ['Minshawy_Teacher_128kbps','الشيخ محمد صديق المنشاوي — معلم'],
-    ['Alafasy_128kbps','الشيخ مشاري راشد العفاسي'],
-    ['MaherAlMuaiqly128kbps','الشيخ ماهر المعيقلي']
-  ];
+  const RECITERS=(g.ImamQuranReciters?.list||[
+    {folder:'Husary_128kbps',label:'الشيخ محمود خليل الحصري — مرتل'},
+    {folder:'Husary_Muallim_128kbps',label:'الشيخ محمود خليل الحصري — معلم'},
+    {folder:'Minshawy_Murattal_128kbps',label:'الشيخ محمد صديق المنشاوي — مرتل'},
+    {folder:'Alafasy_128kbps',label:'الشيخ مشاري راشد العفاسي'},
+    {folder:'MaherAlMuaiqly128kbps',label:'الشيخ ماهر المعيقلي'}
+  ]).map(x=>[x.folder,x.label]);
   const PREF_KEY=document.documentElement.dataset.guestPractice==='1'?'wlq:guest:player-prefs:v1':'imam:guardian-tahfeez:prefs:v1';
   const LAST_PREFIX='imam:guardian-tahfeez:last:v2:';
-  const TEXT_INDEX='imam:guardian-tahfeez:text-index:v1';
   const TEXT_PREFIX='imam:guardian-tahfeez:text:';
+  const TEXT_DB='imam-guardian-quran-text-v2',TEXT_STORE='chapters';let textDbPromise=null;
   const AUDIO_CACHE='imam-guardian-tahfeez-audio-v1';
   const $=id=>document.getElementById(id);
   const clamp=(v,min,max,def=min)=>{v=Number(v);return Number.isFinite(v)?Math.max(min,Math.min(max,v)):def;};
@@ -25,7 +24,7 @@
   const state={
     context:null,assignment:null,open:false,repeatMode:'range',practiceMode:'listen',textRevealed:true,verses:[],selectedAyah:1,
     sequence:[],sequenceIndex:0,cycle:1,itemLoop:1,playing:false,paused:false,timer:null,countdownTimer:null,countdownEnd:0,
-    objectUrl:'',fetchController:null,playRequest:0,activeAudioToken:0,lastEndedToken:0,mediaReadyCleanup:null,textRequest:0,textChapter:0,preparing:false,offlineRequest:0,downloading:false,downloadCancel:false,historyPushed:false,lastState:null
+    objectUrl:'',fetchController:null,playRequest:0,activeAudioToken:0,lastEndedToken:0,mediaReadyCleanup:null,textRequest:0,textChapter:0,preparing:false,offlineRequest:0,downloading:false,downloadCancel:false,historyPushed:false,lastState:null,textPackDownloading:false,textPackCancel:false,textPackController:null
   };
   let selectedNode=null,playingNode=null,renderKey="",offlineTimer=null;
   function toast(msg){
@@ -86,7 +85,7 @@
   }
   function updateLabels(){
     const r=currentRange();
-    const basmala=$('tahfeezBasmala');if(basmala)basmala.hidden=!(g.ImamTahfeezFlow?.showOpeningBasmala?.(r.chapter,r.from)??(r.from===1&&r.chapter!==1&&r.chapter!==9));
+    const guide=g.ImamTahfeezFlow?.openingGuide?.(r.chapter,r.from)||{istiadhah:true,basmala:r.from===1&&r.chapter!==1&&r.chapter!==9};const istiadhah=$('tahfeezIstiadhah');if(istiadhah)istiadhah.hidden=!guide.istiadhah;const basmala=$('tahfeezBasmala');if(basmala)basmala.hidden=!guide.basmala;
     if($('tahfeezSurahLabel'))$('tahfeezSurahLabel').textContent=`سورة ${r.surah}`;
     if($('tahfeezRangeLabel'))$('tahfeezRangeLabel').textContent=`الآيات ${r.from}–${r.to}`;
     if($('tahfeezNowSurah'))$('tahfeezNowSurah').textContent=`سورة ${r.surah}`;if($('tahfeezNowAyah'))$('tahfeezNowAyah').textContent=`الآية ${clamp(state.selectedAyah,r.from,r.to,r.from)}`;
@@ -146,17 +145,11 @@
     state.timer=setTimeout(()=>{state.timer=null;clearCountdown();fn();},ms);updatePlayButton();
   }
   function textCacheKey(ch){return `${TEXT_PREFIX}${ch}`;}
-  function textFromCache(ch){try{const d=JSON.parse(localStorage.getItem(textCacheKey(ch))||'null');return Array.isArray(d)&&d.length?d:null;}catch(_){return null;}}
-  function saveTextCache(ch,arr){
-    try{
-      localStorage.setItem(textCacheKey(ch),JSON.stringify(arr));
-      let idx=JSON.parse(localStorage.getItem(TEXT_INDEX)||'[]');idx=Array.isArray(idx)?idx.filter(x=>Number(x)!==ch):[];idx.push(ch);
-      while(idx.length>8){const old=idx.shift();localStorage.removeItem(textCacheKey(old));}
-      localStorage.setItem(TEXT_INDEX,JSON.stringify(idx));
-    }catch(_){}
-  }
+  function textDb(){if(!g.indexedDB)return Promise.reject(Error('TEXT_STORAGE_UNAVAILABLE'));if(!textDbPromise)textDbPromise=new Promise((resolve,reject)=>{const req=g.indexedDB.open(TEXT_DB,1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(TEXT_STORE))req.result.createObjectStore(TEXT_STORE,{keyPath:'chapter'});};req.onsuccess=()=>{const db=req.result;db.onversionchange=()=>{db.close();textDbPromise=null;};resolve(db);};req.onerror=()=>reject(req.error||Error('TEXT_STORAGE_OPEN'));}).catch(e=>{textDbPromise=null;throw e;});return textDbPromise;}
+  async function textFromCache(ch){try{const db=await textDb();const row=await new Promise((resolve,reject)=>{const tx=db.transaction(TEXT_STORE,'readonly'),req=tx.objectStore(TEXT_STORE).get(Number(ch));req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);tx.onerror=()=>reject(tx.error);});if(Array.isArray(row?.verses)&&row.verses.length)return row.verses;}catch(_){}try{const d=JSON.parse(localStorage.getItem(textCacheKey(ch))||'null');return Array.isArray(d)&&d.length?d:null;}catch(_){return null;}}
+  async function saveTextCache(ch,arr){try{const db=await textDb();await new Promise((resolve,reject)=>{const tx=db.transaction(TEXT_STORE,'readwrite');tx.objectStore(TEXT_STORE).put({chapter:Number(ch),verses:arr,savedAt:Date.now()});tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}catch(_){try{localStorage.setItem(textCacheKey(ch),JSON.stringify(arr));}catch(__){}}}
   async function fetchText(ch,force=false){
-    if(!force){const cached=textFromCache(ch);if(cached)return cached;}
+    if(!force){const cached=await textFromCache(ch);if(cached)return cached;}
     if(state.fetchController)state.fetchController.abort();state.fetchController=new AbortController();
     const sig=state.fetchController.signal;
     const endpoints=[`https://api.quran.com/api/v4/quran/verses/qpc_hafs?chapter_number=${ch}`,`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${ch}`];
@@ -166,15 +159,22 @@
         const res=await fetch(url,{signal:sig,headers:{Accept:'application/json'},cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);
         const d=await res.json(),rows=Array.isArray(d.verses)?d.verses:[];
         const arr=rows.map((v,i)=>({ayah:Number(v.verse_key?.split(':')[1]||v.verse_number||i+1),text:v.text_qpc_hafs||v.text_uthmani||v.text||''})).filter(v=>v.ayah&&v.text);
-        if(arr.length){saveTextCache(ch,arr);return arr;}
+        if(arr.length){await saveTextCache(ch,arr);return arr;}
       }catch(e){last=e;if(e?.name==='AbortError')throw e;}
     }
+    throw last||new Error('Quran text unavailable');
+  }
+  async function fetchTextPackChapter(ch){
+    const cached=await textFromCache(ch);if(cached)return cached;
+    const controller=state.textPackController||new AbortController(),sig=controller.signal;
+    const endpoints=[`https://api.quran.com/api/v4/quran/verses/qpc_hafs?chapter_number=${ch}`,`https://api.quran.com/api/v4/quran/verses/uthmani?chapter_number=${ch}`];let last;
+    for(const url of endpoints){try{const res=await fetch(url,{signal:sig,headers:{Accept:'application/json'},cache:'no-store'});if(!res.ok)throw new Error(`HTTP ${res.status}`);const data=await res.json(),rows=Array.isArray(data.verses)?data.verses:[],arr=rows.map((v,i)=>({ayah:Number(v.verse_key?.split(':')[1]||v.verse_number||i+1),text:v.text_qpc_hafs||v.text_uthmani||v.text||''})).filter(v=>v.ayah&&v.text);if(arr.length){await saveTextCache(ch,arr);return arr;}}catch(e){last=e;if(e?.name==='AbortError')throw e;}}
     throw last||new Error('Quran text unavailable');
   }
   async function loadText(force=false){
     const r=currentRange(),request=++state.textRequest;state.fetchController?.abort();if(!force&&state.textChapter===r.chapter&&state.verses.length){state.selectedAyah=clamp(state.selectedAyah,r.from,r.to,r.from);updateLabels();renderText();return;}if(state.textChapter!==r.chapter){state.verses=[];state.textChapter=0;updateFocus();}updateLabels();const el=$('tahfeezText');el.innerHTML='<div class="tahfeez-loading"><i></i><span>جارٍ تحميل النص العثماني…</span></div>';
     try{const verses=await fetchText(r.chapter,force);if(request!==state.textRequest||currentChapter()!==r.chapter)return;state.verses=verses;state.textChapter=r.chapter;renderKey='';if(state.selectedAyah<r.from||state.selectedAyah>r.to)state.selectedAyah=r.from;renderText();}
-    catch(e){if(e?.name==='AbortError'||request!==state.textRequest||currentChapter()!==r.chapter)return;const cached=textFromCache(r.chapter);if(cached){state.verses=cached;state.textChapter=r.chapter;renderKey='';renderText();return;}state.verses=[];state.textChapter=0;updateFocus();el.innerHTML='<div class="tahfeez-empty"><b>تعذر تحميل النص الآن</b><span>يمكن تشغيل الصوت إذا كان محفوظًا على الجهاز، أو المحاولة عند توفر الإنترنت.</span></div>';}
+    catch(e){if(e?.name==='AbortError'||request!==state.textRequest||currentChapter()!==r.chapter)return;const cached=await textFromCache(r.chapter);if(cached){state.verses=cached;state.textChapter=r.chapter;renderKey='';renderText();return;}state.verses=[];state.textChapter=0;updateFocus();el.innerHTML='<div class="tahfeez-empty"><b>تعذر تحميل النص الآن</b><span>يمكن تشغيل الصوت إذا كان محفوظًا على الجهاز، أو المحاولة عند توفر الإنترنت.</span></div>';}
   }
   function renderText(){
     const r=currentRange(),bounds=repeatBounds(),rows=state.verses.filter(v=>v.ayah>=r.from&&v.ayah<=r.to),el=$('tahfeezText');if(!el)return;
@@ -334,6 +334,14 @@
       $('tahfeezOfflineStatus').textContent=count?`${count} من ${r.max} آية موجودة محليًا · يتم التحقق عند التشغيل`:'يمكن تنزيل التكليف على هذا الجهاز';
     }catch(_){if(request===state.offlineRequest)$('tahfeezOfflineStatus').textContent='تعذر فحص المكتبة المحلية';}
   }
+  async function downloadAllText(){
+    if(state.textPackDownloading){state.textPackCancel=true;state.textPackController?.abort();return;}
+    state.textPackDownloading=true;state.textPackCancel=false;state.textPackController=new AbortController();const status=$('tahfeezTextPackStatus'),btn=$('tahfeezDownloadTextPack');if(btn)btn.textContent='إيقاف التنزيل';
+    try{try{await g.navigator?.storage?.persist?.();}catch(_){}let done=0;for(let ch=1;ch<=114;ch++){if(state.textPackCancel){if(status)status.textContent=`توقف التنزيل عند السورة ${ch}. النصوص المكتملة محفوظة.`;break;}await fetchTextPackChapter(ch);done++;if(status)status.textContent=`حفظ نص المصحف: ${done} / 114 سورة`;}if(done===114&&status)status.textContent='✓ تم حفظ نص المصحف كاملًا للعمل دون إنترنت على هذا الجهاز.';}
+    catch(err){if(status)status.textContent='تعذر إكمال تنزيل النص. السور المكتملة محفوظة ويمكن استكماله لاحقًا.';console.warn('[tahfeez text pack]',err);}
+    finally{state.textPackDownloading=false;state.textPackCancel=false;state.textPackController=null;if(btn)btn.textContent='↓ تنزيل نص المصحف كاملًا';}
+  }
+  function mountOfflineLibrary(){const host=$('tahfeezOfflineAudioLibrary');if(host&&g.ImamOfflineAudio?.mount)g.ImamOfflineAudio.mount(host);}
   function setNet(){const el=$('tahfeezNetState');if(!el)return;const on=navigator.onLine!==false;el.textContent=on?'متصل':'دون إنترنت';el.classList.toggle('offline',!on);}
   function configureAssignment(data){
     const oldKey=state.context?contextKey():'';state.context=data||null;const newKey=state.context?contextKey():'';if(oldKey!==newKey){stop();state.textRequest++;state.fetchController?.abort();const shell=$('guardianTahfeez');if(shell)delete shell.dataset.assignmentOpened;} state.assignment=data?.learning?.newAssignment||null;if($('tahfeezStudentName'))$('tahfeezStudentName').textContent=document.documentElement.dataset.guestPractice==='1'?'مساحتي الخاصة':(data?.student?.name||'الطالب');const btn=$('tahfeezUseAssignment');if(btn)btn.hidden=!state.assignment;state.lastState=readLast();updateResumeButton();
@@ -372,6 +380,7 @@
   }
   function toggleSettings(){const el=$('tahfeezSettings');if(el){const closed=el.classList.toggle('collapsed');document.querySelector('.tahfeez-layout')?.classList.toggle('settings-closed',closed);$('tahfeezSettingsToggle')?.setAttribute('aria-expanded',String(!closed));}}
   function init(){
+    mountOfflineLibrary();
     const surah=$('tahfeezSurah'),rec=$('tahfeezReciter');if(!surah||!rec)return;
     surah.innerHTML=SURAS.map((x,i)=>`<option value="${i+1}">${i+1}. سورة ${x[0]}</option>`).join('');rec.innerHTML=RECITERS.map(x=>`<option value="${x[0]}">${x[1]}</option>`).join('');
     const p=readPrefs();surah.value=String(clamp(p.surah,1,114,1));fillAyahSelectors(false);if(p.from)$('tahfeezFrom').value=String(clamp(p.from,1,surahAyahs(currentChapter()),1));if(p.to)$('tahfeezTo').value=String(clamp(p.to,1,surahAyahs(currentChapter()),surahAyahs(currentChapter())));updateTargetSelectors();
@@ -395,7 +404,7 @@
     state.lastState=x;try{localStorage.setItem(lastKey(),JSON.stringify(x));}catch(_){}updateResumeButton();
   }
   g.openGuardianAssignmentPractice=()=>{open({deferText:true});const shell=$('guardianTahfeez');if(shell)shell.dataset.assignmentOpened='1';if(!state.assignment){loadText();refreshOfflineStatus();toast('لا يوجد تكليف حفظ جديد من المحفظ حاليًا');return;}loadAssignment();};
-  g.ImamGuardianTahfeez={setContext:configureAssignment,open,close,loadAssignment,loadText,resumeLast,setPracticeMode,openCorrectionRange,restoreGuestLast,ayahCount:surahAyahs};
-  g.openGuardianTahfeez=open;g.openGuardianCorrectionRange=openCorrectionRange;g.closeGuardianTahfeez=close;g.tahfeezToggleSettings=toggleSettings;g.tahfeezLoadAssignment=loadAssignment;g.tahfeezResumeLast=resumeLast;g.tahfeezToggleReveal=toggleReveal;g.tahfeezLoadText=loadText;g.tahfeezPlayPause=playPause;g.tahfeezReplayCurrentAyah=replayCurrentAyah;g.tahfeezRestartRange=restartRange;g.tahfeezStop=()=>stop();g.tahfeezPreviousAyah=()=>jumpAyah(-1);g.tahfeezNextAyah=()=>jumpAyah(1);g.tahfeezSeekBy=seekBy;g.tahfeezToggleMute=toggleMute;g.tahfeezDownloadRange=downloadRange;g.tahfeezDownloadSurah=downloadSurah;g.tahfeezClearDownloads=clearDownloads;g.tahfeezCancelDownload=cancelDownload;
+  g.ImamGuardianTahfeez={setContext:configureAssignment,open,close,loadAssignment,loadText,downloadAllText,resumeLast,setPracticeMode,openCorrectionRange,restoreGuestLast,ayahCount:surahAyahs};
+  g.openGuardianTahfeez=open;g.openGuardianCorrectionRange=openCorrectionRange;g.closeGuardianTahfeez=close;g.tahfeezToggleSettings=toggleSettings;g.tahfeezLoadAssignment=loadAssignment;g.tahfeezResumeLast=resumeLast;g.tahfeezToggleReveal=toggleReveal;g.tahfeezLoadText=loadText;g.tahfeezDownloadAllText=downloadAllText;g.tahfeezPlayPause=playPause;g.tahfeezReplayCurrentAyah=replayCurrentAyah;g.tahfeezRestartRange=restartRange;g.tahfeezStop=()=>stop();g.tahfeezPreviousAyah=()=>jumpAyah(-1);g.tahfeezNextAyah=()=>jumpAyah(1);g.tahfeezSeekBy=seekBy;g.tahfeezToggleMute=toggleMute;g.tahfeezDownloadRange=downloadRange;g.tahfeezDownloadSurah=downloadSurah;g.tahfeezClearDownloads=clearDownloads;g.tahfeezCancelDownload=cancelDownload;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })(globalThis);

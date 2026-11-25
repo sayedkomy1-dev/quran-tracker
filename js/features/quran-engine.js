@@ -3,14 +3,13 @@
    Flexible reciters, repetition/tutoring timing, ayah selection, and per-surah offline audio. */
 (function registerQuranEngine(g){
   const root=g.ImamApp||(g.ImamApp={});
-  const RECITERS=Object.freeze([
-    {id:'Husary_128kbps',label:'الشيخ محمود خليل الحصري — مرتل'},
-    {id:'Husary_Muallim_128kbps',label:'الشيخ محمود خليل الحصري — معلم'},
-    {id:'Alafasy_128kbps',label:'الشيخ مشاري راشد العفاسي'},
-    {id:'Minshawy_Murattal_128kbps',label:'الشيخ محمد صديق المنشاوي — مرتل'},
-    {id:'Minshawy_Teacher_128kbps',label:'الشيخ محمد صديق المنشاوي — معلم'},
-    {id:'MaherAlMuaiqly128kbps',label:'الشيخ ماهر المعيقلي'}
-  ]);
+  const RECITERS=Object.freeze((g.ImamQuranReciters?.list||[
+    {folder:'Husary_128kbps',label:'الشيخ محمود خليل الحصري — مرتل'},
+    {folder:'Husary_Muallim_128kbps',label:'الشيخ محمود خليل الحصري — معلم'},
+    {folder:'Alafasy_128kbps',label:'الشيخ مشاري راشد العفاسي'},
+    {folder:'Minshawy_Murattal_128kbps',label:'الشيخ محمد صديق المنشاوي — مرتل'},
+    {folder:'MaherAlMuaiqly128kbps',label:'الشيخ ماهر المعيقلي'}
+  ]).map(x=>({id:x.folder,label:x.label})));
   const reciterIds=new Set(RECITERS.map(x=>x.id));
   const legacy={
     open:g.openQuranTextModal,

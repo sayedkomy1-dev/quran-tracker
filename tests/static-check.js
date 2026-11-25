@@ -11,6 +11,7 @@ const v8=read('v8.js');
 const v9=read('v9.js');
 const v10=read('v10.js');
 const quranEngine=read('js/features/quran-engine.js');
+const reciterCatalog=read('js/features/quran-reciter-registry.js');
 const mushafOffline=read('js/features/mushaf-offline.js');
 const runtime=read('js/core/runtime.js');
 const v10Data=read('js/features/v10-data.js');
@@ -52,14 +53,14 @@ new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='11.12.1-beta.28','VERSION must match the combined RC16 release');
+assert(version==='11.12.1-beta.29','VERSION must match the combined RC16 release');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
 assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'11.0.0'"),'app.js APP_VERSION must come from ImamApp runtime');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js?v=beta28-rc13'")&&sw.includes("'./v10.js?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/tokens.css?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/legacy-features.css?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2'")&&sw.includes("'./js/core/runtime.js?v=11.12.1-beta.28'")&&sw.includes("'./quran-engine.css?v=11.0.0'")&&sw.includes("'./auth.js?v=beta28-rc13'"),'service worker must cache consolidated platform and essential architecture assets');
+assert(sw.includes("'./v9.js?v=beta28-rc13'")&&sw.includes("'./v10.js?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/tokens.css?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/legacy-features.css?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2'")&&sw.includes("'./js/core/runtime.js?v=11.12.1-beta.29'")&&sw.includes("'./quran-engine.css?v=11.0.0'")&&sw.includes("'./auth.js?v=beta28-rc13'"),'service worker must cache consolidated platform and essential architecture assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.
@@ -113,7 +114,8 @@ assert(fs.statSync(file('branding/academy-badge-source.png')).size>1000000,'bran
 
 // All inline handlers must resolve to an application function or browser builtin.
 const revisionText=fs.readFileSync(file('js/features/revision-quran-text.js'),'utf8');
-const js=fs.readFileSync(file('js/features/teacher-quran-range-picker.js'),'utf8')+'\n'+revisionText+'\n'+runtime+'\n'+v10Data+'\n'+quranStructure+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+mushafOffline+'\n'+quranEngine+'\n'+v10+'\n'+guardianCommunication+'\n'+studentProgress+'\n'+teacherFollowup+'\n'+circleAnalytics+'\n'+guardianPortalShare;
+const assignmentAudio=fs.readFileSync(file('js/features/assignment-audio-share.js'),'utf8');
+const js=fs.readFileSync(file('js/features/teacher-quran-range-picker.js'),'utf8')+'\n'+revisionText+'\n'+runtime+'\n'+v10Data+'\n'+quranStructure+'\n'+auth+'\n'+syncCore+'\n'+app+'\n'+v8+'\n'+v9+'\n'+mushafOffline+'\n'+quranEngine+'\n'+v10+'\n'+guardianCommunication+'\n'+studentProgress+'\n'+teacherFollowup+'\n'+circleAnalytics+'\n'+guardianPortalShare+'\n'+assignmentAudio;
 const defs=new Set([...js.matchAll(/\b(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(m=>m[1]));
 for(const m of v10.matchAll(/\b([A-Za-z_$][\w$]*)\s*:\s*v10[A-Za-z_$][\w$]*/g))defs.add(m[1]);
 for(const m of revisionText.matchAll(/g\.(v1181\w+)\s*=\s*\w+/g))defs.add(m[1]);
@@ -287,7 +289,7 @@ assert(v10Data.includes('juzRanges:Object.freeze')&&v10Data.includes('themes:Obj
 // v10.3 Quran teaching engine regression guards.
 assert(html.indexOf('v9.js')<html.indexOf('js/features/quran-engine.js')&&html.indexOf('js/features/quran-engine.js')<html.indexOf('v10.js'),'Quran engine load order invalid');
 assert(app.includes("if(typeof initQuranEngine==='function') await initQuranEngine()"),'Quran engine init hook missing');
-['Minshawy_Murattal_128kbps','Minshawy_Teacher_128kbps','MaherAlMuaiqly128kbps','Husary_128kbps','Alafasy_128kbps'].forEach(id=>assert(quranEngine.includes(id),`missing Quran reciter ${id}`));
+['Minshawy_Murattal_128kbps','Minshawy_Teacher_128kbps','MaherAlMuaiqly128kbps','Husary_128kbps','Alafasy_128kbps'].forEach(id=>assert(reciterCatalog.includes(id),`missing Quran reciter ${id}`));
 ['quranAyahRepeat','quranRangeRepeat','quranTutorPause','quranPlayMode','quranDownloadSurahBtn'].forEach(id=>assert(quranEngine.includes(id),`missing Quran engine control ${id}`));
 assert(quranEngine.includes('mediaPut')&&quranEngine.includes('mediaGet')&&quranEngine.includes('mediaDelete'),'offline surah audio must use IndexedDB media store');
 assert(quranEngine.includes('rangeLoopsLeft')&&quranEngine.includes('itemRepeatsLeft'),'flexible range/ayah repeat engine missing');
