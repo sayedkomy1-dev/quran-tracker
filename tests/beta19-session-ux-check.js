@@ -3,7 +3,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict'),vm=require('nod
 const read=p=>fs.readFileSync(p,'utf8');
 const html=read('index.html'),core=read('js/features/session-intelligence-119.js'),board=read('js/features/imam-smart-board.js'),picker=read('js/features/surah-picker-17.js'),css=read('css/platform/surah-picker.css'),responsive=read('css/platform/responsive.css'),sound=read('js/features/beta19-experience.js'),sw=read('sw.js');
 for(const p of ['js/features/session-intelligence-119.js','js/features/imam-smart-board.js','js/features/surah-picker-17.js','js/features/beta19-experience.js','js/features/platform-workflow.js'])new vm.Script(read(p),{filename:p});
-assert.equal(read('VERSION').trim(),'11.12.1-beta.29');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.30');
 assert.equal((html.match(/id="teacherAssignmentAudioBtn"/g)||[]).length,1,'share audio action must remain singular');
 const notes=html.indexOf('id="sesNotes"'),audio=html.indexOf('class="assignment-audio-details"'),save=html.indexOf('id="saveSessionBtn"');
 assert(notes>=0&&notes<audio&&audio<save,'audio must be in notes before official save actions');

@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Refresh release hash inventory
+        run: node scripts/release-integrity.mjs --write
       - name: Run release checks
         run: npm test
       - name: Verify release hashes

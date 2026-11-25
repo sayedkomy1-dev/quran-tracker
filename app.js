@@ -1,4 +1,4 @@
-// WLQ_RELEASE_11.12.1-beta.29 — Account-independent app version and safe upgrade hotfix.
+// WLQ_RELEASE_11.12.1-beta.30 — Account-independent app version and safe upgrade hotfix.
 
 'use strict';
 
@@ -598,6 +598,7 @@ function showAccountMigrationNotice(){
   else if(n.type==='legacy-owned-by-other')toast('توجد بيانات قديمة على هذا الجهاز مرتبطة بحساب آخر؛ تم فتح مساحة فارغة لهذا الحساب.','info');
   else if(n.type==='empty')toast('تم فتح مساحة بيانات فارغة لهذا الحساب، والبيانات القديمة لم تُحذف.','info');
 }
+function restoreEncryptedCloudBackup(event){return globalThis.ImamApp?.DataProtection?.restoreEncryptedCloudBackup?.(event);}
 function save(){
   // RC13: reclaim only exact duplicate mirrors before writing the next complete snapshot.
   // This reduces LocalStorage pressure without touching unique recovery copies.

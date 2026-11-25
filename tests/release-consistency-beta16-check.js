@@ -3,17 +3,20 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const root=path.resolve(__dirname,'..');
 const read=f=>fs.readFileSync(path.join(root,f),'utf8');
 const version=read('VERSION').trim();
-assert.equal(version,'11.12.1-beta.29');
+assert.equal(version,'11.12.1-beta.30');
 assert.equal(JSON.parse(read('package.json')).version,version);
 assert.equal(JSON.parse(read('manifest.json')).version,version);
 const html=read('index.html'),portal=read('guardian-portal.html'),sw=read('sw.js');
 assert(html.includes(`name="application-version" content="${version}"`));
 assert(sw.includes(`const APP_VERSION = '${version}'`));
-assert(sw.includes(`const CACHE_NAME = 'quran-pwa-v${version}-workspace-workflow'`));
+assert(sw.includes(`const CACHE_NAME = 'quran-pwa-v${version}-data-protection'`));
 for(const name of ['app.js','js/core/runtime.js','js/core/boot-health.js','js/core/offline-bootstrap.js','js/features/platform-workflow.js'])
  assert(!read(name).includes('11.12.1-beta.14'),`${name} has old release marker`);
 const requiredAssets=[
- ['app.js','app.js?v=beta29-rc17'],
+ ['app.js','app.js?v=11.12.1-beta.30'],
+ ['v8.js',`v8.js?v=${version}`],
+ ['js/features/data-protection-sync-rc30.js',`js/features/data-protection-sync-rc30.js?v=${version}`],
+ ['js/features/supervisor-dashboard.js',`js/features/supervisor-dashboard.js?v=${version}`],
  ['js/core/runtime.js',`js/core/runtime.js?v=${version}`],
  ['js/core/boot-health.js',`js/core/boot-health.js?v=${version}`],
  ['js/core/offline-bootstrap.js',`js/core/offline-bootstrap.js?v=${version}`],
