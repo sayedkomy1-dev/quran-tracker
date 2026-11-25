@@ -139,7 +139,7 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/guardian-portal-share.js?v=rc16',
   './js/features/assignment-audio-share.js?v=beta29-rc17',
   './v9.js?v=beta28-rc13',
-  './v8.js?v=11.12.1-beta.27-error-followup-candidate',
+  './v8.js?v=11.12.1-beta.30',
   './js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate',
   './error-followup.css?v=11.12.1-beta.27-error-followup-candidate',
   './app.js?v=11.12.1-beta.30',
@@ -256,7 +256,7 @@ const APP_SHELL = [
 
 
   './app.js?v=11.12.1-beta.30',
-  './v8.js?v=11.12.1-beta.27-error-followup-candidate',
+  './v8.js?v=11.12.1-beta.30',
   './js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate',
   './error-followup.css?v=11.12.1-beta.27-error-followup-candidate',
   './v9.js?v=beta28-rc13',
@@ -512,7 +512,7 @@ async function cacheVerifiedCurrentShell(cache,url){
   const body=await response.clone().text();
   if(url==='./index.html' &&
      (!body.includes(`name="application-version" content="${APP_VERSION}"`)
-      ||!body.includes('app.js?v=beta29-rc17')
+      ||!body.includes('app.js?v=11.12.1-beta.30')
       ||!body.includes(`runtime.js?v=${APP_VERSION}`)))
     throw new Error('[SW] index.html is an older release');
   if(['./index.html','./guardian-portal.html','./guest-practice.html','./maqraa.html'].includes(url) && !body.includes('offline-audio-library.js?v=beta29-rc17'))
