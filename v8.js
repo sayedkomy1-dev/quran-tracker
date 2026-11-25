@@ -101,7 +101,8 @@ function migrateV8Data(){
   settings.quranReciter=['Husary_128kbps','Husary_Muallim_128kbps','Alafasy_128kbps','Minshawy_Murattal_128kbps','Minshawy_Teacher_128kbps','MaherAlMuaiqly128kbps'].includes(settings.quranReciter)?settings.quranReciter:'Husary_128kbps';
   settings.security={lockEnabled:false,pinHash:'',credentialId:'',...(settings.security||{})};
   const previousSync=settings.sync&&typeof settings.sync==='object'?settings.sync:{};
-  settings.sync={mode:'account',passphrase:'',auto:false,lastPush:'',lastPull:'',deviceId:'',serverRevision:0,safeSyncVersion:2,lastLocalSaveAt:'',...previousSync};
+  settings.sync={mode:'account',passphrase:'',auto:true,lastPush:'',lastPull:'',deviceId:'',serverRevision:0,safeSyncVersion:2,lastLocalSaveAt:'',...previousSync};
+  if(Number(previousSync.autoSyncPolicyVersion)!==1){settings.sync.auto=true;settings.sync.autoSyncPolicyVersion=1;changed=true;}
   if(settings.sync.mode!=='account'||settings.sync.id||settings.sync.authSecret){settings.sync.mode='account';settings.sync.id='';settings.sync.authSecret='';changed=true;}
   if(!settings.sync.deviceId){settings.sync.deviceId=makeId('device');changed=true;}
   if(Number(previousSync.safeSyncVersion)!==2){settings.sync.safeSyncVersion=2;settings.sync.serverRevision=0;settings.sync.auto=false;changed=true;}
@@ -121,6 +122,7 @@ async function initV8Layer(){
   renderV8Settings();
   renderWeeklyGoals();
   await createAutoBackup(false).catch(()=>{});
+  try{globalThis.ImamApp?.CloudBackups?.initialize?.();}catch(_){}
   initSecurityLayer();
   if(settings.sync?.auto)setTimeout(()=>autoCloudSync(),2500);
 }
@@ -508,7 +510,7 @@ function stampLocalSyncChanges(){
   for(const list of [students,sessions,tasks])for(const item of list){if(item&&itemTimestamp(item)>=since)item.updatedByDevice=deviceId;}
   settings.sync.lastLocalSaveAt=v8Now();
 }
-function save(){if(!V8.syncing)stampLocalSyncChanges();const stored=__IMAM_BASE__.save();if(stored===false)return false;scheduleAutoBackup();if(settings.sync?.auto&&!V8.syncing)scheduleCloudPush();return stored!==false;}
+function save(){if(!V8.syncing)stampLocalSyncChanges();const stored=__IMAM_BASE__.save();if(stored===false)return false;scheduleAutoBackup();try{globalThis.ImamApp?.CloudBackups?.schedule?.();}catch(_){}if(settings.sync?.auto&&!V8.syncing)scheduleCloudPush();return stored!==false;}
 
 // ──────────────────────────────────────
 // Account-owned encrypted Supabase sync

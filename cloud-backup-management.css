@@ -1,0 +1,6 @@
+.cloud-backup-note{font-size:12px;line-height:1.7;color:var(--muted,#68756d);margin:6px 0 10px}
+#cloudBackupStatus{font-size:12px;line-height:1.7;padding:9px 11px;border-radius:10px;background:rgba(33,132,87,.08);margin:8px 0}
+#cloudBackupStatus.sync-err{background:rgba(180,55,55,.08);color:#a22}
+.supervision-buttons [data-supervision="backup"]{border-color:#7aa68d;background:rgba(33,132,87,.08)}
+.supervision-scope-options label{display:flex;align-items:center;gap:6px;min-height:34px}
+@media(max-width:600px){.supervision-buttons [data-supervision="backup"]{width:100%}}

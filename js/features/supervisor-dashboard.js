@@ -58,6 +58,7 @@
       if(action==='students-close'){const h=inlineHost(btn.closest('.supervisor-row'));if(h)h.hidden=true;return;}
       if(action==='students'||action==='ratings')return detail(id,action,btn.closest('.supervisor-row'));
       if(action==='progress')return g.ImamApp?.ProgressBridge?.detail?.(id,btn.closest('.supervisor-row'));
+      if(action==='backup')return g.downloadTeacherBackup?.(id,btn.closest('.supervisor-row')?.querySelector('.supervisor-row-title b')?.textContent||'المحفظ');
       if(action==='scope')return scopes(id,btn.closest('.supervisor-row'));
       if(action==='scope-save')return saveScope(id,btn.dataset.target,btn.closest('.supervisor-row'));
       if(action==='grant'||action==='revoke')return grant(id,action==='grant');
@@ -111,6 +112,7 @@
       <div class="supervision-buttons">${t.can_students!==false?`<button data-supervision="students" data-teacher="${esc(t.id)}">👥 عرض أسماء الطلاب</button>`:''}
       ${t.can_progress===true?`<button data-supervision="progress" data-teacher="${esc(t.id)}">📈 نتائج التسميع المنشورة</button>`:''}
       ${t.can_ratings!==false?`<button data-supervision="ratings" data-teacher="${esc(t.id)}">⭐ التقييمات الخاصة</button>`:''}
+      ${t.can_backups===true?`<button data-supervision="backup" data-teacher="${esc(t.id)}">⬇️ تنزيل نسخة JSON</button>`:''}
       ${isOwner&&t.role!=='owner'?`<button data-supervision="${t.supervisor?'revoke':'grant'}" data-teacher="${esc(t.id)}">${t.supervisor?'إلغاء صفة المشرف':'منح صفة المشرف'}</button>${t.supervisor?`<button data-supervision="scope" data-teacher="${esc(t.id)}">⚙️ صلاحيات ونطاق المشرف</button>`:''}`:''}</div>
       <div class="supervisor-inline-detail" data-supervision-detail hidden></div>
     </article>`).join('')||'<p>لا يوجد محفظون في نطاق صلاحيتك. يحدد المالك المحفظين والأقسام المسموح لك بمتابعتها.</p>';
@@ -151,6 +153,7 @@
       <label><input type="checkbox" data-cap="progress" ${t.progress?'checked':''}> مؤشرات التقدم</label>
       <label><input type="checkbox" data-cap="ratings" ${t.ratings?'checked':''}> التقييمات الخاصة</label>
       <label><input type="checkbox" data-cap="messages" ${t.messages?'checked':''}> عدد الرسائل</label>
+      <label><input type="checkbox" data-cap="backups" ${t.backups?'checked':''}> تنزيل النسخ الاحتياطية JSON</label>
       </div><button type="button" data-supervision="scope-save" data-teacher="${esc(id)}" data-target="${esc(t.teacher_id)}">حفظ صلاحيات هذا المحفظ</button></div>`).join('')||'<p>لا يوجد محفظون نشطون آخرون لتخصيصهم للمشرف.</p>');
       reveal(host);
     }catch(err){inlineNotice(host,'تعذر تحميل قائمة الصلاحيات. تأكد من تنفيذ SQL الجديد.');}finally{busy=false;}
@@ -158,7 +161,7 @@
   async function saveScope(supervisorId,teacherId,row){if(!isOwner)return;
     const host=inlineHost(row),button=[...(host?.querySelectorAll?.('[data-supervision="scope-save"]')||[])].find(x=>x.dataset.target===teacherId);
     const container=button?.closest('.supervision-scope-row');if(!container)return;
-    const value={};for(const name of ['students','progress','ratings','messages'])value[name]=Boolean(container.querySelector(`[data-cap="${name}"]`)?.checked);
+    const value={};for(const name of ['students','progress','ratings','messages','backups'])value[name]=Boolean(container.querySelector(`[data-cap="${name}"]`)?.checked);
     if(value.progress&&!value.students){status('مؤشرات التقدم تتطلب أيضًا صلاحية عرض الطلاب.');return;}
     busy=true;try{const d=await rpc('app_supervisor_scope_set',{p_supervisor_user_id:supervisorId,p_teacher_user_id:teacherId,p_permissions:value});
       if(d?.ok!==true)throw Error('UNCONFIRMED');status('تم حفظ صلاحيات المحفظ من الخادم.');button.textContent='✓ تم الحفظ';}
