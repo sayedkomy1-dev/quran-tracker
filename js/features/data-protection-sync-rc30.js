@@ -13,13 +13,15 @@
     g.migrateV8Data=function(){
       const oldVersion=Number(settings?.sync?.safeSyncVersion)||0;
       const oldRevision=Number(settings?.sync?.serverRevision)||0;
+      const oldAuto=settings?.sync?.auto;
+      // The legacy migrator only understands protocol marker 2. Present 2 while it runs,
+      // then restore RC30 marker 3 so later saves do not reset the revision repeatedly.
+      if(oldVersion>=3)settings.sync.safeSyncVersion=2;
       const changed=baseMigrate();
-      if(oldVersion<3){
-        settings.sync={...(settings.sync||{}),safeSyncVersion:3,auto:true,
-          serverRevision:Math.max(Number(settings.sync.serverRevision)||0,oldRevision)};
-        return true;
-      }
-      return changed;
+      settings.sync.safeSyncVersion=3;
+      settings.sync.auto=oldVersion<3?true:oldAuto!==false;
+      settings.sync.serverRevision=Math.max(Number(settings.sync.serverRevision)||0,oldRevision);
+      return changed||oldVersion<3;
     };
   }
 
