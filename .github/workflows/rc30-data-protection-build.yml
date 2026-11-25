@@ -64,6 +64,7 @@ jobs:
             fi
           done < dist/changed-files.txt
           cp SHA256SUMS.txt dist/updates/quran-tracker-main/SHA256SUMS.txt
+          cp DELETE_FILES.txt dist/updates/quran-tracker-main/DELETE_FILES.txt
           cp RC30_INSTALL_AR.txt dist/updates/quran-tracker-main/RC30_INSTALL_AR.txt
           (cd dist/updates && zip -qr ../Quran_Tracker_RC30_Updates_Only.zip quran-tracker-main)
 
