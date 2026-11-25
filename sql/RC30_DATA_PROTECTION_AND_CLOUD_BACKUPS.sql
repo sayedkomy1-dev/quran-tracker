@@ -167,7 +167,7 @@ create or replace function public.account_sync_push_v3(
   p_session_count integer,
   p_task_count integer,
   p_source_device_id text default null,
-  p_allow_empty boolean default false
+  p_allow_destructive boolean default false
 )
 returns jsonb
 language plpgsql security definer set search_path=public as $$
@@ -175,6 +175,8 @@ declare
   v_uid uuid:=auth.uid();
   v_current bigint;
   v_current_students integer;
+  v_current_sessions integer;
+  v_current_tasks integer;
   v_next bigint;
 begin
   if v_uid is null then raise exception 'AUTH_REQUIRED'; end if;
@@ -192,8 +194,8 @@ begin
   if p_source_device_id is not null and length(p_source_device_id)>160
     then raise exception 'INVALID_DEVICE_ID'; end if;
 
-  select s.revision,s.student_count
-    into v_current,v_current_students
+  select s.revision,s.student_count,s.session_count,s.task_count
+    into v_current,v_current_students,v_current_sessions,v_current_tasks
     from public.account_sync s where s.owner_user_id=v_uid for update;
 
   if not found then
@@ -218,8 +220,12 @@ begin
 
   -- A transient empty local database must never erase a previously populated cloud account.
   -- An intentional full reset requires a separate, explicit user confirmation in the app.
-  if p_student_count=0 and (v_current_students is null or v_current_students>0) and not coalesce(p_allow_empty,false)
-    then raise exception 'EMPTY_REPLACEMENT_BLOCKED'; end if;
+  if not coalesce(p_allow_destructive,false) and (
+       (v_current_students is null and p_student_count=0)
+       or (v_current_students is not null and p_student_count<v_current_students)
+       or (v_current_sessions is not null and p_session_count<v_current_sessions)
+       or (v_current_tasks is not null and p_task_count<v_current_tasks)
+     ) then raise exception 'DESTRUCTIVE_SYNC_CONFIRM_REQUIRED'; end if;
 
   v_next:=v_current+1;
   update public.account_sync
