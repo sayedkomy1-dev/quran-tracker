@@ -69,6 +69,7 @@ jobs:
           cp SHA256SUMS.txt dist/updates/quran-tracker-main/SHA256SUMS.txt
           cp DELETE_FILES.txt dist/updates/quran-tracker-main/DELETE_FILES.txt
           cp RC30_INSTALL_AR.txt dist/updates/quran-tracker-main/RC30_INSTALL_AR.txt
+          cp sql/RC30_DATA_PROTECTION_AND_CLOUD_BACKUPS.sql dist/RC30_DATA_PROTECTION_AND_CLOUD_BACKUPS.sql
           (cd dist/updates && zip -qr ../Quran_Tracker_RC30_Updates_Only.zip quran-tracker-main)
 
           mkdir -p dist/full/quran-tracker-main
@@ -83,6 +84,7 @@ jobs:
             dist/Quran_Tracker_RC30_Updates_Only.zip
             dist/Quran_Tracker_RC30_Full_Project.zip
             dist/RC30_TEST_REPORT.txt
+            dist/RC30_DATA_PROTECTION_AND_CLOUD_BACKUPS.sql
             RC30_RELEASE_NOTES_AR.md
             RC30_INSTALL_AR.txt
           retention-days: 14
