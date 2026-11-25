@@ -12,13 +12,13 @@
 <meta name="apple-mobile-web-app-title" content="أكاديمية الإمام">
 <meta name="theme-color" content="#126044" id="themeColorMeta">
 <meta name="description" content="أكاديمية الإمام لتحفيظ القرآن الكريم — بالقرآن نحيا — نظام متابعة الطلاب والحفظ والمراجعة والتواصل مع أولياء الأمور">
-<meta name="application-version" content="11.12.1-beta.29">
-<link rel="manifest" href="manifest.json?v=11.12.1-beta.29">
+<meta name="application-version" content="11.12.1-beta.30">
+<link rel="manifest" href="manifest.json?v=11.12.1-beta.30">
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>أكاديمية الإمام لتحفيظ القرآن الكريم – بالقرآن نحيا</title>
 <script src="js/core/boot-health.js?v=11.12.1-beta.29"></script>
-<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.29"></script>
+<script src="js/core/offline-bootstrap.js?v=11.12.1-beta.30"></script>
 <!-- Original style files retained in repository for compatibility/tests, but NOT loaded at runtime.
      Historical refs: styles.css?v=11.0.0 | v9.css?v=11.0.0 | v10.css?v=11.0.0 | v11.css?v=11.4.1-profile-ui -->
 <link rel="stylesheet" href="css/platform/tokens.css?v=11.12.1-beta.27">
@@ -802,24 +802,26 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 
   <div class="card">
     <div class="ch">☁️ نسخة سحابية للحساب <span class="beta-badge">Beta</span></div>
-    <p class="txt-mut mb8" style="font-size:12px">كل حساب معتمد يملك مساحة مزامنة منفصلة. قبل أي رفع آمن يتم تنزيل أحدث نسخة ودمجها أولًا، ثم يُرفع Snapshot جديد برقم Revision لمنع الكتابة فوق تغييرات أحدث.</p>
+    <p class="txt-mut mb8" style="font-size:12px">كل حساب معتمد له مساحة منفصلة. يحفظ التطبيق محليًا عند انقطاع الإنترنت، ثم ينزل أحدث نسخة ويدمجها ويرفع التغييرات تلقائيًا عند عودة الاتصال. أي نقص في أعداد الطلاب أو الحصص أو المهام يوقف الرفع حتى تأكيدك الصريح.</p>
     <div class="fld"><label>الحساب الحالي</label><input type="text" id="syncAccount" readonly></div>
     <div class="fld"><label>كلمة تشفير النسخة السحابية</label><input type="password" id="syncPassphrase" autocomplete="new-password" placeholder="8 أحرف على الأقل — احتفظ بها لاستعادة البيانات على جهاز جديد" oninput="saveV8Settings()"></div>
     <p class="txt-mut" style="font-size:11px">عند فتح الحساب على جهاز جديد، اكتب نفس كلمة التشفير ثم اختر «تنزيل ودمج». لا يتم إرسال كلمة التشفير إلى Supabase.</p>
-    <label class="switch-line"><input type="checkbox" id="syncAuto" onchange="saveV8Settings()"><span>مزامنة تلقائية آمنة بعد التغييرات</span></label>
+    <label class="switch-line"><input type="checkbox" id="syncAuto" onchange="saveV8Settings()"><span>مزامنة تلقائية عند توفر الإنترنت + نسخة سحابية يومية مشفرة</span></label>
     <div class="settings-actions mt8"><button class="btn btn-g btn-sm" onclick="pushCloudSync()">⬆️ رفع نسخة مشفرة</button><button class="btn btn-out btn-sm" onclick="pullCloudSync()">⬇️ تنزيل ودمج</button></div>
     <div id="syncStatus" class="txt-mut mt8"></div>
   </div>
 
   <div class="card">
     <div class="ch">💾 النسخ الاحتياطي</div>
-    <p class="txt-mut mb8" style="font-size:11px">الملف الذي يتم تنزيله أو مشاركته نسخة محمولة ولا يتضمن PIN أو كلمات/أسرار المزامنة. النسخ التلقائية المحلية تبقى مخصصة للاستعادة على نفس الجهاز.</p>
+    <p class="txt-mut mb8" style="font-size:11px">النسخ المحلية تُحفظ يوميًا على الجهاز. النسخ السحابية اليومية مشفرة ومفصولة لكل محفظ. ملفات JSON التي ينزلها المالك أو المشرف مشفرة ولا يمكن استعادتها إلا بكلمة تشفير المحفظ.</p>
     <div class="settings-actions">
       <button class="btn btn-g mb8" onclick="exportData()">📤 تنزيل نسخة JSON</button>
       <button class="btn btn-out mb8" onclick="shareBackup()">📲 مشاركة نسخة احتياطية</button>
     </div>
-    <div id="autoBackupStatus" class="txt-mut mb8">النسخ التلقائي: —</div>
-    <button class="btn btn-out btn-sm mb8" onclick="restoreAutoBackup()">↩️ استعادة نسخة تلقائية</button>
+    <div id="autoBackupStatus" class="txt-mut mb8">النسخ المحلية: —</div>
+    <div id="cloudBackupStatus" class="txt-mut mb8">النسخ السحابية اليومية: —</div>
+    <button class="btn btn-out btn-sm mb8" onclick="restoreAutoBackup()">↩️ استعادة نسخة محلية تلقائية</button>
+    <div class="fld mt8"><label>استعادة نسخة JSON مشفرة من المالك / المشرف</label><input type="file" accept=".json,application/json" onchange="restoreEncryptedCloudBackup(event)" style="border:1px dashed var(--bdr);background:#fafafa;border-radius:10px;padding:10px"><small class="txt-mut">تتطلب اتصالًا بالإنترنت وكلمة تشفير حساب المحفظ. الاستعادة تستبدل النسخة السحابية بعد تأكيدك.</small></div>
     <div class="fld mt8">
       <label>استيراد بيانات</label>
       <input type="file" id="importFile" accept=".json" onchange="importData(event)" style="border:1px dashed var(--bdr);background:#fafafa;border-radius:10px;padding:10px">
@@ -1185,7 +1187,7 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <!-- ════════════ SCRIPTS ════════════ -->
 <!-- v11.2.0 Stage 2 interactive error marking -->
 
-<script src="js/core/runtime.js?v=11.12.1-beta.29" defer></script>
+<script src="js/core/runtime.js?v=11.12.1-beta.30" defer></script>
 <script src="js/features/v10-data.js?v=11.0.0" defer></script>
 <script src="auth.js?v=beta28-rc13" defer></script>
 <script src="js/features/role-home.js?v=beta29-rc17" defer></script>
@@ -1262,5 +1264,6 @@ html,body{overscroll-behavior-y:none}html{font-family:Arial,Tahoma,sans-serif;di
 <script src="js/features/rc9-lesson-flow.js?v=beta28-rc9" defer></script>
 <script src="js/features/rc10-teacher-fast-path.js?v=beta28-rc10" defer></script>
 <script src="js/features/rc11-teacher-flow.js?v=beta28-rc11" defer></script>
+<script src="js/features/data-protection-sync-rc30.js?v=11.12.1-beta.30" defer></script>
 </body>
 </html>
