@@ -269,7 +269,3 @@
   g.ImamApp.DataProtection={start,pushCloudSync,autoCloudSync,pullRemoteIntoLocal,dailyCloudBackup,restoreEncryptedCloudBackup};
 })(globalThis);
 
-// Inline HTML entry point, kept global for the app's static handler contract.
-function restoreEncryptedCloudBackup(event){
-  return globalThis.ImamApp?.DataProtection?.restoreEncryptedCloudBackup?.(event);
-}
