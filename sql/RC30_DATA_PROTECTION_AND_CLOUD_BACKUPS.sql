@@ -177,6 +177,7 @@ declare
   v_current_students integer;
   v_current_sessions integer;
   v_current_tasks integer;
+  v_existing public.account_sync%rowtype;
   v_next bigint;
 begin
   if v_uid is null then raise exception 'AUTH_REQUIRED'; end if;
@@ -194,9 +195,14 @@ begin
   if p_source_device_id is not null and length(p_source_device_id)>160
     then raise exception 'INVALID_DEVICE_ID'; end if;
 
-  select s.revision,s.student_count,s.session_count,s.task_count
-    into v_current,v_current_students,v_current_sessions,v_current_tasks
-    from public.account_sync s where s.owner_user_id=v_uid for update;
+  select s.* into v_existing from public.account_sync s
+    where s.owner_user_id=v_uid for update;
+  if found then
+    v_current:=v_existing.revision;
+    v_current_students:=v_existing.student_count;
+    v_current_sessions:=v_existing.session_count;
+    v_current_tasks:=v_existing.task_count;
+  end if;
 
   if not found then
     if p_expected_revision<>0 then
@@ -226,6 +232,17 @@ begin
        or (v_current_sessions is not null and p_session_count<v_current_sessions)
        or (v_current_tasks is not null and p_task_count<v_current_tasks)
      ) then raise exception 'DESTRUCTIVE_SYNC_CONFIRM_REQUIRED'; end if;
+
+  -- Preserve the previous encrypted cloud state before a due daily update or any approved reduction.
+  if v_existing.last_backup_at is null
+     or v_existing.last_backup_at<=now()-interval '24 hours'
+     or coalesce(p_allow_destructive,false) then
+    insert into public.account_sync_backups(owner_user_id,revision,payload,student_count,
+      session_count,task_count,source_device_id,created_at)
+    values(v_uid,v_existing.revision,v_existing.payload,v_existing.student_count,
+      v_existing.session_count,v_existing.task_count,null,now());
+    update public.account_sync set last_backup_at=now() where owner_user_id=v_uid;
+  end if;
 
   v_next:=v_current+1;
   update public.account_sync
@@ -303,6 +320,10 @@ declare v_job_id bigint;
 begin
   begin
     execute 'create extension if not exists pg_cron with schema pg_catalog';
+    if to_regnamespace('cron') is not null then
+      execute 'grant usage on schema cron to postgres';
+      execute 'grant all privileges on all tables in schema cron to postgres';
+    end if;
   exception when others then
     raise notice 'pg_cron could not be enabled here; PWA-triggered daily backup remains available: %',sqlerrm;
   end;
