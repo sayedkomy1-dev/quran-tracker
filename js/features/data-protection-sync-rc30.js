@@ -3,8 +3,6 @@
 (function dataProtection(g){
   const $=id=>g.document?.getElementById(id);
   let started=false,inFlight=false,retryTimer=null,pollTimer=null;
-  let retryMs=15000;
-  const MAX_RETRY=5*60*1000;
 
   // Enable automatic sync once for existing installs during this migration.
   // Teachers can still turn it off later in Settings.
@@ -136,7 +134,6 @@
           settings.sync.lastPush=new Date().toISOString();
           settings.sync.lastCloudCounts=counts;
           settings.sync.lastCloudFingerprint=currentFingerprint;
-          settings.sync.auto=true;
           persistBase();
           await dailyCloudBackup().catch(err=>{console.warn('[RC30] daily backup deferred',err);setCloudBackupStatus('تعذر إنشاء النسخة اليومية الآن؛ ستُعاد المحاولة تلقائيًا.',true);});
           renderHome?.();if(curPage==='students')renderSt?.();renderV8Settings?.();
