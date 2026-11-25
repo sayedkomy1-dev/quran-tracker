@@ -272,6 +272,54 @@ begin
 end;
 $$;
 
+-- Server-side daily scheduler: backups continue even when no teacher has the PWA open.
+create or replace function public.account_sync_backup_all_daily()
+returns integer language plpgsql security definer set search_path=public,pg_temp as $
+declare v_row public.account_sync%rowtype; v_count integer:=0;
+begin
+  for v_row in
+    select * from public.account_sync
+    where last_backup_at is null or last_backup_at<=now()-interval '24 hours'
+    for update skip locked
+  loop
+    insert into public.account_sync_backups(owner_user_id,revision,payload,student_count,
+      session_count,task_count,source_device_id,created_at)
+    values(v_row.owner_user_id,v_row.revision,v_row.payload,v_row.student_count,
+      v_row.session_count,v_row.task_count,null,now());
+    update public.account_sync set last_backup_at=now()
+      where owner_user_id=v_row.owner_user_id;
+    v_count:=v_count+1;
+  end loop;
+  delete from public.account_sync_backups where created_at<now()-interval '90 days';
+  return v_count;
+end;
+$;
+revoke all on function public.account_sync_backup_all_daily() from public,anon,authenticated;
+
+-- pg_cron is optional. If available, run one server-side snapshot every day at 02:15 UTC.
+-- The PWA also requests a daily backup when an account reconnects, as a fallback.
+do $
+declare v_job_id bigint;
+begin
+  begin
+    execute 'create extension if not exists pg_cron with schema pg_catalog';
+  exception when others then
+    raise notice 'pg_cron could not be enabled here; PWA-triggered daily backup remains available: %',sqlerrm;
+  end;
+  if to_regnamespace('cron') is not null then
+    begin
+      execute 'select cron.unschedule(jobid) from cron.job where jobname = ''wlq-account-sync-daily-backup''';
+      execute 'select cron.schedule(''wlq-account-sync-daily-backup'',''15 2 * * *'',''select public.account_sync_backup_all_daily();'')'
+        into v_job_id;
+      raise notice 'Daily cloud backup scheduled as cron job %',v_job_id;
+    exception when others then
+      raise notice 'Daily cron scheduling unavailable; PWA-triggered daily backup remains active: %',sqlerrm;
+    end;
+  else
+    raise notice 'pg_cron schema is not available; PWA-triggered daily backup remains active.';
+  end if;
+end $;
+
 create table if not exists public.app_teacher_backup_access_audit (
   id bigint generated always as identity primary key,
   actor_user_id uuid not null references auth.users(id),
