@@ -30,25 +30,50 @@ function createCorpusResolver(corpus, chapterMeta) {
   }
   return {version:corpus.version,verse,resolveLocation};
 }
+function buildReferenceSpan(start,end,scope,resolver){
+  if(!start||!end||!scope||!resolver||start.sura_idx!==scope.surahId||end.sura_idx!==scope.surahId||!Number.isInteger(start.aya_idx)||!Number.isInteger(end.aya_idx)||start.aya_idx<scope.fromAyah||end.aya_idx>scope.toAyah||end.aya_idx<start.aya_idx||end.aya_idx-start.aya_idx>100)return null;
+  const parts=[],words=[];let offset=0;
+  const boundary=(v,p)=>{
+    if(!Number.isInteger(p.uthmani_word_idx)||!Number.isInteger(p.uthmani_char_idx)||p.uthmani_word_idx<0||p.uthmani_word_idx>=v.words.length||p.uthmani_char_idx<0)return null;
+    const w=v.words[p.uthmani_word_idx],chars=Array.from(w.word);
+    if(p.uthmani_char_idx>chars.length)return null;
+    const n=chars.slice(0,p.uthmani_char_idx).join('').length;
+    const valid=[0];for(const g of w.chars)valid.push(valid.at(-1)+g.length);
+    return valid.includes(n)?w.start+n:null;
+  };
+  for(let ayah=start.aya_idx;ayah<=end.aya_idx;ayah++){
+    const v=resolver.verse(scope.surahId,ayah);if(!v)return null;
+    const a=ayah===start.aya_idx?boundary(v,start):0;
+    const b=ayah===end.aya_idx?boundary(v,end):v.text.length;
+    if(a===null||b===null||b<=a)return null;
+    if(parts.length)offset++; // only a literal single space is supported between verses
+    for(const [wi,w] of v.words.entries()){
+      if(w.end<=a||w.start>=b)continue;
+      // Keep the entire canonical word's coordinates, including clipped prefix.
+      words.push({ayah,wi,word:w.word,start:offset+w.start-a,end:offset+w.end-a,chars:w.chars});
+    }
+    parts.push(v.text.slice(a,b));offset+=b-a;
+  }
+  const text=parts.join(' ');
+  return text&&text.length<=10000?{text,words}:null;
+}
 function mapDraftForReview(draft, scope, resolver){
   const result={status:'requires-manual-reference',candidates:[],unmapped:[]};
   if(!draft||draft.format!=='imam-muaalem-draft-v1'||draft.approved!==false||draft.automaticImportAllowed!==false||!Array.isArray(draft.errors)||draft.errors.length>300||!scope||!resolver||scope.corpusVersion!==resolver.version)return result;
   const {start,end,uthmaniText}=draft;
-  if(!start||!end||start.sura_idx!==end.sura_idx||start.aya_idx!==end.aya_idx||start.sura_idx!==scope.surahId||!Number.isInteger(start.aya_idx)||start.aya_idx<scope.fromAyah||start.aya_idx>scope.toAyah)return result;
-  const v=resolver.verse(start.sura_idx,start.aya_idx);
-  // V0.4 only accepts exact full single verses. No fuzzy matching, removal of
-  // diacritics, offset guessing, or assuming code points are UTF-16 indexes.
-  if(!v||v.text!==uthmaniText||start.uthmani_word_idx!==0||start.uthmani_char_idx!==0)return result;
+  const v=buildReferenceSpan(start,end,scope,resolver);
+  // Compare exact text from the trusted corpus, never fuzzy match or normalize.
+  if(!v||v.text!==uthmaniText)return result;
   const codepoints=Array.from(v.text);
   const utf16At=[0];for(const c of codepoints)utf16At.push(utf16At[utf16At.length-1]+c.length);
-  const ruleTypes=new Map([['المد الطبيعي','مد طبيعي'],['المد اللازم','مد لازم'],['المد الواجب المتصل','مد متصل'],['المد الجائز المنفصل','مد منفصل'],['الغنة','غنة'],['القلقلة','قلقلة'],['الإقلاب','إقلاب'],['الإظهار الحلقي','إظهار'],['الإدغام بغنة','إدغام بغنة'],['الإدغام بغير غنة','إدغام بغير غنة'],['الإخفاء الحقيقي','إخفاء']]);
+  const ruleTypes=new Map([['المد الطبيعي','مد طبيعي'],['المد اللازم','مد لازم'],['المد الواجب المتصل','مد متصل'],['المد المتصل','مد متصل'],['المد الجائز المنفصل','مد منفصل'],['المد المنفصل','مد منفصل'],['الغنة','غنة'],['القلقلة','قلقلة'],['الإقلاب','إقلاب'],['الإظهار الحلقي','إظهار'],['الإدغام بغنة','إدغام بغنة'],['الإدغام بغير غنة','إدغام بغير غنة'],['الإخفاء الحقيقي','إخفاء']]);
   draft.errors.forEach((e,i)=>{
     const skip=reason=>result.unmapped.push({index:i,reason});
     const p=e?.uthmani_pos;
     if(!Array.isArray(p)||p.length!==2||!p.every(Number.isInteger)||p[0]<0||p[1]<=p[0]||p[1]>codepoints.length){skip('ambiguous-text-span');return;}
     if(!['insert','delete','replace'].includes(e.speech_error_type)){skip('unknown-operation');return;}
     const a=utf16At[p[0]],b=utf16At[p[1]];
-    const hits=v.words.map((w,wi)=>({w,wi})).filter(({w})=>a>=w.start&&b<=w.end);
+    const hits=v.words.map(w=>({w,wi:w.wi})).filter(({w})=>a>=w.start&&b<=w.end);
     if(hits.length!==1){skip('cross-word-or-whitespace-span');return;}
     const {w,wi}=hits[0];let off=w.start;
     const glyphs=w.chars.map((g,ci)=>{const l=off;off+=g.length;return {ci,start:l,end:off};}).filter(g=>a>=g.start&&b<=g.end);
@@ -64,7 +89,7 @@ function mapDraftForReview(draft, scope, resolver){
     const level=glyphs.length===1?'char':'word';
     // Word-level normal error cannot be labelled a specific letter fault.
     if(e.error_type==='normal'&&level!=='char'){skip('requires-manual-error-classification');return;}
-    result.candidates.push({ownerId:scope.ownerId,studentId:scope.studentId,recordingId:scope.recordingId,sessionId:scope.sessionId,jobId:scope.jobId,corpusVersion:scope.corpusVersion,engineVersion:scope.engineVersion,candidateId:`draft-${i}`,surahId:scope.surahId,ayah:start.aya_idx,targetLevel:level,wordIndex:wi,charIndex:level==='char'?glyphs[0].ci:-1,type,alignmentStatus:'verified',startMs:null,endMs:null,reviewStatus:'pending',sourceDraftIndex:i});
+    result.candidates.push({ownerId:scope.ownerId,studentId:scope.studentId,recordingId:scope.recordingId,sessionId:scope.sessionId,jobId:scope.jobId,corpusVersion:scope.corpusVersion,engineVersion:scope.engineVersion,candidateId:`draft-${i}`,surahId:scope.surahId,ayah:w.ayah,targetLevel:level,wordIndex:wi,charIndex:level==='char'?glyphs[0].ci:-1,type,alignmentStatus:'verified',startMs:null,endMs:null,reviewStatus:'pending',sourceDraftIndex:i});
   });
   result.status='review-required';
   return result;
