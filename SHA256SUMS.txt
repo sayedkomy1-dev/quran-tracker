@@ -796,7 +796,7 @@ ade3ee95a451a457225b51067ece10fe89b105d8e7b13268e0621ce4a8bfabb9  ./tests/offlin
 44253e22f9a502b620016431d3f59d2585253750eb4638034256292c46e9701d  ./tests/offline-safety-snapshot-check.js
 e5e0e8cd7a548b418414487ab5febabade0bd866b11c9d64889a5c83a6b8a90d  ./tests/offline-style-fallback-check.js
 87132f6120cfb2ffd6777a5a27fe4aa3c7d6d57a316ab2c8a225e5fcd50eb677  ./tests/offline-whatsapp-check.js
-0e6bfb7850b00bdea7413af587867f4e42f401aed9ff58a38415b6ba2cd27b18  ./tests/owner-upgrade-consistency-check.js
+7b88208914a3a2486e7ddc5bb9c42c5f9055bb215fc4a3f210d6f34bafceb394  ./tests/owner-upgrade-consistency-check.js
 e5b99cf37af60ec556a3cd7db8631d01bd7d683c11752229bed5ce9d3ab3a79e  ./tests/parent-audio-stage4-check.js
 a82d3906e1de69c4e6398df520c07ad0bd57db7f125f8df770b6fafe1f0e10e1  ./tests/placement-center-1191-check.js
 b59bc7570d74a3eaadf31cb6c20bd811514710ebda48d45021a6db7277d67ed7  ./tests/platform-design-system-check.js
