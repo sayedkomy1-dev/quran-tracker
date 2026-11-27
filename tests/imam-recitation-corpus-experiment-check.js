@@ -9,7 +9,7 @@ function tests(create,map,assert){
   const corpus={version:'v1',verses:[{surahId:1,ayah:2,text}]};
   const r=create(corpus,meta);
   const scope={ownerId:'o',studentId:'s',recordingId:'r',sessionId:'x',jobId:'j',corpusVersion:'v1',engineVersion:'e',surahId:1,fromAyah:2,toAyah:2};
-  const draft={format:'imam-muaalem-draft-v1',approved:false,automaticImportAllowed:false,start:{sura_idx:1,aya_idx:2,uthmani_word_idx:0,uthmani_char_idx:0},end:{sura_idx:1,aya_idx:2},uthmaniText:text,errors:[{uthmani_pos:[1,2],error_type:'tashkeel',speech_error_type:'replace'}]};
+  const draft={format:'imam-muaalem-draft-v1',approved:false,automaticImportAllowed:false,start:{sura_idx:1,aya_idx:2,uthmani_word_idx:0,uthmani_char_idx:0},end:{sura_idx:1,aya_idx:2,uthmani_word_idx:1,uthmani_char_idx:2},uthmaniText:text,errors:[{uthmani_pos:[1,2],error_type:'tashkeel',speech_error_type:'replace'}]};
   const run=(d=draft,s=scope)=>map(d,s,r);
   const x=run();check(x.candidates.length===1,'exact full verse');
   check(x.candidates[0].charIndex===0&&x.candidates[0].wordIndex===0,'diacritic maps to grapheme');
@@ -31,6 +31,16 @@ function tests(create,map,assert){
   let fail=false;try{create({...corpus,verses:[...corpus.verses,...corpus.verses]},meta);}catch{fail=true;}check(fail,'duplicate corpus verse');
   const unicode='𞸀 حَ';const r2=create({version:'v1',verses:[{surahId:1,ayah:2,text:unicode}]},meta);
   check(map({...draft,uthmaniText:unicode,errors:[{...draft.errors[0],uthmani_pos:[2,3]}]},scope,r2).candidates[0].wordIndex===1,'python code points to UTF16');
+  const r3=create({version:'v1',verses:[{surahId:1,ayah:2,text},{surahId:1,ayah:3,text:'بَ تَ'}]},meta);
+  const multi={...draft,start:{...draft.start,uthmani_word_idx:1},end:{sura_idx:1,aya_idx:3,uthmani_word_idx:0,uthmani_char_idx:2},uthmaniText:'كُ بَ',errors:[{uthmani_pos:[3,4],error_type:'normal',speech_error_type:'replace'}]};
+  const mm=map(multi,{...scope,toAyah:3},r3);
+  check(mm.candidates[0]?.ayah===3&&mm.candidates[0]?.wordIndex===0,'exact partial multi-verse');
+  check(map(multi,scope,r3).candidates.length===0,'multi-verse outside assignment');
+  check(map({...multi,uthmaniText:'كُ  بَ'},{...scope,toAyah:3},r3).candidates.length===0,'different separator rejected');
+  check(map({...multi,errors:[{...multi.errors[0],uthmani_pos:[1,4]}]},{...scope,toAyah:3},r3).unmapped.length===1,'cross-verse error unmapped');
+  check(map({...multi,end:{...multi.end,uthmani_char_idx:1}},{...scope,toAyah:3},r3).candidates.length===0,'split grapheme rejected');
+  const partial={...draft,start:{...draft.start,uthmani_word_idx:1},uthmaniText:'كُ',errors:[{...draft.errors[0],uthmani_pos:[0,1]}]};
+  check(map(partial,scope,r).candidates[0]?.wordIndex===1,'partial exact canonical word index');
   return n;
 }
 console.log('PASS',tests(createCorpusResolver,mapDraftForReview,assert),'corpus mapping checks');
