@@ -12,8 +12,9 @@
 <script defer src="../../js/features/imam-reviewed-learning-profile-experiment.js"></script>
 <script defer src="../../js/features/imam-recitation-corpus-experiment.js"></script>
 <script defer src="../../js/features/imam-skill-evidence-experiment.js"></script>
+<script defer src="../../js/features/imam-personal-plan-experiment.js"></script>
 <script defer src="review-lab.js"></script></head>
-<body><main><header><p class="muted">أكاديمية الإمام | مختبر البحث 0.4</p><h1>مراجعة التلاوة والذاكرة التعليمية</h1><p>اعتماد الملاحظة بعد التحقق من النص والموضع، ثم معاينة أثرها التعليمي.</p></header>
+<body><main><header><p class="muted">أكاديمية الإمام | مختبر البحث 0.5</p><h1>مراجعة التلاوة والذاكرة التعليمية</h1><p>اعتماد الملاحظة بعد التحقق من النص والموضع، ثم معاينة أثرها التعليمي.</p></header>
 <aside class="notice"><strong>بيئة اختبار وليست نسخة إنتاجية.</strong> لا تسجيل دخول، لا اتصال بخادم، لا حفظ للبيانات ولا اعتماد فعلي باسم محفظ. استخدم أمثلة اصطناعية أو تسجيل بالغ مصرحًا به فقط. لا ترفع ملفات الطلاب هنا. الذكاء الاصطناعي ليس بديلًا عن المحفظ.</aside>
 <div class="controls"><button id="demo" class="primary">تشغيل المثال الاصطناعي</button><button id="clear">مسح المعاينة</button></div>
 <section class="card"><h2>فحص مسودة محلية من Muaalem</h2><p class="muted">الملف المرجعي يجب أن يكون نصًا معتمدًا من خارج النموذج. المطابقة لا تثبت صحة مصدر الملف وحدها. كل الملفات تبقى في ذاكرة هذه الصفحة حتى المسح أو الإغلاق.</p>
@@ -22,5 +23,6 @@
 <p id="status" role="status" aria-live="polite">اختر المثال الاصطناعي أو استورد مسودة اختبار.</p>
 <section id="results" hidden><div class="card"><h2>الملاحظات المعروضة للمراجعة</h2><p id="scopeInfo" class="muted"></p><div id="reviewList" class="grid"></div><p id="unmapped" class="muted"></p></div>
 <div class="card"><h2>الذاكرة التعليمية — معاينة فقط</h2><div id="summary" class="grid"></div><p class="muted">التكرار تاريخي، وليس تشخيصًا. عدم وجود خطأ لا يعني الإتقان. لا توجد درجة آلية.</p><div id="skills" class="grid"></div></div>
+<div class="card"><h2>خطة تدريب شخصية — مقترح للمحفظ</h2><p class="muted">لا يُنشأ تكليف رسمي ولا يُستبدل جدول المراجعة الحالي.</p><div id="personalPlan" class="grid"></div></div>
 <div class="card" id="explicitPanel" hidden><h2>دليل إيجابي مستقل</h2><p class="muted">محاكاة اختبار مباشر لمهارة مخارج الحروف في المثال الاصطناعي. نتيجة الاختبار ليست نتيجة النموذج ولا تعني الإتقان الدائم.</p><div class="controls"><button id="demonstrated">أظهر المهارة في الاختبار</button><button id="needsPractice">يحتاج تدريبًا</button><button id="inconclusive">النتيجة غير حاسمة</button></div></div></section>
 </main></body></html>
