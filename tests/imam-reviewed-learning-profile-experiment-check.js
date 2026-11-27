@@ -1,0 +1,44 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {candidateSnapshot,buildReviewedLearningProfile}=require('../js/features/imam-reviewed-learning-profile-experiment.js');
+const deps={...require('../js/features/imam-recitation-review-bridge-experiment.js'),...require('../js/features/imam-learning-memory-experiment.js'),...require('../js/features/imam-learning-skill-graph-experiment.js')};
+function runIntegrationTests(build,snapshot,deps,assert){
+ let n=0;const check=(v,m)=>{assert(v,m);n++;};
+ const sessions=[1,2].map(i=>({id:'s'+i,ownerId:'o',studentId:'p',recordingId:'r'+i,status:'حضر',date:'2026-11-0'+i,recitationErrors:[]}));
+ const batches=sessions.map((s,i)=>{const scope={ownerId:'o',studentId:'p',recordingId:s.recordingId,sessionId:s.id,jobId:'j'+i,corpusVersion:'test-v1',engineVersion:'mock'};
+ const context={...scope,teacherId:'t',surahId:1,fromAyah:1,toAyah:7,durationMs:4000};
+ const candidate={...scope,candidateId:'c'+i,type:'مخرج حرف',alignmentStatus:'verified',surahId:1,ayah:2+i,targetLevel:'char',wordIndex:0,charIndex:0,startMs:null,endMs:null};
+ const decision={...scope,candidateId:candidate.candidateId,decisionId:'d'+i,teacherId:'t',decision:'approved',reviewedAt:'2026-11-03T10:00:00Z',approvedSnapshot:snapshot(candidate)};
+ return {context,candidates:[candidate],decisions:[decision]};});
+ // Deliberately non-Quran fixtures; verifies the contract, not the corpus.
+ const resolveLocation=x=>({verified:true,corpusVersion:x.corpusVersion,surah:'fixture',ayahText:'fixture',word:'fixture',charText:'ح'});
+ const input={ownerId:'o',studentId:'p',asOf:'2026-11-04',sessions,batches,resolveLocation};
+ const run=x=>build({...input,...x},deps);
+ const before=JSON.stringify({sessions,batches});
+ const out=run({});
+ check(out.projected===2,'two approved recordings');
+ check(out.memory.patterns.length===1,'cross-day cross-location pattern');
+ check(out.graph.nodes.find(n=>n.id==='articulation').status==='historical-pattern','skill graph receives pattern');
+ check(out.graph.nodes.find(n=>n.id==='letter-identity').status==='unknown','no inferred cause');
+ check(out.graph.nodes.every(n=>n.mastery===null),'no automatic mastery');
+ check(JSON.stringify({sessions,batches})===before,'source records unchanged');
+ const rejected={...batches[1],decisions:[{...batches[1].decisions[0],decision:'rejected'}]};
+ check(run({batches:[batches[0],rejected]}).memory.patterns.length===0,'rejected never becomes pattern');
+ check(run({batches:[batches[0],{...batches[1],decisions:[]}]}).projected===1,'pending blocked');
+ const changed={...batches[1],candidates:[{...batches[1].candidates[0],type:'نطق حرف'}]};
+ check(run({batches:[batches[0],changed]}).projected===1,'changed candidate requires new approval');
+ check(run({asOf:'2026-11-02'}).projected===0,'no future approvals');
+ check(run({sessions:[sessions[0]]}).projected===1,'no fabricated session');
+ check(run({sessions:[sessions[0],{...sessions[1],status:'غاب'}]}).projected===1,'absent blocked');
+ check(run({sessions:[sessions[0],{...sessions[1],recordingId:'different'}]}).projected===1,'recording linkage');
+ check(run({sessions:[sessions[0],{...sessions[1],ownerId:'another'}]}).projected===1,'tenant isolation');
+ check(run({sessions:[sessions[0],{...sessions[1],studentId:'sibling'}]}).projected===1,'student isolation');
+ check(run({batches:[...batches,batches[1]]}).projected===1,'duplicate recording rejected');
+ check(run({sessions:[...sessions,sessions[1]]}).projected===1,'duplicate session rejected');
+ check(run({resolveLocation:()=>null}).projected===0,'unverified corpus blocked');
+ check(run({ownerId:''}).status==='invalid-scope','invalid scope');
+ check(run({asOf:'2026-02-30'}).status==='invalid-scope','invalid day');
+ check(run({batches:[]}).graph.nodes.every(x=>x.status==='unknown'),'missing audio results do not imply strength');
+ return n;
+}
+console.log('PASS',runIntegrationTests(buildReviewedLearningProfile,candidateSnapshot,deps,assert),'end-to-end research checks');
