@@ -10,7 +10,7 @@
  function scope(i,version,surahId,fromAyah,toAyah,durationMs=4000){return {ownerId:'lab-only',studentId:'lab-student',recordingId:'lab-recording-'+i,sessionId:'lab-session-'+i,jobId:'lab-job-'+i,teacherId:'lab-reviewer',engineVersion:'research-unpinned',corpusVersion:version,surahId,fromAyah,toAyah,durationMs};}
  function batch(context,draft,resolver){return {context,...mapDraftForReview(draft,context,resolver),decisions:[]};}
  function session(b,date){return {id:b.context.sessionId,ownerId:b.context.ownerId,studentId:b.context.studentId,recordingId:b.context.recordingId,status:'حضر',date,recitationErrors:[]};}
- function demoDraft(ayah,text){return {format:'imam-muaalem-draft-v1',approved:false,automaticImportAllowed:false,start:{sura_idx:1,aya_idx:ayah,uthmani_word_idx:0,uthmani_char_idx:0},end:{sura_idx:1,aya_idx:ayah},uthmaniText:text,errors:[{uthmani_pos:[0,1],error_type:'normal',speech_error_type:'replace'}]};}
+ function demoDraft(ayah,text){return {format:'imam-muaalem-draft-v1',approved:false,automaticImportAllowed:false,start:{sura_idx:1,aya_idx:ayah,uthmani_word_idx:0,uthmani_char_idx:0},end:{sura_idx:1,aya_idx:ayah,uthmani_word_idx:1,uthmani_char_idx:2},uthmaniText:text,errors:[{uthmani_pos:[0,1],error_type:'normal',speech_error_type:'replace'}]};}
  function demo(){
    clear();
    const corpus={version:'synthetic-lab-1',verses:[{surahId:1,ayah:1,text:'حَ كُ'},{surahId:1,ayah:2,text:'حُ بَ'}]};
