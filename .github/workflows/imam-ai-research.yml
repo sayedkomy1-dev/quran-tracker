@@ -1,0 +1,58 @@
+name: Imam AI research verification
+on:
+  push:
+    branches: [research/athar-learning-memory]
+  pull_request:
+    branches: [main]
+    paths:
+      - 'research/recitation-ai/**'
+      - 'js/features/imam-*-experiment.js'
+      - 'tests/imam-*-check.*'
+      - '.github/workflows/imam-ai-research.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node research/recitation-ai/test-all.cjs
+      - run: node research/recitation-ai/browser-smoke.cjs
+        env:
+          CHROME_BIN: google-chrome
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test
+
+  inventory:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/research/athar-learning-memory'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate candidate inventory for verification
+        run: |
+          node scripts/release-integrity.mjs --write
+          echo IMAM_INVENTORY_BEGIN
+          cat SHA256SUMS.txt
+          echo IMAM_INVENTORY_END

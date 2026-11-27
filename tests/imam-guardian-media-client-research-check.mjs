@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import {fetchAuthorizedRecording} from '../research/recitation-ai/security/guardian-client.mjs';
+const ctx={supabaseUrl:'https://example.invalid',publishableKey:'public-key',sessionToken:'10000000-0000-4000-8000-000000000001',studentRef:'a'.repeat(64),recordingId:'10000000-0000-4000-8000-000000000002'};
+const url='https://example.invalid/storage/v1/object/sign/guardian-recitation-media/parent/a.webm?token=fixture';
+let calls=[];
+const fake=(returned=url,ok=true,mime='audio/webm')=>async(u,o)=>{
+ calls.push({u,o});
+ if(u.includes('/functions/v1/'))return new Response(JSON.stringify({url:returned,expiresIn:60}),{status:ok?200:403});
+ return new Response(new Uint8Array([1,2,3]),{headers:{'Content-Type':mime}});
+};
+let n=0;
+const blob=await fetchAuthorizedRecording(ctx,fake());assert.equal(blob.size,3);n++;
+assert.equal(calls.length,2);n++;
+assert.equal(JSON.parse(calls[0].o.body).recordingId,ctx.recordingId);n++;
+assert(!calls[1].o.headers);n++;
+assert.equal(calls[1].o.redirect,'error');n++;
+calls=[];await assert.rejects(fetchAuthorizedRecording(ctx,fake('https://other.invalid/storage/v1/object/sign/guardian-recitation-media/a?token=x')));assert.equal(calls.length,1);n++;
+calls=[];await assert.rejects(fetchAuthorizedRecording(ctx,fake(url,false)));assert.equal(calls.length,1);n++;
+await assert.rejects(fetchAuthorizedRecording(ctx,fake(url,true,'text/html')));n++;
+calls=[];await assert.rejects(fetchAuthorizedRecording({...ctx,sessionToken:'bad'},fake()));assert.equal(calls.length,0);n++;
+await assert.rejects(fetchAuthorizedRecording(ctx,fake(url.replace('?token=fixture',''))));n++;
+console.log('PASS',n,'staged guardian media client checks');

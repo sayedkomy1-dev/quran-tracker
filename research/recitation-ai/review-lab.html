@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; media-src blob:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>مختبر الإمام — المراجعة والذاكرة التعليمية</title>
+<style>
+:root{color-scheme:light dark;font-family:system-ui,sans-serif;--accent:#19775d;--border:#8a9896;--muted:#697c77}
+*{box-sizing:border-box}body{margin:0;line-height:1.7}main{max-width:1060px;margin:auto;padding:clamp(12px,4vw,28px)}h1{font-size:clamp(1.4rem,4vw,2rem);line-height:1.4;margin:.2em 0}h2{font-size:1.2rem}h3{font-size:1rem;margin:.3rem 0}p{margin:.3em 0 1em}.notice,.card{border:1px solid var(--border);border-radius:14px;padding:1rem;margin-block:1rem}.notice{border-inline-start:5px solid #b7791f}.controls{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}button,input,select{font:inherit;padding:.5rem .75rem;border:1px solid var(--border);border-radius:8px;max-width:100%}button{cursor:pointer;min-height:44px}button.primary,button[aria-pressed=true]{background:var(--accent);color:white;border-color:var(--accent)}button:focus-visible,input:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}button:disabled{opacity:.5;cursor:not-allowed}label{display:grid;gap:.3em;margin-block:.6rem}fieldset{border:1px solid var(--border);border-radius:10px;margin:0;padding:.8rem}legend{font-weight:650}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:.8rem}.candidate,.skill{border:1px solid var(--border);border-radius:10px;padding:.8rem;overflow-wrap:anywhere}.skill strong{display:block}.sample{font-size:1.3rem;line-height:2;white-space:pre-wrap;overflow-wrap:anywhere}.muted{opacity:.8;font-size:.9rem}.metric{font-size:1.45rem;font-weight:700}#status{min-height:1.6em}audio{width:100%}[hidden]{display:none!important}
+</style>
+<script defer src="../../js/features/imam-learning-memory-experiment.js"></script>
+<script defer src="../../js/features/imam-learning-skill-graph-experiment.js"></script>
+<script defer src="../../js/features/imam-recitation-review-bridge-experiment.js"></script>
+<script defer src="../../js/features/imam-reviewed-learning-profile-experiment.js"></script>
+<script defer src="../../js/features/imam-recitation-corpus-experiment.js"></script>
+<script defer src="../../js/features/imam-skill-evidence-experiment.js"></script>
+<script defer src="../../js/features/imam-personal-plan-experiment.js"></script>
+<script defer src="review-lab.js"></script></head>
+<body><main><header><p class="muted">أكاديمية الإمام | مختبر البحث 0.5</p><h1>مراجعة التلاوة والذاكرة التعليمية</h1><p>اعتماد الملاحظة بعد التحقق من النص والموضع، ثم معاينة أثرها التعليمي.</p></header>
+<aside class="notice"><strong>بيئة اختبار وليست نسخة إنتاجية.</strong> لا تسجيل دخول، لا اتصال بخادم، لا حفظ للبيانات ولا اعتماد فعلي باسم محفظ. استخدم أمثلة اصطناعية أو تسجيل بالغ مصرحًا به فقط. لا ترفع ملفات الطلاب هنا. الذكاء الاصطناعي ليس بديلًا عن المحفظ.</aside>
+<div class="controls"><button id="demo" class="primary">تشغيل المثال الاصطناعي</button><button id="clear">مسح المعاينة</button></div>
+<section class="card"><h2>فحص مسودة محلية من Muaalem</h2><p class="muted">الملف المرجعي يجب أن يكون نصًا معتمدًا من خارج النموذج. المطابقة لا تثبت صحة مصدر الملف وحدها. كل الملفات تبقى في ذاكرة هذه الصفحة حتى المسح أو الإغلاق.</p>
+<form id="importForm"><div class="grid"><label>مسودة JSON من العميل المحلي<input id="draftFile" type="file" accept=".json,application/json" required></label><label>ملف النص المرجعي (corpus.json)<input id="corpusFile" type="file" accept=".json,application/json" required></label><label>بيانات السور (mushaf-meta.json)<input id="metaFile" type="file" accept=".json,application/json" required></label><label>التسجيل المصرح به — اختياري للاستماع فقط<input id="audioFile" type="file" accept="audio/*"></label></div><fieldset><legend>نطاق التسميع المتوقع من المحفظ</legend><div class="grid"><label>رقم السورة<input id="surah" type="number" min="1" max="114" required></label><label>من آية<input id="from" type="number" min="1" max="286" required></label><label>إلى آية<input id="to" type="number" min="1" max="286" required></label></div></fieldset><label><span><input id="ack" type="checkbox" required> تحققت من مصدر النص المرجعي، والملفات للاختبار المصرح به فقط.</span></label><button class="primary" type="submit">فحص المسودة دون حفظ</button></form>
+<audio id="audio" controls hidden></audio></section>
+<p id="status" role="status" aria-live="polite">اختر المثال الاصطناعي أو استورد مسودة اختبار.</p>
+<section id="results" hidden><div class="card"><h2>الملاحظات المعروضة للمراجعة</h2><p id="scopeInfo" class="muted"></p><div id="reviewList" class="grid"></div><p id="unmapped" class="muted"></p></div>
+<div class="card"><h2>الذاكرة التعليمية — معاينة فقط</h2><div id="summary" class="grid"></div><p class="muted">التكرار تاريخي، وليس تشخيصًا. عدم وجود خطأ لا يعني الإتقان. لا توجد درجة آلية.</p><div id="skills" class="grid"></div></div>
+<div class="card"><h2>خطة تدريب شخصية — مقترح للمحفظ</h2><p class="muted">لا يُنشأ تكليف رسمي ولا يُستبدل جدول المراجعة الحالي.</p><div id="personalPlan" class="grid"></div></div>
+<div class="card" id="explicitPanel" hidden><h2>دليل إيجابي مستقل</h2><p class="muted">محاكاة اختبار مباشر لمهارة مخارج الحروف في المثال الاصطناعي. نتيجة الاختبار ليست نتيجة النموذج ولا تعني الإتقان الدائم.</p><div class="controls"><button id="demonstrated">أظهر المهارة في الاختبار</button><button id="needsPractice">يحتاج تدريبًا</button><button id="inconclusive">النتيجة غير حاسمة</button></div></div></section>
+</main></body></html>

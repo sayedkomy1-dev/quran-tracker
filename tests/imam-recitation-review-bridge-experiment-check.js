@@ -1,0 +1,35 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {projectApprovedRecitation}=require('../js/features/imam-recitation-review-bridge-experiment.js');
+function checks(project,assert){
+ const scope={ownerId:'o',studentId:'s',recordingId:'r',sessionId:'session',jobId:'j',corpusVersion:'v1',engineVersion:'test'};
+ const ctx={...scope,teacherId:'t',surahId:1,fromAyah:2,toAyah:3,durationMs:4000};
+ const c={...scope,candidateId:'c',type:'مخرج حرف',alignmentStatus:'verified',surahId:1,ayah:2,targetLevel:'char',wordIndex:0,charIndex:1,startMs:100,endMs:200};
+ const d={...scope,candidateId:'c',decisionId:'d',teacherId:'t',decision:'approved',reviewedAt:'2026-11-27T10:00:00Z'};
+ const resolver=x=>x.ayah===2&&x.wordIndex===0&&x.charIndex===1?{verified:true,corpusVersion:'v1',surah:'fixture',ayahText:'fixture',word:'fixture',charText:'ح'}:null;
+ let n=0;const check=(x,m)=>{assert(x,m);n++};
+ const run=(cs=[c],ds=[d],ct=ctx,fn=resolver)=>project(ct,cs,ds,fn);
+ const ok=run();check(ok.annotations.length===1,'approved');
+ check(ok.annotations[0].charText==='ح'&&ok.annotations[0].resolved===false,'canonical and not mastery');
+ check(ok.annotations[0].aiEvidence.teacherId==='t','provenance');
+ check(run([c],[]).annotations.length===0,'pending blocked');
+ check(run([c],[{...d,decision:'rejected'}]).annotations.length===0,'rejected blocked');
+ check(run([c],[{...d,decision:'edited'}]).annotations.length===0,'edit needs renewed approval');
+ check(run([c],[{...d,teacherId:'other'}]).annotations.length===0,'teacher mismatch');
+ check(run([{...c,studentId:'sibling'}]).annotations.length===0,'student mismatch');
+ check(run([c],[{...d,ownerId:'other'}]).annotations.length===0,'tenant mismatch');
+ check(run([{...c,ayah:4}]).annotations.length===0,'assignment bounds');
+ check(run([{...c,alignmentStatus:'uncertain'}]).annotations.length===0,'alignment');
+ check(run([{...c,charIndex:99}]).annotations.length===0,'canonical index');
+ check(run([{...c,endMs:5000}]).annotations.length===0,'timing');
+ check(run([{...c,startMs:null,endMs:null}]).annotations[0].aiEvidence.startMs===null,'unknown timing remains unknown');
+ check(run([c,c]).annotations.length===0,'duplicate candidates');
+ check(run([c],[d,d]).annotations.length===0,'duplicate decisions');
+ check(run([c],[d],{...ctx,existingAnnotationIds:[ok.annotations[0].id]}).annotations.length===0,'idempotency');
+ check(run([{...c,type:'unrecognized'}]).annotations.length===0,'unknown type');
+ check(run([c],[d],ctx,()=>{throw Error('unavailable')}).annotations.length===0,'resolver failure');
+ check(run([c],[d],ctx,()=>({verified:true,corpusVersion:'old',surah:'x',ayahText:'x',word:'x',charText:'x'})).annotations.length===0,'corpus mismatch');
+ const before=JSON.stringify([c,d,ctx]);run();check(JSON.stringify([c,d,ctx])===before,'no mutation');
+ return n;
+}
+console.log('PASS',checks(projectApprovedRecitation,assert),'recitation review bridge checks');

@@ -72,7 +72,7 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  }
  await installation;
  const currentName=vm.runInContext('ACTIVE_CACHE_NAME',ctx);
- assert(currentName.includes('-beta28-stage1')&&currentName.endsWith('-rc17-integrated-offline-teaching-audio'),'must install the combined RC17 cache namespace while retaining the Beta28 stage marker');
+ assert(currentName.includes('-beta28-stage1')&&currentName.includes('-ai-research-06')&&currentName.endsWith('-rc17-integrated-offline-teaching-audio'),'must install the isolated AI candidate cache namespace while retaining the RC17 and Beta28 stage markers');
  const newCache=await cachesMock.open(currentName);
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
