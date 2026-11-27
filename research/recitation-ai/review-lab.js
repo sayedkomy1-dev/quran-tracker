@@ -6,7 +6,7 @@
  const stateLabels={'unknown':'لم تُختبر / لا دليل كافٍ','demonstrated':'أظهر المهارة في الاختبار','needs-practice':'يحتاج تدريبًا حسب الاختبار','inconclusive':'نتيجة غير حاسمة'};
  function el(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=String(text);if(cls)e.className=cls;return e;}
  function clearAudio(){const a=$('audio');a.pause();a.removeAttribute('src');a.load();a.hidden=true;if(audioURL)URL.revokeObjectURL(audioURL);audioURL='';}
- function clear(){generation++;data=null;clearAudio();$('results').hidden=true;$('reviewList').replaceChildren();$('summary').replaceChildren();$('skills').replaceChildren();$('unmapped').textContent='';$('scopeInfo').textContent='';$('importForm').reset();$('status').textContent='تم مسح المعاينة.';}
+ function clear(){generation++;data=null;clearAudio();$('results').hidden=true;$('reviewList').replaceChildren();$('summary').replaceChildren();$('skills').replaceChildren();$('personalPlan').replaceChildren();$('unmapped').textContent='';$('scopeInfo').textContent='';$('importForm').reset();$('status').textContent='تم مسح المعاينة.';}
  function scope(i,version,surahId,fromAyah,toAyah,durationMs=4000){return {ownerId:'lab-only',studentId:'lab-student',recordingId:'lab-recording-'+i,sessionId:'lab-session-'+i,jobId:'lab-job-'+i,teacherId:'lab-reviewer',engineVersion:'research-unpinned',corpusVersion:version,surahId,fromAyah,toAyah,durationMs};}
  function batch(context,draft,resolver){return {context,...mapDraftForReview(draft,context,resolver),decisions:[]};}
  function session(b,date){return {id:b.context.sessionId,ownerId:b.context.ownerId,studentId:b.context.studentId,recordingId:b.context.recordingId,status:'حضر',date,recitationErrors:[]};}
@@ -72,6 +72,10 @@
    const p=buildReviewedLearningProfile({ownerId:'lab-only',studentId:'lab-student',asOf,sessions,batches,resolveLocation:resolver.resolveLocation},deps);
    const ev=buildSkillEvidence({ownerId:'lab-only',studentId:'lab-student',asOf,assessments:data.assessments},SKILLS);
    $('summary').replaceChildren(metric('ملاحظات مقترحة',total),metric('معتمدة في المعاينة',p.projected),metric('أنماط تاريخية',p.memory?.patterns.length||0));
+   const plan=buildPersonalPlan({ownerId:'lab-only',studentId:'lab-student',asOf,graph:p.graph,skillEvidence:ev,similarPairs:[],methodObservations:[]},SKILLS);
+   const planHost=$('personalPlan');planHost.replaceChildren();
+   if(!plan.activities.length)planHost.append(el('p','لا توجد أدلة كافية لاقتراح تدريب مخصص.'));
+   for(const activity of plan.activities){const item=el('article',undefined,'skill');item.append(el('strong',activity.title),el('p',activity.reason==='teacher-observed-need'?'اختبار المحفظ أظهر حاجة إلى التدريب':activity.reason==='inconclusive-assessment'?'أعد الاختبار للتأكد':'اختبار متابعة بسبب نمط تاريخي'),el('p','الأدلة: '+activity.evidence.length+' | يحتاج اعتماد المحفظ','muted'));for(const c of activity.candidateChecks)item.append(el('p','فحص مقترح: '+c.label,'muted'));planHost.append(item);}
    const sh=$('skills');sh.replaceChildren();
    for(const s of p.graph?.nodes||[]){const a=ev.skills.find(x=>x.skillId===s.id);const box=el('article',undefined,'skill');box.append(el('strong',s.title),el('p',s.status==='historical-pattern'?'نمط تاريخي مسجل':'لا نمط تاريخي كافٍ','muted'),el('p',stateLabels[a?.state||'unknown']));for(const c of s.candidateChecks)box.append(el('p','فحص مقترح غير معتمد: '+c.label,'muted'));sh.append(box);}
  }
