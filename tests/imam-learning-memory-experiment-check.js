@@ -23,6 +23,11 @@ function runTests(build, assert){
   const before=JSON.stringify(rows);build(rows,'a','2026-11-26');check(JSON.stringify(rows)===before,'no mutation');
   check(build([ses('1','2026-11-01',[err(0,2)]),ses('2','2026-11-02',[err(2,5)])],'a','2026-11-26').patterns.length===0,'invalid location');
   check(build([ses('1','2026-11-01',[err(1,2,{wordIndex:null})]),ses('2','2026-11-02',[err(2,5)])],'a','2026-11-26').patterns.length===0,'missing location');
+  const verseRows=[ses('v1','2026-11-01',[err(1,2,{targetLevel:'ayah',wordIndex:-1,charIndex:-1,type:'نسيان'})]),ses('v2','2026-11-02',[err(2,2,{targetLevel:'ayah',wordIndex:-1,charIndex:-1,type:'نسيان'})])];
+  check(build(verseRows,'a','2026-11-26').patterns[0]?.evidence.every(e=>e.targetLevel==='ayah'),'whole ayah support');
+  const invalid=JSON.parse(JSON.stringify(verseRows));invalid[0].recitationErrors[0].targetLevel='word';
+  check(build(invalid,'a','2026-11-26').patterns.length===0,'negative word index rejected for word target');
+  check(build([ses('a1','2026-11-01',[err(1,2,{charIndex:null})]),ses('a2','2026-11-02',[err(2,2)])],'a','2026-11-26').patterns.length===0,'missing char index rejected');
   return n;
 }
 console.log('PASS',runTests(buildLearningMemory,assert),'learning memory checks');
