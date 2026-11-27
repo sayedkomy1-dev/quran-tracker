@@ -13,7 +13,8 @@ const tests=[
  'imam-review-lab-check.js',
  'imam-personal-plan-experiment-check.js',
  'imam-audio-authorization-research-check.mjs',
- 'imam-guardian-media-client-research-check.mjs'
+ 'imam-guardian-media-client-research-check.mjs',
+ 'imam-learning-preview-check.js'
 ];
 for(const t of tests){
  const p=spawnSync(process.execPath,[path.join(root,'tests',t)],{cwd:root,stdio:'inherit'});
