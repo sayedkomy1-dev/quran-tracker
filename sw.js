@@ -12,9 +12,9 @@
 const CACHE_NAME = 'quran-pwa-v11.12.1-beta.29-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette' + '-rc3-experience' + '-rc4-share-warning' + '-rc5-teacher-feedback' + '-rc6-quiet-lesson' + '-rc7-data-safety' + '-rc8-reliability-workspace' + '-rc9-lesson-flow' + '-rc10-teacher-fast-path' + '-rc11-teacher-flow';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
-const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
+const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3' + '-ai-research-06';
 // New reader-only shell must not overwrite an already-installed offline release.
-const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation' + '-rc17-integrated-offline-teaching-audio' + '-ai-research-06';
+const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation' + '-rc17-integrated-offline-teaching-audio';
 // Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
 const APP_VERSION = '11.12.1-beta.29';
