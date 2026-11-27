@@ -24,15 +24,18 @@ function buildLearningMemory(sessions, studentId, asOf) {
     for(const e of Array.isArray(s.recitationErrors)?s.recitationErrors:[]){
       if(!e||e.source!=='quran-word')continue;
       const surah=Number(e.surahId),ayah=Number(e.ayah),word=Number(e.wordIndex),type=clean(e.type);
-      if(!Number.isInteger(surah)||surah<1||surah>114||!Number.isInteger(ayah)||ayah<1||ayah>286||!Number.isInteger(word)||word<0||e.wordIndex==null||!type)continue;
-      const char=Number(e.charIndex),letter=e.targetLevel==='char'&&Number.isInteger(char)&&char>=0&&e.charIndex!=null?clean(e.charText,10).replace(/[\u064b-\u065f\u0670\u06d6-\u06ed]/g,''):'';
+      const level=e.targetLevel==='ayah'?'ayah':e.targetLevel==='char'?'char':'word';
+      if(!Number.isInteger(surah)||surah<1||surah>114||!Number.isInteger(ayah)||ayah<1||ayah>286||!Number.isInteger(word)||(level==='ayah'?word!==-1:word<0)||e.wordIndex==null||!type)continue;
+      const char=Number(e.charIndex);
+      if(level==='char'&&(!Number.isInteger(char)||char<0||e.charIndex==null))continue;
+      const letter=e.targetLevel==='char'&&Number.isInteger(char)&&char>=0&&e.charIndex!=null?clean(e.charText,10).replace(/[\u064b-\u065f\u0670\u06d6-\u06ed]/g,''):'';
       const key=JSON.stringify([type,/^[ء-ي]$/.test(letter)?letter:'']);
       const loc=JSON.stringify([surah,ayah,word,e.targetLevel==='char'&&Number.isInteger(char)&&char>=0&&e.charIndex!=null?char:-1]);
       const b=buckets.get(key)||{type,letter:/^[ء-ي]$/.test(letter)?letter:null,days:new Set(),locations:new Set(),records:new Map()};
       const ref=JSON.stringify([sessionId,loc]);
       if(b.records.has(ref)) continue;
       b.days.add(day);b.locations.add(loc);
-      b.records.set(ref,{sessionId,day,surah,ayah,wordIndex:word,charIndex:JSON.parse(loc)[3],errorId:clean(e.id,160)||null});
+      b.records.set(ref,{sessionId,day,surah,ayah,wordIndex:word,targetLevel:level,charIndex:JSON.parse(loc)[3],errorId:clean(e.id,160)||null});
       buckets.set(key,b);
     }
   }
