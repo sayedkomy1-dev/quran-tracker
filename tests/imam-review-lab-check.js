@@ -7,6 +7,7 @@ const paths=[
   "js/features/imam-reviewed-learning-profile-experiment.js",
   "js/features/imam-recitation-corpus-experiment.js",
   "js/features/imam-skill-evidence-experiment.js",
+  "js/features/imam-personal-plan-experiment.js",
   "research/recitation-ai/review-lab.js"
 ];
 function runLabChecks(load,assert){
@@ -40,12 +41,15 @@ function runLabChecks(load,assert){
  check($('skills').children.length===13,'all skills visible');
  const skill=()=> $('skills').children.find(x=>textOf(x).includes('نطق الحروف ومخارجها'));
  check(textOf(skill()).includes('نمط تاريخي مسجل'),'memory graph update');
+ check(textOf($('personalPlan')).includes('اختبار متابعة بسبب نمط تاريخي'),'personal plan connected');
  check(textOf(skill()).includes('لم تُختبر'),'no automatic positive result');
  $('demonstrated').click();
  check(textOf(skill()).includes('أظهر المهارة في الاختبار'),'explicit positive evidence');
  rejected()[1].click();
  check($('summary').children[2].children[1].textContent==='0','rejection updates preview');
  check(textOf(skill()).includes('أظهر المهارة في الاختبار'),'independent positive evidence retained');
+ $('needsPractice').click();
+ check(textOf($('personalPlan')).includes('اختبار المحفظ أظهر حاجة إلى التدريب'),'explicit evidence updates plan');
  $('clear').click();
  check($('results').hidden&&$('reviewList').children.length===0&&$('skills').children.length===0,'clear removes preview');
  return n;
