@@ -9,7 +9,7 @@
 // Compatibility marker for Tahfeez Stage 1 offline checks: './guardian-tahfeez.css?v=11.2.0-s1.1' | './js/features/guardian-tahfeez.js?v=11.2.0-s1.1'
 // Compatibility markers for historical static regression checks: quran-pwa-v11.2.0-error1.1 | uiStage:'11.2-error-marking-1.1' | './js/features/teacher-error-marking.js?v=11.2.0-s1.1'
 // Stage 1 compatibility: quran-pwa-v11.5.0-student-finance1 ./student-finance.css?v=11.5.0-s1 ./js/features/student-finance.js?v=11.5.0-s1
-const CACHE_NAME = 'quran-pwa-v11.12.1-beta.29-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette' + '-rc3-experience' + '-rc4-share-warning' + '-rc5-teacher-feedback' + '-rc6-quiet-lesson' + '-rc7-data-safety' + '-rc8-reliability-workspace' + '-rc9-lesson-flow' + '-rc10-teacher-fast-path' + '-rc11-teacher-flow';
+const CACHE_NAME = 'quran-pwa-v11.12.1-beta.30-workspace-workflow' + '-candidate1' + '-candidate2-reference-palette' + '-rc3-experience' + '-rc4-share-warning' + '-rc5-teacher-feedback' + '-rc6-quiet-lesson' + '-rc7-data-safety' + '-rc8-reliability-workspace' + '-rc9-lesson-flow' + '-rc10-teacher-fast-path' + '-rc11-teacher-flow';
 // Review5 candidate cache is separate from installed Review4; failed installation keeps the old shell.
 // Prior release marker: '-combined-review4'.
 const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3';
@@ -17,7 +17,7 @@ const LIVE_CACHE_NAME = CACHE_NAME + '-academy-life-review8' + '-mobile-hotfix3'
 const ACTIVE_CACHE_NAME = LIVE_CACHE_NAME + '-mushaf-hd-only' + '-unified-entry1' + '-entry2' + '-beta28-stage1' + '-rc12-storage-governor' + '-rc13-storage-audio-portal' + '-rc14-tahfeez-continuation' + '-rc17-integrated-offline-teaching-audio';
 // Prior stable Review7 cache suffix retained for traceability: '-academy-suite-review7'.
 // Historical regression marker: quran-pwa-v11.5.1-student-finance2
-const APP_VERSION = '11.12.1-beta.29';
+const APP_VERSION = '11.12.1-beta.30';
 const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
 // Never populate a new release's essential code from an old offline cache.
 // A temporarily unreachable deployment must leave the previous worker active.
@@ -40,7 +40,7 @@ const CRITICAL_FRESH_SHELL = [
   './css/platform/rc14-tahfeez-flow.css?v=beta28-rc14',
   './sync-core.js?v=beta28-rc7-data-safety',
   './app.js?v=beta29-rc17',
-  './v8.js?v=beta28-rc7-data-safety',
+  './v8.js?v=beta30-sync-recovery',
   './css/platform/rc8-premium-workspace.css?v=beta28-rc8',
   './css/platform/rc9-lesson-flow.css?v=beta28-rc9',
   './js/features/rc9-lesson-flow.js?v=beta28-rc9',
@@ -91,7 +91,7 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/teacher-correction-document.js?v=11.7.4.5',
   './js/features/guardian-tahfeez.js?v=beta29-rc17',
   './js/features/guardian-tahfeez.js?v=beta29-rc17',
-  './manifest.json?v=11.12.1-beta.29',
+  './manifest.json?v=11.12.1-beta.30',
   './guardian-manifest.json?v=11.2.0-s4.1',
   './academy-mushaf.html',
   './css/platform/academy-mushaf.css?v=11.12.1-beta.27-hd-only',
@@ -142,11 +142,11 @@ const CRITICAL_FRESH_SHELL = [
   './js/features/error-followup-engine.js?v=11.12.1-beta.27-error-followup-candidate',
   './error-followup.css?v=11.12.1-beta.27-error-followup-candidate',
   './app.js?v=beta29-rc17',
-  './js/core/runtime.js?v=11.12.1-beta.29',
-  './js/core/boot-health.js?v=11.12.1-beta.29',
-  './js/core/offline-bootstrap.js?v=11.12.1-beta.29',
+  './js/core/runtime.js?v=11.12.1-beta.30',
+  './js/core/boot-health.js?v=11.12.1-beta.30',
+  './js/core/offline-bootstrap.js?v=11.12.1-beta.30',
   './js/features/role-home.js?v=beta29-rc17',
-  './js/features/supervisor-dashboard.js?v=11.12.1-beta.27',
+  './js/features/supervisor-dashboard.js?v=beta30-sync-recovery',
   './role-home.css?v=11.12.1-beta.27',
   './teacher-rating.css?v=11.12.1-beta.27',
   './v10.js?v=11.12.1-beta.27',
@@ -282,7 +282,7 @@ const APP_SHELL = [
   './guardian-finance.css?v=11.5.1-s2',
   './guardian-messages.css?v=11.6.0-s1',
   './teacher-rating.css?v=11.12.1-beta.27',
-  './js/features/supervisor-dashboard.js?v=11.12.1-beta.27',
+  './js/features/supervisor-dashboard.js?v=beta30-sync-recovery',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './v10.js?v=11.12.1-beta.27',
@@ -323,9 +323,9 @@ const APP_SHELL = [
   './guardian-login.js?v=11.0.0',
   './js/features/quran-engine.js?v=11.0.0',
   './js/features/quran-structure.js?v=11.0.0',
-  './js/core/runtime.js?v=11.12.1-beta.29',
-  './js/core/boot-health.js?v=11.12.1-beta.29',
-  './js/core/offline-bootstrap.js?v=11.12.1-beta.29',
+  './js/core/runtime.js?v=11.12.1-beta.30',
+  './js/core/boot-health.js?v=11.12.1-beta.30',
+  './js/core/offline-bootstrap.js?v=11.12.1-beta.30',
   './js/core/mobile-navigation.js?v=11.12.1-beta.27',
   './js/features/v10-data.js?v=11.0.0',
   './js/features/recitation-carry.js?v=11.0.0',
@@ -336,7 +336,7 @@ const APP_SHELL = [
   './js/features/academy-workspaces.js?v=11.7.4-foundation',
   './privacy.html',
   './terms.html',
-  './manifest.json?v=11.12.1-beta.29',
+  './manifest.json?v=11.12.1-beta.30',
   './guardian-manifest.json?v=11.2.0-s4.1',
   './favicon.png',
   './icon-96.png',
@@ -414,7 +414,7 @@ const CORE_SHELL = [
   './student-finance.css?v=11.5.1-s2',
   './guardian-messages.css?v=11.6.0-s1',
   './teacher-rating.css?v=11.12.1-beta.27',
-  './js/features/supervisor-dashboard.js?v=11.12.1-beta.27',
+  './js/features/supervisor-dashboard.js?v=beta30-sync-recovery',
   './js/features/teacher-inbox.js?v=11.6.0-s1',
   './js/features/guardian-messages.js?v=11.6.0-s1',
   './js/features/academy-suite.js?v=rc16',
@@ -445,8 +445,8 @@ const CORE_SHELL = [
   './revision-quran-text.css?v=11.8.1',
   './js/features/revision-quran-text.js?v=11.8.1',
   './auth.js?v=beta28-rc13',
-  './js/core/runtime.js?v=11.12.1-beta.29',
-  './js/core/offline-bootstrap.js?v=11.12.1-beta.29',
+  './js/core/runtime.js?v=11.12.1-beta.30',
+  './js/core/offline-bootstrap.js?v=11.12.1-beta.30',
 
   './maqraa.webmanifest?v=beta29-rc17',
   './js/features/quran-reciter-registry.js?v=beta29-rc17',
@@ -770,7 +770,7 @@ self.addEventListener('notificationclick', event => {
 
 self.addEventListener('message', event => {
   if(event.data==='SKIP_WAITING')self.skipWaiting();
-  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:ACTIVE_CACHE_NAME,offlineStage:'5.9-guardian-home-recitation-rc17-offline-outbox',uiStage:'11.12.1-beta.29-rc17-integrated-offline-teaching'});
+  if(event.data==='GET_VERSION'&&event.ports?.[0])event.ports[0].postMessage({version:APP_VERSION,cache:ACTIVE_CACHE_NAME,offlineStage:'5.9-guardian-home-recitation-rc17-offline-outbox',uiStage:'11.12.1-beta.30-rc17-integrated-offline-teaching'});
   if(event.data?.type==='IMAM_STORAGE_SAFE_CLEAN'&&event.ports?.[0]){
     const port=event.ports[0];
     event.waitUntil((async()=>{

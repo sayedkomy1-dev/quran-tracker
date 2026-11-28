@@ -53,14 +53,14 @@ new vm.Script(auth,{filename:'auth.js'});
 new vm.Script(syncCore,{filename:'sync-core.js'});
 new vm.Script(sw,{filename:'sw.js'});
 
-assert(version==='11.12.1-beta.29','VERSION must match the combined RC16 release');
+assert(version==='11.12.1-beta.30','VERSION must match the combined RC16 release');
 assert(pkg.version===version,'package.json version mismatch');
 assert(manifest.version===undefined || manifest.version===version,'manifest version mismatch');
 assert(html.includes(`content="${version}"`),'HTML application-version mismatch');
 assert(app.includes("const APP_VERSION=globalThis.ImamApp?.meta?.version||'11.0.0'"),'app.js APP_VERSION must come from ImamApp runtime');
 assert(app.includes('const SCHEMA_VERSION=12'),'schema version must be 12 for item-level review migration');
 assert(sw.includes(`const APP_VERSION = '${version}'`),'sw.js APP_VERSION mismatch');
-assert(sw.includes("'./v9.js?v=beta28-rc13'")&&sw.includes("'./v10.js?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/tokens.css?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/legacy-features.css?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2'")&&sw.includes("'./js/core/runtime.js?v=11.12.1-beta.29'")&&sw.includes("'./quran-engine.css?v=11.0.0'")&&sw.includes("'./auth.js?v=beta28-rc13'"),'service worker must cache consolidated platform and essential architecture assets');
+assert(sw.includes("'./v9.js?v=beta28-rc13'")&&sw.includes("'./v10.js?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/tokens.css?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/legacy-features.css?v=11.12.1-beta.27'")&&sw.includes("'./css/platform/components.css?v=11.12.1-beta.27-more-scroll-hotfix2'")&&sw.includes("'./js/core/runtime.js?v=11.12.1-beta.30'")&&sw.includes("'./quran-engine.css?v=11.0.0'")&&sw.includes("'./auth.js?v=beta28-rc13'"),'service worker must cache consolidated platform and essential architecture assets');
 assert(manifest.display_override?.includes('window-controls-overlay'),'manifest missing desktop display override');
 
 // Required files and local references.

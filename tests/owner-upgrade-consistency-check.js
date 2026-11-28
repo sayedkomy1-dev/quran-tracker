@@ -10,7 +10,7 @@ const html=read('index.html');
 const runtime=read('js/core/runtime.js');
 const app=read('app.js');
 const bootstrap=read('js/core/offline-bootstrap.js');
-const version='11.12.1-beta.29';
+const version='11.12.1-beta.30';
 assert(html.includes(`name="application-version" content="${version}"`));
 assert(html.includes("app.js?v=beta29-rc17"));
 assert(html.includes(`runtime.js?v=${version}`));
@@ -77,12 +77,12 @@ async function testWorker({staleIndex=false,offlineRuntime=false}={}){
  const currentRoot=await newCache.match(base);
  const currentHtml=await newCache.match(base+'index.html');
  assert(currentRoot && currentHtml,'both root and index paths must have current HTML');
- assert((await currentRoot.text()).includes('name="application-version" content="11.12.1-beta.29"'),'root may not serve stale HTML');
+ assert((await currentRoot.text()).includes('name="application-version" content="11.12.1-beta.30"'),'root may not serve stale HTML');
  assert((await currentHtml.text()).includes('app.js?v=beta29-rc17'),'index may not serve old app.js');
 }
 (async()=>{
  await testWorker({staleIndex:true});
  await testWorker({offlineRuntime:true});
  await testWorker({});
- console.log('PASS 11.12.1-beta.29 owner upgrade: reject stale shell, preserve offline cache, verified RC17 root/index and retained stable core scripts');
+ console.log('PASS 11.12.1-beta.30 owner upgrade: reject stale shell, preserve offline cache, verified RC17 root/index and retained stable core scripts');
 })().catch(e=>{console.error(e);process.exitCode=1;});

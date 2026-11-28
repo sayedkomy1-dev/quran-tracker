@@ -108,6 +108,7 @@ function migrateV8Data(){
   const syncCore=globalThis.WLQSyncCore;
   if(syncCore?.normalizeTombstones){const normalized=syncCore.normalizeTombstones(settings.syncTombstones);if(JSON.stringify(normalized)!==JSON.stringify(settings.syncTombstones||{}))changed=true;settings.syncTombstones=normalized;}
   for(const list of [students,sessions,tasks])for(const item of list){if(item&&!item.updatedByDevice){item.updatedByDevice=settings.sync.deviceId;changed=true;}}
+  if(!settings.sync.rc30AutoConfigured){settings.sync.rc30AutoConfigured=true;settings.sync.auto=true;changed=true;}
   settings.schemaVersion=SCHEMA_VERSION;
   return changed;
 }
@@ -122,7 +123,7 @@ async function initV8Layer(){
   renderWeeklyGoals();
   await createAutoBackup(false).catch(()=>{});
   initSecurityLayer();
-  if(settings.sync?.auto)setTimeout(()=>autoCloudSync(),2500);
+  rc30StartSync();
 }
 
 function initV8DOM(){
@@ -457,7 +458,7 @@ function saveV8Settings(){
   const num=(id,def,max)=>v8Clamp(document.getElementById(id)?.value??def,0,max);
   settings.weeklyGoals={newAyat:num('goalNewAyat',40,5000),reviews:num('goalReviews',6,500),sessions:num('goalSessions',8,500),attendance:num('goalAttendance',8,500)};
   settings.sync={...(settings.sync||{}),mode:'account',id:'',authSecret:'',passphrase:document.getElementById('syncPassphrase')?.value||'',auto:!!document.getElementById('syncAuto')?.checked};
-  save();renderWeeklyGoals();renderSyncStatus();
+  save();renderWeeklyGoals();renderSyncStatus();if(settings.sync.auto)scheduleCloudPush();
 }
 async function hashText(v){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(v)));return [...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');}
 function pinBytesToB64(bytes){let out='';for(const b of bytes)out+=String.fromCharCode(b);return btoa(out);}
@@ -490,15 +491,15 @@ async function unlockWithBiometric(){if(!settings.security?.credentialId)return;
 function renderSecurityStatus(){const el=document.getElementById('securityStatus');if(!el)return;const s=settings.security||{};el.innerHTML=`<span class="security-chip ${s.lockEnabled?'':'off'}">${s.lockEnabled?'القفل مفعّل':'القفل غير مفعّل'}</span><span class="security-chip ${s.pinHash?'':'off'}">PIN ${s.pinHash?'مضبوط':'غير مضبوط'}</span><span class="security-chip ${s.credentialId?'':'off'}">جهاز ${s.credentialId?'مرتبط':'غير مرتبط'}</span>`;}
 
 // ──────────────────────────────────────
-// Automatic local backups (last 5) — account scoped
+// Automatic local backups (last 7) — account scoped
 // ──────────────────────────────────────
 function v8BackupPayload(){return{app:'imam-academy',version:APP_VERSION,schemaVersion:SCHEMA_VERSION,createdAt:v8Now(),accountUserId:storageScopeUserId||'',students:typeof structuredClone==='function'?structuredClone(students):JSON.parse(JSON.stringify(students)),sessions:typeof structuredClone==='function'?structuredClone(sessions):JSON.parse(JSON.stringify(sessions)),tasks:typeof structuredClone==='function'?structuredClone(tasks):JSON.parse(JSON.stringify(tasks)),settings:JSON.parse(JSON.stringify(settings))};}
 function autoBackupPrefix(){return `autobackup:${storageScopeUserId}:`;}
 async function listAutoBackups(){if(!db?.objectStoreNames?.contains('kv')||!storageScopeUserId)return[];const rows=await idbGetAll(db).catch(()=>[]),prefix=autoBackupPrefix();return rows.filter(r=>String(r.key||'').startsWith(prefix)).map(r=>({key:r.key,...(()=>{try{return JSON.parse(r.val)}catch(_){return{}}})()})).sort((a,b)=>String(b.createdAt||b.key).localeCompare(String(a.createdAt||a.key)));}
 async function createAutoBackup(force=true){
-  if(!db?.objectStoreNames?.contains('kv')||!storageScopeUserId)return;const list=await listAutoBackups();if(!force&&list[0]?.createdAt&&Date.now()-new Date(list[0].createdAt).getTime()<6*3600000){renderAutoBackupStatus(list);return;}const payload=v8BackupPayload(),key=`${autoBackupPrefix()}${payload.createdAt}`;await idbKvPut(key,JSON.stringify(payload));const all=await listAutoBackups();for(const old of all.slice(5))await new Promise(resolve=>{try{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').delete(old.key);tx.oncomplete=resolve;tx.onerror=resolve;}catch(_){resolve();}});renderAutoBackupStatus(await listAutoBackups());}
+  if(!db?.objectStoreNames?.contains('kv')||!storageScopeUserId||!(students.length||sessions.length||tasks.length))return;const list=await listAutoBackups();if(!force&&list[0]?.createdAt&&Date.now()-new Date(list[0].createdAt).getTime()<24*3600000){renderAutoBackupStatus(list);return;}const payload=v8BackupPayload(),key=`${autoBackupPrefix()}${payload.createdAt}`;await idbKvPut(key,JSON.stringify(payload));const all=await listAutoBackups();for(const old of all.slice(7))await new Promise(resolve=>{try{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').delete(old.key);tx.oncomplete=resolve;tx.onerror=resolve;}catch(_){resolve();}});renderAutoBackupStatus(await listAutoBackups());}
 function scheduleAutoBackup(){clearTimeout(V8.backupTimer);V8.backupTimer=setTimeout(()=>createAutoBackup(false).catch(()=>{}),2000);}
-async function renderAutoBackupStatus(list=null){const el=document.getElementById('autoBackupStatus');if(!el)return;list=list||await listAutoBackups();el.textContent=list.length?`النسخ التلقائي لهذا الحساب: ${list.length} نسخة · آخر نسخة ${new Date(list[0].createdAt).toLocaleString('ar-EG')}`:'النسخ التلقائي لهذا الحساب: لا توجد نسخة بعد';}
+async function renderAutoBackupStatus(list=null){const el=document.getElementById('autoBackupStatus');if(!el)return;list=list||await listAutoBackups();el.textContent=list.length?`النسخ التلقائي لهذا الحساب: ${list.length} نسخة · آخر نسخة ${new Date(list[0].createdAt).toLocaleString('ar-EG')}`:'النسخ التلقائي لهذا الحساب: لا توجد نسخة بعد';const at=settings.sync?.rc30BackupAt;el.textContent+=' · '+(at?'آخر نسخة إنقاذ سحابية مؤكدة: '+new Date(at).toLocaleString('ar-EG'):'لم تتأكد نسخة إنقاذ سحابية من هذا الجهاز بعد');}
 async function restoreAutoBackup(){const list=await listAutoBackups();if(!list.length)return v8Toast('لا توجد نسخ تلقائية لهذا الحساب','error');const lines=list.map((x,i)=>`${i+1}) ${new Date(x.createdAt).toLocaleString('ar-EG')}`).join('\n'),pick=prompt(`اختر رقم النسخة التي تريد استعادتها:\n${lines}`);if(pick==null)return;const x=list[Number(pick)-1];if(!x)return v8Toast('اختيار غير صحيح','error');if(!confirm('سيتم استبدال بيانات الحساب الحالية بهذه النسخة. هل تستمر؟'))return;const localSync=settings.sync,localSecurity=settings.security,owner=settings.accountOwner;students=x.students||[];sessions=x.sessions||[];tasks=x.tasks||[];settings={...settings,...(x.settings||{}),sync:localSync,security:localSecurity,accountOwner:owner};migrateV8Data();if(typeof globalThis.v10Migrate==='function')globalThis.v10Migrate();__IMAM_BASE__.save();renderHome();renderV8Settings();v8Toast('تمت استعادة النسخة التلقائية للحساب','success');}
 
 // Override normal save: keep base persistence, then v8 maintenance.
@@ -526,12 +527,15 @@ function cloudPayload(){const cfg=JSON.parse(JSON.stringify(settings)),core=glob
 function supaHeaders(accessToken){const cfg=globalThis.WeLiveQuranAuth?.config||{};return{'Content-Type':'application/json',apikey:cfg.publishableKey||'',Authorization:`Bearer ${accessToken}`};}
 function generateSecureSyncCredentials(){v8Toast('لم يعد Sync ID أو سر وصول مطلوبًا؛ الحساب المسجل هو هوية المزامنة الآن.','info');}
 async function callAccountSyncRpc(name,body={}){
+  const actor=rc30Actor();
   const accessToken=await globalThis.WeLiveQuranAuth?.getAccessToken?.(),cfg=globalThis.WeLiveQuranAuth?.config||{};
+  rc30AssertActor(actor);
+  if(accessToken){const part=accessToken.split('.')[1];if(!part)throw Error('AUTH_TOKEN_INVALID');const sub=JSON.parse(atob(part.replace(/-/g,'+').replace(/_/g,'/'))).sub;if(sub!==actor)throw Error('ACCOUNT_MISMATCH');}
   if(!accessToken)throw new Error('AUTH_REQUIRED: سجّل الدخول واتصل بالإنترنت لاستخدام المزامنة السحابية');
   if(!cfg.supabaseUrl||!cfg.publishableKey)throw new Error('SYNC_CONFIG_MISSING');
   const res=await fetch(`${cfg.supabaseUrl}/rest/v1/rpc/${name}`,{method:'POST',headers:supaHeaders(accessToken),body:JSON.stringify(body)});
   if(!res.ok){const msg=await res.text();throw new Error(`HTTP ${res.status}: ${msg.slice(0,500)}`);}
-  const text=await res.text();return text?JSON.parse(text):null;
+  const text=await res.text();rc30AssertActor(actor);return text?JSON.parse(text):null;
 }
 function itemTimestamp(x){return globalThis.WLQSyncCore?.itemTimestamp?globalThis.WLQSyncCore.itemTimestamp(x):(new Date(x?.updatedAt||x?.createdAt||x?.date||0).getTime()||0);}
 function mergeById(local,remote,kind='students',tombstones=settings.syncTombstones){const core=globalThis.WLQSyncCore;return core?.mergeById?core.mergeById(local,remote,kind,tombstones):[...(local||[])];}
@@ -558,42 +562,99 @@ function mergeCloudPayload(remote,revision){
   migrateV8Data();if(typeof globalThis.v10Migrate==='function')globalThis.v10Migrate();
   settings.sync.serverRevision=Number(revision)||0;settings.sync.lastPull=v8Now();
 }
+// RC30: local-first, pull-before-push, single-flight, append-only recovery copies.
+function rc30Actor(){return String(globalThis.WeLiveQuranAuth?.getAccess?.()?.user_id||'');}
+function rc30AssertActor(actor){if(!actor||actor!==storageScopeUserId||actor!==rc30Actor())throw Error('ACCOUNT_MISMATCH');}
+function rc30ValidateSnapshot(x){
+  if(!x||typeof x!=='object')throw Error('INVALID_SYNC_SNAPSHOT');
+  for(const k of ['students','sessions','tasks']){
+    if(!Array.isArray(x[k]))throw Error('INVALID_SYNC_COLLECTION_'+k);
+    const seen=new Set();for(const r of x[k]){if(!r||typeof r!=='object'||typeof r.id!=='string'||!r.id||seen.has(r.id))throw Error('INVALID_SYNC_RECORD_'+k);seen.add(r.id);}
+  }
+  if(!x.settings||typeof x.settings!=='object'||Array.isArray(x.settings))throw Error('INVALID_SYNC_SETTINGS');
+  return x;
+}
+function rc30HasData(x){return !!(x.students.length||x.sessions.length||x.tasks.length);}
+function rc30Canonical(x){if(Array.isArray(x))return x.map(rc30Canonical);if(x&&typeof x==='object')return Object.fromEntries(Object.keys(x).sort().map(k=>[k,rc30Canonical(x[k])]));return x;}
+function rc30Fingerprint(x){const cfg={...x.settings};delete cfg.sync;delete cfg.security;delete cfg.accountOwner;return JSON.stringify(rc30Canonical({students:x.students,sessions:x.sessions,tasks:x.tasks,settings:cfg,tombstones:x.tombstones||{}}));}
+function rc30Scrub(x){if(Array.isArray(x))return x.map(rc30Scrub);if(x&&typeof x==='object')return Object.fromEntries(Object.entries(x).filter(([k])=>!/(password|passphrase|secret|token|credential|pinhash|pinsalt|pinkdf|piniterations|apikey|privatekey|authkey|^pin$|guardianpin|^security$|^sync$|^accountowner$)/i.test(k.replace(/[^a-z0-9]/gi,''))).map(([k,v])=>[k,rc30Scrub(v)]));return x;}
+function rc30BackupPayload(snapshot,actor){return rc30Scrub({meta:{app:'أكاديمية الإمام — بالقرآن نحيا',appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION,exportDate:v8Now(),backupType:'academy-recovery'},accountUserId:actor,students:snapshot.students,sessions:snapshot.sessions,tasks:snapshot.tasks,settings:{...snapshot.settings,syncTombstones:snapshot.tombstones}});}
+async function rc30UploadBackup(snapshot,actor,revision,force=false){
+  const access=globalThis.WeLiveQuranAuth?.getAccess?.();if(!['teacher','owner'].includes(access?.role)||!rc30HasData(snapshot))return;
+  const cairoDay=x=>new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Cairo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(x));
+  const sameDay=settings.sync.rc30BackupAt&&cairoDay(settings.sync.rc30BackupAt)===cairoDay(Date.now());
+  const sameRevision=Number(settings.sync.rc30BackupRevision)===revision;
+  if(!force&&sameDay&&sameRevision)return;
+  rc30AssertActor(actor);const result=await callAccountSyncRpc('app_teacher_backup_save_v1',{p_payload:rc30BackupPayload(snapshot,actor),p_revision:revision,p_force:force||!sameRevision});
+  if(result?.ok!==true)throw Error('BACKUP_NOT_CONFIRMED');rc30AssertActor(actor);settings.sync.rc30BackupAt=result.saved_at||v8Now();settings.sync.rc30BackupRevision=revision;__IMAM_BASE__.save();
+}
 async function pullRemoteIntoLocal(){
+  const actor=rc30Actor();rc30AssertActor(actor);
   const rows=await callAccountSyncRpc('account_sync_pull_v2',{}),row=Array.isArray(rows)?rows[0]:rows;
-  if(!row?.payload){settings.sync.serverRevision=0;return{found:false,revision:0};}
-  const remote=await decryptSyncPayload(row.payload,settings.sync.passphrase);
-  mergeCloudPayload(remote,row.revision);
-  __IMAM_BASE__.save();
-  return{found:true,revision:Number(row.revision)||0};
+  if(!row?.payload){if(Number(settings.sync.serverRevision)>0)throw Error('CLOUD_SNAPSHOT_MISSING');settings.sync.serverRevision=0;return{found:false,revision:0,remote:null};}
+  const remote=rc30ValidateSnapshot(await decryptSyncPayload(row.payload,settings.sync.passphrase));rc30AssertActor(actor);
+  if(remote.ownerUserId&&remote.ownerUserId!==actor)throw Error('ACCOUNT_MISMATCH');
+  const local=rc30ValidateSnapshot(cloudPayload());
+  if(rc30HasData(local)&&rc30Fingerprint(local)!==rc30Fingerprint(remote))await createAutoBackup(true);
+  rc30AssertActor(actor);
+  // Do not merge an unexpected empty remote over a populated local account.
+  if(rc30HasData(local)&&!rc30HasData(remote))throw Error('EMPTY_REMOTE_REVIEW_REQUIRED');
+  const core=globalThis.WLQSyncCore;if(!core)throw Error('SYNC_CORE_MISSING');
+  const tombstones=core.mergeTombstones(settings.syncTombstones,remote.tombstones||remote.settings?.syncTombstones);
+  const mergedStudents=core.mergeById(students,remote.students,'students',tombstones),deleted=core.deletedStudentIds(mergedStudents,tombstones);
+  const proposed={students:mergedStudents,sessions:core.filterDeletedChildren(core.mergeById(sessions,remote.sessions,'sessions',tombstones),deleted),tasks:core.filterDeletedChildren(core.mergeById(tasks,remote.tasks,'tasks',tombstones),deleted)};
+  if(!rc30HasData(proposed)&&(rc30HasData(local)||rc30HasData(remote)))throw Error('EMPTY_MERGE_BLOCKED');
+  const prior=JSON.parse(JSON.stringify({students,sessions,tasks,settings}));
+  try{mergeCloudPayload(remote,row.revision);if(!rc30HasData(cloudPayload())&&(rc30HasData(local)||rc30HasData(remote)))throw Error('EMPTY_MERGE_BLOCKED');if(__IMAM_BASE__.save()===false)throw Error('LOCAL_SAVE_FAILED');}
+  catch(e){students=prior.students;sessions=prior.sessions;tasks=prior.tasks;settings=prior.settings;throw e;}
+  return{found:true,revision:Number(row.revision)||0,remote};
 }
 function isSyncRevisionConflict(err){return /SYNC_REVISION_CONFLICT/i.test(String(err?.message||err));}
 async function pushCloudSync(opts={}){
+  if(V8.syncing){V8.rc30Pending=true;return false;}
   if(!syncConfigValid()){if(!opts.silent)v8Toast('اكتب كلمة تشفير للنسخة السحابية من 8 أحرف على الأقل','error');return false;}
+  if(navigator.onLine===false){renderSyncStatus('البيانات محفوظة محليًا؛ ستُعاد المزامنة عند الاتصال.');return false;}
   if(!crypto?.subtle){v8Toast('التشفير غير مدعوم','error');return false;}
-  V8.syncing=true;renderSyncStatus('جارٍ تنزيل أحدث تغييرات الحساب ثم الدمج والرفع الآمن…');
+  const actor=rc30Actor();V8.syncing=true;renderSyncStatus('جارٍ تنزيل أحدث تغييرات الحساب ثم الدمج والرفع الآمن…');
   try{
+    rc30AssertActor(actor);
     for(let attempt=0;attempt<3;attempt++){
-      await pullRemoteIntoLocal();
-      const expected=Number(settings.sync.serverRevision)||0;
-      const payload=await encryptSyncPayload(cloudPayload(),settings.sync.passphrase);
+      const pulled=await pullRemoteIntoLocal();rc30AssertActor(actor);
+      const expected=Number(settings.sync.serverRevision)||0,snapshot=rc30ValidateSnapshot(cloudPayload());
+      if(!rc30HasData(snapshot)){renderSyncStatus('لا توجد بيانات جاهزة للرفع؛ لن نرسل نسخة فارغة.');return false;}
+      let revision=expected;
       try{
-        const result=await callAccountSyncRpc('account_sync_push_v2',{p_payload:payload,p_expected_revision:expected});
-        settings.sync.serverRevision=Number(result?.revision)||expected+1;settings.sync.lastPush=v8Now();__IMAM_BASE__.save();renderSyncStatus();
-        renderHome();if(curPage==='students')renderSt();renderV8Settings();
-        if(!opts.silent)v8Toast('تمت مزامنة الحساب ورفع النسخة المشفرة بأمان','success');return true;
+        if(!pulled.remote||rc30Fingerprint(snapshot)!==rc30Fingerprint(pulled.remote)){
+          const payload=await encryptSyncPayload(snapshot,settings.sync.passphrase);rc30AssertActor(actor);
+          const result=await callAccountSyncRpc('account_sync_push_v2',{p_payload:payload,p_expected_revision:expected});
+          if(result?.ok!==true||Number(result.revision)!==expected+1)throw Error('SYNC_NOT_CONFIRMED');revision=Number(result.revision);
+          settings.sync.serverRevision=revision;settings.sync.lastPush=v8Now();if(__IMAM_BASE__.save()===false)throw Error('LOCAL_SAVE_FAILED');
+        }
+        // A backup failure must not be presented as a successful backup.
+        let backupError=false;try{await rc30UploadBackup(snapshot,actor,revision,!opts.silent);}catch(e){backupError=true;console.warn('[academy backup]',e?.message||e);}
+        rc30AssertActor(actor);renderHome();if(curPage==='students')renderSt();renderV8Settings();renderSyncStatus(backupError?'تمت المزامنة؛ النسخة الإدارية لم تتأكد وستُعاد المحاولة.':'',backupError);
+        if(rc30Fingerprint(cloudPayload())!==rc30Fingerprint(snapshot))V8.rc30Pending=true;
+        if(!opts.silent)v8Toast(backupError?'تمت المزامنة؛ تعذر تأكيد النسخة الإدارية':'تمت مزامنة الحساب بأمان',backupError?'info':'success');return true;
       }catch(e){if(isSyncRevisionConflict(e)&&attempt<2)continue;throw e;}
     }
     throw new Error('SYNC_RETRY_EXHAUSTED');
-  }catch(e){const wrong=e?.name==='OperationError'||String(e?.message||'').includes('ACCOUNT_MISMATCH');renderSyncStatus(wrong?'تعذر فك النسخة — تحقق من كلمة التشفير والحساب':'فشل الرفع الآمن: '+(e.message||e),true);if(!opts.silent)v8Toast('تعذر مزامنة النسخة السحابية','error');return false;}finally{V8.syncing=false;}
+  }catch(e){const wrong=e?.name==='OperationError'||String(e?.message||'').includes('ACCOUNT_MISMATCH');renderSyncStatus(wrong?'تعذر فك النسخة — تحقق من كلمة التشفير والحساب':'فشل الرفع الآمن: '+(e.message||e),true);if(!opts.silent)v8Toast('تعذر مزامنة النسخة السحابية','error');return false;}finally{V8.syncing=false;if(V8.rc30Pending){V8.rc30Pending=false;if(settings.sync?.auto)scheduleCloudPush();}}
 }
 async function pullCloudSync(opts={}){
+  if(V8.syncing){V8.rc30Pending=true;return false;}
   if(!syncConfigValid()){if(!opts.silent)v8Toast('اكتب نفس كلمة التشفير المستخدمة عند رفع النسخة','error');return false;}
   V8.syncing=true;renderSyncStatus('جارٍ تنزيل وفك تشفير ودمج أحدث نسخة للحساب…');
-  try{const result=await pullRemoteIntoLocal();if(!result.found){renderSyncStatus('لا توجد نسخة سحابية لهذا الحساب.');if(!opts.silent)v8Toast('لا توجد نسخة سحابية لهذا الحساب بعد','info');return false;}renderHome();if(curPage==='students')renderSt();renderV8Settings();renderSyncStatus();if(!opts.silent)v8Toast('تم تنزيل ودمج النسخة السحابية بأمان','success');return true;}
-  catch(e){const wrong=e?.name==='OperationError'||String(e?.message||'').includes('ACCOUNT_MISMATCH');renderSyncStatus(wrong?'تعذر فك النسخة — تحقق من كلمة التشفير والحساب':'فشل التنزيل: '+(e.message||e),true);if(!opts.silent)v8Toast('تعذر تنزيل النسخة السحابية','error');return false;}finally{V8.syncing=false;}
+  try{const result=await pullRemoteIntoLocal();if(!result.found){renderSyncStatus('لا توجد نسخة سحابية لهذا الحساب.');return false;}renderHome();if(curPage==='students')renderSt();renderV8Settings();renderSyncStatus();if(!opts.silent)v8Toast('تم تنزيل ودمج النسخة السحابية بأمان','success');return true;}
+  catch(e){renderSyncStatus('فشل التنزيل: '+(e.message||e),true);if(!opts.silent)v8Toast('تعذر تنزيل النسخة السحابية','error');return false;}finally{V8.syncing=false;if(V8.rc30Pending){V8.rc30Pending=false;if(settings.sync?.auto)scheduleCloudPush();}}
 }
-function scheduleCloudPush(){clearTimeout(V8.syncTimer);V8.syncTimer=setTimeout(()=>pushCloudSync({silent:true}),5000);}
-async function autoCloudSync(){if(!settings.sync?.auto||!syncConfigValid())return;await pushCloudSync({silent:true});}
+function scheduleCloudPush(){clearTimeout(V8.syncTimer);V8.syncTimer=setTimeout(()=>autoCloudSync(),5000);}
+async function autoCloudSync(){if(!settings.sync?.auto||!syncConfigValid()||navigator.onLine===false)return;await pushCloudSync({silent:true});}
+function rc30StartSync(){
+  if(V8.rc30Started)return;V8.rc30Started=true;
+  const wake=()=>{scheduleAutoBackup();if(settings.sync?.auto)scheduleCloudPush();};
+  globalThis.addEventListener('online',wake);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')wake();});
+  globalThis.setInterval(wake,120000);setTimeout(wake,1000);
+}
 
 // ──────────────────────────────────────
 // Import extension preserving v8 fields
@@ -609,7 +670,7 @@ function sanitizeBackupData(d){
     if(Array.isArray(raw.reviewAssignments))se.reviewAssignments=JSON.parse(JSON.stringify(raw.reviewAssignments));if(Array.isArray(raw.reviewResults))se.reviewResults=JSON.parse(JSON.stringify(raw.reviewResults));if(raw.assessmentScores&&typeof raw.assessmentScores==='object'){const scores={};for(const k of ['new','rec','far','juz','surahReview']){if(raw.assessmentScores[k]===null||raw.assessmentScores[k]===undefined||raw.assessmentScores[k]==='')continue;const n=Math.round(Number(raw.assessmentScores[k]));if(Number.isFinite(n))scores[k]=Math.max(0,Math.min(100,n));}if(Object.keys(scores).length)se.assessmentScores=scores;}});return safe;
 }
 function importData(e){
-  const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!d||!Array.isArray(d.students)||!Array.isArray(d.sessions||[]))throw new Error('بنية الملف غير صحيحة');const safe=sanitizeBackupData(d);if(!confirm(`سيتم استبدال البيانات الحالية واستيراد ${safe.students.length} طالب و${safe.sessions.length} حصة.\nيفضل أخذ نسخة احتياطية أولاً.\n\nهل تريد الاستمرار؟`))return;const localSync=settings.sync,localSecurity=settings.security;students=safe.students;sessions=safe.sessions;tasks=safe.tasks||[];const cfg=d.settings&&typeof d.settings==='object'?d.settings:{};settings={...settings,...cfg,sync:localSync,security:localSecurity};migrateV8Data();if(typeof globalThis.v10Migrate==='function')globalThis.v10Migrate();__IMAM_BASE__.save();renderHome();renderV8Settings();v8Toast('تم استيراد البيانات وترقيتها إلى v10.1','success');goPage('home');}catch(err){v8Toast(`ملف غير صالح: ${err.message||'تعذر القراءة'}`,'error');}finally{e.target.value='';}};reader.readAsText(file);
+  const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(d?.meta?.backupType==='academy-recovery'&&d.accountUserId!==storageScopeUserId)throw Error('هذه نسخة لمحفظ آخر؛ افتح حساب صاحب النسخة للاستعادة');if(!d||!Array.isArray(d.students)||!Array.isArray(d.sessions||[]))throw new Error('بنية الملف غير صحيحة');const safe=sanitizeBackupData(d);if(!confirm(`سيتم استبدال البيانات الحالية واستيراد ${safe.students.length} طالب و${safe.sessions.length} حصة.\nيفضل أخذ نسخة احتياطية أولاً.\n\nهل تريد الاستمرار؟`))return;const localSync=settings.sync,localSecurity=settings.security;students=safe.students;sessions=safe.sessions;tasks=safe.tasks||[];const cfg=d.settings&&typeof d.settings==='object'?d.settings:{};settings={...settings,...cfg,sync:localSync,security:localSecurity};migrateV8Data();if(typeof globalThis.v10Migrate==='function')globalThis.v10Migrate();__IMAM_BASE__.save();renderHome();renderV8Settings();v8Toast('تم استيراد البيانات وترقيتها إلى v10.1','success');goPage('home');}catch(err){v8Toast(`ملف غير صالح: ${err.message||'تعذر القراءة'}`,'error');}finally{e.target.value='';}};reader.readAsText(file);
 }
 
 

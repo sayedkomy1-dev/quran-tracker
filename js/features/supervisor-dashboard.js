@@ -54,6 +54,8 @@
       const action=btn.dataset.supervision,id=btn.dataset.teacher;
       if(action==='verify'||action==='reload')return authorizeAndReload();
       if(action==='audit')return audit();
+      if(action==='backups')return backups(id,btn.closest('.supervisor-row'));
+      if(action==='backup-download')return downloadBackup(id,btn.dataset.backup,btn.closest('.supervisor-row'));
       if(action==='analytics')return g.ImamApp?.AcademyAnalytics?.open?.();
       if(action==='students-close'){const h=inlineHost(btn.closest('.supervisor-row'));if(h)h.hidden=true;return;}
       if(action==='students'||action==='ratings')return detail(id,action,btn.closest('.supervisor-row'));
@@ -109,6 +111,7 @@
       <p class="supervision-roster-hint">${esc(teacherSummary(t))} · ${esc(rosterSyncState(t).label)} · آخر كشف: ${esc(dateTime(t.roster_synced_at))}</p>
       <div class="supervisor-stats"><span>طلاب منشورون <b>${metric(t.published_students)}</b></span><span>كشف الطلاب <b>${t.roster_synced_at==null?'لم يُزامَن':metric(t.roster_students)}</b></span><span>رسائل <b>${metric(t.messages)}</b></span><span>تقييمات <b>${metric(t.rated_guardians)}</b></span><span>متوسط التقييم <b>${t.rating_average==null?'—':esc(t.rating_average)+' / 5'}</b></span></div>
       <div class="supervision-buttons">${t.can_students!==false?`<button data-supervision="students" data-teacher="${esc(t.id)}">👥 عرض أسماء الطلاب</button>`:''}
+      ${t.can_backup===true||isOwner?`<button data-supervision="backups" data-teacher="${esc(t.id)}">💾 النسخ الاحتياطية JSON</button>`:''}
       ${t.can_progress===true?`<button data-supervision="progress" data-teacher="${esc(t.id)}">📈 نتائج التسميع المنشورة</button>`:''}
       ${t.can_ratings!==false?`<button data-supervision="ratings" data-teacher="${esc(t.id)}">⭐ التقييمات الخاصة</button>`:''}
       ${isOwner&&t.role!=='owner'?`<button data-supervision="${t.supervisor?'revoke':'grant'}" data-teacher="${esc(t.id)}">${t.supervisor?'إلغاء صفة المشرف':'منح صفة المشرف'}</button>${t.supervisor?`<button data-supervision="scope" data-teacher="${esc(t.id)}">⚙️ صلاحيات ونطاق المشرف</button>`:''}`:''}</div>
@@ -145,12 +148,13 @@
   async function scopes(id,row){if(!isOwner)return;const host=inlineHost(row);if(!host)return;busy=true;inlineNotice(host,'جارٍ تحميل صلاحيات المشرف…');
     try{const d=await rpc('app_supervisor_scope_get',{p_supervisor_user_id:id});
       const items=Array.isArray(d?.teachers)?d.teachers:[];
-      host.innerHTML=`<h3>⚙️ نطاق المشرف وصلاحياته</h3><p class="supervision-note">اختر المحفظين المسموح بمتابعتهم، ثم حدد الصلاحيات لكل محفظ. بدون تحديد صلاحيات لن تظهر بياناته للمشرف. التقييمات مغلقة افتراضيًا، وسجل الإدارة والمالية غير متاحين للمشرف.</p>`+
+      host.innerHTML=`<h3>⚙️ نطاق المشرف وصلاحياته</h3><p class="supervision-note">اختر المحفظين المسموح بمتابعتهم، ثم حدد الصلاحيات لكل محفظ. بدون تحديد صلاحيات لن تظهر بياناته للمشرف. التقييمات مغلقة افتراضيًا، وسجل الإدارة غير متاح للمشرف. النسخ الاحتياطية قد تشمل البيانات المالية؛ امنحها فقط للمشرف المخول بالاستعادة.</p>`+
       (items.map(t=>`<div class="supervision-scope-row"><strong>${esc(t.name||'محفظ')}</strong><div class="supervision-scope-options">
       <label><input type="checkbox" data-cap="students" ${t.students?'checked':''}> الطلاب</label>
       <label><input type="checkbox" data-cap="progress" ${t.progress?'checked':''}> مؤشرات التقدم</label>
       <label><input type="checkbox" data-cap="ratings" ${t.ratings?'checked':''}> التقييمات الخاصة</label>
       <label><input type="checkbox" data-cap="messages" ${t.messages?'checked':''}> عدد الرسائل</label>
+      <label><input type="checkbox" data-cap="backup" ${t.backup?'checked':''}> تنزيل نسخ الإنقاذ (بيانات خاصة وقد تشمل المالية)</label>
       </div><button type="button" data-supervision="scope-save" data-teacher="${esc(id)}" data-target="${esc(t.teacher_id)}">حفظ صلاحيات هذا المحفظ</button></div>`).join('')||'<p>لا يوجد محفظون نشطون آخرون لتخصيصهم للمشرف.</p>');
       reveal(host);
     }catch(err){inlineNotice(host,'تعذر تحميل قائمة الصلاحيات. تأكد من تنفيذ SQL الجديد.');}finally{busy=false;}
@@ -158,11 +162,25 @@
   async function saveScope(supervisorId,teacherId,row){if(!isOwner)return;
     const host=inlineHost(row),button=[...(host?.querySelectorAll?.('[data-supervision="scope-save"]')||[])].find(x=>x.dataset.target===teacherId);
     const container=button?.closest('.supervision-scope-row');if(!container)return;
-    const value={};for(const name of ['students','progress','ratings','messages'])value[name]=Boolean(container.querySelector(`[data-cap="${name}"]`)?.checked);
+    const value={};for(const name of ['students','progress','ratings','messages','backup'])value[name]=Boolean(container.querySelector(`[data-cap="${name}"]`)?.checked);
+    if(value.backup&&(!value.students||!value.progress)){status('النسخ الاحتياطية تتطلب صلاحية الطلاب والتقدم.');return;}
     if(value.progress&&!value.students){status('مؤشرات التقدم تتطلب أيضًا صلاحية عرض الطلاب.');return;}
     busy=true;try{const d=await rpc('app_supervisor_scope_set',{p_supervisor_user_id:supervisorId,p_teacher_user_id:teacherId,p_permissions:value});
       if(d?.ok!==true)throw Error('UNCONFIRMED');status('تم حفظ صلاحيات المحفظ من الخادم.');button.textContent='✓ تم الحفظ';}
     catch(err){status('تعذر حفظ الصلاحيات. تأكد من اتصال الإنترنت وصلاحية المالك.');}finally{busy=false;}
+  }
+  async function backups(id,row){
+    if(!teachers.some(t=>t.id===id))return;const host=inlineHost(row);if(!host)return;busy=true;inlineNotice(host,'جارٍ تحميل النسخ الاحتياطية…');
+    try{const d=await rpc('app_teacher_backup_list_v1',{p_teacher_id:id});const list=Array.isArray(d?.backups)?d.backups:[];
+      host.innerHTML=`<h3>💾 نسخ الإنقاذ السحابية</h3><p>الملف JSON غير مشفر عند تنزيله، ويحتوي بيانات خاصة. احفظه في مكان آمن. لا تتضمن النسخة ملفات الصوت نفسها.</p>`+(list.map(x=>`<div class="supervisor-detail-row">${esc(dateTime(x.saved_at))} · ${esc(x.students)} طالب · ${esc(x.sessions)} حصة <button type="button" data-supervision="backup-download" data-teacher="${esc(id)}" data-backup="${esc(x.id)}">تنزيل JSON</button></div>`).join('')||'<p>لم تصل نسخة احتياطية مؤكدة من جهاز المحفظ بعد.</p>');reveal(host);
+    }catch(e){inlineNotice(host,'تعذر الوصول إلى النسخ الاحتياطية؛ تحقق من الصلاحية والاتصال.');}finally{busy=false;}
+  }
+  async function downloadBackup(id,backup,row){
+    if(!teachers.some(t=>t.id===id)||!g.confirm?.('تنزيل نسخة JSON غير مشفرة؟ احفظها في مكان آمن.'))return;
+    const actor=currentActor();busy=true;try{const d=await rpc('app_teacher_backup_download_v1',{p_teacher_id:id,p_backup_id:backup});
+      if(actor!==currentActor()||!d?.payload||d.payload.accountUserId!==id)throw Error('ACCOUNT_CHANGED');
+      const url=URL.createObjectURL(new Blob([JSON.stringify(d.payload,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download=`imam-backup-${id}-${backup}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);status('تم تجهيز ملف النسخة الاحتياطية.');
+    }catch(e){status('تعذر تنزيل النسخة أو لا تملك الصلاحية.');}finally{busy=false;}
   }
   async function grant(id,enabled){if(!isOwner||!teachers.some(t=>t.id===id))return;
     if(!g.confirm?.(enabled?'منح صفة مشرف لهذا الحساب؟ لن يطّلع على أي محفظ قبل أن تحدد نطاقه وصلاحياته.':'إلغاء صلاحية الإشراف؟ ستُحجب بيانات الإدارة فورًا.'))return;
@@ -269,7 +287,10 @@
         // Never publish one account's locally loaded data after switching account.
         if(actor!==currentActor()||!authenticatedTeacher())throw Error('ACCOUNT_CHANGED');
         const batch=g.crypto?.randomUUID?.();if(!batch)throw Error('CRYPTO_UNAVAILABLE');
-        const result=await rpc('app_teacher_roster_publish',{p_students:rows,p_batch:batch});
+        const deleted=Object.keys(g.ImamApp?.State?.settings?.syncTombstones?.students||{});
+        const live=new Set(draft.map(x=>x.id)),deletedRefs=[];for(const id of deleted)if(!live.has(id))deletedRefs.push(await refFn(id));
+        if(actor!==currentActor()||!authenticatedTeacher())throw Error('ACCOUNT_CHANGED');
+        const result=deletedRefs.length?await rpc('app_teacher_roster_publish_safe_v1',{p_students:rows,p_batch:batch,p_deleted_refs:deletedRefs}):await rpc('app_teacher_roster_publish',{p_students:rows,p_batch:batch});
         if(result?.ok!==true||Number(result.count)!==rows.length)throw Error('NOT_CONFIRMED');
         lastPublishedAccount=actor;lastPublishedSignature=signature;retryAfter=0;
         rosterMessage(`✅ مزامنة ${rows.length} طالبًا نجحت ${automatic?'تلقائيًا':'يدويًا'}. آخر تحديث: ${new Date().toLocaleTimeString('ar-EG',{hour:'numeric',minute:'2-digit'})}.`);

@@ -5,7 +5,7 @@ const source=fs.readFileSync('js/features/supervisor-dashboard.js','utf8');
 const auth=fs.readFileSync('auth.js','utf8');
 assert.match(html,/src="auth\.js\?v=beta28-rc13"/);
 assert.match(sw,/\.\/auth\.js\?v=beta28\-rc13/);
-assert.match(sw,/\.\/js\/features\/supervisor-dashboard\.js\?v=11\.12\.1/);
+assert.match(sw,/\.\/js\/features\/supervisor-dashboard\.js\?v=beta30-sync-recovery/);
 assert.match(auth,/ImamApp\?\.Supervision\?\.initialize/);
 
 const css=fs.readFileSync('teacher-rating.css','utf8');

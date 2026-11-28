@@ -28,5 +28,5 @@ assert.match(responsive, /body\.v9-shell-ready \.pg\{padding:13px 12px calc\(var
 assert.match(responsive, /\.v9-nav,body\.v9-shell-ready \.v9-nav\{left:9px;right:9px;bottom:max\(8px/,'compact phone nav');
 assert.match(roleStyles, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/,'two-column action cards');
 assert(html.includes('role-home.css?v=beta29-rc17') && sw.includes("'./role-home.css?v=beta29-rc17'"),'client and offline resource versions match');
-assert.equal(read('VERSION').trim(),'11.12.1-beta.29');
+assert.equal(read('VERSION').trim(),'11.12.1-beta.30');
 console.log('PASS beta10 phone homepage screenshot regression: toast, duplicate role title, contextual actions, accessible original routes, nav safe area');
